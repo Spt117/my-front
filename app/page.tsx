@@ -6,10 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/library/auth/authOption";
 import Test from "./accueil/test";
 
-export default async function Home() {
-    const session = await getServerSession(authOptions);
-    console.log("Session:", session);
-
+export default function Home() {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-8">
             <h1 className="text-3xl font-bold">Bienvenue sur Amalerte</h1>

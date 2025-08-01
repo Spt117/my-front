@@ -40,7 +40,7 @@ class ControllerUser {
         const UsersModel = await this.getUserModel();
         try {
             const user = await UsersModel.findOne({ email }).lean();
-            return user ?? null;
+            return JSON.parse(JSON.stringify(user)) as TUser | null;
         } catch {
             return null;
         }

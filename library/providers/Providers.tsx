@@ -1,6 +1,7 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
 import { useEffect } from "react";
+import BackendProvider from "./BackendProvider";
 
 export default function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
     useEffect(() => {

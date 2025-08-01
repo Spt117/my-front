@@ -18,7 +18,8 @@ export async function getUserFromMail(address: string): Promise<TUser | null> {
     }
 
     try {
-        return await controllerUser.getUserFromMail(address);
+        const user = await controllerUser.getUserFromMail(address);
+        return JSON.parse(JSON.stringify(user));
     } catch (error) {
         console.error(`Error fetching user by email: ${address}`, error);
         throw new Error("Failed to fetch user by email");

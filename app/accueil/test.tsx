@@ -1,12 +1,14 @@
 "use client";
 
 import { setUserWithNextAuth } from "@/library/models/user/middlewareUser";
+import useUserStore from "@/library/stores/UserStore";
 import { useEffect } from "react";
 
 export default function Test() {
+    const { user } = useUserStore();
     useEffect(() => {
-        setUserWithNextAuth("fr");
-    }, []);
+        console.log(user);
+    }, [user]);
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-8">
