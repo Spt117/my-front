@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/authOption";
 import { getUserFromHeader } from "../../auth/secureServer";
 import { controllerUser } from "./userController";
-import { IUserProfile, Langage, TParamUpdateUser, TUser } from "./userType";
+import { IUserProfile, Language, TParamUpdateUser, TUser } from "./userType";
 
 /**
  * Retrieves a user from the database by email address
@@ -89,7 +89,7 @@ export async function getUserPseudoFromId(id: string): Promise<string> {
  * @returns A new user object with default values
  * @throws Error if email is invalid
  */
-const createNewUser = (email: string, language: Langage): TUser => {
+const createNewUser = (email: string, language: Language): TUser => {
     if (!email?.trim()) {
         throw new Error("Email is required to create a new user");
     }
@@ -120,7 +120,7 @@ const createNewUser = (email: string, language: Langage): TUser => {
  * @returns Promise resolving to the user object or null if session is invalid
  * @throws Error if user creation fails or database operations fail
  */
-export async function setUserWithNextAuth(language: Langage): Promise<TUser | null> {
+export async function setUserWithNextAuth(language: Language): Promise<TUser | null> {
     try {
         const session = await getServerSession(authOptions);
 
