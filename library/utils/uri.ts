@@ -6,11 +6,13 @@ if (!process.env.EMAIL_PASSEWORD) throw new Error("EMAIL_PASSEWORD is not define
 if (!process.env.AUTH_SECRET) throw new Error("AUTH_SECRET is not defined");
 if (!process.env.GOOGLE_ID) throw new Error("GOOGLE_ID is not defined");
 if (!process.env.GOOGLE_SECRET) throw new Error("GOOGLE_SECRET is not defined");
+if (!process.env.USER_EMAIL) throw new Error("USER_EMAIL is not defined");
 
 const uriMongodb: string = process.env.URI_MONGODB;
 const authSecret: string = process.env.AUTH_SECRET;
 const googleId: string = process.env.GOOGLE_ID;
 const googleSecret: string = process.env.GOOGLE_SECRET;
+const userEmail: string = process.env.USER_EMAIL;
 
 const email = {
     host: process.env.EMAIL_HOST,
@@ -19,4 +21,4 @@ const email = {
     password: process.env.EMAIL_PASSEWORD,
 };
 
-export { uriMongodb, authSecret, googleId, googleSecret, email };
+export { uriMongodb, authSecret, googleId, googleSecret, email, userEmail };

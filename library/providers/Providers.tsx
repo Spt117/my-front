@@ -2,6 +2,7 @@
 import { SessionProvider } from "next-auth/react";
 import { useEffect } from "react";
 import BackendProvider from "./BackendProvider";
+import RouterProvider from "./RouterProvider";
 
 export default function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
     useEffect(() => {
@@ -15,7 +16,9 @@ export default function Providers({ children }: Readonly<{ children: React.React
 
     return (
         <>
-            <SessionProvider>{children}</SessionProvider>
+            <SessionProvider>
+                <RouterProvider>{children}</RouterProvider>
+            </SessionProvider>
         </>
     );
 }
