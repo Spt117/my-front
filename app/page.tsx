@@ -24,7 +24,7 @@ export default function Page() {
                             <Input placeholder="ASIN" className="w-full md:w-[300px] rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all" />
                             <Select>
                                 <SelectTrigger className="w-full md:w-[200px] rounded-lg border-gray-200 bg-white shadow-sm hover:border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all">
-                                    <SelectValue placeholder="Choisir un marché" />
+                                    <SelectValue placeholder="Choisir un marché !!!" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-lg border-gray-200 bg-white shadow-lg">
                                     {marketPlaceEnum.map((option) => (
