@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "@/library/providers/Providers";
 import BackendProvider from "@/library/providers/BackendProvider";
+export const dynamic = "force-dynamic";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
