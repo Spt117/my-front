@@ -1,4 +1,4 @@
-import { uriServerAccess } from "./uri";
+import { uriServerAcces } from "./uri";
 
 export async function postServer(url: string, data: any) {
     let body = typeof data === "string" ? data : JSON.stringify(data);
@@ -7,7 +7,7 @@ export async function postServer(url: string, data: any) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${uriServerAccess}`,
+                Authorization: `Bearer ${uriServerAcces}`,
             },
             body: body,
         });
@@ -27,7 +27,7 @@ export async function getServer(url: string) {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${uriServerAccess}`,
+                Authorization: `Bearer ${uriServerAcces}`,
             },
         });
         const json = await response.json();
