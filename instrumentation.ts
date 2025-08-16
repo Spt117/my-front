@@ -18,5 +18,5 @@ export async function register() {
 
     console.log("[BOOT] App démarrée ahahahahaahah", payload);
     const msg = `App démarrée ${payload.when} (${payload.env})`;
-    sendToTelegram(msg, telegram.dev);
+    sendToTelegram(msg, telegram.rapports);
 }
