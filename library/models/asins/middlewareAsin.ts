@@ -1,152 +1,102 @@
-import { getMongoConnectionManager } from "@/library/auth/connector";
-import { Model } from "mongoose";
-import { Asin, TAsin, TMarketPlace } from "./asin";
+"use server";
 
-class ControllerAsin {
-    /**
-     * Récupère le modèle Mongoose de l'utilisateur.
-     */
-    private async getASinModel(): Promise<Model<TAsin>> {
-        const manager = await getMongoConnectionManager();
-        const connection = await manager.getConnection("datas");
-        return connection.model<TAsin>("asin", Asin.schema);
-    }
+import { asinController } from "./asinController";
+import { TAsin, TMarketPlace } from "./asinType";
 
-    /**
-     * Crée un nouvel ASIN ou ajoute une marketplace si l'ASIN existe déjà.
-     */
-    public async createASin(data: TAsin): Promise<TAsin | null> {
-        if (!data.asin) {
-            console.error("Invalid data: asin is required");
-            return null;
+/**
+ * Action serveur pour créer un nouvel ASIN
+ */
+export async function createAsinAction(data: TAsin): Promise<{ success: boolean; data?: TAsin; error?: string }> {
+    try {
+        const result = await asinController.createASin(data);
+
+        if (result) {
+            return { success: true, data: JSON.parse(JSON.stringify(result)) }; // Utiliser JSON.parse pour éviter les références circulaires
+        } else {
+            return { success: false, error: "Failed to create ASIN" };
         }
-
-        try {
-            // Vérifier si l'ASIN existe déjà
-            const asinExists = await this.checkASinExists(data.asin);
-
-            if (asinExists) {
-                // Si l'ASIN existe, ajouter la marketplace si elle n'existe pas
-                if (data.alerte && data.alerte.length > 0) {
-                    for (const alert of data.alerte) {
-                        await this.checkAndAddMarketPlace(data.asin, alert.marketPlace);
-                    }
-                }
-
-                // Retourner l'ASIN existant mis à jour
-                const AsinModel = await this.getASinModel();
-                return await AsinModel.findOne({ asin: data.asin }).exec();
-            } else {
-                // Si l'ASIN n'existe pas, le créer
-                const AsinModel = await this.getASinModel();
-                const asin = new AsinModel(data);
-                return await asin.save();
-            }
-        } catch (error) {
-            console.error(`Error creating/updating ASIN: ${error}`);
-            return null;
-        }
-    }
-
-    public async getASins(): Promise<TAsin[]> {
-        const AsinModel = await this.getASinModel();
-        try {
-            return await AsinModel.find().exec();
-        } catch (error) {
-            console.error(`Error fetching ASINs: ${error}`);
-            return [];
-        }
-    }
-
-    /**
-     * Vérifie si un ASIN existe dans la base de données.
-     */
-    public async checkASinExists(asin: string): Promise<boolean> {
-        const AsinModel = await this.getASinModel();
-
-        if (!asin) {
-            console.error("Invalid parameter: asin is required");
-            return false;
-        }
-
-        try {
-            const count = await AsinModel.countDocuments({ asin }).exec();
-            return count > 0;
-        } catch (error) {
-            console.error(`Error checking ASIN existence: ${error}`);
-            return false;
-        }
-    }
-
-    /**
-     * Vérifie si une marketplace existe dans l'array alerte d'un ASIN.
-     * Si elle n'existe pas, l'ajoute à l'array.
-     */
-    public async checkAndAddMarketPlace(asin: string, marketPlace: TMarketPlace): Promise<boolean> {
-        const AsinModel = await this.getASinModel();
-
-        if (!asin || !marketPlace) {
-            console.error("Invalid parameters: asin and marketPlace are required");
-            return false;
-        }
-
-        try {
-            // Vérifier si la marketplace existe déjà
-            const existingDoc = await AsinModel.findOne({
-                asin,
-                "alerte.marketPlace": marketPlace,
-            }).exec();
-
-            // Si la marketplace existe déjà, retourner true
-            if (existingDoc) {
-                return true;
-            }
-
-            // Sinon, ajouter la marketplace à l'array alerte
-            const result = await AsinModel.updateOne(
-                { asin },
-                {
-                    $push: {
-                        alerte: {
-                            marketPlace,
-                            endOfAlerte: false,
-                        },
-                    },
-                }
-            ).exec();
-
-            return result.modifiedCount > 0;
-        } catch (error) {
-            console.error(`Error checking/adding marketplace: ${error}`);
-            return false;
-        }
-    }
-
-    public async disableASinByMarketPlace(asin: string, marketPlace: TMarketPlace): Promise<boolean> {
-        const AsinModel = await this.getASinModel();
-
-        // Validation des paramètres
-        if (!asin || !marketPlace) {
-            console.error("Invalid parameters: asin and marketPlace are required");
-            return false;
-        }
-
-        try {
-            const result = await AsinModel.updateOne(
-                { asin },
-                { "alerte.$[elem].endOfAlerte": true },
-                {
-                    arrayFilters: [{ "elem.marketPlace": marketPlace }],
-                }
-            ).exec();
-
-            // Vérifier si un document a été modifié ET si au moins un élément a été mis à jour
-            return result.matchedCount > 0 && result.modifiedCount > 0;
-        } catch (error) {
-            console.error(`Error disabling ASIN: ${error}`);
-            return false;
-        }
+    } catch (error) {
+        console.error("Server action error:", error);
+        return { success: false, error: "Internal server error" };
     }
 }
 
-export const asinController = new ControllerAsin();
+/**
+ * Action serveur pour récupérer tous les ASINs
+ */
+export async function getAsinsAction(): Promise<{ success: boolean; data?: TAsin[]; error?: string }> {
+    try {
+        const result = await asinController.getASins();
+        return { success: true, data: result };
+    } catch (error) {
+        console.error("Server action error:", error);
+        return { success: false, error: "Internal server error" };
+    }
+}
+
+/**
+ * Action serveur pour désactiver un ASIN par marketplace
+ */
+export async function disableAsinByMarketPlaceAction(asin: string, marketPlace: TMarketPlace): Promise<{ success: boolean; error?: string }> {
+    try {
+        // Validation côté serveur
+        if (!asin || !marketPlace) {
+            return { success: false, error: "ID and marketplace are required" };
+        }
+
+        const result = await asinController.disableASinByMarketPlace(asin, marketPlace);
+
+        if (result) {
+            return { success: true };
+        } else {
+            return { success: false, error: "ASIN not found or already disabled" };
+        }
+    } catch (error) {
+        console.error("Server action error:", error);
+        return { success: false, error: "Internal server error" };
+    }
+}
+
+/**
+ * Action serveur pour récupérer les ASINs actifs par marketplace
+ */
+export async function getActiveAsinsByMarketPlaceAction(marketPlace: TMarketPlace): Promise<{ success: boolean; data?: TAsin[]; error?: string }> {
+    try {
+        if (!marketPlace) {
+            return { success: false, error: "Marketplace is required" };
+        }
+
+        const asins = await asinController.getASins();
+        const activeAsins = asins.filter((asin) => asin.alerte.some((alert) => alert.marketPlace === marketPlace && !alert.endOfAlerte));
+
+        return { success: true, data: activeAsins };
+    } catch (error) {
+        console.error("Server action error:", error);
+        return { success: false, error: "Internal server error" };
+    }
+}
+
+/**
+ * Action serveur pour mettre à jour le titre d'un ASIN
+ */
+export async function updateAsinTitleAction(id: string, newTitle: string): Promise<{ success: boolean; error?: string }> {
+    try {
+        if (!id || !newTitle) {
+            return { success: false, error: "ID and title are required" };
+        }
+
+        // Note: Il faudrait ajouter cette méthode au controller
+        // Pour l'instant, on peut utiliser une approche directe
+        const AsinModel = await asinController["getASinModel"]();
+        const result = await AsinModel.updateOne({ _id: id }, { title: newTitle }).exec();
+
+        if (result.matchedCount > 0) {
+            return { success: true };
+        } else {
+            return { success: false, error: "ASIN not found" };
+        }
+    } catch (error) {
+        console.error("Server action error:", error);
+        return { success: false, error: "Internal server error" };
+    }
+}

@@ -1,6 +1,7 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
-import mongoose, { Model } from "mongoose";
-import { Asin, TAsin, TMarketPlace } from "./asin";
+import { Model } from "mongoose";
+import { TAsin, TMarketPlace } from "./asinType";
+import { Asin } from "./asin";
 
 class ControllerAsin {
     /**
@@ -13,20 +14,66 @@ class ControllerAsin {
     }
 
     /**
-     * Crée un nouvel ASIN.
+     * Crée un nouvel ASIN ou ajoute une marketplace si l'ASIN existe déjà.
      */
     public async createASin(data: TAsin): Promise<TAsin | null> {
-        const exist = await this.checkASinExists(data.asin);
-        if (exist) {
-            console.error(`ASIN already exists: ${data.asin}`);
+        if (!data.asin) {
+            console.error("Invalid data: asin is required");
             return null;
         }
-        const AsinModel = await this.getASinModel();
-        const asin = new AsinModel(data);
+
         try {
-            return await asin.save();
+            const AsinModel = await this.getASinModel();
+
+            // Vérifier si l'ASIN existe déjà
+            const existingAsin = await AsinModel.findOne({ asin: data.asin }).exec();
+
+            if (existingAsin) {
+                console.log(`ASIN ${data.asin} already exists, updating marketplaces...`);
+
+                // Si l'ASIN existe, ajouter la marketplace si elle n'existe pas
+                if (data.alerte && data.alerte.length > 0) {
+                    let hasUpdated = false;
+
+                    for (const alert of data.alerte) {
+                        // Vérifier si cette marketplace existe déjà
+                        const marketplaceExists = existingAsin.alerte?.some((existingAlert) => existingAlert.marketPlace === alert.marketPlace);
+
+                        if (!marketplaceExists) {
+                            await AsinModel.updateOne(
+                                { asin: data.asin },
+                                {
+                                    $push: {
+                                        alerte: {
+                                            marketPlace: alert.marketPlace,
+                                            endOfAlerte: false,
+                                        },
+                                    },
+                                }
+                            ).exec();
+                            hasUpdated = true;
+                        }
+                    }
+
+                    if (hasUpdated) {
+                        // Retourner l'ASIN mis à jour avec .lean() pour éviter les références circulaires
+                        return await AsinModel.findOne({ asin: data.asin }).lean().exec();
+                    }
+                }
+
+                // Retourner l'ASIN existant sans modification avec .lean()
+                return existingAsin.toObject();
+            } else {
+                // Si l'ASIN n'existe pas, le créer
+                console.log(`Creating new ASIN: ${data.asin}`);
+                const asin = new AsinModel(data);
+                const saved = await asin.save();
+
+                // Retourner l'objet plain pour éviter les références circulaires
+                return saved.toObject();
+            }
         } catch (error) {
-            console.error(`Error creating ASIN: ${error}`);
+            console.error(`Error creating/updating ASIN: ${error}`);
             return null;
         }
     }
@@ -34,7 +81,8 @@ class ControllerAsin {
     public async getASins(): Promise<TAsin[]> {
         const AsinModel = await this.getASinModel();
         try {
-            return await AsinModel.find().exec();
+            const result = await AsinModel.find().lean().exec();
+            return JSON.parse(JSON.stringify(result)); // Utiliser JSON.parse pour éviter les références circulaires
         } catch (error) {
             console.error(`Error fetching ASINs: ${error}`);
             return [];
@@ -82,6 +130,7 @@ class ControllerAsin {
 
             // Si la marketplace existe déjà, retourner true
             if (existingDoc) {
+                console.log(`Marketplace ${marketPlace} already exists for ASIN ${asin}`);
                 return true;
             }
 
@@ -98,7 +147,9 @@ class ControllerAsin {
                 }
             ).exec();
 
-            return result.modifiedCount > 0;
+            const success = result.modifiedCount > 0;
+            console.log(`Added marketplace ${marketPlace} to ASIN ${asin}: ${success}`);
+            return success;
         } catch (error) {
             console.error(`Error checking/adding marketplace: ${error}`);
             return false;
@@ -124,7 +175,9 @@ class ControllerAsin {
             ).exec();
 
             // Vérifier si un document a été modifié ET si au moins un élément a été mis à jour
-            return result.matchedCount > 0 && result.modifiedCount > 0;
+            const success = result.matchedCount > 0 && result.modifiedCount > 0;
+            console.log(`Disabled ASIN ${asin} for marketplace ${marketPlace}: ${success}`);
+            return success;
         } catch (error) {
             console.error(`Error disabling ASIN: ${error}`);
             return false;

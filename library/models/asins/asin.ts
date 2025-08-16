@@ -1,25 +1,10 @@
 import { Schema, model, models, Model } from "mongoose";
-
-export const marketPlaceEnum = ["amazon.fr", "amazon.de", "amazon.com"] as const;
-export type TMarketPlace = (typeof marketPlaceEnum)[number];
-
-type TALerteMarketPlace = {
-    endOfAlerte: boolean;
-    marketPlace: TMarketPlace;
-};
-
-export type TAsin = {
-    asin: string;
-    title: string;
-    alerte: TALerteMarketPlace[];
-    createdAt?: Date;
-    updatedAt?: Date;
-};
+import { marketPlaceEnum, TAsin } from "./asinType";
 
 const AsinSchema = new Schema<TAsin>(
     {
         asin: { type: String, required: true, index: true, unique: true },
-        title: { type: String, required: true },
+        title: { type: String, required: false },
         alerte: {
             type: [
                 {

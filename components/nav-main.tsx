@@ -1,19 +1,11 @@
 "use client";
 
-import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
+import { IconCirclePlusFilled } from "@tabler/icons-react";
 
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import useUserStore from "@/library/stores/UserStore";
 
-export function NavMain({
-    items,
-}: {
-    items: {
-        title: string;
-        url: string;
-        icon?: Icon;
-    }[];
-}) {
+export function NavMain() {
     const { setCard } = useUserStore();
     const handleQuickCreate = () => {
         console.log("Quick Create clicked");
@@ -29,22 +21,8 @@ export function NavMain({
                             <IconCirclePlusFilled />
                             <span>Quick Create</span>
                         </SidebarMenuButton>
-                        {/* <Button size="icon" className="size-8 group-data-[collapsible=icon]:opacity-0" variant="outline">
-                            <IconMail />
-                            <span className="sr-only">Inbox</span>
-                        </Button> */}
                     </SidebarMenuItem>
                 </SidebarMenu>
-                {/* <SidebarMenu>
-                    {items.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton tooltip={item.title}>
-                                {item.icon && <item.icon />}
-                                <span>{item.title}</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    ))}
-                </SidebarMenu> */}
             </SidebarGroupContent>
         </SidebarGroup>
     );
