@@ -6,6 +6,7 @@ if (!process.env.EMAIL_PASSEWORD) throw new Error("EMAIL_PASSEWORD is not define
 if (!process.env.AUTH_SECRET) throw new Error("AUTH_SECRET is not defined");
 if (!process.env.GOOGLE_ID) throw new Error("GOOGLE_ID is not defined");
 if (!process.env.GOOGLE_SECRET) throw new Error("GOOGLE_SECRET is not defined");
+if (!process.env.URI_SERVER_ACCES) throw new Error("URI_SERVER_ACCES is not defined");
 if (!process.env.USER_EMAIL) throw new Error("USER_EMAIL is not defined");
 
 const uriMongodb: string = process.env.URI_MONGODB;
@@ -22,3 +23,12 @@ const email = {
 };
 
 export { uriMongodb, authSecret, googleId, googleSecret, email, userEmail };
+
+const pokeUriServer = "http://localhost:9100";
+export const telegram = {
+    api: `${pokeUriServer}/msgtelegram`,
+    dev: "1063455465",
+    erreur: "-1002779214968",
+    rapports: "-1002830443637",
+    logs: "-1002614418286",
+};
