@@ -14,6 +14,7 @@ const authSecret: string = process.env.AUTH_SECRET;
 const googleId: string = process.env.GOOGLE_ID;
 const googleSecret: string = process.env.GOOGLE_SECRET;
 const userEmail: string = process.env.USER_EMAIL;
+const uriServerAcces: string = process.env.URI_SERVER_ACCES;
 
 const email = {
     host: process.env.EMAIL_HOST,
@@ -22,7 +23,7 @@ const email = {
     password: process.env.EMAIL_PASSEWORD,
 };
 
-export { uriMongodb, authSecret, googleId, googleSecret, email, userEmail };
+export { uriMongodb, authSecret, googleId, googleSecret, email, userEmail, uriServerAcces };
 
 const pokeUriServer = "http://localhost:9100";
 export const telegram = {
