@@ -1,15 +1,19 @@
-export const marketPlaceEnum = ["amazon.fr", "amazon.de", "amazon.com"] as const;
+export const marketPlaceEnum = ["amazon_fr", "amazon_de", "amazon_com"] as const;
 export type TMarketPlace = (typeof marketPlaceEnum)[number];
 
-type TALerteMarketPlace = {
-    endOfAlerte: boolean;
+export type TALerteMarketPlace = {
+    active: boolean;
     marketPlace: TMarketPlace;
 };
 
-export type TAsin = {
+type TAsinMarketPlaces = {
+    [key in TMarketPlace]?: boolean; // Champs dynamiques pour chaque marketplace
+};
+interface TAsinBase {
     asin: string;
     title?: string;
-    alerte: TALerteMarketPlace[];
     createdAt?: Date;
     updatedAt?: Date;
-};
+}
+
+export type TAsin = TAsinBase & TAsinMarketPlaces;

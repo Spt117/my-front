@@ -16,56 +16,24 @@ class ControllerAsin {
     /**
      * Crée un nouvel ASIN ou ajoute une marketplace si l'ASIN existe déjà.
      */
-    public async createASin(data: TAsin): Promise<TAsin | null> {
-        if (!data.asin) {
-            console.error("Invalid data: asin is required");
-            return null;
-        }
-
+    public async createASin(asinID: string, marketPlace: TMarketPlace): Promise<TAsin | null> {
         try {
             const AsinModel = await this.getASinModel();
 
             // Vérifier si l'ASIN existe déjà
-            const existingAsin = await AsinModel.findOne({ asin: data.asin }).exec();
+            const existingAsin = await AsinModel.findOne({ asin: asinID }).exec();
 
             if (existingAsin) {
-                console.log(`ASIN ${data.asin} already exists, updating marketplaces...`);
-
-                // Si l'ASIN existe, ajouter la marketplace si elle n'existe pas
-                if (data.alerte && data.alerte.length > 0) {
-                    let hasUpdated = false;
-
-                    for (const alert of data.alerte) {
-                        // Vérifier si cette marketplace existe déjà
-                        const marketplaceExists = existingAsin.alerte?.some((existingAlert) => existingAlert.marketPlace === alert.marketPlace);
-
-                        if (!marketplaceExists) {
-                            await AsinModel.updateOne(
-                                { asin: data.asin },
-                                {
-                                    $push: {
-                                        alerte: {
-                                            marketPlace: alert.marketPlace,
-                                            endOfAlerte: false,
-                                        },
-                                    },
-                                }
-                            ).exec();
-                            hasUpdated = true;
-                        }
-                    }
-
-                    if (hasUpdated) {
-                        // Retourner l'ASIN mis à jour avec .lean() pour éviter les références circulaires
-                        return await AsinModel.findOne({ asin: data.asin }).lean().exec();
-                    }
-                }
-
+                // Mettre à jour les marketplaces de l'ASIN existant
+                this.enableASinByMarketPlace(asinID, marketPlace);
                 // Retourner l'ASIN existant sans modification avec .lean()
                 return existingAsin.toObject();
             } else {
                 // Si l'ASIN n'existe pas, le créer
-                console.log(`Creating new ASIN: ${data.asin}`);
+                const data: TAsin = {
+                    asin: asinID,
+                    [marketPlace]: true, // Activer la marketplace pour le nouvel ASIN
+                };
                 const asin = new AsinModel(data);
                 const saved = await asin.save();
 
@@ -110,52 +78,42 @@ class ControllerAsin {
     }
 
     /**
-     * Vérifie si une marketplace existe dans l'array alerte d'un ASIN.
-     * Si elle n'existe pas, l'ajoute à l'array.
+     * Active un ASIN pour une marketplace spécifique.
+     * @param asin L'ASIN à désactiver.
+     * @param marketPlace La marketplace pour laquelle désactiver l'ASIN.
+     * @returns true si la désactivation a réussi, false sinon.
      */
-    public async checkAndAddMarketPlace(asin: string, marketPlace: TMarketPlace): Promise<boolean> {
+    public async enableASinByMarketPlace(asin: string, marketPlace: TMarketPlace): Promise<boolean> {
         const AsinModel = await this.getASinModel();
 
+        // Validation des paramètres
         if (!asin || !marketPlace) {
             console.error("Invalid parameters: asin and marketPlace are required");
             return false;
         }
 
         try {
-            // Vérifier si la marketplace existe déjà
-            const existingDoc = await AsinModel.findOne({
-                asin,
-                "alerte.marketPlace": marketPlace,
-            }).exec();
+            const result = await AsinModel.updateOne({ asin }, { [marketPlace]: true }).exec();
+            console.log(marketPlace);
 
-            // Si la marketplace existe déjà, retourner true
-            if (existingDoc) {
-                console.log(`Marketplace ${marketPlace} already exists for ASIN ${asin}`);
-                return true;
-            }
+            console.log(result);
 
-            // Sinon, ajouter la marketplace à l'array alerte
-            const result = await AsinModel.updateOne(
-                { asin },
-                {
-                    $push: {
-                        alerte: {
-                            marketPlace,
-                            endOfAlerte: false,
-                        },
-                    },
-                }
-            ).exec();
-
-            const success = result.modifiedCount > 0;
-            console.log(`Added marketplace ${marketPlace} to ASIN ${asin}: ${success}`);
+            // Vérifier si un document a été modifié ET si au moins un élément a été mis à jour
+            const success = result.matchedCount > 0 && result.modifiedCount > 0;
+            console.log(`Disabled ASIN ${asin} for marketplace ${marketPlace}: ${success}`);
             return success;
         } catch (error) {
-            console.error(`Error checking/adding marketplace: ${error}`);
+            console.error(`Error disabling ASIN: ${error}`);
             return false;
         }
     }
 
+    /**
+     * Désactive un ASIN pour une marketplace spécifique.
+     * @param asin L'ASIN à désactiver.
+     * @param marketPlace La marketplace pour laquelle désactiver l'ASIN.
+     * @returns true si la désactivation a réussi, false sinon.
+     */
     public async disableASinByMarketPlace(asin: string, marketPlace: TMarketPlace): Promise<boolean> {
         const AsinModel = await this.getASinModel();
 
@@ -166,13 +124,10 @@ class ControllerAsin {
         }
 
         try {
-            const result = await AsinModel.updateOne(
-                { asin },
-                { "alerte.$[elem].endOfAlerte": true },
-                {
-                    arrayFilters: [{ "elem.marketPlace": marketPlace }],
-                }
-            ).exec();
+            const result = await AsinModel.updateOne({ asin }, { [marketPlace]: false }).exec();
+            console.log(marketPlace);
+
+            console.log(result);
 
             // Vérifier si un document a été modifié ET si au moins un élément a été mis à jour
             const success = result.matchedCount > 0 && result.modifiedCount > 0;

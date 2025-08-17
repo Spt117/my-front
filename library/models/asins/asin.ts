@@ -1,22 +1,21 @@
 import { Schema, model, models, Model } from "mongoose";
-import { marketPlaceEnum, TAsin } from "./asinType";
+import { marketPlaceEnum, TAsin, TMarketPlace } from "./asinType";
+
+const marketPlaceFields = marketPlaceEnum.reduce((acc, marketPlace) => {
+    acc[marketPlace] = { type: Boolean, required: false, default: false };
+    return acc;
+}, {} as Record<TMarketPlace, { type: typeof Boolean; required: boolean; default: boolean }>);
 
 const AsinSchema = new Schema<TAsin>(
     {
         asin: { type: String, required: true, index: true, unique: true },
         title: { type: String, required: false },
-        alerte: {
-            type: [
-                {
-                    endOfAlerte: { type: Boolean, required: true },
-                    marketPlace: { type: String, enum: marketPlaceEnum, required: true },
-                },
-            ],
-        },
+        ...marketPlaceFields,
     },
     {
         versionKey: false,
         timestamps: true,
+        strict: true,
     }
 );
 
