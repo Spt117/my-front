@@ -6,12 +6,21 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { authOptions } from "../auth/authOption";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { headers } from "next/headers";
 
 export default async function BackendProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const user = await getUserFromHeader();
     const session = await getServerSession(authOptions);
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "/unknown";
+    console.log(pathname);
 
-    if (!session || session.user?.email === userEmail)
+    if (!session) {
+        if (pathname !== "/boarding") return null;
+        return <>{children}</>;
+    }
+
+    if (session.user?.email === userEmail)
         return (
             <StoreProvider user={user}>
                 <SidebarProvider

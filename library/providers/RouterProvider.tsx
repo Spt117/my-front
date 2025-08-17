@@ -18,5 +18,7 @@ export default function RouterProvider({ children }: Readonly<{ children: React.
         if (basePath) redirect();
     }, [status, basePath, user]);
 
+    if (status === "unauthenticated" && basePath !== "/boarding") return null;
+
     return <>{children}</>;
 }
