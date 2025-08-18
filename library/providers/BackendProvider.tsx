@@ -13,7 +13,6 @@ export default async function BackendProvider({ children }: Readonly<{ children:
     const session = await getServerSession(authOptions);
     const headersList = await headers();
     const pathname = headersList.get("x-pathname") || "/unknown";
-    console.log(pathname);
 
     if (!session) {
         if (pathname !== "/boarding") return null;

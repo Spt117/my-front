@@ -6,11 +6,13 @@ import { marketPlaceEnum, TMarketPlace } from "@/library/models/asins/asinType";
 import { Button } from "../ui/button";
 import { createAsinAction } from "@/library/models/asins/middlewareAsin";
 import { Spinner } from "../ui/shadcn-io/spinner/index";
+import { useGetAsins } from "@/library/hooks/useGetAsins";
 
 export default function Page() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [marketPlace, setMarketPlace] = useState<TMarketPlace | null>(null);
     const [asin, setAsin] = useState<string>("");
+    const { getAsins } = useGetAsins();
 
     const handleSubmit = async () => {
         if (!asin || !marketPlace) {
@@ -30,6 +32,7 @@ export default function Page() {
 
             setAsin("");
             setMarketPlace(null);
+            await getAsins();
         } catch (error) {
             console.error("Error in handleSubmit:", error);
         } finally {

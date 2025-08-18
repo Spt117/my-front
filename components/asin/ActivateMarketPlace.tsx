@@ -19,11 +19,7 @@ export default function ActivateMarketPlace({ asin, marketPlace }: { asin: strin
     return (
         <div className="flex items-center gap-2 mb-2  ">
             <Switch disabled={loading} checked={marketPlace.active} onCheckedChange={() => handleSwitchChange(marketPlace)} className="ml-2" />
-            {!loading && (
-                <span className="mr-2">
-                    {marketPlace.marketPlace} {marketPlace.active ? "(Alerte terminée)" : ""}
-                </span>
-            )}
+            {!loading && <span className="mr-2">{marketPlace.marketPlace}</span>}
             {loading && <Spinner className="w-4 h-4" />}
         </div>
     );

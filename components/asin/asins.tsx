@@ -7,7 +7,7 @@ export default async function Asins() {
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:p-6">
-            <h1 className="text-2xl font-bold">Liste des ASINs</h1>
+            <h1 className="text-2xl font-bold">Liste des ASINs surveillés</h1>
             <AsinsClient asinsData={asins.data} />
         </div>
     );
