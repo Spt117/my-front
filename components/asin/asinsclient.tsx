@@ -8,9 +8,7 @@ export default function AsinsClient({ asinsData }: { asinsData: TAsin[] }) {
     const { setAsins, asins } = useAsinStore();
 
     useEffect(() => {
-        if (asinsData && asinsData.length > 0) {
-            setAsins(asinsData);
-        }
+        if (asinsData && asinsData.length > 0) setAsins(asinsData);
     }, [asinsData, setAsins]);
 
     return (
