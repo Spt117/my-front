@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { createAsinAction } from "@/library/models/asins/middlewareAsin";
 import { Spinner } from "../ui/shadcn-io/spinner/index";
 import { useGetAsins } from "@/library/hooks/useGetAsins";
+import CheckAsins from "./CheckAsins";
 
 export default function Page() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -63,6 +64,7 @@ export default function Page() {
                 </Button>
             )}
             {isLoading && <Spinner className="h-6 w-6 text-blue-500" />}
+            <CheckAsins />
         </div>
     );
 }

@@ -1,3 +1,4 @@
+"use server";
 import { uriServerAcces } from "./uri";
 
 export async function postServer(url: string, data: any) {
