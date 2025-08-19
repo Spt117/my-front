@@ -13,7 +13,7 @@ export default function ActiveMarketplace({ dataAsin }: { dataAsin: TAsin[] }) {
         <Card className="flex items-center justify-between p-4 border rounded-lg shadow-sm">
             {dataAsin[0].title && (
                 <h3 className="text-lg font-semibold">
-                    <a href={`https://${marketplace.marketplace}/dp/${dataAsin[0].asin}`} className="hover:underline">
+                    <a href={`https://${marketplace.marketplace}/dp/${dataAsin[0].asin}`} className="hover:underline text-blue-400" target="_blank" rel="noopener noreferrer">
                         {dataAsin[0].title}
                     </a>
                 </h3>
