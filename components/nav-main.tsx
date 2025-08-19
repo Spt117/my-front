@@ -3,14 +3,9 @@
 import { IconCirclePlusFilled } from "@tabler/icons-react";
 
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import useUserStore from "@/library/stores/UserStore";
 
 export function NavMain() {
-    const { setCard } = useUserStore();
-    const handleQuickCreate = () => {
-        console.log("Quick Create clicked");
-        setCard("quick-create");
-    };
+    const handleQuickCreate = () => {};
 
     return (
         <SidebarGroup>
