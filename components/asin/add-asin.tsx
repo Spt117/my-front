@@ -42,9 +42,9 @@ export default function Page() {
 
     return (
         <div className="flex flex-col gap-4 md:flex-row md:items-center">
-            <Input onChange={(e) => setAsin(e.target.value)} placeholder="ASIN" className="w-full md:w-[300px] rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all" />
+            <Input value={asin} onChange={(e) => setAsin(e.target.value)} placeholder="ASIN" className="w-full md:w-[300px] rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all" />
             <div className="w-full md:w-[300px]">
-                <Select onValueChange={(m) => setMarketPlace(m as TMarketPlace)}>
+                <Select value={marketPlace || ""} onValueChange={(m) => setMarketPlace(m as TMarketPlace)}>
                     <SelectTrigger className="w-full md:w-[200px] rounded-lg border-gray-200 bg-white shadow-sm hover:border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all">
                         <SelectValue placeholder="Choisir un marché" />
                     </SelectTrigger>

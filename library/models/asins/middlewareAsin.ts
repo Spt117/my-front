@@ -2,7 +2,7 @@
 
 import { boolean } from "zod";
 import { asinController } from "./asinController";
-import { TALerteMarketPlace, TAsin, TMarketPlace } from "./asinType";
+import { TAsin, TMarketPlace } from "./asinType";
 import { authOptions } from "@/library/auth/authOption";
 import { getServerSession } from "next-auth";
 
@@ -44,41 +44,21 @@ export async function getAsinsAction(): Promise<{ success: boolean; data?: TAsin
  * @param asin - L'ASIN à modifier
  * @param marketPlace - La marketplace pour laquelle activer l'ASIN
  */
-export async function acitveAsinByMarketPlaceAction(asin: string, marketPlace: TALerteMarketPlace): Promise<{ success: boolean; error?: string }> {
-    try {
-        // Validation côté serveur
-        if (!asin || !marketPlace) {
-            return { success: false, error: "ID and marketplace are required" };
-        }
-
-        let result;
-        if (marketPlace.active) result = await asinController.disableASinByMarketPlace(asin, marketPlace.marketPlace);
-        else result = await asinController.enableASinByMarketPlace(asin, marketPlace.marketPlace);
-
-        if (result) {
-            return { success: true };
-        } else {
-            return { success: false, error: "ASIN not found or already disabled" };
-        }
-    } catch (error) {
-        console.error("Server action error:", error);
-        return { success: false, error: "Internal server error" };
+export async function activeAsinByMarketPlaceAction(asin: TAsin): Promise<{ success: boolean; error?: string }> {
+    // Validation côté serveur
+    if (!asin) {
+        return { success: false, error: "asin is required" };
     }
-}
 
-/**
- * Action serveur pour désactiver une marketplace d'un ASIN
- * @param asin - L'ASIN à modifier
- * @param marketPlace - La marketplace pour laquelle désactiver l'ASIN
- */
-export async function disableAsinByMarketPlaceAction(asin: string, marketPlace: TMarketPlace): Promise<{ success: boolean; error?: string }> {
     try {
-        // Validation côté serveur
-        if (!asin || !marketPlace) {
-            return { success: false, error: "ID and marketplace are required" };
+        const asinMarketPlace = await asinController.getAsinByMarketPlace(asin.asin, asin.marketPlace);
+        if (!asinMarketPlace) {
+            return { success: false, error: "ASIN not found" };
         }
-
-        const result = await asinController.disableASinByMarketPlace(asin, marketPlace);
+        let result: boolean;
+        // Si l'ASIN est déjà actif, on le désactive, sinon on l'active
+        if (asinMarketPlace.active) result = await asinController.disableASinByMarketPlace(asin.asin, asin.marketPlace);
+        else result = await asinController.enableASinByMarketPlace(asin.asin, asin.marketPlace);
 
         if (result) {
             return { success: true };

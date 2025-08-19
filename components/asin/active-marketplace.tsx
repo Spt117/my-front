@@ -1,22 +1,18 @@
 import { Card } from "../ui/card";
-import { marketPlaceEnum, TALerteMarketPlace, TAsin } from "@/library/models/asins/asinType";
+import { marketPlaceEnum, TAsin } from "@/library/models/asins/asinType";
 import ActivateMarketPlace from "./ActivateMarketPlace";
 
-export default function ActiveMarketplace({ dataAsin }: { dataAsin: TAsin }) {
-    const m = marketPlaceEnum.map((marketPlace) => {
-        if (dataAsin[marketPlace] !== undefined)
-            return {
-                marketPlace,
-                active: dataAsin[marketPlace],
-            };
-    }) as TALerteMarketPlace[];
+export default function ActiveMarketplace({ dataAsin }: { dataAsin: TAsin[] }) {
+    if (!dataAsin || dataAsin.length === 0) return null;
+
+    console.log("ActiveMarketplace dataAsin", dataAsin);
 
     return (
         <Card className="flex items-center justify-between p-4 border rounded-lg shadow-sm">
-            <span className="text-lg font-semibold">{dataAsin.asin}</span>
+            <span className="text-lg font-semibold">{dataAsin[0].asin}</span>
             <span className="text-sm text-gray-500">
-                {m.map((marketPlaceAlert: TALerteMarketPlace, index: number) => (
-                    <ActivateMarketPlace marketPlace={marketPlaceAlert} asin={dataAsin.asin} key={index} />
+                {dataAsin.map((asin: TAsin, index: number) => (
+                    <ActivateMarketPlace asin={asin} key={index} />
                 ))}
             </span>
         </Card>

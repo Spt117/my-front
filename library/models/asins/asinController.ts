@@ -16,23 +16,20 @@ class ControllerAsin {
     /**
      * Crée un nouvel ASIN ou ajoute une marketplace si l'ASIN existe déjà.
      */
-    public async createASin(asinID: string, marketPlace: TMarketPlace): Promise<TAsin | null> {
+    public async createASin(asinID: string, marketPlace: TMarketPlace) {
         try {
             const AsinModel = await this.getASinModel();
-
             // Vérifier si l'ASIN existe déjà
-            const existingAsin = await AsinModel.findOne({ asin: asinID }).exec();
+            const existingAsin = await this.checkASinExists(asinID, marketPlace);
 
             if (existingAsin) {
-                // Mettre à jour les marketplaces de l'ASIN existant
-                this.enableASinByMarketPlace(asinID, marketPlace);
-                // Retourner l'ASIN existant sans modification avec .lean()
-                return existingAsin.toObject();
+                return;
             } else {
                 // Si l'ASIN n'existe pas, le créer
                 const data: TAsin = {
                     asin: asinID,
-                    [marketPlace]: true, // Activer la marketplace pour le nouvel ASIN
+                    marketPlace,
+                    active: true,
                 };
                 const asin = new AsinModel(data);
                 const saved = await asin.save();
@@ -42,6 +39,24 @@ class ControllerAsin {
             }
         } catch (error) {
             console.error(`Error creating/updating ASIN: ${error}`);
+            return null;
+        }
+    }
+
+    public async getAsinByMarketPlace(asin: string, marketPlace: TMarketPlace): Promise<TAsin | null> {
+        const AsinModel = await this.getASinModel();
+
+        // Validation des paramètres
+        if (!asin || !marketPlace) {
+            console.error("Invalid parameters: asin and marketPlace are required");
+            return null;
+        }
+
+        try {
+            const result = await AsinModel.findOne({ asin, marketPlace }).lean().exec();
+            return result ? JSON.parse(JSON.stringify(result)) : null; // Utiliser JSON.parse pour éviter les références circulaires
+        } catch (error) {
+            console.error(`Error fetching ASIN by marketplace: ${error}`);
             return null;
         }
     }
@@ -60,7 +75,7 @@ class ControllerAsin {
     /**
      * Vérifie si un ASIN existe dans la base de données.
      */
-    public async checkASinExists(asin: string): Promise<boolean> {
+    public async checkASinExists(asin: string, marketPlace: TMarketPlace): Promise<boolean> {
         const AsinModel = await this.getASinModel();
 
         if (!asin) {
@@ -69,7 +84,7 @@ class ControllerAsin {
         }
 
         try {
-            const count = await AsinModel.countDocuments({ asin }).exec();
+            const count = await AsinModel.countDocuments({ asin, marketPlace }).exec();
             return count > 0;
         } catch (error) {
             console.error(`Error checking ASIN existence: ${error}`);
@@ -93,7 +108,7 @@ class ControllerAsin {
         }
 
         try {
-            const result = await AsinModel.updateOne({ asin }, { [marketPlace]: true }).exec();
+            const result = await AsinModel.updateOne({ asin, marketPlace }, { active: true }).exec();
             console.log(marketPlace);
 
             console.log(result);
@@ -124,14 +139,9 @@ class ControllerAsin {
         }
 
         try {
-            const result = await AsinModel.updateOne({ asin }, { [marketPlace]: false }).exec();
-            console.log(marketPlace);
-
-            console.log(result);
-
+            const result = await AsinModel.updateOne({ asin, marketPlace }, { active: false }).exec();
             // Vérifier si un document a été modifié ET si au moins un élément a été mis à jour
             const success = result.matchedCount > 0 && result.modifiedCount > 0;
-            console.log(`Disabled ASIN ${asin} for marketplace ${marketPlace}: ${success}`);
             return success;
         } catch (error) {
             console.error(`Error disabling ASIN: ${error}`);
