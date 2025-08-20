@@ -8,13 +8,13 @@ export const boutiques = [
         flag: "/flags/fr.png",
     },
     {
-        vendor: "Beyblade Shop",
+        vendor: "Beyblade Shop Fr",
         domain: "bayblade-shops.myshopify.com",
         langue: "français",
         flag: "/flags/fr.png",
     },
     {
-        vendor: "Beyblade Shop",
+        vendor: "Beyblade Shop De",
         domain: "beyblade-shopde.myshopify.com",
         langue: "allemand",
         flag: "/flags/de.png",

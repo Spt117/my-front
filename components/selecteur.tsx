@@ -1,10 +1,9 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TMarketPlace } from "@/library/models/asins/asinType";
 import { Dispatch, SetStateAction } from "react";
 
 interface SelecteurProps {
     value: string | null;
-    onChange: Dispatch<SetStateAction<TMarketPlace | string | null>>;
+    onChange: Dispatch<SetStateAction<any>>;
     array: { label: React.ReactNode; value: string }[];
     placeholder: string;
 }
