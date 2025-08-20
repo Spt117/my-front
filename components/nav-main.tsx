@@ -1,22 +1,24 @@
-"use client";
-
-import { IconCirclePlusFilled } from "@tabler/icons-react";
+import { IconCactus, IconCirclePlusFilled, IconLocationExclamation } from "@tabler/icons-react";
 
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import Menu, { MenuProps } from "./menu";
 
 export function NavMain() {
     const handleQuickCreate = () => {};
 
+    const menuItems: MenuProps[] = [
+        { path: "/", label: "Asins à surveiller" },
+        { path: "/product-create", label: "Créer une fiches produit" },
+        { path: "/product-duplicate", label: "Dupliquer une fiche produit" },
+    ];
+
     return (
         <SidebarGroup>
-            <SidebarGroupContent className="flex flex-col gap-2">
-                <SidebarMenu>
-                    <SidebarMenuItem className="flex items-center gap-2">
-                        <SidebarMenuButton onClick={handleQuickCreate} tooltip="Quick Create" className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear">
-                            <IconCirclePlusFilled />
-                            <span>Quick Create</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
+            <SidebarGroupContent>
+                <SidebarMenu className="flex flex-col gap-4">
+                    {menuItems.map((item) => (
+                        <Menu key={item.path} path={item.path} label={item.label} />
+                    ))}
                 </SidebarMenu>
             </SidebarGroupContent>
         </SidebarGroup>

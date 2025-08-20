@@ -1,12 +1,11 @@
 import { TAsin } from "@/library/models/asins/asinType";
-import { amazonMarketPlaces, getMarketplace } from "@/library/utils/paramsAmazon";
+import { amazonMarketPlaces, getMarketplace } from "@/library/params/paramsAmazon";
 import { Card } from "../ui/card";
 import ActivateMarketPlace from "./ActivateMarketPlace";
 
 export default function ActiveMarketplace({ dataAsin }: { dataAsin: TAsin[] }) {
     if (!dataAsin || dataAsin.length === 0) return null;
 
-    console.log("ActiveMarketplace dataAsin", dataAsin);
     const marketplace = getMarketplace(dataAsin[0].marketPlace);
 
     return (

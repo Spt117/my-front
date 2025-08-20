@@ -109,13 +109,8 @@ class ControllerAsin {
 
         try {
             const result = await AsinModel.updateOne({ asin, marketPlace }, { active: true }).exec();
-            console.log(marketPlace);
-
-            console.log(result);
-
             // Vérifier si un document a été modifié ET si au moins un élément a été mis à jour
             const success = result.matchedCount > 0 && result.modifiedCount > 0;
-            console.log(`Disabled ASIN ${asin} for marketplace ${marketPlace}: ${success}`);
             return success;
         } catch (error) {
             console.error(`Error disabling ASIN: ${error}`);
