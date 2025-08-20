@@ -2,10 +2,17 @@
 
 import Selecteur from "@/components/selecteur";
 import { Input } from "@/components/ui/input";
-import { boutiques } from "@/library/params/paramsShopify";
+import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { MultiSelect, MultiSelectOption } from "./Multiselect";
+
+interface IDuplicatePostRequest {
+    productId: number;
+    domainOrigin: TDomainsShopify;
+    domainsDest: TDomainsShopify[];
+    tags: string[];
+}
 
 export default function Action() {
     const [origin, setOrigin] = useState<string | null>(null);
