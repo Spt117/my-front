@@ -3,11 +3,13 @@ import { getProduct } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { postServer } from "@/library/utils/fetchServer";
 import { useState } from "react";
 
 export default function AddImage() {
     const { product, shopifyBoutique, setProduct } = useShopifyStore();
+    const [loading, setLoading] = useState(false);
     const [params, setParams] = useState({
         url: "",
         name: "",
@@ -16,7 +18,7 @@ export default function AddImage() {
 
     const handleAddImage = async () => {
         if (!shopifyBoutique || !product || !params.url || !params.name) return;
-
+        setLoading(true);
         // Logic to add image to the product using Shopify API
         const data = {
             domain: shopifyBoutique.domain,
@@ -25,13 +27,13 @@ export default function AddImage() {
         };
 
         await postServer("http://localhost:9100/shopify/add-image", data);
+
         const paramsProduct = {
             domain: shopifyBoutique.domain,
             productId: product.id,
         };
         const updatedProduct = await getProduct(paramsProduct);
-        console.log("Updated product:", updatedProduct);
-
+        setLoading(false);
         setProduct(updatedProduct);
     };
 
@@ -59,9 +61,12 @@ export default function AddImage() {
                 placeholder="alt"
             />
             <br />
-            <Button className="ml-2" onClick={handleAddImage} disabled={!params.url || !params.name || !product}>
-                Add Image
-            </Button>
+            {!loading && (
+                <Button className="ml-2" onClick={handleAddImage} disabled={!params.url || !params.name || !product}>
+                    Add Image
+                </Button>
+            )}
+            {loading && <Spinner />}
         </div>
     );
 }
