@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useCopy } from "@/hooks/useCopy";
 import { IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -14,6 +15,14 @@ import { useEffect, useState } from "react";
 export default function Product({ data, boutique }: { data: ProductGET; boutique: IShopify }) {
     const { product, setProduct, setShopifyBoutique } = useShopifyStore();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const { handleCopy } = useCopy();
+    const [isCopied, setIsCopied] = useState(false);
+
+    const handleClickTitle = () => {
+        handleCopy(product?.title || "");
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 5000);
+    };
 
     useEffect(() => {
         setProduct(data);
@@ -38,7 +47,17 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
     return (
         <Card className="max-w-3xl mx-auto my-8">
             <CardHeader>
-                <CardTitle className="text-2xl font-bold">{product.title}</CardTitle>
+                <CardTitle
+                    onClick={handleClickTitle}
+                    className={`
+        text-2xl font-bold cursor-pointer hover:underline
+        transition-transform duration-100 ease-in-out
+        active:scale-95 active:shadow-inner
+        ${isCopied ? "text-green-500" : "text-black"}
+      `}
+                >
+                    {product.title}
+                </CardTitle>
                 <div className="text-sm text-muted-foreground">
                     Vendu par {product.vendor} | Catégorie: {product.category?.name || "Non spécifié"}
                 </div>
