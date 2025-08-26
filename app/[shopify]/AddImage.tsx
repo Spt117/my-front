@@ -36,9 +36,11 @@ export default function AddImage() {
         setLoading(false);
         setProduct(updatedProduct);
     };
-
+    const click = () => {
+        console.log(params);
+    };
     return (
-        <div className="mx-4 my-8 p-4 border rounded-lg flex flex-col items-center">
+        <div onClick={click} className="mx-4 my-8 p-4 border rounded-lg flex flex-col items-center">
             <h3 className="mb-4 text-lg font-semibold">Ajouter une image à {product?.title || "No product selected"}</h3>
             <Input
                 onChange={(e) => {

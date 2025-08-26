@@ -87,7 +87,7 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
                         <div className="flex gap-2 overflow-x-auto pb-2">
                             {images.map((img, index) => (
                                 <button key={index} onClick={() => setCurrentImageIndex(index)} className={`flex-shrink-0 relative w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${index === currentImageIndex ? "border-primary shadow-md" : "border-gray-200 hover:border-gray-400"}`}>
-                                    <Image src={img.image?.url || "/no_image.png"} alt={img.alt || `${product.title} ${index + 1}`} fill className="object-cover" sizes="64px" />
+                                    <Image src={img.image?.url || "/no_image.png"} alt={img.alt || `${product.title} ${index + 1}`} fill className="object-cover" sizes="64px" priority />
                                     {/* Overlay pour l'image active */}
                                     {index === currentImageIndex && <div className="absolute inset-0 bg-primary/10" />}
                                 </button>

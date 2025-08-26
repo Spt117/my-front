@@ -15,7 +15,6 @@ export default async function Page({ params, searchParams }: { params: Promise<S
         productId: query.id,
         domain: boutique.domain,
     };
-    console.log("Fetching product with data:", data);
 
     const product = await getProduct(data);
 
