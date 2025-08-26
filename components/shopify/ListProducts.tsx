@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import { IShopifyProductSearch } from "@/library/types/shopifySearch";
 
 export default function ListProducts() {
-    const { productsSearch, shopifyBoutique, setSearchTerm } = useShopifyStore();
+    const { productsSearch, shopifyBoutique, setSearchTerm, searchTerm, loading } = useShopifyStore();
     const router = useRouter();
 
-    if (productsSearch.length === 0) return null;
+    if (productsSearch.length === 0 && !searchTerm) return null;
 
     const handlClickProduct = (product: IShopifyProductSearch) => {
         const id = product.id.split("/").pop();
@@ -32,6 +32,14 @@ export default function ListProducts() {
                     <div className="text-sm font-semibold text-primary">{product.variants.edges[0]?.node.price || "Prix indisponible"}</div>
                 </div>
             ))}
+            {!loading && searchTerm && productsSearch.length === 0 && (
+                <div className="cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
+                    <div className="relative w-12 h-12 flex-shrink-0"></div>
+                    <div className="ml-4 flex-1">
+                        <h3 className="text-sm font-medium text-foreground line-clamp-1">Aucun produit trouvé pour "{searchTerm}"</h3>
+                    </div>
+                </div>
+            )}
             <Separator />
         </div>
     );

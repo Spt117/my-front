@@ -5,16 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { postServer } from "@/library/utils/fetchServer";
+import { X } from "lucide-react";
 import { useState } from "react";
 
 export default function AddImage() {
     const { product, shopifyBoutique, setProduct } = useShopifyStore();
     const [loading, setLoading] = useState(false);
-    const [params, setParams] = useState({
+    const initialParams = {
         url: "",
         name: "",
         altText: "",
-    });
+    };
+    const [params, setParams] = useState(initialParams);
 
     const handleAddImage = async () => {
         if (!shopifyBoutique || !product || !params.url || !params.name) return;
@@ -40,6 +42,9 @@ export default function AddImage() {
     return (
         <div className="mx-4 my-8 p-4 border rounded-lg flex flex-col items-center">
             <h3 className="mb-4 text-lg font-semibold">Ajouter une image à {product?.title || "No product selected"}</h3>
+            <button type="button" onClick={() => setParams(initialParams)} className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Effacer la recherche">
+                <X size={16} />
+            </button>
             <Input
                 onChange={(e) => {
                     setParams({ ...params, url: e.target.value });

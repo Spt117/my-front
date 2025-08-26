@@ -7,15 +7,13 @@ import { X } from "lucide-react";
 import ListProducts from "./ListProducts";
 
 export default function SearchProduct() {
-    const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm } = useShopifyStore();
-    const [isLoading, setIsLoading] = useState(false);
+    const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Fonction de recherche qui utilise toujours la valeur actuelle de shopifyBoutique
     const handleSearch = async (query: string) => {
         if (!query.trim() || !shopifyBoutique) return;
 
-        setIsLoading(true);
         try {
             const uri = "http://localhost:9100/shopify/search";
             const res = await postServer(uri, {
@@ -26,7 +24,7 @@ export default function SearchProduct() {
         } catch (error) {
             console.error("Erreur lors de la recherche:", error);
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
@@ -43,6 +41,7 @@ export default function SearchProduct() {
         }
 
         // Programme une nouvelle recherche
+        setLoading(true);
         timeoutRef.current = setTimeout(() => {
             handleSearch(searchTerm);
         }, 300);
@@ -70,7 +69,7 @@ export default function SearchProduct() {
                     </button>
                 )}
 
-                {isLoading && (
+                {loading && (
                     <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
                         <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
                     </div>

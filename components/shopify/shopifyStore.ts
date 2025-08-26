@@ -12,9 +12,13 @@ interface StoreState {
     setProductsSearch: (products: IShopifyProductSearch[]) => void;
     product: ProductGET | null;
     setProduct: (product: ProductGET | null) => void;
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
+    loading: false,
+    setLoading: (loading) => set({ loading }),
     searchTerm: "",
     setSearchTerm: (term) => set({ searchTerm: term }),
     shopifyBoutique: null,
