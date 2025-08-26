@@ -1,13 +1,13 @@
+"use client";
 import { useState, useEffect, useRef } from "react";
 import { postServer } from "@/library/utils/fetchServer";
 import { Input } from "../ui/input";
 import useShopifyStore from "./shopifyStore";
-import ListProducts from "./ListProducts";
 import { X } from "lucide-react";
+import ListProducts from "./ListProducts";
 
 export default function SearchProduct() {
-    const { shopifyBoutique, setProductsSearch } = useShopifyStore();
-    const [searchTerm, setSearchTerm] = useState("");
+    const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm } = useShopifyStore();
     const [isLoading, setIsLoading] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -60,25 +60,25 @@ export default function SearchProduct() {
     };
 
     return (
-        <>
-            <div>SearchProduct</div>
-            <div className="relative">
-                <div className="relative w-full">
-                    <Input disabled={!shopifyBoutique} type="text" value={searchTerm} onChange={handleInputChange} placeholder="Produit Shopify" className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10" />
+        <div className="relative w-full">
+            <div className="relative w-full">
+                <Input disabled={!shopifyBoutique} type="text" value={searchTerm} onChange={handleInputChange} placeholder="Produit Shopify" className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10" />
 
-                    {searchTerm && (
-                        <button type="button" onClick={() => setSearchTerm("")} className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Effacer la recherche">
-                            <X size={16} />
-                        </button>
-                    )}
-                </div>
+                {searchTerm && (
+                    <button type="button" onClick={() => setSearchTerm("")} className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Effacer la recherche">
+                        <X size={16} />
+                    </button>
+                )}
+
                 {isLoading && (
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
                         <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
                     </div>
                 )}
-                <ListProducts />
             </div>
-        </>
+
+            {/* Liste des produits positionnée sous l'input */}
+            <ListProducts />
+        </div>
     );
 }

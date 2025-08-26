@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import useShopifyStore from "./shopifyStore";
@@ -5,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { IShopifyProductSearch } from "@/library/types/shopifySearch";
 
 export default function ListProducts() {
-    const { productsSearch, shopifyBoutique } = useShopifyStore();
+    const { productsSearch, shopifyBoutique, setSearchTerm } = useShopifyStore();
     const router = useRouter();
 
     if (productsSearch.length === 0) return null;
@@ -13,11 +14,12 @@ export default function ListProducts() {
     const handlClickProduct = (product: IShopifyProductSearch) => {
         const id = product.id.split("/").pop();
         const url = `/${shopifyBoutique?.locationHome}?id=${id}`;
+        setSearchTerm("");
         router.push(url);
     };
 
     return (
-        <div className="divide-y divide-gray-200">
+        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
             {productsSearch.map((product) => (
                 <div onClick={() => handlClickProduct(product)} key={product.id} className="cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
                     <div className="relative w-12 h-12 flex-shrink-0">

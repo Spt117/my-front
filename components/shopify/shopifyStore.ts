@@ -4,6 +4,8 @@ import { IShopifyProductSearch } from "@/library/types/shopifySearch";
 import { create } from "zustand";
 
 interface StoreState {
+    searchTerm: string;
+    setSearchTerm: (term: string) => void;
     shopifyBoutique: IShopify | null;
     setShopifyBoutique: (boutique: IShopify | null) => void;
     productsSearch: IShopifyProductSearch[];
@@ -13,6 +15,8 @@ interface StoreState {
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
+    searchTerm: "",
+    setSearchTerm: (term) => set({ searchTerm: term }),
     shopifyBoutique: null,
     setShopifyBoutique: (boutique) => set({ shopifyBoutique: boutique }),
     productsSearch: [],

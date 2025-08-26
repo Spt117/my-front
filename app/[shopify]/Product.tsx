@@ -10,7 +10,7 @@ import { IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Product({ data, boutique }: { data: ProductGET; boutique: IShopify }) {
     const { product, setProduct, setShopifyBoutique } = useShopifyStore();
@@ -47,17 +47,22 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
     return (
         <Card className="max-w-3xl mx-auto my-8">
             <CardHeader>
-                <CardTitle
-                    onClick={handleClickTitle}
-                    className={`
-        text-2xl font-bold cursor-pointer hover:underline
-        transition-transform duration-100 ease-in-out
-        active:scale-95 active:shadow-inner
-        ${isCopied ? "text-green-500" : "text-black"}
-      `}
-                >
-                    {product.title}
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                    <CardTitle
+                        onClick={handleClickTitle}
+                        className={`
+                text-2xl font-bold cursor-pointer hover:underline
+                transition-transform duration-100 ease-in-out
+                active:scale-95 active:shadow-inner
+                ${isCopied ? "text-green-500" : "text-black"}
+            `}
+                    >
+                        {product.title}
+                    </CardTitle>
+                    <a href={`https://${boutique.domain}/admin/products/${product.id.split("/").pop()}`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                        Edit in Shopify
+                    </a>
+                </div>
                 <div className="text-sm text-muted-foreground">
                     Vendu par {product.vendor} | Catégorie: {product.category?.name || "Non spécifié"}
                 </div>
@@ -68,7 +73,6 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
                     {/* Image principale */}
                     <div className="relative aspect-square mb-3">
                         <Image src={images[currentImageIndex]?.image.url || "/no_image.png"} alt={images[currentImageIndex]?.alt || product.title} fill className="object-cover rounded-lg" sizes="(max-width: 768px) 100vw, 50vw" priority />
-
                         {/* Boutons de navigation sur l'image principale */}
                         {images.length > 1 && (
                             <>
@@ -87,7 +91,7 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
                         <div className="flex gap-2 overflow-x-auto pb-2">
                             {images.map((img, index) => (
                                 <button key={index} onClick={() => setCurrentImageIndex(index)} className={`flex-shrink-0 relative w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${index === currentImageIndex ? "border-primary shadow-md" : "border-gray-200 hover:border-gray-400"}`}>
-                                    <Image src={img.image?.url || "/no_image.png"} alt={img.alt || `${product.title} ${index + 1}`} fill className="object-cover" sizes="64px" priority />
+                                    <Image src={img.image?.url || "/no_image.png"} alt={img.alt || `${product.title} ${index + 1}`} fill className="object-cover" sizes="64px" loading="lazy" />
                                     {/* Overlay pour l'image active */}
                                     {index === currentImageIndex && <div className="absolute inset-0 bg-primary/10" />}
                                 </button>
@@ -131,11 +135,21 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
                         <div>
                             <h3 className="text-lg font-medium">Informations supplémentaires</h3>
                             <div className="text-sm text-muted-foreground">
-                                {product.metafields.nodes.map((metafield) => (
-                                    <p key={metafield.id}>
-                                        {metafield.key}: {metafield.value}
-                                    </p>
-                                ))}
+                                <ul>
+                                    {product.metafields.nodes.map((metafield) => (
+                                        <React.Fragment key={metafield.id}>
+                                            <li
+                                                className="cursor-pointer hover:underline"
+                                                onClick={() => {
+                                                    handleCopy(metafield.value);
+                                                }}
+                                            >
+                                                {metafield.key}: {metafield.value}
+                                            </li>
+                                            <br />
+                                        </React.Fragment>
+                                    ))}
+                                </ul>
                             </div>
                         </div>
                     )}
