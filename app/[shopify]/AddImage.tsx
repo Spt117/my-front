@@ -40,12 +40,15 @@ export default function AddImage() {
     };
 
     return (
-        <div className="mx-4 my-8 p-4 border rounded-lg flex flex-col items-center">
+        <div className="mx-4 my-8 p-4 border rounded-lg flex flex-col items-center relative">
             <h3 className="mb-4 text-lg font-semibold">Ajouter une image à {product?.title || "No product selected"}</h3>
-            <button type="button" onClick={() => setParams(initialParams)} className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Effacer la recherche">
-                <X size={16} />
-            </button>
+            {(params.url || params.altText || params.name) && (
+                <button type="button" onClick={() => setParams(initialParams)} className="absolute right-3 top-5 cursor-pointer transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Effacer la recherche">
+                    <X size={30} />
+                </button>
+            )}
             <Input
+                value={params.url}
                 onChange={(e) => {
                     setParams({ ...params, url: e.target.value });
                 }}
@@ -53,6 +56,7 @@ export default function AddImage() {
             />
             <br />
             <Input
+                value={params.name}
                 onChange={(e) => {
                     setParams({ ...params, name: e.target.value });
                 }}
@@ -60,6 +64,7 @@ export default function AddImage() {
             />
             <br />
             <Input
+                value={params.altText}
                 onChange={(e) => {
                     setParams({ ...params, altText: e.target.value });
                 }}
