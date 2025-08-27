@@ -1,5 +1,4 @@
 import { marketPlaceEnum, TAsin } from "@/library/models/asins/asinType";
-import { amazonMarketPlaces, getMarketplace } from "@/library/params/paramsAmazon";
 import { Card } from "../ui/card";
 import ActivateMarketPlace from "./ActivateMarketPlace";
 
@@ -10,8 +9,6 @@ export default function ActiveMarketplace({ dataAsin }: { dataAsin: TAsin[] }) {
     newArray.map((m) => {
         dataAsin.push({ marketPlace: m, asin: dataAsin[0].asin, active: false });
     });
-
-    const marketplace = getMarketplace(dataAsin[0].marketPlace);
 
     return (
         <Card className="flex items-center justify-between p-4 border rounded-lg shadow-sm">
