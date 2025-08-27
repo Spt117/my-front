@@ -53,7 +53,8 @@ export async function activeAsinByMarketPlaceAction(asin: TAsin): Promise<{ succ
     try {
         const asinMarketPlace = await asinController.getAsinByMarketPlace(asin.asin, asin.marketPlace);
         if (!asinMarketPlace) {
-            return { success: false, error: "ASIN not found" };
+            const result = await createAsinAction(asin.asin, asin.marketPlace);
+            return result;
         }
         let result: boolean;
         // Si l'ASIN est déjà actif, on le désactive, sinon on l'active
