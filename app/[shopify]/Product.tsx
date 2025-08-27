@@ -13,7 +13,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 export default function Product({ data, boutique }: { data: ProductGET; boutique: IShopify }) {
-    const { product, setProduct, setShopifyBoutique } = useShopifyStore();
+    const { product, setProduct, setShopifyBoutique, shopifyBoutique } = useShopifyStore();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const { handleCopy } = useCopy();
     const [isCopied, setIsCopied] = useState(false);
@@ -23,6 +23,8 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 5000);
     };
+
+    const url = `/${shopifyBoutique?.locationHome}?id=${product?.id.split("/").pop()}`;
 
     useEffect(() => {
         setProduct(data);
@@ -61,6 +63,9 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
                     </CardTitle>
                     <a href={`https://${boutique.domain}/admin/products/${product.id.split("/").pop()}`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
                         Edit in Shopify
+                    </a>
+                    <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                        Ajouter une image
                     </a>
                 </div>
                 <div className="text-sm text-muted-foreground">
