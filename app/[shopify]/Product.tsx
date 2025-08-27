@@ -72,7 +72,7 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
                 <div className="relative">
                     {/* Image principale */}
                     <div className="relative aspect-square mb-3">
-                        <Image src={images[currentImageIndex]?.image.url || "/no_image.png"} alt={images[currentImageIndex]?.alt || product.title} fill className="object-cover rounded-lg" sizes="(max-width: 768px) 100vw, 50vw" priority />
+                        <Image src={images[currentImageIndex]?.image?.url || "/no_image.png"} alt={images[currentImageIndex]?.alt || product.title} fill className="object-cover rounded-lg" sizes="(max-width: 768px) 100vw, 50vw" priority />
                         {/* Boutons de navigation sur l'image principale */}
                         {images.length > 1 && (
                             <>
