@@ -110,6 +110,9 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
 
                     {/* SKU, stock et politique d'inventaire */}
                     <div className="text-sm text-muted-foreground">
+                        <p className="cursor-pointer" onClick={() => handleCopy(product.id.split("/").pop() || "")}>
+                            Id: {product.id.split("/").pop()}
+                        </p>
                         <p>SKU: {mainVariant?.sku || "Non disponible"}</p>
                         <p>Barcode: {mainVariant?.barcode || "Non disponible"}</p>
                         <p>Stock: {mainVariant?.inventoryQuantity > 0 ? `${mainVariant.inventoryQuantity} disponibles` : "Rupture de stock"}</p>

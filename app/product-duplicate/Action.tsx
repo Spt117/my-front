@@ -1,25 +1,26 @@
 "use client";
 
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MultiSelect, MultiSelectOption } from "./Multiselect";
-import ShopifySelect from "@/components/ShopifySelect";
-import useShopifyStore from "@/components/shopify/shopifyStore";
+import Product from "../[shopify]/Product";
 
 interface IDuplicatePostRequest {
-    productId: number;
+    productId: string;
     domainsDest: TDomainsShopify[];
     tags: string[];
 }
 
 export default function Action() {
-    const { shopifyBoutique } = useShopifyStore();
+    const { shopifyBoutique, loading, setLoading, setProduct, product } = useShopifyStore();
     const [params, setParams] = useState<IDuplicatePostRequest>({
-        productId: 0,
+        productId: "",
         domainsDest: [],
         tags: [],
     });
@@ -42,25 +43,39 @@ export default function Action() {
     };
 
     const handleSelectId = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(e.target.value, 10);
         setParams((prev) => ({
             ...prev,
-            productId: value,
+            productId: e.target.value,
         }));
     };
 
     const handleValidate = async () => {
+        setLoading(true);
         const uri = "http://localhost:9100/shopify/duplicate";
-        const res = await postServer(uri, params);
-        console.log(res);
+        const data = {
+            ...params,
+            domainOrigin: shopifyBoutique?.domain,
+        };
+        const res = await postServer(uri, data);
+        setLoading(false);
     };
+
+    useEffect(() => {
+        const getProduct = async () => {
+            const uri = "http://localhost:9100/shopify/product-by-id";
+            const res = await postServer(uri, { domain: shopifyBoutique?.domain, productId: params.productId });
+            setProduct(res.response);
+        };
+        if (params.productId && shopifyBoutique) getProduct();
+    }, [params.productId]);
 
     return (
         <>
-            <ShopifySelect />
             <MultiSelect placeholder={"Choisir les boutiques"} options={options} onValueChange={handleSelectDest} />
-            <Input type="number" onChange={handleSelectId} placeholder="Id produit" className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all" />
-            {shopifyBoutique && params.domainsDest.length > 0 && params.productId > 0 && <Button onClick={handleValidate}>Lancer la duplication</Button>}
+            <Input type="string" onChange={handleSelectId} placeholder="Id produit" className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all" />
+            {!loading && shopifyBoutique && params.domainsDest.length > 0 && params.productId && <Button onClick={handleValidate}>Lancer la duplication</Button>}
+            {loading && <Spinner />}
+            {product && <Product data={product} boutique={shopifyBoutique!} />}
         </>
     );
 }
