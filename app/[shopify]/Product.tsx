@@ -10,6 +10,7 @@ import { IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 export default function Product({ data, boutique }: { data: ProductGET; boutique: IShopify }) {
@@ -64,9 +65,9 @@ export default function Product({ data, boutique }: { data: ProductGET; boutique
                     <a href={`https://${boutique.domain}/admin/products/${product.id.split("/").pop()}`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
                         Edit in Shopify
                     </a>
-                    <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                    <Link href={url} className="text-sm text-blue-600 hover:underline">
                         Ajouter une image
-                    </a>
+                    </Link>
                 </div>
                 <div className="text-sm text-muted-foreground">
                     Vendu par {product.vendor} | Catégorie: {product.category?.name || "Non spécifié"}
