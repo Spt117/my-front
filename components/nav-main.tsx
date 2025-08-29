@@ -1,15 +1,12 @@
-import { IconCactus, IconCirclePlusFilled, IconLocationExclamation } from "@tabler/icons-react";
-
-import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { SidebarGroup, SidebarGroupContent, SidebarMenu } from "@/components/ui/sidebar";
 import Menu, { MenuProps } from "./menu";
 
 export function NavMain() {
-    const handleQuickCreate = () => {};
-
     const menuItems: MenuProps[] = [
-        { path: "/", label: "Asins à surveiller" },
+        { path: "/", label: "Produit" },
         { path: "/product-create", label: "Créer une fiches produit" },
         { path: "/product-duplicate", label: "Dupliquer une fiche produit" },
+        { path: "/asins", label: "Asins à surveiller" },
     ];
 
     return (

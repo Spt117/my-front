@@ -1,6 +1,7 @@
+import AddAsin from "@/components/asin/add-asin";
+import Asins from "@/components/asin/asins";
 import { authOptions } from "@/library/auth/authOption";
 import { getServerSession } from "next-auth";
-import ClientProduct from "../components/shopify/ClientProduct";
 
 export default async function Page() {
     const session = await getServerSession(authOptions);
@@ -8,7 +9,9 @@ export default async function Page() {
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:p-6">
-            <ClientProduct />
+            <AddAsin />
+            <hr />
+            <Asins />
         </div>
     );
 }
