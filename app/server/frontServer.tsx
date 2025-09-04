@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button"; // Composant Button de Shadcn/UI
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Composant Card de Shadcn/UI
-import { Loader2 } from "lucide-react"; // Icône de chargement de Shadcn/UI
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 import { dataStock } from "./page";
 import { getServer } from "@/library/utils/fetchServer";
 
@@ -14,7 +14,7 @@ export default function DataFront({ data }: { data: dataStock[] }) {
         setLoading(true);
         try {
             const url = `http://localhost:9100/remove-stock`;
-            const res = await getServer(url); // Remplace getServer par fetch ou ta fonction personnalisée
+            const res = await getServer(url);
             setStock(res);
         } catch (error) {
             console.error("Erreur lors du reset du stock:", error);
