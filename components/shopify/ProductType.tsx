@@ -16,9 +16,9 @@ export function ProductType() {
     const { selectedType, setSelectedType, selectedBrand, setSelectedBrand } = useShopifyStore();
 
     return (
-        <div className="flex gap-4 my-4">
+        <>
             <Selecteur value={selectedType} onChange={setSelectedType} array={Object.entries(productTypes).map(([key, value]) => ({ label: value.français, value: key }))} placeholder="Type de produit" />
             <Selecteur value={selectedBrand} onChange={setSelectedBrand} array={Object.entries(brandTypes).map(([key, value]) => ({ label: value, value: value }))} placeholder="Marque" />
-        </div>
+        </>
     );
 }
