@@ -1,9 +1,9 @@
 "use client";
-
-import { getServer } from "@/library/utils/fetchServer";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button"; // Composant Button de Shadcn/UI
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Composant Card de Shadcn/UI
+import { Loader2 } from "lucide-react"; // Icône de chargement de Shadcn/UI
 import { dataStock } from "./page";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 
 export default function DataFront({ data }: { data: dataStock[] }) {
     const [loading, setLoading] = useState(false);
@@ -11,28 +11,58 @@ export default function DataFront({ data }: { data: dataStock[] }) {
 
     const resetStock = async () => {
         setLoading(true);
-        const url = `http://localhost:9100/remove-stock`;
-        const res = await getServer(url);
-        setStock(res);
-        setLoading(false);
+        try {
+            const url = `http://localhost:9100/remove-stock`;
+            const res = await fetch(url); // Remplace getServer par fetch ou ta fonction personnalisée
+            const data = await res.json();
+            setStock(data);
+        } catch (error) {
+            console.error("Erreur lors du reset du stock:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         setStock(data);
     }, [data]);
 
-    if (stock.length > 0)
-        return (
-            <div>
-                {stock.map((item, index) => (
-                    <div key={index}>
-                        <h3>Domain: {item.domain}</h3>
-                        <p>SKU: {item.sku}</p>
+    return (
+        <div className="container mx-auto p-4">
+            {stock.length > 0 ? (
+                <div className="space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {stock.map((item, index) => (
+                            <Card key={index} className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                                <CardHeader>
+                                    <CardTitle className="text-lg font-semibold text-gray-800">{item.domain}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-sm text-gray-600">
+                                        <span className="font-medium">SKU:</span> {item.sku}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        ))}
                     </div>
-                ))}
-                <Button onClick={resetStock} disabled={loading}>
-                    {loading ? "Loading..." : "Reset Stock"}
-                </Button>
-            </div>
-        );
+                    <div className="flex justify-center mt-6">
+                        <Button onClick={resetStock} disabled={loading} className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors">
+                            {loading ? (
+                                <>
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    Chargement...
+                                </>
+                            ) : (
+                                "Réinitialiser le stock"
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            ) : (
+                <div className="text-center py-10">
+                    <p className="text-gray-500 text-lg">Aucun stock disponible.</p>
+                </div>
+            )}
+        </div>
+    );
 }
