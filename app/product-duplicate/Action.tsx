@@ -55,7 +55,11 @@ export default function Action() {
             <MultiSelect placeholder={"Choisir les boutiques"} options={options} onValueChange={handleSelectDest} />
             <div className="flex gap-4 my-4">
                 <ProductType />
-                {!loading && shopifyBoutique && product && domainsDest.length > 0 && <Button onClick={handleValidate}>Lancer la duplication</Button>}
+                {!loading && shopifyBoutique && product && domainsDest.length > 0 && (
+                    <Button disabled={loading || !selectedBrand || !selectedType} onClick={handleValidate}>
+                        Lancer la duplication
+                    </Button>
+                )}
             </div>
             {loading && (
                 <div className="flex justify-center">
