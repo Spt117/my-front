@@ -2,6 +2,7 @@ import { IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { IShopifyProductSearch } from "@/library/types/shopifySearch";
 import { create } from "zustand";
+import { TBrand, TProductType } from "./ProductType";
 
 interface StoreState {
     searchTerm: string;
@@ -14,6 +15,10 @@ interface StoreState {
     setProduct: (product: ProductGET | null) => void;
     loading: boolean;
     setLoading: (loading: boolean) => void;
+    selectedType: TProductType | null;
+    setSelectedType: (type: TProductType | null) => void;
+    selectedBrand: TBrand | null;
+    setSelectedBrand: (brand: TBrand | null) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
@@ -27,6 +32,10 @@ const useShopifyStore = create<StoreState>((set) => ({
     setProductsSearch: (products) => set({ productsSearch: products }),
     product: null,
     setProduct: (product) => set({ product }),
+    selectedType: null,
+    setSelectedType: (type) => set({ selectedType: type }),
+    selectedBrand: null,
+    setSelectedBrand: (brand) => set({ selectedBrand: brand }),
 }));
 
 export default useShopifyStore;

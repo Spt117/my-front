@@ -52,7 +52,7 @@ export default function SearchProduct() {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [searchTerm]); // Seulement searchTerm dans les dépendances
+    }, [searchTerm, shopifyBoutique]); // Seulement searchTerm dans les dépendances
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
