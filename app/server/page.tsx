@@ -15,7 +15,6 @@ export default async function Page() {
 
     const url = `http://localhost:9100/stock`;
     const res = (await getServer(url)) as dataStock[];
-    console.log(res);
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:p-6">
