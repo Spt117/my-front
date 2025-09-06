@@ -2,6 +2,7 @@ import { authOptions } from "@/library/auth/authOption";
 import { getServer } from "@/library/utils/fetchServer";
 import { getServerSession } from "next-auth";
 import DataFront from "./frontServer";
+import ScanVeille from "./ScanVeille";
 
 export interface dataStock {
     domain: string;
@@ -17,6 +18,7 @@ export default async function Page() {
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:p-6">
+            <ScanVeille />
             <DataFront data={res} />
         </div>
     );
