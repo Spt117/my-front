@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { NavMain } from "@/components/nav-main";
+import { NavMain } from "@/components/menu/nav-main";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { IconInnerShadowTop } from "@tabler/icons-react";
 

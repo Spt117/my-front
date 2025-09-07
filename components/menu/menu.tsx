@@ -1,8 +1,8 @@
 "use client";
-import { IconCirclePlusFilled } from "@tabler/icons-react";
-import { SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
-import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/library/utils/utils";
+import { IconCirclePlusFilled } from "@tabler/icons-react";
+import { usePathname, useRouter } from "next/navigation";
+import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
 export interface MenuProps {
     path: string;

@@ -8,6 +8,7 @@ export function NavMain() {
         { path: "/product-duplicate", label: "Dupliquer une fiche produit" },
         { path: "/orders", label: "Commandes" },
         { path: "/tasks", label: "Tâches" },
+        { path: "/stats", label: "Statistiques affiliation" },
         { path: "/server", label: "Serveur Pokémon" },
     ];
 
