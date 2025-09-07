@@ -24,6 +24,7 @@ export default function Action() {
             </>
         ),
         value: boutique.domain,
+        disabled: boutique.domain === shopifyBoutique?.domain,
     })) as unknown as MultiSelectOption[];
 
     const handleSelectDest = (selectedOptions: string[]) => {

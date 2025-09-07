@@ -25,7 +25,7 @@ const email = {
 
 export { uriMongodb, authSecret, googleId, googleSecret, email, userEmail, uriServerAcces };
 
-const pokeUriServer = "http://localhost:9100";
+export const pokeUriServer = "http://localhost:9100";
 export const telegram = {
     api: `${pokeUriServer}/msgtelegram`,
     dev: "1063455465",

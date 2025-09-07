@@ -3,7 +3,7 @@
 import Selecteur from "@/components/selecteur";
 import { boutiques } from "@/library/params/paramsShopify";
 import Image from "next/image";
-import useShopifyStore from "./shopify/shopifyStore";
+import useShopifyStore from "../shopify/shopifyStore";
 
 export default function ShopifySelect() {
     const { shopifyBoutique, setShopifyBoutique, setProduct, product } = useShopifyStore();

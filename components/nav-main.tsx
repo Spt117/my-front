@@ -6,7 +6,8 @@ export function NavMain() {
         { path: "/", label: "Produit" },
         { path: "/product-create", label: "Créer une fiches produit" },
         { path: "/product-duplicate", label: "Dupliquer une fiche produit" },
-        { path: "/asins", label: "Asins à surveiller" },
+        { path: "/orders", label: "Commandes" },
+        { path: "/tasks", label: "Tâches" },
         { path: "/server", label: "Serveur Pokémon" },
     ];
 

@@ -63,5 +63,8 @@ export const boutiqueFromLocation = (locationHome: TLocationHome) => {
     const b = boutiques.find((b) => b.locationHome === Number(locationHome));
     return b;
 };
-
+export const boutiqueFromDomain = (domain: TDomainsShopify) => {
+    const b = boutiques.find((b) => b.domain === domain);
+    return b;
+};
 export const apiVersion = "2024-01";
