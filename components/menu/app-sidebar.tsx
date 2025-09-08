@@ -3,8 +3,9 @@
 import * as React from "react";
 
 import { NavMain } from "@/components/menu/nav-main";
-import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { IconInnerShadowTop } from "@tabler/icons-react";
+import Logout from "./Logout";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return (
@@ -24,6 +25,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarContent>
                 <NavMain />
             </SidebarContent>
+            <hr />
+            <SidebarFooter>
+                <Logout />
+            </SidebarFooter>
         </Sidebar>
     );
 }
