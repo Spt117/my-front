@@ -1,7 +1,9 @@
+"use server";
 import { IOrdersDomains } from "@/library/shopify/orders";
 import { getServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 import { ProductInOrder } from "./store";
+import { revalidatePath } from "next/cache";
 
 export async function getOrders() {
     const url = `${pokeUriServer}/shopify/orders`;
@@ -40,4 +42,9 @@ export async function getOrders() {
     }, []);
 
     return { orders: data, products: groupedProducts };
+}
+
+export async function revalidateOrders() {
+    revalidatePath("/orders");
+    return true;
 }
