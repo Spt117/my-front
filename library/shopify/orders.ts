@@ -37,7 +37,7 @@ interface ProductVariant {
     product: Product;
 }
 
-interface LineItemNode {
+export interface LineItemNode {
     id: string;
     title: string;
     sku: string;
