@@ -11,7 +11,6 @@ export default async function Page() {
     if (!response || !response.response) return <div>Erreur lors de la récupération des commandes</div>;
 
     const data: IOrdersDomains[] = response.response;
-    const countOrders = data.reduce((acc, domain) => acc + domain.orders.length, 0);
 
     const products: ProductInOrder[] = data.flatMap((domain) =>
         domain.orders.flatMap((order) =>

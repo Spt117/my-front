@@ -1,6 +1,6 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import useKeyboardShortcuts from "@/hooks/useKyboardShortcuts";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { IOrdersDomains } from "@/library/shopify/orders";
 import { useEffect } from "react";
 import OrdersList from "./list";

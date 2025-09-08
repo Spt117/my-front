@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useCopy } from "@/hooks/useCopy";
+import { useCopy } from "@/library/hooks/useCopy";
 import { IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { ChevronLeft, ChevronRight } from "lucide-react";
