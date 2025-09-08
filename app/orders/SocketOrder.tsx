@@ -28,7 +28,7 @@ export default function SocketOrder({ products, ordersDomains }: { products: Pro
                     toast.success(`Nouvelle commande reçue !`);
                     break;
                 case "orders/fulfilled":
-                    toast.success(`Commande ${data.body.name} expédiée !`);
+                    toast.success(`Commande ${data.name} expédiée !`);
                     break;
                 default:
                     toast.info(`Événement reçu : ${eventName}`);
