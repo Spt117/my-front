@@ -1,3 +1,4 @@
+"use client";
 import { IOrdersDomains } from "@/library/shopify/orders";
 import { socket } from "@/library/utils/utils";
 import { useRouter } from "next/navigation";
@@ -28,7 +29,8 @@ export default function SocketOrder({ products, ordersDomains }: { products: Pro
 
     return (
         <>
-            <Products products={products} /> <MapOrdersDomains ordersDomains={ordersDomains} />
+            <Products products={products} />
+            <MapOrdersDomains ordersDomains={ordersDomains} />
         </>
     );
 }

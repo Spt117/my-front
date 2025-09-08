@@ -1,4 +1,3 @@
-"use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { IOrdersDomains } from "@/library/shopify/orders";
