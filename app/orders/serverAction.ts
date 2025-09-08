@@ -1,29 +1,25 @@
 "use server";
-import { IOrdersDomains } from "@/library/shopify/orders";
 import { getServer } from "@/library/utils/fetchServer";
-import { pokeUriServer } from "@/library/utils/uri";
-import { ProductInOrder } from "./store";
 import { revalidatePath } from "next/cache";
+import { ProductInOrder } from "./store";
+import { ShopifyOrder } from "@/library/shopify/orders";
 
-export async function getOrders() {
-    const url = `${pokeUriServer}/shopify/orders`;
+export async function getOrders(url: string) {
     const response = await getServer(url);
     if (!response || !response.response) return null;
-    const data: IOrdersDomains[] = response.response;
+    const data: ShopifyOrder[] = response.response;
 
-    const products: ProductInOrder[] = data.flatMap((domain) =>
-        domain.orders.flatMap((order) =>
-            order.lineItems.edges.map(({ node }) => {
-                return {
-                    title: node.title,
-                    image: node.variant.product.featuredImage.url,
-                    productUrl: `https://${domain.shop}/admin/products/${node.variant.product.id.split("/").pop()}`,
-                    quantity: node.quantity,
-                    shop: domain.shop,
-                    sku: node.sku,
-                };
-            })
-        )
+    const products: ProductInOrder[] = data.flatMap((order) =>
+        order.lineItems.edges.flatMap(({ node }) => {
+            return {
+                title: node.title,
+                image: node?.variant?.product?.featuredImage?.url || " ",
+                productUrl: `https://${order.shop}/admin/products/${node.variant?.product.id.split("/").pop()}`,
+                quantity: node.quantity,
+                shop: order.shop,
+                sku: node.sku,
+            };
+        })
     );
 
     // Regroupement par SKU avec addition des quantités

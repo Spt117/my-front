@@ -1,46 +1,84 @@
 "use client";
+import ListOrdersSearch from "@/app/orders/search/ListOrdersSearch";
 import useOrdersStore from "@/app/orders/store";
+import { postServer } from "@/library/utils/fetchServer";
 import { X } from "lucide-react";
+import { useEffect, useRef } from "react";
 import useShopifyStore from "../shopify/shopifyStore";
-import { Button } from "../ui/button";
-import { Switch } from "../ui/switch";
+import { Input } from "../ui/input";
 
 export default function Orders() {
-    const { orders, setFilterOrders, filterOrders, mode, setMode } = useOrdersStore();
-    const { shopifyBoutique, setShopifyBoutique } = useShopifyStore();
+    const { setOrdersSearch } = useOrdersStore();
+    const { shopifyBoutique, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const handleCleanShop = () => {
-        setShopifyBoutique(null);
-        setFilterOrders(orders);
+    const handleSearch = async (query: string) => {
+        if (!query.trim() || !shopifyBoutique) return;
+
+        try {
+            const uri = "http://localhost:9100/shopify/get-order";
+            const res = await postServer(uri, {
+                domain: shopifyBoutique.domain,
+                orderName: query.trim(),
+            });
+            if (res && res.response) setOrdersSearch([res.response]);
+        } catch (error) {
+            console.error("Erreur lors de la recherche:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Effet de debounce
+    useEffect(() => {
+        // Nettoie le timeout précédent
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        if (!searchTerm) {
+            setOrdersSearch([]);
+            return;
+        }
+
+        // Programme une nouvelle recherche
+        setLoading(true);
+        timeoutRef.current = setTimeout(() => {
+            handleSearch(searchTerm);
+        }, 300);
+
+        // Cleanup
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, [searchTerm, shopifyBoutique]); // Seulement searchTerm dans les dépendances
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
     };
 
     return (
-        <>
-            <Selecteur />
-            {(shopifyBoutique || orders.length > filterOrders.length) && (
-                <button type="button" onClick={handleCleanShop} className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Effacer la recherche">
-                    <X size={16} />
-                </button>
-            )}
-        </>
-    );
-}
+        <div className="relative w-full">
+            <div className="relative w-full">
+                <Input disabled={!shopifyBoutique} type="text" value={searchTerm} onChange={handleInputChange} placeholder="Commande Shopify" className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10" />
 
-export function Selecteur() {
-    const { orders, setFilterOrders, filterOrders, mode, setMode } = useOrdersStore();
+                {searchTerm && (
+                    <button type="button" onClick={() => setSearchTerm("")} className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Effacer la recherche">
+                        <X size={16} />
+                    </button>
+                )}
 
-    const toggleMode = () => {
-        setMode(mode === "orders" ? "products" : "orders");
-    };
-
-    return (
-        <div onClick={toggleMode} className="group cursor-pointer flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-                <Switch checked={mode === "orders"} className="" />
+                {loading && (
+                    <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
+                        <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                    </div>
+                )}
             </div>
-            <div className="relative flex items-center gap-2">
-                <label className="cursor-pointer text-sm font-medium text-gray-700">{mode === "orders" ? "Commandes" : "Produits"}</label>
-            </div>
+
+            {/* Liste des produits positionnée sous l'input */}
+            <ListOrdersSearch />
         </div>
     );
 }

@@ -1,11 +1,13 @@
-import { IOrdersDomains } from "@/library/shopify/orders";
+import { ShopifyOrder } from "@/library/shopify/orders";
 import { create } from "zustand";
 
 interface StoreState {
-    orders: IOrdersDomains[];
-    setOrders: (orders: IOrdersDomains[]) => void;
-    filterOrders: IOrdersDomains[];
-    setFilterOrders: (orders: IOrdersDomains[]) => void;
+    ordersSearch: ShopifyOrder[];
+    setOrdersSearch: (orders: ShopifyOrder[]) => void;
+    orders: ShopifyOrder[];
+    setOrders: (orders: ShopifyOrder[]) => void;
+    filterOrders: ShopifyOrder[];
+    setFilterOrders: (orders: ShopifyOrder[]) => void;
     mode: "orders" | "products";
     setMode: (mode: "orders" | "products") => void;
     products: ProductInOrder[];
@@ -13,6 +15,8 @@ interface StoreState {
 }
 
 const useOrdersStore = create<StoreState>((set) => ({
+    ordersSearch: [],
+    setOrdersSearch: (orders) => set({ ordersSearch: orders }),
     orders: [],
     setOrders: (orders) => set({ orders }),
     filterOrders: [],

@@ -6,7 +6,7 @@ import { getProduct } from "./serverActions";
 export default function ProductList({ product }: { product: IShopifyProductSearch }) {
     const { shopifyBoutique, setSearchTerm, setProduct } = useShopifyStore();
 
-    const handlClickProduct = async (product: IShopifyProductSearch) => {
+    const handlClickProduct = async () => {
         const id = product.id.split("/").pop();
         if (!id || !shopifyBoutique) return;
         const data = {
@@ -18,7 +18,7 @@ export default function ProductList({ product }: { product: IShopifyProductSearc
         setSearchTerm("");
     };
     return (
-        <div onClick={() => handlClickProduct(product)} key={product.id} className="cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
+        <div onClick={handlClickProduct} key={product.id} className="cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
             <div className="relative w-12 h-12 flex-shrink-0">
                 <Image src={product.images.edges[0]?.node.url || "/no_image.png"} alt={product.title} fill className="object-cover rounded-md" sizes="48px" priority={false} />
             </div>

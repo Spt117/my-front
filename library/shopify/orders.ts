@@ -54,7 +54,7 @@ interface LineItems {
 }
 
 // Type principal pour la commande
-interface ShopifyOrder {
+export interface ShopifyOrder {
     id: string;
     legacyResourceId: string;
     name: string;
@@ -64,12 +64,5 @@ interface ShopifyOrder {
     customer: Customer;
     shippingAddress: ShippingAddress;
     lineItems: LineItems;
-}
-
-interface IOrdersDomains {
     shop: TDomainsShopify;
-    orders: ShopifyOrder[];
 }
-
-// Export du type principal
-export type { ShopifyOrder, IOrdersDomains };
