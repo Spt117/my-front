@@ -1,9 +1,8 @@
 import { IOrdersDomains } from "@/library/shopify/orders";
 import { getServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
-import MapOrdersDomains from "./mapOrdersDomains";
+import SocketOrder from "./SocketOrder";
 import { ProductInOrder } from "./store";
-import Products from "./ModeProducts/Products";
 
 export default async function Page() {
     const url = `${pokeUriServer}/shopify/orders`;
@@ -44,8 +43,7 @@ export default async function Page() {
 
     return (
         <div className="container flex flex-col justify-center items-center ">
-            <MapOrdersDomains ordersDomains={data} />
-            <Products products={groupedProducts} />
+            <SocketOrder products={groupedProducts} ordersDomains={data} />
         </div>
     );
 }
