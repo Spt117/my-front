@@ -18,11 +18,9 @@ export default function SocketOrder({ products, ordersDomains }: { products: Pro
         });
 
         socket.onAny((eventName, data) => {
-            console.log("📡 Événement reçu sur SocketOrder:", {
-                event: eventName,
-                data: data,
-                timestamp: new Date().toISOString(),
-            });
+            console.log("📡 Événement reçu sur SocketOrder");
+            console.log("eventName :", eventName);
+            console.log(data);
             router.refresh();
         });
     }, []);
