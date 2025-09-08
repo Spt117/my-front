@@ -7,7 +7,7 @@ import OrdersList from "./list";
 import useOrdersStore from "./store";
 
 export default function MapOrdersDomains({ ordersDomains }: { ordersDomains: IOrdersDomains[] }) {
-    const { setOrders, setFilterOrders, filterOrders } = useOrdersStore();
+    const { setOrders, setFilterOrders, filterOrders, mode } = useOrdersStore();
     const { shopifyBoutique } = useShopifyStore();
 
     const handleEscape = () => setFilterOrders(ordersDomains);
@@ -27,8 +27,11 @@ export default function MapOrdersDomains({ ordersDomains }: { ordersDomains: IOr
         }
     }, [shopifyBoutique, ordersDomains, setFilterOrders]);
 
+    if (mode !== "orders") return null;
+    const countOrders = filterOrders.reduce((acc, domain) => acc + domain.orders.length, 0);
     return (
         <>
+            <h1 className="text-2xl font-bold m-3">{countOrders} commandes</h1>
             {filterOrders.map((shop) => (
                 <OrdersList key={shop.shop} data={shop} />
             ))}

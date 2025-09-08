@@ -2,9 +2,9 @@
 import { useState, useEffect, useRef } from "react";
 import { postServer } from "@/library/utils/fetchServer";
 import { Input } from "../ui/input";
-import useShopifyStore from "./shopifyStore";
+import useShopifyStore from "../shopify/shopifyStore";
 import { X } from "lucide-react";
-import ListProducts from "./ListProducts";
+import ListProducts from "../shopify/ListProducts";
 
 export default function SearchProduct() {
     const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
