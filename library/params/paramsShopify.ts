@@ -8,6 +8,7 @@ export interface IShopifyBase {
     locationHome: number;
     langue: TLangueTraduction;
     flag: string;
+    devise: string;
 }
 
 // 2. Définir le tableau des boutiques avec l'interface de base
@@ -18,6 +19,7 @@ export const boutiques = [
         locationHome: 34463252529,
         langue: "français",
         flag: "/flags/fr.png",
+        devise: "€",
     },
     {
         vendor: "Beyblade Shop Fr",
@@ -25,6 +27,7 @@ export const boutiques = [
         locationHome: 32727892040,
         langue: "français",
         flag: "/flags/fr.png",
+        devise: "€",
     },
     {
         vendor: "Beyblade Shop De",
@@ -32,6 +35,7 @@ export const boutiques = [
         locationHome: 63287656610,
         langue: "allemand",
         flag: "/flags/de.png",
+        devise: "€",
     },
     {
         vendor: "Beyblade Toys",
@@ -39,6 +43,7 @@ export const boutiques = [
         langue: "anglais",
         locationHome: 87601742141,
         flag: "/flags/us.png",
+        devise: "$",
     },
 ] as const satisfies readonly IShopifyBase[];
 
@@ -55,6 +60,7 @@ export interface IShopify {
     locationHome: TLocationHome;
     langue: TLangueTraduction;
     flag: string;
+    devise: string;
 }
 
 export const domainsBeyblade = boutiques.filter((b) => b.vendor.includes("Beyblade")).map((b) => b.domain);

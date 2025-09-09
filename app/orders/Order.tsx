@@ -4,10 +4,15 @@ import { boutiqueFromDomain } from "@/library/params/paramsShopify";
 import Image from "next/image";
 import ProductSection from "./ProductSection";
 import useOrdersStore from "./store";
-import { ShopifyOrder } from "@/library/shopify/orders";
+import { IShopifyOrderResponse } from "@/library/types/shopifySearch";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
-export default function Order({ order }: { order: ShopifyOrder }) {
+export default function Order({ orderData }: { orderData: IShopifyOrderResponse }) {
     const { setFilterOrders, orders } = useOrdersStore();
+
+    const order = orderData.response;
+    if (!order) return <div>Commande non trouvée</div>;
 
     const flagUrl = boutiqueFromDomain(order.shop)?.flag;
 
@@ -22,6 +27,11 @@ export default function Order({ order }: { order: ShopifyOrder }) {
         const clientOrders = orders.filter((o) => o.customer.email === order.customer.email);
         return clientOrders.length;
     };
+
+    useEffect(() => {
+        if (orderData.message) toast.success(orderData.message);
+        if (orderData.error) toast.error(orderData.error);
+    }, []);
 
     return (
         <div className="container mx-auto p-4">

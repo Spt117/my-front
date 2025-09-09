@@ -1,4 +1,5 @@
 import { TDomainsShopify } from "../params/paramsShopify";
+import { ShopifyOrder } from "../shopify/orders";
 import { ProductGET } from "./graph";
 
 // Type pour une image de produit
@@ -52,6 +53,11 @@ export type { IGetProduct, IShopifyProductSearch, ProductImage, ProductVariant }
 
 export interface IShopifyProductResponse {
     response: ProductGET | null;
+    error?: string;
+    message?: string;
+}
+export interface IShopifyOrderResponse {
+    response: ShopifyOrder | null;
     error?: string;
     message?: string;
 }
