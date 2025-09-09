@@ -57,17 +57,17 @@ export default function Action() {
         console.log(res);
         if (res.error) toast.error(res.error);
         if (res.message) toast.success(res.message);
-        await sleep(1000);
+        await sleep(2000);
         if (res.response?.messages && res.response.messages.length > 0) {
             for (const message of res.response.messages) {
                 toast.success(message);
-                await sleep(1000);
+                await sleep(2000);
             }
         }
         if (res.response?.errors && res.response.errors.length > 0) {
             for (const error of res.response.errors) {
                 toast.error(error);
-                await sleep(1000);
+                await sleep(2000);
             }
         }
         setLoading(false);
