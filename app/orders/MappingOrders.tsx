@@ -35,7 +35,7 @@ export default function MappingOrders({ ordersDomains }: { ordersDomains: Shopif
         <>
             <h1 className="text-2xl font-bold m-3">{filterOrders.length} commandes</h1>
             {filterOrders.map((order) => (
-                <Order key={order.name} order={order} />
+                <Order key={order.name} orderData={{ response: order }} />
             ))}
         </>
     );
