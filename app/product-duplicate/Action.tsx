@@ -10,6 +10,8 @@ import { useState } from "react";
 import Product from "../../components/shopify/Product/Product";
 import { MultiSelect, MultiSelectOption } from "./Multiselect";
 import { ProductType } from "@/components/shopify/ProductType";
+import { toast } from "sonner";
+import { sleep } from "@/library/utils/helpers";
 
 export default function Action() {
     const { shopifyBoutique, product, selectedType, selectedBrand } = useShopifyStore();
@@ -46,8 +48,28 @@ export default function Action() {
             productType: selectedType,
             productBrand: selectedBrand,
         };
-        const res = await postServer(uri, data);
+        interface IResponseDuplicate {
+            response: { messages?: string[]; errors?: string[] } | null;
+            error?: string;
+            message?: string;
+        }
+        const res = (await postServer(uri, data)) as IResponseDuplicate;
         console.log(res);
+        if (res.error) toast.error(res.error);
+        if (res.message) toast.success(res.message);
+        await sleep(1000);
+        if (res.response?.messages && res.response.messages.length > 0) {
+            for (const message of res.response.messages) {
+                toast.success(message);
+                await sleep(1000);
+            }
+        }
+        if (res.response?.errors && res.response.errors.length > 0) {
+            for (const error of res.response.errors) {
+                toast.error(error);
+                await sleep(1000);
+            }
+        }
         setLoading(false);
     };
 
