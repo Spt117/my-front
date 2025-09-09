@@ -3,8 +3,6 @@ import { uriServerAcces } from "./uri";
 
 export async function postServer(url: string, data: any) {
     let body = typeof data === "string" ? data : JSON.stringify(data);
-    console.log("POST to ", url, " with body ", body);
-
     try {
         const response = await fetch(url, {
             method: "POST",

@@ -75,7 +75,7 @@ export interface ProductGET {
     status: ProductStatus;
     vendor: TVendorsShopify;
     productType: string;
-    category: CategoryProduct;
+    category?: CategoryProduct;
     tags: string[];
     createdAt: string; // ISO
     updatedAt: string; // ISO

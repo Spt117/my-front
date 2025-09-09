@@ -1,7 +1,9 @@
-import { IShopifyProductSearch } from "@/library/types/shopifySearch";
+import { IShopifyProductResponse, IShopifyProductSearch } from "@/library/types/shopifySearch";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import useShopifyStore from "./shopifyStore";
+import { postServer } from "@/library/utils/fetchServer";
+import { toast } from "sonner";
 
 export default function ProductList({ product }: { product: IShopifyProductSearch }) {
     const { shopifyBoutique, setSearchTerm, setProduct } = useShopifyStore();
@@ -13,7 +15,15 @@ export default function ProductList({ product }: { product: IShopifyProductSearc
         const id = product.id.split("/").pop();
         const url = `?id=${id}&shopify=${shopifyBoutique.locationHome}`;
         router.push(url);
+        console.log(product);
+        const url2 = "http://localhost:9100/shopify/get-product";
+        const response = (await postServer(url2, { productId: product.id, domain: shopifyBoutique.domain })) as IShopifyProductResponse | null;
+        if (!response) return;
+        if (response.error) toast.error(response.message || "Erreur lors de la récupération du produit");
+        if (!response.message) toast.success("Produit chargé avec succès");
+        const productData = response as IShopifyProductResponse;
         setSearchTerm("");
+        setProduct(productData.response);
     };
     return (
         <div onClick={handlClickProduct} key={product.id} className="cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
