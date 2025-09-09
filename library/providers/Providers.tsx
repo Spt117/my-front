@@ -26,7 +26,7 @@ export default function Providers({ children }: Readonly<{ children: React.React
         });
 
         socket.onAny((eventName, data) => {
-            console.log("eventName :", eventName);
+            console.log("eventName : ", eventName);
             console.log(data);
             switch (eventName) {
                 case "orders/paid":
