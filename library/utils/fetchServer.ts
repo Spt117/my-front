@@ -4,9 +4,6 @@ import { uriServerAcces } from "./uri";
 export async function postServer(url: string, data: any) {
     let body = typeof data === "string" ? data : JSON.stringify(data);
 
-    console.log("POST to:", url);
-    console.log("Body:", body);
-
     try {
         const response = await fetch(url, {
             method: "POST",
@@ -19,9 +16,7 @@ export async function postServer(url: string, data: any) {
         const json = await response.json();
         return json;
     } catch (e) {
-        console.log(url);
-        console.log(body);
-        console.error("Erreur lors de l'envoi de la requête:", e);
+        console.error("Erreur lors de l'envoi de la requête postserver: ", e);
         return null;
     }
 }
@@ -38,7 +33,7 @@ export async function getServer(url: string) {
         const json = await response.json();
         return json;
     } catch (e) {
-        // console.log(e);
+        console.error("Erreur lors de l'envoi de la requête getserver: ", e);
         return null;
     }
 }

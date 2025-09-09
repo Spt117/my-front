@@ -1,4 +1,5 @@
 "use client";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { SessionProvider } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -6,10 +7,12 @@ import { toast } from "sonner";
 import { socket } from "../utils/utils";
 
 export default function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
+    const { setSearchTerm } = useShopifyStore();
     const path = usePathname();
     const router = useRouter();
 
     useEffect(() => {
+        setSearchTerm("");
         router.refresh();
     }, [path]);
 

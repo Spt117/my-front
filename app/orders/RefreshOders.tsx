@@ -8,6 +8,7 @@ import Products from "./ModeProducts/Products";
 import { revalidateOrders } from "./serverAction";
 import { ProductInOrder } from "./store";
 import ToggleMode from "./ToggleMode";
+import { sleep } from "@/library/utils/helpers";
 
 export default function RefreshOders({ products, ordersDomains }: { products: ProductInOrder[]; ordersDomains: ShopifyOrder[] }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +18,7 @@ export default function RefreshOders({ products, ordersDomains }: { products: Pr
     const handleGetOrders = async () => {
         setIsLoading(true);
         await revalidateOrders();
+        await sleep(2000); // Attendre 2 secondes pour s'assurer que les données sont mises à jour
         setIsLoading(false);
     };
 

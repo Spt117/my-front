@@ -61,10 +61,12 @@ export const domainsBeyblade = boutiques.filter((b) => b.vendor.includes("Beybla
 
 export const boutiqueFromLocation = (locationHome: TLocationHome) => {
     const b = boutiques.find((b) => b.locationHome === Number(locationHome));
+    if (!b) throw new Error(`Boutique non trouvée pour la locationHome: ${locationHome}`);
     return b;
 };
-export const boutiqueFromDomain = (domain: TDomainsShopify) => {
+export const boutiqueFromDomain: (domain: TDomainsShopify) => IShopify = (domain: TDomainsShopify) => {
     const b = boutiques.find((b) => b.domain === domain);
+    if (!b) throw new Error(`Boutique non trouvée pour le domaine: ${domain}`);
     return b;
 };
 export const apiVersion = "2024-01";

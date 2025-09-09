@@ -1,5 +1,4 @@
 "use client";
-import { getProduct } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,8 +74,8 @@ export default function AddImage() {
                 productId: product!.id,
             };
 
-            const updatedProduct = await getProduct(paramsProduct);
-            setProduct(updatedProduct);
+            // const updatedProduct = await getProduct(paramsProduct);
+            // setProduct(updatedProduct);
 
             // Réinitialiser le formulaire
             setImages([{ ...EMPTY_IMAGE }]);

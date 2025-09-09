@@ -1,20 +1,18 @@
-import Image from "next/image";
 import { IShopifyProductSearch } from "@/library/types/shopifySearch";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import useShopifyStore from "./shopifyStore";
-import { getProduct } from "./serverActions";
 
 export default function ProductList({ product }: { product: IShopifyProductSearch }) {
     const { shopifyBoutique, setSearchTerm, setProduct } = useShopifyStore();
 
+    const router = useRouter();
+
     const handlClickProduct = async () => {
+        if (!shopifyBoutique) return;
         const id = product.id.split("/").pop();
-        if (!id || !shopifyBoutique) return;
-        const data = {
-            productId: id,
-            domain: shopifyBoutique.domain,
-        };
-        const productFetch = await getProduct(data);
-        setProduct(productFetch);
+        const url = `?id=${id}&shopify=${shopifyBoutique.locationHome}`;
+        router.push(url);
         setSearchTerm("");
     };
     return (

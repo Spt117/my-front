@@ -1,3 +1,4 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { boutiqueFromDomain } from "@/library/params/paramsShopify";
 import Image from "next/image";
@@ -27,9 +28,9 @@ export default function Order({ order }: { order: ShopifyOrder }) {
             <div className="grid gap-6">
                 <Card key={order.id} className="flex overflow-hidden">
                     <CardHeader className="p-4 flex flex-wrap justify-between items-center gap-2">
-                        <a className="flex items-center gap-2" href={`https://${order.shop}/admin/orders/${order.legacyResourceId}`} target="_blank" rel="noopener noreferrer">
-                            {flagUrl && <Image src={flagUrl} alt={order.shop} width={30} height={30} className="ml-2" />}
-                            <CardTitle className="text-lg">{order.name}</CardTitle>
+                        <a className="flex items-center gap-2  transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-sm rounded-md p-2 -m-2" href={`https://${order.shop}/admin/orders/${order.legacyResourceId}`} target="_blank" rel="noopener noreferrer">
+                            {flagUrl && <Image src={flagUrl} alt={order.shop} width={30} height={30} className="ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2" />}
+                            <CardTitle className="text-lg transition-colors duration-300 group-hover:text-blue-600 group-hover:font-semibold">{order.name}</CardTitle>
                         </a>
                         <p className="text-sm text-gray-600">
                             Le{" "}
@@ -59,7 +60,7 @@ export default function Order({ order }: { order: ShopifyOrder }) {
                                         {order.totalPriceSet.shopMoney.amount} {order.totalPriceSet.shopMoney.currencyCode}
                                     </p>
                                 </div>
-                                <div onClick={handleFilterClient} className="cursor-pointer">
+                                <div onClick={handleFilterClient} className="cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-sm rounded-md p-2 -m-2">
                                     {getClientOrderCount() === 1 && <p className="text-sm font-medium">Client</p>}{" "}
                                     {getClientOrderCount() > 1 && (
                                         <p className="inline mr-1 text-red-500 font-bold flex items-center gap-1">

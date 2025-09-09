@@ -7,7 +7,7 @@ import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
 import Image from "next/image";
 import { useState } from "react";
-import Product from "../[shopify]/Product";
+import Product from "../../components/shopify/Product/Product";
 import { MultiSelect, MultiSelectOption } from "./Multiselect";
 import { ProductType } from "@/components/shopify/ProductType";
 

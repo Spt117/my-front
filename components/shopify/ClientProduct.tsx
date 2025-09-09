@@ -1,15 +1,21 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { boutiques } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain, IShopify } from "@/library/params/paramsShopify";
+import { IShopifyProductResponse } from "@/library/types/shopifySearch";
 import { useEffect } from "react";
-import Product from "../../app/[shopify]/Product";
+import { toast } from "sonner";
+import Product from "./Product/Product";
 
-export default function ClientProduct() {
-    const { product, setShopifyBoutique, shopifyBoutique } = useShopifyStore();
+export default function ClientProduct({ productData, shopify }: { productData: IShopifyProductResponse; shopify: IShopify }) {
+    const { setShopifyBoutique, product, setProduct } = useShopifyStore();
+    const boutique = boutiqueFromDomain(shopify.domain);
 
     useEffect(() => {
-        if (!shopifyBoutique) setShopifyBoutique(boutiques[1]);
+        setShopifyBoutique(boutique);
+        setProduct(productData.response);
+        if (productData.error) toast.error(productData.error);
+        if (productData.message) toast.success(productData.message);
     }, []);
-
-    if (product && shopifyBoutique) return <Product data={product} boutique={shopifyBoutique} />;
+    if (!productData.response || !product) return <div>Produit non trouvé</div>;
+    return <Product />;
 }

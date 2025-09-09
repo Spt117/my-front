@@ -1,10 +1,10 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
 import { postServer } from "@/library/utils/fetchServer";
-import { Input } from "../ui/input";
-import useShopifyStore from "../shopify/shopifyStore";
 import { X } from "lucide-react";
+import { useEffect, useRef } from "react";
 import ListProducts from "../shopify/ListProducts";
+import useShopifyStore from "../shopify/shopifyStore";
+import { Input } from "../ui/input";
 
 export default function SearchProduct() {
     const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();

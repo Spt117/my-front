@@ -1,4 +1,5 @@
 import { TDomainsShopify } from "../params/paramsShopify";
+import { ProductGET } from "./graph";
 
 // Type pour une image de produit
 interface ProductImage {
@@ -48,3 +49,9 @@ interface IGetProduct {
 
 // Export du type pour utilisation
 export type { IGetProduct, IShopifyProductSearch, ProductImage, ProductVariant };
+
+export interface IShopifyProductResponse {
+    response: ProductGET | null;
+    error?: string;
+    message?: string;
+}

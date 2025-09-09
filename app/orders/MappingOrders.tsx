@@ -7,11 +7,12 @@ import { ShopifyOrder } from "@/library/shopify/orders";
 
 export default function MappingOrders({ ordersDomains }: { ordersDomains: ShopifyOrder[] }) {
     const { setOrders, setFilterOrders, filterOrders, mode } = useOrdersStore();
-    const { shopifyBoutique, setShopifyBoutique } = useShopifyStore();
+    const { shopifyBoutique, setShopifyBoutique, setSearchTerm } = useShopifyStore();
 
     const handleEscape = () => {
         setShopifyBoutique(null);
         setFilterOrders(ordersDomains);
+        setSearchTerm("");
     };
     useKeyboardShortcuts("Escape", handleEscape);
 

@@ -18,7 +18,7 @@ export async function SiteHeader() {
                 <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
                 <ShopifySelect />
                 {searchProductsPaths.includes(pathname) && <SearchProduct />}
-                {pathname === "/orders" && <Orders />}
+                {pathname.includes("/orders") && <Orders />}
             </div>
         </header>
     );

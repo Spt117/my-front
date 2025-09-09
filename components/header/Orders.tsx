@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import useShopifyStore from "../shopify/shopifyStore";
 import { Input } from "../ui/input";
+import { ShopifyOrder } from "@/library/shopify/orders";
 
 export default function Orders() {
     const { setOrdersSearch } = useOrdersStore();
@@ -21,7 +22,7 @@ export default function Orders() {
                 domain: shopifyBoutique.domain,
                 orderName: query.trim(),
             });
-            if (res && res.response) setOrdersSearch([res.response]);
+            if (res && res.response) setOrdersSearch(res.response as ShopifyOrder[]);
         } catch (error) {
             console.error("Erreur lors de la recherche:", error);
         } finally {
