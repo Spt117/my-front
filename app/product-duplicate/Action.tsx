@@ -67,7 +67,7 @@ export default function Action() {
                     <Spinner size={35} />
                 </div>
             )}
-            {product && <Product data={product} boutique={shopifyBoutique!} />}
+            {product && <Product />}
         </>
     );
 }
