@@ -22,7 +22,7 @@ export const boutiques = [
         devise: "€",
     },
     {
-        vendor: "Beyblade Shop Fr",
+        vendor: "Beyblade Shop",
         domain: "bayblade-shops.myshopify.com",
         locationHome: 32727892040,
         langue: "français",
@@ -30,7 +30,7 @@ export const boutiques = [
         devise: "€",
     },
     {
-        vendor: "Beyblade Shop De",
+        vendor: "Beyblade Shop",
         domain: "beyblade-shopde.myshopify.com",
         locationHome: 63287656610,
         langue: "allemand",
