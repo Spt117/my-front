@@ -17,7 +17,8 @@ export default function Orders() {
         if (!query.trim() || !shopifyBoutique) return;
 
         try {
-            const uri = "http://localhost:9100/shopify/get-order";
+            const req = query.includes("@") ? "orders-customer" : "get-order";
+            const uri = `http://localhost:9100/shopify/${req}`;
             const res = await postServer(uri, {
                 domain: shopifyBoutique.domain,
                 orderName: query.trim(),
