@@ -12,7 +12,7 @@ export default function ListOrdersSearch() {
 
     return (
         <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
-            {ordersSearch.length > 0 && ordersSearch.map((order, index) => <OrderSearch order={order} key={index} />)}
+            {ordersSearch.length > 0 && ordersSearch.sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map((order, index) => <OrderSearch order={order} key={index} />)}
             {!loading && searchTerm && ordersSearch.length === 0 && (
                 <div className="cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
                     <div className="relative w-12 h-12 flex-shrink-0"></div>
