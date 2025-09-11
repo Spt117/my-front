@@ -42,6 +42,16 @@ export async function getOrders(url: string) {
     return { orders: groupedOrders, products: groupedProducts };
 }
 
+export async function searchOrders(domain: string, query: string) {
+    const req = query.includes("@") ? "orders-customer" : "get-order";
+    const uri = `http://localhost:9100/shopify/${req}`;
+    const res = await postServer(uri, {
+        domain,
+        orderName: query.trim(),
+    });
+    return res.response as ShopifyOrder[];
+}
+
 export async function revalidateOrders() {
     revalidatePath("/orders");
     return true;

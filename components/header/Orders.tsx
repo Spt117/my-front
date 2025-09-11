@@ -1,8 +1,8 @@
 "use client";
 import ListOrdersSearch from "@/app/orders/search/ListOrdersSearch";
+import { searchOrders } from "@/app/orders/serverAction";
 import useOrdersStore from "@/app/orders/store";
-import { GroupedShopifyOrder } from "@/library/shopify/orders";
-import { postServer } from "@/library/utils/fetchServer";
+import { ShopifyOrder } from "@/library/shopify/orders";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import useShopifyStore from "../shopify/shopifyStore";
@@ -17,13 +17,8 @@ export default function Orders() {
         if (!query.trim() || !shopifyBoutique) return;
 
         try {
-            const req = query.includes("@") ? "orders-customer" : "get-order";
-            const uri = `http://localhost:9100/shopify/${req}`;
-            const res = await postServer(uri, {
-                domain: shopifyBoutique.domain,
-                orderName: query.trim(),
-            });
-            if (res && res.response) setOrdersSearch(res.response as GroupedShopifyOrder[]);
+            const res = await searchOrders(shopifyBoutique.domain, query.trim());
+            if (res && res) setOrdersSearch(res as ShopifyOrder[]);
         } catch (error) {
             console.error("Erreur lors de la recherche:", error);
         } finally {

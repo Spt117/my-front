@@ -1,9 +1,9 @@
-import { GroupedShopifyOrder } from "@/library/shopify/orders";
+import { GroupedShopifyOrder, ShopifyOrder } from "@/library/shopify/orders";
 import { create } from "zustand";
 
 interface StoreState {
-    ordersSearch: GroupedShopifyOrder[];
-    setOrdersSearch: (orders: GroupedShopifyOrder[]) => void;
+    ordersSearch: ShopifyOrder[];
+    setOrdersSearch: (orders: ShopifyOrder[]) => void;
     orders: GroupedShopifyOrder[];
     setOrders: (orders: GroupedShopifyOrder[]) => void;
     filterOrders: GroupedShopifyOrder[];

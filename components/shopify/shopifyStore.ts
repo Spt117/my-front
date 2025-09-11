@@ -7,8 +7,8 @@ import { TBrand, TProductType } from "./ProductType";
 interface StoreState {
     searchTerm: string;
     setSearchTerm: (term: string) => void;
-    shopifyBoutique: IShopify;
-    setShopifyBoutique: (boutique: IShopify) => void;
+    shopifyBoutique: IShopify | null;
+    setShopifyBoutique: (boutique: IShopify | null) => void;
     productsSearch: IShopifyProductSearch[];
     setProductsSearch: (products: IShopifyProductSearch[]) => void;
     product: ProductGET | null;

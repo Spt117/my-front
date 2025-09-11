@@ -11,7 +11,7 @@ export default function MappingOrders({ orders }: { orders: GroupedShopifyOrder[
     const { shopifyBoutique, setShopifyBoutique, setSearchTerm } = useShopifyStore();
 
     const handleEscape = () => {
-        setShopifyBoutique(boutiques[0]);
+        setShopifyBoutique(null);
         setFilterOrders(orders);
         setSearchTerm("");
     };
