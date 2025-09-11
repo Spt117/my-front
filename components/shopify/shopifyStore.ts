@@ -19,9 +19,13 @@ interface StoreState {
     setSelectedType: (type: TProductType | null) => void;
     selectedBrand: TBrand | null;
     setSelectedBrand: (brand: TBrand | null) => void;
+    event: string | null;
+    setEvent: (event: string | null) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
+    event: null,
+    setEvent: (event) => set({ event }),
     loading: false,
     setLoading: (loading) => set({ loading }),
     searchTerm: "",
