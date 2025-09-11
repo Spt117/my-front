@@ -1,12 +1,12 @@
 "use client";
 import ListOrdersSearch from "@/app/orders/search/ListOrdersSearch";
 import useOrdersStore from "@/app/orders/store";
+import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import { postServer } from "@/library/utils/fetchServer";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import useShopifyStore from "../shopify/shopifyStore";
 import { Input } from "../ui/input";
-import { ShopifyOrder } from "@/library/shopify/orders";
 
 export default function Orders() {
     const { setOrdersSearch } = useOrdersStore();
@@ -23,7 +23,7 @@ export default function Orders() {
                 domain: shopifyBoutique.domain,
                 orderName: query.trim(),
             });
-            if (res && res.response) setOrdersSearch(res.response as ShopifyOrder[]);
+            if (res && res.response) setOrdersSearch(res.response as GroupedShopifyOrder[]);
         } catch (error) {
             console.error("Erreur lors de la recherche:", error);
         } finally {

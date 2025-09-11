@@ -1,7 +1,7 @@
 "use client";
 
 import Selecteur from "@/components/selecteur";
-import { boutiques } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain, boutiques, IShopify, TDomainsShopify } from "@/library/params/paramsShopify";
 import Image from "next/image";
 import useShopifyStore from "../shopify/shopifyStore";
 
@@ -18,8 +18,8 @@ export default function ShopifySelect() {
         value: boutique.domain,
     }));
 
-    const handleSelectOrigin = (selectedOption: string) => {
-        const boutique = boutiques.find((b) => b.domain === selectedOption) || null;
+    const handleSelectOrigin = (domain: TDomainsShopify) => {
+        const boutique = boutiqueFromDomain(domain);
         setShopifyBoutique(boutique);
         if (product) setProduct(null);
     };
