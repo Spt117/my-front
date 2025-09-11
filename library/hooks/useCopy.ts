@@ -4,7 +4,7 @@ export const useCopy = () => {
     const handleCopy = async (value: string) => {
         try {
             await navigator.clipboard.writeText(value);
-            toast.success("Copied to clipboard");
+            toast.success(`${value} copié !`);
         } catch (err) {
             console.error(err);
         }

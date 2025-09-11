@@ -67,7 +67,7 @@ export interface ShopifyOrder {
     shop: TDomainsShopify;
 }
 export interface IShopifyOrderResponse {
-    response: GroupedShopifyOrder | null;
+    response: ShopifyOrder | null;
     error?: string;
     message?: string;
 }

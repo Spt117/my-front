@@ -1,6 +1,6 @@
 "use server";
-import { GroupedShopifyOrder, ShopifyOrder } from "@/library/shopify/orders";
-import { getServer } from "@/library/utils/fetchServer";
+import { GroupedShopifyOrder, IShopifyOrderResponse, ShopifyOrder } from "@/library/shopify/orders";
+import { getServer, postServer } from "@/library/utils/fetchServer";
 import { revalidatePath } from "next/cache";
 import { ProductInOrder } from "./store";
 
@@ -45,6 +45,15 @@ export async function getOrders(url: string) {
 export async function revalidateOrders() {
     revalidatePath("/orders");
     return true;
+}
+
+export async function getOrderById(params: { orderId: string; domain: string }) {
+    const url = `http://localhost:9100/shopify/get-order-by-id`;
+    const res = (await postServer(url, params)) as IShopifyOrderResponse;
+    const order = res.response;
+    if (!order) return null;
+    const groupedOrder = groupOrdersByCustomerEmail([order]);
+    return groupedOrder[0];
 }
 
 function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder[] {

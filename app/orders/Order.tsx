@@ -1,37 +1,17 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useCopy } from "@/library/hooks/useCopy";
 import { boutiqueFromDomain } from "@/library/params/paramsShopify";
-import { IShopifyOrderResponse } from "@/library/shopify/orders";
+import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import Image from "next/image";
-import { useEffect } from "react";
-import { toast } from "sonner";
 import ProductSection from "./ProductSection";
 import useOrdersStore from "./store";
 
-export default function Order({ orderData }: { orderData: IShopifyOrderResponse }) {
+export default function Order({ order }: { order: GroupedShopifyOrder }) {
     const { setFilterOrders, orders } = useOrdersStore();
-
-    const order = orderData.response;
-    if (!order) return <div>Commande non trouvée</div>;
+    const { handleCopy } = useCopy();
 
     const flagUrl = boutiqueFromDomain(order.shop)?.flag;
-
-    const handleFilterClient = () => {
-        const filtered = orders.filter((domain) => domain.shop === order.shop);
-        const clientOrders = filtered.filter((o) => o.customer.email === order.customer.email);
-        setFilterOrders(clientOrders);
-    };
-
-    // Fonction pour vérifier si un client a plusieurs commandes
-    const getClientOrderCount = () => {
-        const clientOrders = orders.filter((o) => o.customer.email === order.customer.email);
-        return clientOrders.length;
-    };
-
-    useEffect(() => {
-        if (orderData.message) toast.success(orderData.message);
-        if (orderData.error) toast.error(orderData.error);
-    }, []);
 
     return (
         <div className="container mx-auto p-4">
@@ -80,14 +60,8 @@ export default function Order({ orderData }: { orderData: IShopifyOrderResponse 
                                         {order.totalPriceSet.shopMoney.amount} {order.totalPriceSet.shopMoney.currencyCode}
                                     </p>
                                 </div>
-                                <div onClick={handleFilterClient} className="cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-sm rounded-md p-2 -m-2">
-                                    {getClientOrderCount() === 1 && <p className="text-sm font-medium">Client</p>}{" "}
-                                    {getClientOrderCount() > 1 && (
-                                        <p className="inline mr-1 text-red-500 font-bold flex items-center gap-1">
-                                            <span>Ce client a {getClientOrderCount()} commandes à traiter</span>
-                                        </p>
-                                    )}
-                                    <p className={`text-sm text-gray-600 ${getClientOrderCount() > 1 ? "font-bold" : ""}`}>{order.customer.email}</p>
+                                <div onClick={() => handleCopy(order.customer.email)} className="cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-sm rounded-md p-2 -m-2">
+                                    {order.customer.email}
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium">Adresse de livraison</p>

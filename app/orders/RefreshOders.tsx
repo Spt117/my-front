@@ -1,5 +1,6 @@
 "use client";
-import { GroupedShopifyOrder, ShopifyOrder } from "@/library/shopify/orders";
+import { GroupedShopifyOrder } from "@/library/shopify/orders";
+import { sleep } from "@/library/utils/helpers";
 import { Archive, ArrowBigLeft, RefreshCcw } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -8,9 +9,8 @@ import Products from "./ModeProducts/Products";
 import { revalidateOrders } from "./serverAction";
 import { ProductInOrder } from "./store";
 import ToggleMode from "./ToggleMode";
-import { sleep } from "@/library/utils/helpers";
 
-export default function RefreshOders({ products, ordersDomains }: { products: ProductInOrder[]; ordersDomains: GroupedShopifyOrder[] }) {
+export default function RefreshOders({ products, orders }: { products: ProductInOrder[]; orders: GroupedShopifyOrder[] }) {
     const [isLoading, setIsLoading] = useState(false);
     const path = usePathname();
     const router = useRouter();
@@ -31,7 +31,7 @@ export default function RefreshOders({ products, ordersDomains }: { products: Pr
                 {path === "/orders" && <Archive className={`cursor-pointer inline-block mr-2 absolute top-5 right-5 transition-transform duration-300 ease-in-out hover:scale-125 hover:rotate-10 hover:text-blue-500`} onClick={() => router.push("/orders/fulfilled")} />}
             </div>
             <Products products={products} />
-            <MappingOrders ordersDomains={ordersDomains} />
+            <MappingOrders orders={orders} />
         </>
     );
 }
