@@ -4,13 +4,14 @@ import { useEffect } from "react";
 import Order from "./Order";
 import useOrdersStore from "./store";
 import { GroupedShopifyOrder, ShopifyOrder } from "@/library/shopify/orders";
+import { boutiques } from "@/library/params/paramsShopify";
 
 export default function MappingOrders({ ordersDomains }: { ordersDomains: GroupedShopifyOrder[] }) {
     const { setOrders, setFilterOrders, filterOrders, mode } = useOrdersStore();
     const { shopifyBoutique, setShopifyBoutique, setSearchTerm } = useShopifyStore();
 
     const handleEscape = () => {
-        setShopifyBoutique(null);
+        setShopifyBoutique(boutiques[0]);
         setFilterOrders(ordersDomains);
         setSearchTerm("");
     };

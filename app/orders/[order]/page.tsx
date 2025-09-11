@@ -1,5 +1,5 @@
 import { TDomainsShopify } from "@/library/params/paramsShopify";
-import { IShopifyOrderResponse } from "@/library/types/shopifySearch";
+import { IShopifyOrderResponse } from "@/library/shopify/orders";
 import { SegmentParams } from "@/library/types/utils";
 import { postServer } from "@/library/utils/fetchServer";
 import Order from "../Order";
