@@ -11,7 +11,7 @@ export default async function Page() {
 
     return (
         <div className="container flex flex-col justify-center items-center relative">
-            <RefreshOders products={data.products} orders={data.orders} />
+            <RefreshOders products={data.products} orders={data.orders.sort((a, b) => b.createdAt.localeCompare(a.createdAt))} />
         </div>
     );
 }

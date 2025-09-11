@@ -14,7 +14,7 @@ import ToggleMode from "./ToggleMode";
 export default function RefreshOders({ products, orders }: { products: ProductInOrder[]; orders: GroupedShopifyOrder[] }) {
     const [isLoading, setIsLoading] = useState(false);
     const path = usePathname();
-    const { event, setEvent } = useShopifyStore();
+    const { event, setEvent, setShopifyBoutique } = useShopifyStore();
     const router = useRouter();
 
     const handleGetOrders = async () => {
@@ -25,6 +25,7 @@ export default function RefreshOders({ products, orders }: { products: ProductIn
     };
 
     useEffect(() => {
+        setShopifyBoutique(null);
         if (event === "orders/paid") {
             setEvent(null);
             handleGetOrders();

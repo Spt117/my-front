@@ -8,10 +8,17 @@ export default function ProductSection({ node, domain }: { node: LineItemNode; d
     const productAdminUrl = `https://${domain}/admin/products/${idProduct}`;
 
     return (
-        <a href={productAdminUrl} target="_blank" rel="noopener noreferrer">
+        <a href={productAdminUrl} target="_blank" rel="noopener noreferrer" className="">
             <div className="flex items-center gap-4 border-2 border-gray-200 rounded-md p-2 hover:shadow-md transition-shadow">
                 <div className="relative w-24 h-24 z-0">
-                    <Image sizes="50" priority src={node.variant?.product.featuredImage.url || "/no_image.png"} alt={node.title} fill className="object-cover rounded-md" />
+                    <Image
+                        sizes="50"
+                        priority
+                        src={node.variant?.product.featuredImage.url || "/no_image.png"}
+                        alt={node.title}
+                        fill
+                        className="object-cover rounded-md"
+                    />
                 </div>
                 <div>
                     <p className="text-sm font-medium">{node.title}</p>
