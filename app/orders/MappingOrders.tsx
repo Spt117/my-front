@@ -3,9 +3,9 @@ import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { useEffect } from "react";
 import Order from "./Order";
 import useOrdersStore from "./store";
-import { ShopifyOrder } from "@/library/shopify/orders";
+import { GroupedShopifyOrder, ShopifyOrder } from "@/library/shopify/orders";
 
-export default function MappingOrders({ ordersDomains }: { ordersDomains: ShopifyOrder[] }) {
+export default function MappingOrders({ ordersDomains }: { ordersDomains: GroupedShopifyOrder[] }) {
     const { setOrders, setFilterOrders, filterOrders, mode } = useOrdersStore();
     const { shopifyBoutique, setShopifyBoutique, setSearchTerm } = useShopifyStore();
 
@@ -34,8 +34,8 @@ export default function MappingOrders({ ordersDomains }: { ordersDomains: Shopif
     return (
         <>
             <h1 className="text-2xl font-bold m-3">{filterOrders.length} commandes</h1>
-            {filterOrders.map((order) => (
-                <Order key={order.name} orderData={{ response: order }} />
+            {filterOrders.map((order, index) => (
+                <Order key={index} orderData={{ response: order }} />
             ))}
         </>
     );

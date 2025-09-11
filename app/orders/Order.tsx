@@ -1,12 +1,12 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { boutiqueFromDomain } from "@/library/params/paramsShopify";
+import { IShopifyOrderResponse } from "@/library/shopify/orders";
 import Image from "next/image";
-import ProductSection from "./ProductSection";
-import useOrdersStore from "./store";
-import { IShopifyOrderResponse } from "@/library/types/shopifySearch";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import ProductSection from "./ProductSection";
+import useOrdersStore from "./store";
 
 export default function Order({ orderData }: { orderData: IShopifyOrderResponse }) {
     const { setFilterOrders, orders } = useOrdersStore();
@@ -38,10 +38,20 @@ export default function Order({ orderData }: { orderData: IShopifyOrderResponse 
             <div className="grid gap-6">
                 <Card key={order.id} className="flex overflow-hidden">
                     <CardHeader className="p-4 flex flex-wrap justify-between items-center gap-2">
-                        <a className="flex items-center gap-2  transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-sm rounded-md p-2 -m-2" href={`https://${order.shop}/admin/orders/${order.legacyResourceId}`} target="_blank" rel="noopener noreferrer">
-                            {flagUrl && <Image src={flagUrl} alt={order.shop} width={30} height={30} className="ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2" />}
-                            <CardTitle className="text-lg transition-colors duration-300 group-hover:text-blue-600 group-hover:font-semibold">{order.name}</CardTitle>
-                        </a>
+                        <div>
+                            <CardTitle className="text-lg transition-colors duration-300 group-hover:text-blue-600 group-hover:font-semibold flex gap-2">
+                                {flagUrl && <Image src={flagUrl} alt={order.shop} width={30} height={30} className="ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2" />}
+                                <div className="flex items-center gap-2">
+                                    {order.name.map((name, index) => (
+                                        <span key={index}>
+                                            <a className="transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-sm rounded-md p-1 -m-1" href={`https://${order.shop}/admin/orders/${order.legacyResourceId[index]}`} target="_blank" rel="noopener noreferrer">
+                                                {name}
+                                            </a>
+                                        </span>
+                                    ))}
+                                </div>
+                            </CardTitle>
+                        </div>
                         <p className="text-sm text-gray-600">
                             Le{" "}
                             {new Date(order.createdAt).toLocaleDateString("fr-FR", {

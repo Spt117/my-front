@@ -10,6 +10,13 @@ export default function ProductList({ product }: { product: IShopifyProductSearc
 
     const router = useRouter();
 
+    const handleClickShopify = () => {
+        if (shopifyBoutique) {
+            const shopifyUrl = `https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`;
+            window.open(shopifyUrl, "_blank");
+        }
+    };
+
     const handlClickProduct = async () => {
         if (!shopifyBoutique) return;
         const id = product.id.split("/").pop();
@@ -33,8 +40,11 @@ export default function ProductList({ product }: { product: IShopifyProductSearc
             <div className="ml-4 flex-1">
                 <h3 className="text-sm font-medium text-foreground line-clamp-1">{product.title}</h3>
                 <p className="text-sm text-muted-foreground">ID: {product.id.split("/").pop()}</p>
+                <div className="text-sm font-semibold text-primary">{`${product.variants.edges[0].node.price} ${shopifyBoutique.devise}`}</div>
             </div>
-            <div className="text-sm font-semibold text-primary">{product.variants.edges[0]?.node.price || "Prix indisponible"}</div>
+            <div onClick={handleClickShopify} className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600">
+                <Image src="/shopify.png" alt="Shopify" width={50} height={50} className="object-contain" />
+            </div>
         </div>
     );
 }

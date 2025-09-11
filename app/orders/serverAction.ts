@@ -1,8 +1,8 @@
 "use server";
+import { GroupedShopifyOrder, ShopifyOrder } from "@/library/shopify/orders";
 import { getServer } from "@/library/utils/fetchServer";
 import { revalidatePath } from "next/cache";
 import { ProductInOrder } from "./store";
-import { ShopifyOrder } from "@/library/shopify/orders";
 
 export async function getOrders(url: string) {
     const response = await getServer(url);
@@ -37,10 +37,59 @@ export async function getOrders(url: string) {
         return acc;
     }, []);
 
-    return { orders: data, products: groupedProducts };
+    const groupedOrders = groupOrdersByCustomerEmail(data);
+
+    return { orders: groupedOrders, products: groupedProducts };
 }
 
 export async function revalidateOrders() {
     revalidatePath("/orders");
     return true;
+}
+
+function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder[] {
+    const groupedOrders = new Map<string, GroupedShopifyOrder>();
+
+    orders.forEach((order) => {
+        const customerEmail = order.customer.email;
+
+        if (groupedOrders.has(customerEmail)) {
+            const existingOrder = groupedOrders.get(customerEmail)!;
+
+            // Additionner les montants
+            const existingAmount = parseFloat(existingOrder.totalPriceSet.shopMoney.amount);
+            const currentAmount = parseFloat(order.totalPriceSet.shopMoney.amount);
+            const totalAmount = (existingAmount + currentAmount).toFixed(2);
+
+            // Ajouter le nom de la commande à l'array
+            existingOrder.name.push(order.name);
+            existingOrder.legacyResourceId.push(order.legacyResourceId);
+
+            // Mettre à jour le montant total
+            existingOrder.totalPriceSet.shopMoney.amount = totalAmount;
+
+            // Fusionner les line items
+            existingOrder.lineItems.edges.push(...order.lineItems.edges);
+
+            // Garder la date de création la plus récente
+            if (new Date(order.createdAt) > new Date(existingOrder.createdAt)) {
+                existingOrder.createdAt = order.createdAt;
+            }
+        } else {
+            // Créer une nouvelle entrée groupée
+            const products = order.lineItems.edges;
+            const groupedOrder: GroupedShopifyOrder = {
+                ...order,
+                name: [order.name], // Convertir en array
+                lineItems: {
+                    edges: [...products], // Copier les edges
+                },
+                legacyResourceId: [order.legacyResourceId], // Convertir en array
+            };
+
+            groupedOrders.set(customerEmail, groupedOrder);
+        }
+    });
+
+    return Array.from(groupedOrders.values());
 }

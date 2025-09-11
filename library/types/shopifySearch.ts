@@ -56,8 +56,3 @@ export interface IShopifyProductResponse {
     error?: string;
     message?: string;
 }
-export interface IShopifyOrderResponse {
-    response: ShopifyOrder | null;
-    error?: string;
-    message?: string;
-}

@@ -1,5 +1,5 @@
 "use client";
-import { ShopifyOrder } from "@/library/shopify/orders";
+import { GroupedShopifyOrder, ShopifyOrder } from "@/library/shopify/orders";
 import { Archive, ArrowBigLeft, RefreshCcw } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -10,7 +10,7 @@ import { ProductInOrder } from "./store";
 import ToggleMode from "./ToggleMode";
 import { sleep } from "@/library/utils/helpers";
 
-export default function RefreshOders({ products, ordersDomains }: { products: ProductInOrder[]; ordersDomains: ShopifyOrder[] }) {
+export default function RefreshOders({ products, ordersDomains }: { products: ProductInOrder[]; ordersDomains: GroupedShopifyOrder[] }) {
     const [isLoading, setIsLoading] = useState(false);
     const path = usePathname();
     const router = useRouter();

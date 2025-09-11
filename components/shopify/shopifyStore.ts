@@ -1,4 +1,4 @@
-import { IShopify } from "@/library/params/paramsShopify";
+import { boutiques, IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { IShopifyProductSearch } from "@/library/types/shopifySearch";
 import { create } from "zustand";
@@ -7,8 +7,8 @@ import { TBrand, TProductType } from "./ProductType";
 interface StoreState {
     searchTerm: string;
     setSearchTerm: (term: string) => void;
-    shopifyBoutique: IShopify | null;
-    setShopifyBoutique: (boutique: IShopify | null) => void;
+    shopifyBoutique: IShopify;
+    setShopifyBoutique: (boutique: IShopify) => void;
     productsSearch: IShopifyProductSearch[];
     setProductsSearch: (products: IShopifyProductSearch[]) => void;
     product: ProductGET | null;
@@ -26,7 +26,7 @@ const useShopifyStore = create<StoreState>((set) => ({
     setLoading: (loading) => set({ loading }),
     searchTerm: "",
     setSearchTerm: (term) => set({ searchTerm: term }),
-    shopifyBoutique: null,
+    shopifyBoutique: boutiques[1],
     setShopifyBoutique: (boutique) => set({ shopifyBoutique: boutique }),
     productsSearch: [],
     setProductsSearch: (products) => set({ productsSearch: products }),

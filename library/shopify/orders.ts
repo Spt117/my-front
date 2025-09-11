@@ -66,3 +66,22 @@ export interface ShopifyOrder {
     lineItems: LineItems;
     shop: TDomainsShopify;
 }
+export interface IShopifyOrderResponse {
+    response: GroupedShopifyOrder | null;
+    error?: string;
+    message?: string;
+}
+
+// Interface de sortie avec name comme array de strings
+export interface GroupedShopifyOrder {
+    id: string;
+    legacyResourceId: string[];
+    name: string[];
+    createdAt: string;
+    displayFulfillmentStatus: "FULFILLED" | "UNFULFILLED" | "PARTIALLY_FULFILLED";
+    totalPriceSet: TotalPriceSet;
+    customer: Customer;
+    shippingAddress: ShippingAddress;
+    lineItems: LineItems;
+    shop: TDomainsShopify;
+}

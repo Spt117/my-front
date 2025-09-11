@@ -1,13 +1,13 @@
-import { ShopifyOrder } from "@/library/shopify/orders";
+import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import { create } from "zustand";
 
 interface StoreState {
-    ordersSearch: ShopifyOrder[];
-    setOrdersSearch: (orders: ShopifyOrder[]) => void;
-    orders: ShopifyOrder[];
-    setOrders: (orders: ShopifyOrder[]) => void;
-    filterOrders: ShopifyOrder[];
-    setFilterOrders: (orders: ShopifyOrder[]) => void;
+    ordersSearch: GroupedShopifyOrder[];
+    setOrdersSearch: (orders: GroupedShopifyOrder[]) => void;
+    orders: GroupedShopifyOrder[];
+    setOrders: (orders: GroupedShopifyOrder[]) => void;
+    filterOrders: GroupedShopifyOrder[];
+    setFilterOrders: (orders: GroupedShopifyOrder[]) => void;
     mode: "orders" | "products";
     setMode: (mode: "orders" | "products") => void;
     products: ProductInOrder[];

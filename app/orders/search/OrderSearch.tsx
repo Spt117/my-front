@@ -1,9 +1,9 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { ShopifyOrder } from "@/library/shopify/orders";
+import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-export default function OrderSearch({ order }: { order: ShopifyOrder }) {
+export default function OrderSearch({ order }: { order: GroupedShopifyOrder }) {
     const { shopifyBoutique } = useShopifyStore();
     const router = useRouter();
     const handleClickOrder = async () => {
@@ -22,11 +22,11 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
         <div className="flex border-b last:border-0">
             <div onClick={handleClickOrder} key={order.id} className="w-min cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
                 <div className="relative w-12 h-12 flex-shrink-0">
-                    <Image src={order.lineItems.edges[0].node.variant.product.featuredImage.url || "/no_image.png"} alt={order.name} fill className="object-cover rounded-md" sizes="48px" priority={false} />
+                    <Image src={order.lineItems.edges[0].node.variant.product.featuredImage.url || "/no_image.png"} alt={order.name[0]} fill className="object-cover rounded-md" sizes="48px" priority={false} />
                 </div>
                 <div className="ml-4 flex-1">
                     <div className="flex gap-2">
-                        <h3 className="text-sm font-medium text-foreground line-clamp-1">{order.name}</h3>
+                        <h3 className="text-sm font-medium text-foreground line-clamp-1">{order.name[0]}</h3>
                         <span className="text-sm text-muted-foreground line-clamp-1">
                             {order.totalPriceSet.shopMoney.amount || "Prix indisponible"} {shopifyBoutique.devise}
                         </span>
