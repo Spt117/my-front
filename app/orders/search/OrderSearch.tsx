@@ -10,20 +10,10 @@ export default function OrderSearch({ order }: { order: GroupedShopifyOrder }) {
         router.push(`/orders/${order.id.split("/").pop()}?domain=${shopifyBoutique?.domain}`); // Utiliser l'ID de la commande pour la navigation
     };
 
-    const handleClickShopify = () => {
-        if (shopifyBoutique) {
-            const shopifyUrl = `https://${shopifyBoutique.domain}/admin/orders/${order.id.split("/").pop()}`;
-            window.open(shopifyUrl, "_blank");
-        }
-    };
-    const handleClickColissimo = () => {
-        if (shopifyBoutique) {
-            const shopifyUrl = `https://${shopifyBoutique.domain}/admin/apps/colissimo-officiel/home?id=${order.id.split("/").pop()}`;
-            window.open(shopifyUrl, "_blank");
-        }
-    };
-
     if (!shopifyBoutique) return null;
+    const orderUrl = `https://${shopifyBoutique.domain}/admin/orders/${order.id.split("/").pop()}`;
+    const colissimoUrl = `https://${shopifyBoutique.domain}/admin/apps/colissimo-officiel/home?id=${order.id.split("/").pop()}`;
+
     return (
         <div className="flex border-b last:border-0">
             <div onClick={handleClickOrder} key={order.id} className="w-min cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
@@ -40,11 +30,15 @@ export default function OrderSearch({ order }: { order: GroupedShopifyOrder }) {
                     <p className="text-sm text-muted-foreground">ID: {order.id.split("/").pop()}</p>
                 </div>
             </div>
-            <div onClick={handleClickShopify} className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600">
-                <Image src="/shopify.png" alt="Shopify" width={50} height={50} className="object-contain" />
-            </div>{" "}
-            <div onClick={handleClickColissimo} className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600">
-                <Image src="/colissimo.png" alt="Colissimo" width={50} height={50} className="object-contain" />
+            <div className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600">
+                <a href={orderUrl} target="_blank" rel="noopener noreferrer">
+                    <Image src="/shopify.png" alt="Shopify" width={50} height={50} className="object-contain" />
+                </a>
+            </div>
+            <div className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600">
+                <a href={colissimoUrl} target="_blank" rel="noopener noreferrer">
+                    <Image src="/colissimo.png" alt="Colissimo" width={50} height={50} className="object-contain" />
+                </a>
             </div>
         </div>
     );
