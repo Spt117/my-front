@@ -9,10 +9,9 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     if (!shopifyBoutique) return null;
     const orderUrl = `https://${shopifyBoutique.domain}/admin/orders/${order.id.split("/").pop()}`;
     const colissimoUrl = `https://${shopifyBoutique.domain}/admin/apps/colissimo-officiel/home?id=${order.id.split("/").pop()}`;
-    // https://admin.shopify.com/store/bayblade-shops/apps/simple-invoice-1/print-invoice-page?id=10303373934916&shop=bayblade-shops.myshopify.com
-    const invoiceUrl = `https://${shopifyBoutique.domain}/admin/apps/simple-invoice-1/print-invoice-page?id=${order.id
+    const invoiceUrl = `https://${shopifyBoutique.domain}/admin/apps/simple-invoice-1/orders/invoice/quick-edit?id=${order.id
         .split("/")
-        .pop()}&shop=${shopifyBoutique.domain}`;
+        .pop()}`;
     const appUrl = `/orders/${order.id.split("/").pop()}?domain=${shopifyBoutique?.domain}`;
 
     return (
