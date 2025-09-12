@@ -4,10 +4,15 @@ import Image from "next/image";
 
 export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     const { shopifyBoutique } = useShopifyStore();
+    console.log(order);
 
     if (!shopifyBoutique) return null;
     const orderUrl = `https://${shopifyBoutique.domain}/admin/orders/${order.id.split("/").pop()}`;
     const colissimoUrl = `https://${shopifyBoutique.domain}/admin/apps/colissimo-officiel/home?id=${order.id.split("/").pop()}`;
+    // https://admin.shopify.com/store/bayblade-shops/apps/simple-invoice-1/print-invoice-page?id=10303373934916&shop=bayblade-shops.myshopify.com
+    const invoiceUrl = `https://${shopifyBoutique.domain}/admin/apps/simple-invoice-1/print-invoice-page?id=${order.id
+        .split("/")
+        .pop()}&shop=${shopifyBoutique.domain}`;
     const appUrl = `/orders/${order.id.split("/").pop()}?domain=${shopifyBoutique?.domain}`;
 
     return (
@@ -19,7 +24,7 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
                 >
                     <div className="relative w-12 h-12 flex-shrink-0">
                         <Image
-                            src={order.lineItems.edges[0].node.variant.product.featuredImage.url || "/no_image.png"}
+                            src={order.lineItems.edges[0].node?.variant?.product.featuredImage.url || "/no_image.png"}
                             alt={order.name}
                             fill
                             className="object-cover rounded-md"
@@ -49,6 +54,13 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
                 <a href={colissimoUrl} target="_blank" rel="noopener noreferrer">
                     <div className="w-[50px] h-[50px] relative">
                         <Image src="/colissimo.png" alt="Colissimo" fill sizes="50px" className="object-contain" />
+                    </div>
+                </a>
+            </div>
+            <div className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600">
+                <a href={invoiceUrl} target="_blank" rel="noopener noreferrer">
+                    <div className="w-[50px] h-[50px] relative">
+                        <Image src="/invoice.png" alt="invoice" fill sizes="50px" className="object-contain" />
                     </div>
                 </a>
             </div>
