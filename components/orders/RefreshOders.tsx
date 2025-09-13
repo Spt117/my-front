@@ -36,26 +36,9 @@ export default function RefreshOders({ products, orders }: { products: ProductIn
         <>
             <div className="sticky w-full flex justify-center items-center mb-3 z-10">
                 <ToggleMode />
-                {path === "/orders" && (
-                    <RefreshCcw
-                        className={`cursor-pointer inline-block mr-2 absolute top-5 left-5 transition-transform duration-300 ease-in-out ${
-                            isLoading ? "animate-spin" : ""
-                        } hover:scale-125 hover:rotate-45 hover:text-blue-500`}
-                        onClick={handleGetOrders}
-                    />
-                )}
-                {path !== "/orders" && (
-                    <ArrowBigLeft
-                        className={`cursor-pointer inline-block mr-2 absolute top-5 right-5 transition-transform duration-300 ease-in-out hover:scale-125 hover:rotate-10 hover:text-blue-500`}
-                        onClick={() => router.push("/orders")}
-                    />
-                )}
-                {path === "/orders" && (
-                    <Archive
-                        className={`cursor-pointer inline-block mr-2 absolute top-5 right-5 transition-transform duration-300 ease-in-out hover:scale-125 hover:rotate-10 hover:text-blue-500`}
-                        onClick={() => router.push("/orders/fulfilled")}
-                    />
-                )}
+                {path === "/" && <RefreshCcw className={`cursor-pointer inline-block mr-2 absolute top-5 left-5 transition-transform duration-300 ease-in-out ${isLoading ? "animate-spin" : ""} hover:scale-125 hover:rotate-45 hover:text-blue-500`} onClick={handleGetOrders} />}
+                {path !== "/" && <ArrowBigLeft className={`cursor-pointer inline-block mr-2 absolute top-5 right-5 transition-transform duration-300 ease-in-out hover:scale-125 hover:rotate-10 hover:text-blue-500`} onClick={() => router.push("/")} />}
+                {path === "/" && <Archive className={`cursor-pointer inline-block mr-2 absolute top-5 right-5 transition-transform duration-300 ease-in-out hover:scale-125 hover:rotate-10 hover:text-blue-500`} onClick={() => router.push("/fulfilled")} />}
             </div>
             <Products products={products} />
             <MappingOrders orders={orders} />

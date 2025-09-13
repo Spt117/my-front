@@ -15,7 +15,7 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
         <div className="container mx-auto p-3">
             <Card key={order.id} className="m-0 p-1 gap-1">
                 <CardHeader className="flex flex-wrap justify-between items-center">
-                    <div className="flex items-center justify-center  gap-4">
+                    <div className="flex items-center justify-center gap-4">
                         <CardTitle className="text-lg transition-colors duration-300 group-hover:text-blue-600 group-hover:font-semibold flex gap-2">
                             {flagUrl && <Image src={flagUrl} alt={order.shop} width={30} height={30} className="ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2" />}
                             <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 "use client";
-import ListOrdersSearch from "@/app/orders/search/ListOrdersSearch";
-import { searchOrders } from "@/app/orders/serverAction";
-import useOrdersStore from "@/app/orders/store";
+import ListOrdersSearch from "@/components/orders/search/ListOrdersSearch";
+import { searchOrders } from "@/components/orders/serverAction";
+import useOrdersStore from "@/components/orders/store";
 import { ShopifyOrder } from "@/library/shopify/orders";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";

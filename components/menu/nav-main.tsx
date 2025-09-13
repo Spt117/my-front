@@ -5,6 +5,7 @@ export function NavMain() {
     const menuItems: MenuProps[] = [
         { path: "/", label: "Commandes" },
         { path: "/tasks", label: "Tâches" },
+        { path: "/stock", label: "Stock" },
         { path: "/product", label: "Produit" },
         { path: "/product-create", label: "Créer une fiches produit" },
         { path: "/product-duplicate", label: "Dupliquer une fiche produit" },

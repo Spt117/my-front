@@ -1,0 +1,50 @@
+import { TDomainsShopify } from "@/library/params/paramsShopify";
+import { Model, model, models, Schema } from "mongoose";
+
+interface ids {
+    shop: TDomainsShopify;
+    idProduct: string;
+    idVariant: string;
+}
+
+export type TVariant = {
+    title: string;
+    sku: string;
+    rebuy?: boolean;
+    rebuyLater?: boolean;
+    price: number;
+    compareAtPrice?: number;
+    barcode?: string;
+    ids: ids[];
+};
+
+const VariantSchema = new Schema<TVariant>(
+    {
+        title: { type: String, required: true },
+        sku: { type: String, required: true },
+        rebuy: { type: Boolean, required: false, default: false },
+        rebuyLater: { type: Boolean, required: false, default: false },
+        price: { type: Number, required: true },
+        compareAtPrice: { type: Number, required: false },
+        barcode: { type: String, required: false },
+        ids: {
+            type: [
+                new Schema(
+                    {
+                        shop: { type: String, required: true },
+                        idProduct: { type: String, required: true },
+                        idVariant: { type: String, required: true },
+                    },
+                    { _id: false }
+                ),
+            ],
+            required: true,
+        },
+    },
+    {
+        versionKey: false,
+        timestamps: true,
+    }
+);
+
+export const VariantModel: Model<TVariant> = models.variant || model<TVariant>("variant", VariantSchema);
