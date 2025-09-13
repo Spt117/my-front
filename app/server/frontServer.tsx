@@ -15,6 +15,8 @@ export default function DataFront({ data }: { data: dataStock[] }) {
         try {
             const url = `http://localhost:9100/remove-stock`;
             const res = await getServer(url);
+            console.log(res);
+
             setStock(res);
         } catch (error) {
             console.error("Erreur lors du reset du stock:", error);
