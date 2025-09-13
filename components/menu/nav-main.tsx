@@ -3,11 +3,11 @@ import Menu, { MenuProps } from "./menu";
 
 export function NavMain() {
     const menuItems: MenuProps[] = [
-        { path: "/", label: "Produit" },
+        { path: "/", label: "Commandes" },
+        { path: "/tasks", label: "Tâches" },
+        { path: "/product", label: "Produit" },
         { path: "/product-create", label: "Créer une fiches produit" },
         { path: "/product-duplicate", label: "Dupliquer une fiche produit" },
-        { path: "/orders", label: "Commandes" },
-        { path: "/tasks", label: "Tâches" },
         { path: "/stats", label: "Statistiques affiliation" },
         { path: "/server", label: "Serveur Pokémon" },
     ];

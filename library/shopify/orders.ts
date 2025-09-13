@@ -33,6 +33,7 @@ interface Product {
 
 interface ProductVariant {
     id: string;
+    price: string;
     image: null | string; // Peut être null ou une URL d'image
     product: Product;
 }
