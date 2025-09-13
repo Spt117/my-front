@@ -16,7 +16,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     }, [data, setVariantsBuy, setVariantsBuyLater]);
 
     return (
-        <div className="w-full relative pt-10 pl-5 pr-5 flex gap-4 ">
+        <div className="w-full relative pt-10 pl-5 pr-5 flex gap-4 flex-wrap">
             <ToggleMode />
             {mode === "now" && variantsBuy.map((variant, index) => <Variant key={index} variant={variant} />)}
             {mode === "later" && variantsBuyLater.map((variant, index) => <Variant key={index} variant={variant} />)}
