@@ -3,6 +3,7 @@ import { TVariant } from "@/library/models/produits/Variant";
 import useVariantStore from "./store";
 import { useEffect } from "react";
 import { Variant } from "./Variant";
+import ToggleMode from "./ToggleMode";
 
 export default function mappingVariants({ data }: { data: TVariant[] }) {
     const { variantsBuy, setVariantsBuy, setVariantsBuyLater, mode, variantsBuyLater } = useVariantStore();
@@ -16,6 +17,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
 
     return (
         <div className="w-full">
+            <ToggleMode />
             {mode === "now" && variantsBuy.map((variant, index) => <Variant key={index} variant={variant} />)}
             {mode === "later" && variantsBuyLater.map((variant, index) => <Variant key={index} variant={variant} />)}
         </div>
