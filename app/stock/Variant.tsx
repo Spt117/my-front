@@ -8,6 +8,7 @@ import { postServer } from "@/library/utils/fetchServer";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import { Card } from "@/components/ui/card";
 
 export function Variant({ variant }: { variant: TVariant }) {
     const { setVariantsBuy, setVariantsBuyLater } = useVariantStore();
@@ -56,7 +57,7 @@ export function Variant({ variant }: { variant: TVariant }) {
     };
 
     return (
-        <div className="border-b border-gray-300 p-4">
+        <Card className="p-4 mb-4">
             <h2 className="text-lg font-semibold">{variant.title}</h2>
             <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
                 <p className="text-sm text-gray-600">SKU: {variant.sku}</p>
@@ -88,6 +89,6 @@ export function Variant({ variant }: { variant: TVariant }) {
                 {!isLoading && <Button onClick={handleUpdateVariantStock}>Ajouter</Button>}
                 {isLoading && <Spinner className="h-6 w-6" />}{" "}
             </div>
-        </div>
+        </Card>
     );
 }
