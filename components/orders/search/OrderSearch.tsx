@@ -17,10 +17,7 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     return (
         <div className="flex border-b last:border-0">
             <a href={appUrl}>
-                <div
-                    key={order.id}
-                    className="w-min-0 cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
-                >
+                <div className="w-min-0 cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
                     <div className="relative w-12 h-12 flex-shrink-0">
                         <Image
                             src={order.lineItems.edges[0].node?.variant?.product.featuredImage.url || "/no_image.png"}

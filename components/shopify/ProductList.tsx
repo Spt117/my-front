@@ -10,12 +10,7 @@ export default function ProductList({ product }: { product: IShopifyProductSearc
 
     const router = useRouter();
 
-    const handleClickShopify = () => {
-        if (shopifyBoutique) {
-            const shopifyUrl = `https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`;
-            window.open(shopifyUrl, "_blank");
-        }
-    };
+    const shopifyUrl = `https://${shopifyBoutique?.domain}/admin/products/${product.id.split("/").pop()}`;
 
     const handlClickProduct = async () => {
         if (!shopifyBoutique) return;
@@ -56,11 +51,16 @@ export default function ProductList({ product }: { product: IShopifyProductSearc
                 <p className="text-sm text-muted-foreground">ID: {product.id.split("/").pop()}</p>
                 <div className="text-sm font-semibold text-primary">{`${product.variants.edges[0].node.price} ${shopifyBoutique?.devise}`}</div>
             </div>
+
             <div
-                onClick={handleClickShopify}
+                onClick={(e) => e.stopPropagation()}
                 className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600"
             >
-                <Image src="/shopify.png" alt="Shopify" width={50} height={50} className="object-contain" />
+                <a href={shopifyUrl} target="_blank" rel="noopener noreferrer">
+                    <div className="w-[50px] h-[50px] relative">
+                        <Image src="/shopify.png" alt="Shopify" fill sizes="50px" className="object-contain" />
+                    </div>
+                </a>
             </div>
         </div>
     );
