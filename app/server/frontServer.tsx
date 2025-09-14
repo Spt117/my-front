@@ -17,7 +17,7 @@ export default function DataFront({ data }: { data: dataStock[] }) {
             const res = await getServer(url);
             console.log(res);
 
-            setStock(res);
+            setStock(res.response);
         } catch (error) {
             console.error("Erreur lors du reset du stock:", error);
         } finally {
