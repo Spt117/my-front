@@ -1,4 +1,4 @@
-import { toggleRebuy, toggleRebuyLater } from "@/library/models/produits/middlewareVariants";
+import { getStockVariant, toggleRebuy, toggleRebuyLater } from "@/library/models/produits/middlewareVariants";
 import { TVariant } from "@/library/models/produits/Variant";
 import useVariantStore from "./store";
 import { Switch } from "@/components/ui/switch";
@@ -52,6 +52,8 @@ export function Variant({ variant }: { variant: TVariant }) {
         const res = await postServer(url, data);
         if (res.error) toast.error("Erreur lors de la mise à jour du stock");
         if (res.message) toast.success(res.message);
+        const vUpdated = await getStockVariant();
+        storeData(vUpdated);
         setIsLoading(false);
         setNumberInput(0);
     };
@@ -62,6 +64,7 @@ export function Variant({ variant }: { variant: TVariant }) {
             <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
                 <p className="text-sm text-gray-600">SKU: {variant.sku}</p>
             </a>
+            <p className="text-sm text-gray-600">Quantité en stock: {variant.quantity}</p>
             <div>
                 <div className="flex items-center align-center rounded">
                     <p className="text-sm text-gray-600 w-50">Rebuy:</p>

@@ -15,6 +15,7 @@ export type TVariant = {
     price: number;
     compareAtPrice?: number;
     barcode?: string;
+    quantity?: number;
     ids: ids[];
 };
 
