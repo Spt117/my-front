@@ -1,6 +1,4 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { boutiques } from "@/library/params/paramsShopify";
 import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import { useEffect } from "react";
 import Order from "./Order";
@@ -8,14 +6,7 @@ import useOrdersStore from "./store";
 
 export default function MappingOrders({ orders }: { orders: GroupedShopifyOrder[] }) {
     const { setOrders, setFilterOrders, filterOrders, mode } = useOrdersStore();
-    const { shopifyBoutique, setShopifyBoutique, setSearchTerm } = useShopifyStore();
-
-    const handleEscape = () => {
-        setShopifyBoutique(null);
-        setFilterOrders(orders);
-        setSearchTerm("");
-    };
-    useKeyboardShortcuts("Escape", handleEscape);
+    const { shopifyBoutique } = useShopifyStore();
 
     useEffect(() => {
         setOrders(orders);

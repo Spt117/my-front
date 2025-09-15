@@ -1,6 +1,6 @@
 import { boutiques, IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
-import { IShopifyProductSearch } from "@/library/types/shopifySearch";
+import { IShopifyProductSearch } from "@/components/header/products/shopifySearch";
 import { create } from "zustand";
 import { TBrand, TProductType } from "./ProductType";
 
@@ -9,8 +9,8 @@ interface StoreState {
     setSearchTerm: (term: string) => void;
     shopifyBoutique: IShopify | null;
     setShopifyBoutique: (boutique: IShopify | null) => void;
-    productsSearch: IShopifyProductSearch[];
-    setProductsSearch: (products: IShopifyProductSearch[]) => void;
+    productsSearch: IShopifyProductSearch[][];
+    setProductsSearch: (products: IShopifyProductSearch[][]) => void;
     product: ProductGET | null;
     setProduct: (product: ProductGET | null) => void;
     loading: boolean;

@@ -1,7 +1,7 @@
 import ClientProduct from "@/components/shopify/ClientProduct";
 import { authOptions } from "@/library/auth/authOption";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
-import { IShopifyProductResponse } from "@/library/types/shopifySearch";
+import { IShopifyProductResponse } from "@/components/header/products/shopifySearch";
 import { SegmentParams } from "@/library/types/utils";
 import { postServer } from "@/library/utils/fetchServer";
 import { getServerSession } from "next-auth";

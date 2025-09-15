@@ -1,7 +1,7 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { boutiqueFromDomain, IShopify } from "@/library/params/paramsShopify";
-import { IShopifyProductResponse } from "@/library/types/shopifySearch";
+import { IShopifyProductResponse } from "@/components/header/products/shopifySearch";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import Product from "./Product/Product";

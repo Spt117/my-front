@@ -2,7 +2,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { headers } from "next/headers";
 import Orders from "./Orders";
-import SearchProduct from "./SearchProduct";
+import SearchProduct from "./products/SearchProduct";
 import ShopifySelect from "./ShopifySelect";
 
 export async function SiteHeader() {

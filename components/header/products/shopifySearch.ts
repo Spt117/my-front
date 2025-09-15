@@ -1,6 +1,5 @@
-import { TDomainsShopify } from "../params/paramsShopify";
-import { ShopifyOrder } from "../shopify/orders";
-import { ProductGET } from "./graph";
+import { TDomainsShopify } from "../../../library/params/paramsShopify";
+import { ProductGET } from "../../../library/types/graph";
 
 // Type pour une image de produit
 interface ProductImage {
@@ -41,6 +40,7 @@ interface IShopifyProductSearch {
     variants: {
         edges: ProductVariant[];
     };
+    domain?: TDomainsShopify;
 }
 
 interface IGetProduct {

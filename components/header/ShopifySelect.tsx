@@ -1,12 +1,15 @@
 "use client";
 
 import Selecteur from "@/components/selecteur";
-import { boutiqueFromDomain, boutiques, IShopify, TDomainsShopify } from "@/library/params/paramsShopify";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
 import Image from "next/image";
+import useOrdersStore from "../orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
 
 export default function ShopifySelect() {
-    const { shopifyBoutique, setShopifyBoutique, setProduct, product } = useShopifyStore();
+    const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm } = useShopifyStore();
+    const { setFilterOrders, orders } = useOrdersStore();
 
     const option2 = boutiques.map((boutique) => ({
         label: (
@@ -24,5 +27,19 @@ export default function ShopifySelect() {
         if (product) setProduct(null);
     };
 
-    return <Selecteur array={option2} value={shopifyBoutique?.domain || ""} onChange={handleSelectOrigin} placeholder="Choisir l'origine" />;
+    const handleEscape = () => {
+        setShopifyBoutique(null);
+        setFilterOrders(orders);
+        setSearchTerm("");
+    };
+    useKeyboardShortcuts("Escape", handleEscape);
+
+    return (
+        <Selecteur
+            array={option2}
+            value={shopifyBoutique?.domain || ""}
+            onChange={handleSelectOrigin}
+            placeholder="Choisir l'origine"
+        />
+    );
 }
