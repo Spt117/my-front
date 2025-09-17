@@ -12,7 +12,7 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     const invoiceUrl = `https://${shopifyBoutique.domain}/admin/apps/simple-invoice-1/orders/invoice/quick-edit?id=${order.id
         .split("/")
         .pop()}`;
-    const appUrl = `/orders/${order.id.split("/").pop()}?domain=${shopifyBoutique?.domain}`;
+    const appUrl = `/${order.id.split("/").pop()}?domain=${shopifyBoutique?.domain}`;
 
     return (
         <div className="flex border-b last:border-0">

@@ -3,7 +3,16 @@
 import * as React from "react";
 
 import { NavMain } from "@/components/menu/nav-main";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuBadge,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from "@/components/ui/sidebar";
 import { IconInnerShadowTop } from "@tabler/icons-react";
 import Logout from "./Logout";
 
