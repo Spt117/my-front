@@ -1,9 +1,8 @@
 import ClientProduct from "@/components/shopify/ClientProduct";
+import { getProduct } from "@/components/shopify/serverActions";
 import { authOptions } from "@/library/auth/authOption";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
-import { IShopifyProductResponse } from "@/components/header/products/shopifySearch";
 import { SegmentParams } from "@/library/types/utils";
-import { postServer } from "@/library/utils/fetchServer";
 import { getServerSession } from "next-auth";
 import AddImage from "../../components/shopify/Product/AddImage";
 
@@ -17,10 +16,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
         );
     const shopify = boutiqueFromLocation(query.shopify) as IShopify;
     const data = { productId: query.id, domain: shopify?.domain };
-    const url = "http://localhost:9100/shopify/get-product";
-    const response = await postServer(url, data);
-    if (!response) return <div>Erreur lors de la récupération du produit (mauvaise url)</div>;
-    const product = response as IShopifyProductResponse;
+    const product = await getProduct(data);
+    if (!product) return <div>Erreur lors de la récupération du produit (mauvaise url)</div>;
     const session = await getServerSession(authOptions);
     if (!session) return null;
 

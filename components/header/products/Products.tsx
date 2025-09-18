@@ -1,9 +1,9 @@
-import { IShopifyProductResponse, IShopifyProductSearch } from "@/components/header/products/shopifySearch";
+import { IShopifyProductSearch } from "@/components/header/products/shopifySearch";
+import { getProduct } from "@/components/shopify/serverActions";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import useShopifyStore from "../../shopify/shopifyStore";
-import { postServer } from "@/library/utils/fetchServer";
 import { toast } from "sonner";
+import useShopifyStore from "../../shopify/shopifyStore";
 import ProductToClick from "./ProductToClick";
 
 export default function ProductList({ products }: { products: IShopifyProductSearch[] }) {
@@ -16,18 +16,15 @@ export default function ProductList({ products }: { products: IShopifyProductSea
         const id = products[0].id.split("/").pop();
         const url = `?id=${id}&shopify=${shopifyBoutique.locationHome}`;
         router.push(url);
-        console.log(products);
-        const url2 = "http://localhost:9100/shopify/get-product";
-        const response = (await postServer(url2, {
+        const product = await getProduct({
             productId: products[0].id,
             domain: shopifyBoutique.domain,
-        })) as IShopifyProductResponse | null;
-        if (!response) return;
-        if (response.error) toast.error(response.message || "Erreur lors de la récupération du produit");
-        if (!response.message) toast.success("Produit chargé avec succès");
-        const productData = response as IShopifyProductResponse;
+        });
+        if (!product) return;
+        if (product.error) toast.error(product.message || "Erreur lors de la récupération du produit");
+        if (!product.message) toast.success("Produit chargé avec succès");
         setSearchTerm("");
-        setProduct(productData.response);
+        setProduct(product.response);
     };
     return (
         <div className="flex items-center">

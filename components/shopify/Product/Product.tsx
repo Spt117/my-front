@@ -1,7 +1,6 @@
 "use client";
 
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -9,6 +8,7 @@ import { useCopy } from "@/library/hooks/useCopy";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
+import TagShopify from "./TagShopify";
 
 export default function Product() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -222,9 +222,7 @@ export default function Product() {
                             <h3 className="text-lg font-medium">Tags</h3>
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {product.tags.map((tag) => (
-                                    <Badge key={tag} variant="secondary">
-                                        {tag}
-                                    </Badge>
+                                    <TagShopify key={tag} tag={tag} />
                                 ))}
                             </div>
                         </div>

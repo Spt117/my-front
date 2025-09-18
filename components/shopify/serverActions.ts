@@ -1,12 +1,22 @@
-// "use server";
+"use server";
 
-// import { ProductGET } from "@/library/types/graph";
-// import { IGetProduct } from "@/library/types/shopifySearch";
-// import { postServer } from "@/library/utils/fetchServer";
+import { postServer } from "@/library/utils/fetchServer";
+import { IGetProduct, ITagRequest, ResponseServer } from "./typesShopify";
+import { ProductGET } from "@/library/types/graph";
 
-// export async function getProduct(data: IGetProduct): Promise<ProductGET | null> {
-//     const url = "http://localhost:9100/shopify/get-product";
-//     const response = await postServer(url, data);
-//     const product = response.response as ProductGET | null;
-//     return product;
-// }
+export async function getProduct(data: IGetProduct): Promise<ResponseServer<ProductGET> | null> {
+    const url = "http://localhost:9100/shopify/get-product";
+    const response = await postServer(url, data);
+    return response;
+}
+
+export async function deleteTag(data: ITagRequest): Promise<ResponseServer<any> | null> {
+    const url = "http://localhost:9100/shopify/delete-tag";
+    const response = await postServer(url, data);
+    return response;
+}
+export async function addTag(data: ITagRequest): Promise<ResponseServer<any> | null> {
+    const url = "http://localhost:9100/shopify/add-tag";
+    const response = await postServer(url, data);
+    return response;
+}

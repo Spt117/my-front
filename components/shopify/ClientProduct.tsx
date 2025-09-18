@@ -1,12 +1,13 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { boutiqueFromDomain, IShopify } from "@/library/params/paramsShopify";
-import { IShopifyProductResponse } from "@/components/header/products/shopifySearch";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import Product from "./Product/Product";
+import { ResponseServer } from "./typesShopify";
+import { ProductGET } from "@/library/types/graph";
 
-export default function ClientProduct({ productData, shopify }: { productData: IShopifyProductResponse; shopify: IShopify }) {
+export default function ClientProduct({ productData, shopify }: { productData: ResponseServer<ProductGET>; shopify: IShopify }) {
     const { setShopifyBoutique, product, setProduct } = useShopifyStore();
     const boutique = boutiqueFromDomain(shopify.domain);
 
