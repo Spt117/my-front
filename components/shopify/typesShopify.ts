@@ -8,6 +8,10 @@ export interface IGetProduct {
 export interface ITagRequest extends IGetProduct {
     tag: string;
 }
+export interface IMetafieldRequest extends IGetProduct {
+    value: boolean;
+    key: string;
+}
 
 export interface ResponseServer<T> {
     response: T;

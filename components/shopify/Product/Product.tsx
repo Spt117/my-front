@@ -9,6 +9,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import Tags from "./Tags/Tags";
+import Metafields from "./Metafields/Metafields";
 
 export default function Product() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -76,6 +77,7 @@ export default function Product() {
                                 src={images[currentImageIndex]?.image?.url || "/no_image.png"}
                                 alt={images[currentImageIndex]?.alt || product.title}
                                 fill
+                                loading="eager"
                                 sizes="10vw"
                                 className="object-cover rounded-lg"
                             />
@@ -164,7 +166,7 @@ export default function Product() {
                         </div>
 
                         {/* Options */}
-                        {product.options.length > 0 && (
+                        {product.options.length > 1 && (
                             <div>
                                 <h3 className="text-lg font-medium">Options</h3>
                                 <div className="text-sm text-muted-foreground">
@@ -179,28 +181,7 @@ export default function Product() {
                         )}
 
                         {/* Metafields */}
-                        {product.metafields.nodes.length > 0 && (
-                            <div>
-                                <h3 className="text-lg font-medium">Informations supplémentaires</h3>
-                                <div className="text-sm text-muted-foreground">
-                                    <ul>
-                                        {product.metafields.nodes.map((metafield) => (
-                                            <React.Fragment key={metafield.id}>
-                                                <li
-                                                    className="cursor-pointer hover:underline"
-                                                    onClick={() => {
-                                                        handleCopy(metafield.value);
-                                                    }}
-                                                >
-                                                    {metafield.key}: {metafield.value}
-                                                </li>
-                                                <br />
-                                            </React.Fragment>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        )}
+                        <Metafields metafields={product.metafields.nodes} />
                     </div>
                 </CardContent>
                 <Separator />

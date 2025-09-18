@@ -9,11 +9,16 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Card } from "@/components/ui/card";
+import { boutiqueFromDomain } from "@/library/params/paramsShopify";
 
 export function Variant({ variant }: { variant: TVariant }) {
     const { setVariantsBuy, setVariantsBuyLater } = useVariantStore();
     const [numberInput, setNumberInput] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const domain = variant.ids.find((id) => id.shop === "bayblade-shops.myshopify.com")?.shop;
+    if (!domain) return null;
+    const boutique = boutiqueFromDomain(domain);
 
     const handleRebuyChange = async () => {
         const data = await toggleRebuy(variant.sku, !variant.rebuy);
@@ -32,8 +37,9 @@ export function Variant({ variant }: { variant: TVariant }) {
     };
 
     const ids = variant.ids;
-    const id = ids.find((id) => id.shop === "bayblade-shops.myshopify.com")?.idProduct;
-    const url = `https://bayblade-shops.myshopify.com/admin/products/${id?.replace("gid://shopify/Product/", "")}`;
+    const id = ids.find((id) => id.shop === domain)?.idProduct;
+    const url = `https://${domain}/admin/products/${id?.replace("gid://shopify/Product/", "")}`;
+    const urlProduct = `/product?id=${id?.replace("gid://shopify/Product/", "")}&shopify=${boutique.locationHome}`;
 
     const handleUpdateVariantStock = async () => {
         if (numberInput <= 0) {
@@ -42,13 +48,12 @@ export function Variant({ variant }: { variant: TVariant }) {
         }
         setIsLoading(true);
         const url = `http://localhost:9100/shopify/update-stock`;
+
         const data = {
-            domain: "bayblade-shops.myshopify.com",
+            domain: domain,
             sku: variant.sku,
             quantity: numberInput,
         };
-        console.log(data);
-
         const res = await postServer(url, data);
         if (res.error) toast.error("Erreur lors de la mise à jour du stock");
         if (res.message) toast.success(res.message);
@@ -60,7 +65,11 @@ export function Variant({ variant }: { variant: TVariant }) {
 
     return (
         <Card className="p-4 mb-4">
-            <h2 className="text-lg font-semibold">{variant.title}</h2>
+            <h2 className="text-lg font-semibold">
+                <a href={urlProduct} rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                    {variant.title}
+                </a>
+            </h2>
             <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
                 <p className="text-sm text-gray-600">SKU: {variant.sku}</p>
             </a>
