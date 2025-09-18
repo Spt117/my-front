@@ -8,7 +8,7 @@ import { useCopy } from "@/library/hooks/useCopy";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
-import TagShopify from "./TagShopify";
+import Tags from "./Tags/Tags";
 
 export default function Product() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -204,6 +204,7 @@ export default function Product() {
                     </div>
                 </CardContent>
                 <Separator />
+                <Tags />
                 <CardContent className="pt-4 space-y-4">
                     {/* Description */}
                     <div>
@@ -215,18 +216,6 @@ export default function Product() {
                             }}
                         />
                     </div>
-
-                    {/* Tags */}
-                    {product.tags.length > 0 && (
-                        <div>
-                            <h3 className="text-lg font-medium">Tags</h3>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                                {product.tags.map((tag) => (
-                                    <TagShopify key={tag} tag={tag} />
-                                ))}
-                            </div>
-                        </div>
-                    )}
 
                     {/* Informations supplémentaires */}
                     <div className="text-sm text-muted-foreground">

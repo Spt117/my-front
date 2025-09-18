@@ -15,8 +15,8 @@ export async function postServer(url: string, data: any) {
         const json = await response.json();
         return json;
     } catch (e) {
-        console.error("Erreur lors de l'envoi de la requête postserver: ", e);
-        return null;
+        console.error(e);
+        return { response: null, error: "Erreur lors de l'envoi de la requête au serveur" };
     }
 }
 
@@ -34,8 +34,8 @@ export async function postServerOld(url: string, data: any) {
         const json = await response.json();
         return json;
     } catch (e) {
-        console.error("Erreur lors de l'envoi de la requête postserver: ", e);
-        return null;
+        console.error(e);
+        return { response: null, error: "Erreur lors de l'envoi de la requête au serveur" };
     }
 }
 
@@ -51,7 +51,7 @@ export async function getServer(url: string) {
         const json = await response.json();
         return json;
     } catch (e) {
-        console.error("Erreur lors de l'envoi de la requête getserver: ", e);
-        return null;
+        console.error(e);
+        return { response: null, error: "Erreur lors de l'envoi de la requête au serveur" };
     }
 }
