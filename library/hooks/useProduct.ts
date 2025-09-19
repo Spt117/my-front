@@ -22,7 +22,6 @@ export const useProduct = () => {
             const data = await getProduct(params);
             if (data?.error) toast.error(data.error);
             if (data?.response) setProduct(data.response);
-            if (data?.message) toast.success(data.message);
         } catch (err) {
             console.error(err);
         }

@@ -28,6 +28,7 @@ export default function Tags() {
             if (res?.error) toast.error(res.error);
             if (res?.message) {
                 await getProductUpdate();
+                setNewTag("");
                 toast.success(res.message);
             }
         } catch (error) {
@@ -38,10 +39,10 @@ export default function Tags() {
     };
 
     return (
-        <div className="p-2">
+        <div>
             <h3 className="m-2 text-lg font-medium">Tags</h3>
             <div className="flex items-center gap-2 justify-center">
-                <Input type="text" placeholder="Ajouter un tag" onChange={(e) => setNewTag(e.target.value)} />
+                <Input type="text" placeholder="Ajouter un tag" onChange={(e) => setNewTag(e.target.value)} value={newTag} />
                 <Button disabled={!newTag.trim() || loading} onClick={handleAddTag}>
                     Ajouter un tag
                     <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />

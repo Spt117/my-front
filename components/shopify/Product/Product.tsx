@@ -10,6 +10,8 @@ import Image from "next/image";
 import React, { useState } from "react";
 import Tags from "./Tags/Tags";
 import Metafields from "./Metafields/Metafields";
+import Amazon from "./Metafields/Amazon";
+import Video from "./Metafields/Video";
 
 export default function Product() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -98,9 +100,9 @@ export default function Product() {
                 </CardHeader>
                 <CardContent className="grid flex gap-6 flex-wrap md:flex-nowrap md:grid-cols-2">
                     {/* Carrousel d'images */}
-                    <div className="relative w-full max-w-md min-w-[250px]">
+                    <div className="relative w-full max-w-md min-w-[250px] flex flex-col gap-2">
                         {/* Image principale */}
-                        <div className="relative aspect-square mb-3">
+                        <div className="relative aspect-square">
                             <Image
                                 priority={true}
                                 src={images[currentImageIndex]?.image?.url || "/no_image.png"}
@@ -132,6 +134,7 @@ export default function Product() {
                                 </>
                             )}
                         </div>
+                        <Video />
 
                         {/* Aperçus des images (thumbnails) */}
                         {images.length > 1 && (
@@ -176,7 +179,7 @@ export default function Product() {
                         </div>
 
                         {/* SKU, stock et politique d'inventaire */}
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-muted-foreground flex flex-col gap-1">
                             <p
                                 className="cursor-pointer flex items-center gap-1 text-gray-700 hover:text-gray-900"
                                 onClick={() => handleCopyWithAnimation(product.id.split("/").pop() || "", "id")}
@@ -208,10 +211,7 @@ export default function Product() {
                                     ? `${mainVariant.inventoryQuantity} disponibles`
                                     : "Rupture de stock"}
                             </p>
-                            <p>
-                                Politique d'inventaire:{" "}
-                                {mainVariant?.inventoryPolicy === "CONTINUE" ? "Continuer après rupture" : "Arrêter à rupture"}
-                            </p>
+                            <Amazon />
                         </div>
 
                         {/* Options */}
@@ -231,10 +231,10 @@ export default function Product() {
 
                         {/* Metafields */}
                         <Metafields metafields={product.metafields.nodes} />
+                        <Tags />
                     </div>
                 </CardContent>
                 <Separator />
-                <Tags />
                 <CardContent className="pt-4 space-y-4">
                     {/* Description */}
                     <div>
