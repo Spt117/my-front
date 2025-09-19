@@ -232,6 +232,18 @@ export default function Product() {
                         {/* Metafields */}
                         <Metafields metafields={product.metafields.nodes} />
                         <Tags />
+                        <div>
+                            {images.length > 1 &&
+                                images.map((img, index) => (
+                                    <p
+                                        key={index}
+                                        className="text-xs text-muted-foreground break-all cursor-pointer hover:underline active:text-primary "
+                                        onClick={() => handleCopy(img.image?.url || "")}
+                                    >
+                                        {img.image?.url}
+                                    </p>
+                                ))}
+                        </div>
                     </div>
                 </CardContent>
                 <Separator />
