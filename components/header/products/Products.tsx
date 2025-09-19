@@ -8,16 +8,18 @@ import ProductToClick from "./ProductToClick";
 
 export default function ProductList({ products }: { products: IShopifyProductSearch[] }) {
     const { shopifyBoutique, setSearchTerm, setProduct } = useShopifyStore();
+    if (!shopifyBoutique) return;
+    const productBoutique = products.find((p) => p.domain === shopifyBoutique.domain);
+    if (!productBoutique || products.length === 0) return <div>Aucun produit trouvé</div>;
 
     const router = useRouter();
 
     const handlClickProduct = async () => {
-        if (!shopifyBoutique) return;
-        const id = products[0].id.split("/").pop();
+        const id = productBoutique.id.split("/").pop();
         const url = `?id=${id}&shopify=${shopifyBoutique.locationHome}`;
         router.push(url);
         const product = await getProduct({
-            productId: products[0].id,
+            productId: productBoutique.id,
             domain: shopifyBoutique.domain,
         });
         if (!product) return;
@@ -26,6 +28,7 @@ export default function ProductList({ products }: { products: IShopifyProductSea
         setSearchTerm("");
         setProduct(product.response);
     };
+
     return (
         <div className="flex items-center">
             <div

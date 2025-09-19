@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCopy } from "@/library/hooks/useCopy";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Copy } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import Tags from "./Tags/Tags";
@@ -15,13 +15,7 @@ export default function Product() {
     const { product, shopifyBoutique } = useShopifyStore();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const { handleCopy } = useCopy();
-    const [isCopied, setIsCopied] = useState(false);
-
-    const handleClickTitle = () => {
-        handleCopy(product?.title || "");
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 5000);
-    };
+    const [isCopied, setIsCopied] = useState({ title: false, sku: false, id: false });
 
     if (!product || !shopifyBoutique) {
         return <div className="text-center py-8 text-muted-foreground">Aucun produit sélectionné</div>;
@@ -38,30 +32,65 @@ export default function Product() {
         setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     };
 
+    const productUrl = `https://${shopifyBoutique.domain}/products/${product.handle}`;
+
+    // Fonction générique pour copier avec animation
+    const handleCopyWithAnimation = (value: string, animationType: "id" | "sku" | "title") => {
+        handleCopy(value);
+
+        if (animationType === "id") {
+            setIsCopied((prev) => ({ ...prev, id: true }));
+            setTimeout(() => setIsCopied((prev) => ({ ...prev, id: false })), 100);
+        } else if (animationType === "sku") {
+            setIsCopied((prev) => ({ ...prev, sku: true }));
+            setTimeout(() => setIsCopied((prev) => ({ ...prev, sku: false })), 100);
+        } else if (animationType === "title") {
+            setIsCopied((prev) => ({ ...prev, title: true }));
+            setTimeout(() => setIsCopied((prev) => ({ ...prev, title: false })), 100);
+        }
+    };
+
     if (product)
         return (
             <Card className="">
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle
-                            onClick={handleClickTitle}
+                            onClick={() => {
+                                handleCopyWithAnimation(product.title, "title");
+                            }}
                             className={`
-                text-2xl font-bold cursor-pointer hover:underline
-                transition-transform duration-100 ease-in-out
-                active:scale-95 active:shadow-inner
-                ${isCopied ? "text-green-500" : "text-black"}
-            `}
+                flex items-center gap-2 
+                text-lg font-semibold 
+                cursor-pointer 
+                hover:text-gray-900 
+                `}
+                            title="Cliquer pour copier le titre"
                         >
                             {product.title}
+                            <Copy
+                                size={18}
+                                className={`text-gray-500 transition-transform duration-100 ${isCopied.title ? "scale-75" : ""}`}
+                            />
                         </CardTitle>
-                        <a
-                            href={`https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-blue-600 hover:underline"
-                        >
-                            <Button>Edit in Shopify</Button>
-                        </a>
+                        <div className="flex gap-2">
+                            <a
+                                href={`https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-blue-600 hover:underline"
+                            >
+                                <Button className="hover:bg-gray-600">Edit in Shopify</Button>
+                            </a>
+                            <a
+                                href={productUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-blue-600 hover:underline"
+                            >
+                                <Button className="hover:bg-gray-600">Aperçu</Button>
+                            </a>
+                        </div>
                     </div>
                     <div className="text-sm text-muted-foreground">
                         Vendu par {product.vendor} | Catégorie: {product.category?.name || "Non spécifié"}
@@ -148,10 +177,30 @@ export default function Product() {
 
                         {/* SKU, stock et politique d'inventaire */}
                         <div className="text-sm text-muted-foreground">
-                            <p className="cursor-pointer" onClick={() => handleCopy(product.id.split("/").pop() || "")}>
+                            <p
+                                className="cursor-pointer flex items-center gap-1 text-gray-700 hover:text-gray-900"
+                                onClick={() => handleCopyWithAnimation(product.id.split("/").pop() || "", "id")}
+                                title="Cliquer pour copier l'ID"
+                            >
                                 Id: {product.id.split("/").pop()}
+                                <Copy
+                                    size={12}
+                                    className={`text-gray-500 transition-transform duration-100 ${isCopied.id ? "scale-75" : ""}`}
+                                />
                             </p>
-                            <p>SKU: {mainVariant?.sku || "Non disponible"}</p>
+                            <p
+                                className="cursor-pointer flex items-center gap-1 text-gray-700 hover:text-gray-900"
+                                onClick={() => handleCopyWithAnimation(mainVariant.sku, "sku")}
+                                title="Cliquer pour copier le SKU"
+                            >
+                                SKU: {mainVariant.sku}
+                                <Copy
+                                    size={12}
+                                    className={`text-gray-500 transition-transform duration-100 ${
+                                        isCopied.sku ? "scale-75" : ""
+                                    }`}
+                                />
+                            </p>
                             <p>Barcode: {mainVariant?.barcode || "Non disponible"}</p>
                             <p>
                                 Stock:{" "}

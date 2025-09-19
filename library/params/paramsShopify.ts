@@ -9,6 +9,7 @@ export interface IShopifyBase {
     langue: TLangueTraduction;
     flag: string;
     devise: string;
+    marketplaceAmazon: string;
 }
 
 // 2. Définir le tableau des boutiques avec l'interface de base
@@ -20,6 +21,7 @@ export const boutiques = [
         langue: "français",
         flag: "/flags/fr.png",
         devise: "€",
+        marketplaceAmazon: "amazon.fr",
     },
     {
         vendor: "Beyblade Shop",
@@ -28,6 +30,7 @@ export const boutiques = [
         langue: "français",
         flag: "/flags/fr.png",
         devise: "€",
+        marketplaceAmazon: "amazon.fr",
     },
     {
         vendor: "Beyblade Shop",
@@ -36,6 +39,7 @@ export const boutiques = [
         langue: "allemand",
         flag: "/flags/de.png",
         devise: "€",
+        marketplaceAmazon: "amazon.de",
     },
     {
         vendor: "Beyblade Toys",
@@ -44,6 +48,7 @@ export const boutiques = [
         locationHome: 87601742141,
         flag: "/flags/us.png",
         devise: "$",
+        marketplaceAmazon: "amazon.com",
     },
 ] as const satisfies readonly IShopifyBase[];
 
@@ -52,6 +57,7 @@ export type TBoutiques = typeof boutiques;
 export type TDomainsShopify = TBoutiques[number]["domain"];
 export type TVendorsShopify = TBoutiques[number]["vendor"];
 export type TLocationHome = TBoutiques[number]["locationHome"];
+export type TMarketplaceAmazonBoutique = TBoutiques[number]["marketplaceAmazon"];
 
 // 4. Maintenant définir l'interface finale avec le type strict pour domain
 export interface IShopify {
@@ -59,6 +65,7 @@ export interface IShopify {
     domain: TDomainsShopify;
     locationHome: TLocationHome;
     langue: TLangueTraduction;
+    marketplaceAmazon: TMarketplaceAmazonBoutique;
     flag: string;
     devise: string;
 }
