@@ -15,5 +15,18 @@ export default function ScanVeille() {
         }
     };
 
-    return <Button onClick={handleclic}>Lancer la veille Amazon</Button>;
+    const rebootVeille = async () => {
+        const url = `http://localhost:9100/veille-action`;
+        const res = await getServer(url);
+        toast.success(res.response);
+    };
+
+    return (
+        <div className="p-4">
+            <Button onClick={handleclic}>Lancer nouvelle veille Amazon </Button>
+            <Button className="ml-4" onClick={rebootVeille}>
+                Relancer la veille
+            </Button>
+        </div>
+    );
 }
