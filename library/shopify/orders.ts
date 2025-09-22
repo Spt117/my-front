@@ -41,6 +41,7 @@ interface ProductVariant {
 export interface LineItemNode {
     id: string;
     title: string;
+    fulfillmentStatus: "unfulfilled" | "fulfilled";
     sku: string;
     quantity: number;
     variant: ProductVariant;

@@ -42,8 +42,8 @@ export function Variant({ variant }: { variant: TVariant }) {
     const urlProduct = `/product?id=${id?.replace("gid://shopify/Product/", "")}&shopify=${boutique.locationHome}`;
 
     const handleUpdateVariantStock = async () => {
-        if (numberInput <= 0) {
-            toast.error("Veuillez entrer une quantité valide");
+        if (!variant.quantity) {
+            toast.error("Quantité actuelle invalide");
             return;
         }
         setIsLoading(true);
@@ -52,7 +52,7 @@ export function Variant({ variant }: { variant: TVariant }) {
         const data = {
             domain: domain,
             sku: variant.sku,
-            quantity: numberInput,
+            quantity: numberInput + variant.quantity,
         };
         const res = await postServer(url, data);
         if (res.error) toast.error("Erreur lors de la mise à jour du stock");
@@ -73,7 +73,15 @@ export function Variant({ variant }: { variant: TVariant }) {
             <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
                 <p className="text-sm text-gray-600">SKU: {variant.sku}</p>
             </a>
-            <p className="text-sm text-gray-600">Quantité en stock: {variant.quantity}</p>
+            <p className="text-sm text-gray-600">
+                Quantité en stock: {variant.quantity}
+                {numberInput && variant.quantity && (
+                    <span className="font-bold">
+                        {"  -> "}
+                        {numberInput + variant.quantity}
+                    </span>
+                )}{" "}
+            </p>
             <div>
                 <div className="flex items-center align-center rounded">
                     <p className="text-sm text-gray-600 w-50">Rebuy:</p>

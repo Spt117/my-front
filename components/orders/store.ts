@@ -36,4 +36,5 @@ export interface ProductInOrder {
     quantity: number;
     shop: string;
     sku: string;
+    fulfillmentStatus: "unfulfilled" | "fulfilled";
 }

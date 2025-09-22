@@ -8,14 +8,21 @@ export async function getOrders(url: string) {
     const response = await getServer(url);
     if (!response || !response.response) return null;
     const data: ShopifyOrder[] = response.response;
+    const filterOrdersProductsUnfulfilled = data.map((order) => ({
+        ...order,
+        lineItems: {
+            edges: order.lineItems.edges.filter(({ node }) => node.fulfillmentStatus === "unfulfilled"),
+        },
+    }));
 
-    const products: ProductInOrder[] = data.flatMap((order) =>
+    const products: ProductInOrder[] = filterOrdersProductsUnfulfilled.flatMap((order) =>
         order.lineItems.edges.flatMap(({ node }) => {
             return {
                 title: node.title,
                 image: node?.variant?.product?.featuredImage?.url || " ",
                 productUrl: `https://${order.shop}/admin/products/${node.variant?.product.id.split("/").pop()}`,
                 quantity: node.quantity,
+                fulfillmentStatus: node.fulfillmentStatus,
                 shop: order.shop,
                 sku: node.sku,
             };
@@ -37,7 +44,7 @@ export async function getOrders(url: string) {
         return acc;
     }, []);
 
-    const groupedOrders = groupOrdersByCustomerEmail(data);
+    const groupedOrders = groupOrdersByCustomerEmail(filterOrdersProductsUnfulfilled);
 
     return { orders: groupedOrders, products: groupedProducts };
 }
