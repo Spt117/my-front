@@ -81,7 +81,7 @@ export function Variant({ variant }: { variant: TVariant }) {
             </a>
             <p className="text-sm text-gray-600">
                 Quantité en stock: {variant.quantity}
-                {numberInput && variant.quantity && (
+                {numberInput > 0 && variant.quantity && (
                     <span className="font-bold">
                         {"  -> "}
                         {numberInput + variant.quantity}
