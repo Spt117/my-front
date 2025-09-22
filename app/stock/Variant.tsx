@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Card } from "@/components/ui/card";
 import { boutiqueFromDomain } from "@/library/params/paramsShopify";
+import { sleep } from "@/library/utils/helpers";
 
 export function Variant({ variant }: { variant: TVariant }) {
     const { setVariantsBuy, setVariantsBuyLater } = useVariantStore();
@@ -20,12 +21,12 @@ export function Variant({ variant }: { variant: TVariant }) {
     if (!domain) return null;
     const boutique = boutiqueFromDomain(domain);
 
-    const handleRebuyChange = async () => {
-        const data = await toggleRebuy(variant.sku, !variant.rebuy);
+    const handleRebuyChange = async (bool: boolean) => {
+        const data = await toggleRebuy(variant.sku, bool);
         storeData(data);
     };
-    const handleRebuyLaterChange = async () => {
-        const data = await toggleRebuyLater(variant.sku, !variant.rebuyLater);
+    const handleRebuyLaterChange = async (bool: boolean) => {
+        const data = await toggleRebuyLater(variant.sku, bool);
         storeData(data);
     };
 
@@ -55,9 +56,14 @@ export function Variant({ variant }: { variant: TVariant }) {
             quantity: numberInput + variant.quantity,
         };
         const res = await postServer(url, data);
-        if (res.error) toast.error("Erreur lors de la mise à jour du stock");
-        if (res.message) toast.success(res.message);
         const vUpdated = await getStockVariant();
+        if (res.error) toast.error("Erreur lors de la mise à jour du stock");
+        if (res.message) {
+            toast.success(res.message);
+            await sleep(500);
+            if (variant.rebuy) await handleRebuyChange(false);
+            if (variant.rebuyLater) await handleRebuyLaterChange(false);
+        }
         storeData(vUpdated);
         setIsLoading(false);
         setNumberInput(0);
@@ -86,13 +92,21 @@ export function Variant({ variant }: { variant: TVariant }) {
                 <div className="flex items-center align-center rounded">
                     <p className="text-sm text-gray-600 w-50">Rebuy:</p>
                     <div>
-                        <Switch checked={variant.rebuy} onCheckedChange={handleRebuyChange} className="mt-2" />
+                        <Switch
+                            checked={variant.rebuy}
+                            onCheckedChange={() => handleRebuyChange(!variant.rebuy)}
+                            className="mt-2"
+                        />
                     </div>
                 </div>
                 <div className="flex items-center align-center rounded">
                     <p className="text-sm text-gray-600 w-50">Rebuy Later:</p>
                     <div>
-                        <Switch checked={variant.rebuyLater} onCheckedChange={handleRebuyLaterChange} className="mt-2" />
+                        <Switch
+                            checked={variant.rebuyLater}
+                            onCheckedChange={() => handleRebuyLaterChange(!variant.rebuyLater)}
+                            className="mt-2"
+                        />
                     </div>
                 </div>
             </div>
