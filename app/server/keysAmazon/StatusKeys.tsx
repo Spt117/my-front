@@ -13,7 +13,7 @@ export default function StatusKeys({ data }: { data: IResponseFetch }) {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (data?.message) toast.success(data.message);
+        if (data?.message) toast.success(data.message, { id: "status-keys" });
         if (data?.error) toast.error(data.error);
         setStatus(JSON.stringify(data.response, null, 2));
     }, [data]);

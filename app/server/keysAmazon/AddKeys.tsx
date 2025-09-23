@@ -11,6 +11,7 @@ import { amazonMarketPlaces } from "@/library/params/paramsAmazon";
 import { getServer } from "@/library/utils/fetchServer";
 import { useState } from "react";
 import { toast } from "sonner";
+import { clearKeys } from "./server";
 
 export default function AddKeys() {
     const marketplaces = amazonMarketPlaces.map((mp) => ({ label: mp.marketplace, value: mp.marketplace }));
@@ -31,6 +32,7 @@ export default function AddKeys() {
             const res = await addKeys(data);
             if (res.error) toast.error(res.error);
             if (res.message) toast.success(res.message);
+            clearKeys();
         } catch (error) {
             toast.error("An error occurred while adding keys");
         } finally {
