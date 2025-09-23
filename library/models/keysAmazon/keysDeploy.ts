@@ -29,6 +29,7 @@ const AmazonKeysModel: Model<TAmazonKeys> = models.amazon_keys || model<TAmazonK
 class ControllerAmazonKeys {
     private readonly ENCRYPTION_KEY = encryptedKeyAmazon; // 32 caractères
     private readonly ALGORITHM = "aes-256-cbc";
+
     private encryptSecretKey(secretKey: string): { encrypted: string; iv: string } {
         const iv = crypto.randomBytes(16);
         const cipher = crypto.createCipheriv(this.ALGORITHM, this.ENCRYPTION_KEY, iv);
@@ -61,7 +62,7 @@ class ControllerAmazonKeys {
             if (existing) {
                 existing.accessKeyId = keys.accessKeyId;
                 existing.secretAccessKey = keys.secretAccessKey;
-                await model.updateOne({ marketplace: keys.marketplace }, existing);
+                await model.updateOne({ marketplace: keys.marketplace }, keys);
                 return existing;
             } else {
                 const newKey = new model(keys);
