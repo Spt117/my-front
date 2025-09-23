@@ -1,13 +1,14 @@
 "use client";
 import Selecteur from "@/components/selecteur";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction } from "@/components/ui/card";
+import { Card, CardAction, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { TAmazonKeys } from "@/library/models/keysAmazon/keysDeploy";
 import { addKeys } from "@/library/models/keysAmazon/middleware";
 import { amazonMarketPlaces } from "@/library/params/paramsAmazon";
+import { getServer } from "@/library/utils/fetchServer";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -38,9 +39,9 @@ export default function AddKeys() {
     };
 
     return (
-        <Card className="m-2 p-2 space-y-4">
+        <CardContent className="flex flex-col gap-4">
             <h1>Add Amazon Keys</h1>
-            <CardAction className="flex  md:flex-row gap-4">
+            <CardAction className="flex gap-4 flex-wrap">
                 <Selecteur
                     value={data?.marketplace}
                     array={marketplaces}
@@ -64,6 +65,6 @@ export default function AddKeys() {
                     {loading && <Spinner className="ml-2" />}
                 </Button>
             </CardAction>
-        </Card>
+        </CardContent>
     );
 }

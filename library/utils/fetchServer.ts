@@ -1,6 +1,12 @@
 "use server";
 import { uriServerAcces } from "./uri";
 
+export interface IResponseFetch {
+    response: any;
+    error?: string;
+    message?: string;
+}
+
 export async function postServer(url: string, data: any) {
     let body = typeof data === "string" ? data : JSON.stringify(data);
     try {
