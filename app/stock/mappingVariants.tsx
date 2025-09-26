@@ -44,7 +44,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
         <div className="w-full relative pl-5 pr-5 flex gap-4 flex-wrap">
             <div className="w-full flex items-center gap-2 mt-3">
                 <ToggleMode />
-                {isLoading && <RefreshCcw className={`transition-transform duration-300 ease-in-out animate-spin`} />}
+                {isLoading && <RefreshCcw size={20} className={`transition-transform duration-300 ease-in-out animate-spin`} />}
             </div>
             {mode === "now" && variantsBuy.map((variant, index) => <Variant key={index} variant={variant} />)}
             {mode === "later" && variantsBuyLater.map((variant, index) => <Variant key={index} variant={variant} />)}
