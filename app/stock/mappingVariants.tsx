@@ -34,7 +34,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
         }
     };
 
-    useEventListener("inventory_levels/update", () => getData());
+    useEventListener("products/update", () => getData());
 
     useEffect(() => {
         handleStoreVariants(data);
