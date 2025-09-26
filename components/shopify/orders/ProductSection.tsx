@@ -1,27 +1,20 @@
-import useShopifyStore from "@/components/shopify/shopifyStore";
 import { boutiqueFromDomain, TDomainsShopify } from "@/library/params/paramsShopify";
 import { LineItemNode } from "@/library/shopify/orders";
 import { AlertTriangle } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ProductSection({ node, domain }: { node: LineItemNode; domain: TDomainsShopify }) {
     const idProduct = node.variant?.product.id.split("/").pop();
-    const productAdminUrl = `https://${domain}/admin/products/${idProduct}`;
     const boutique = boutiqueFromDomain(domain);
+    const productAdminUrl = `/product?id=${idProduct}&shopify=${boutique.locationHome}`;
 
     if (node.variant)
         return (
-            <a href={productAdminUrl} target="_blank" rel="noopener noreferrer" className="">
+            <Link href={productAdminUrl} rel="noopener noreferrer" className="">
                 <div className="flex items-center gap-2 border-2 border-gray-200 rounded-md p-1 hover:shadow-md transition-shadow">
                     <div className="relative w-24 h-24 z-0">
-                        <Image
-                            sizes="50"
-                            priority
-                            src={node.variant?.product.featuredImage.url || "/no_image.png"}
-                            alt={node.title}
-                            fill
-                            className="object-cover rounded-md"
-                        />
+                        <Image sizes="50" priority src={node.variant?.product.featuredImage.url || "/no_image.png"} alt={node.title} fill className="object-cover rounded-md" />
                     </div>
                     <div>
                         <p className="text-sm font-medium">{node.title}</p>
@@ -36,6 +29,6 @@ export default function ProductSection({ node, domain }: { node: LineItemNode; d
                         )}
                     </div>
                 </div>
-            </a>
+            </Link>
         );
 }

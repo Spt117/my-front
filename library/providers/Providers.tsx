@@ -50,8 +50,6 @@ export default function Providers({ children }: Readonly<{ children: React.React
                     toast.success(`Commande ${data.name} expédiée !`);
                     break;
                 case "products/update":
-                    console.log(data);
-
                     emit("products/update", { domain: data.shop, sku: data.variants[0].sku });
                     break;
                 default:

@@ -36,29 +36,16 @@ export default function Product() {
                         <Prices />
                         {/* SKU, stock et politique d'inventaire */}
                         <div className="text-sm text-muted-foreground flex flex-col gap-1">
-                            <p
-                                className={"flex items-center gap-1 text-gray-700 " + classCopy}
-                                onClick={() => handleCopy(product.id.split("/").pop() || "")}
-                                title="Cliquer pour copier l'ID"
-                            >
+                            <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(product.id.split("/").pop() || "")} title="Cliquer pour copier l'ID">
                                 Id: {product.id.split("/").pop()}
                                 <Copy size={12} className="text-gray-500" />
                             </p>
-                            <p
-                                className={"flex items-center gap-1 text-gray-700 " + classCopy}
-                                onClick={() => handleCopy(mainVariant.sku)}
-                                title="Cliquer pour copier le SKU"
-                            >
+                            <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(mainVariant.sku)} title="Cliquer pour copier le SKU">
                                 SKU: {mainVariant.sku}
                                 <Copy size={12} className="text-gray-500" />
                             </p>
                             <p>Barcode: {mainVariant?.barcode || "Non disponible"}</p>
-                            <p>
-                                Stock:{" "}
-                                {mainVariant?.inventoryQuantity > 0
-                                    ? `${mainVariant.inventoryQuantity} disponibles`
-                                    : "Rupture de stock"}
-                            </p>
+                            <p>Stock: {mainVariant?.inventoryQuantity > 0 ? `${mainVariant.inventoryQuantity} disponibles` : "Rupture de stock"}</p>
                             <Amazon />
                         </div>
 
@@ -69,8 +56,7 @@ export default function Product() {
                                 <div className="text-sm text-muted-foreground">
                                     {product.options.map((option, index) => (
                                         <p key={index}>
-                                            {option.name}:{" "}
-                                            {option.values.map((v) => (typeof v === "string" ? v : v.name)).join(", ")}
+                                            {option.name}: {option.values.map((v) => (typeof v === "string" ? v : v.name)).join(", ")}
                                         </p>
                                     ))}
                                 </div>

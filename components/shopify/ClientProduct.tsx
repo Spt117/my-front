@@ -8,15 +8,7 @@ import { ResponseServer } from "./typesShopify";
 import { ProductGET } from "@/library/types/graph";
 import { TVariant } from "@/library/models/produits/Variant";
 
-export default function ClientProduct({
-    productData,
-    shopify,
-    variant,
-}: {
-    productData: ResponseServer<ProductGET>;
-    shopify: IShopify;
-    variant: TVariant | null;
-}) {
+export default function ClientProduct({ productData, shopify, variant }: { productData: ResponseServer<ProductGET>; shopify: IShopify; variant: TVariant | null }) {
     const { setShopifyBoutique, product, setProduct } = useShopifyStore();
     const boutique = boutiqueFromDomain(shopify.domain);
 
