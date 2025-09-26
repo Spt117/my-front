@@ -29,8 +29,9 @@ export default function Providers({ children }: Readonly<{ children: React.React
         });
 
         socket.onAny((eventName, data) => {
-            console.log("eventName : ", eventName);
-            console.log(data);
+            const msg = `Événement reçu: ${eventName} - de ${data.shop || data.domain || "unknown"}`;
+            console.log(msg);
+
             switch (eventName) {
                 case "orders/paid":
                     const boutique = boutiqueFromDomain(data.shop);
