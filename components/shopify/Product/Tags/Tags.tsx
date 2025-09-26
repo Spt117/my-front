@@ -41,7 +41,7 @@ export default function Tags() {
     return (
         <div>
             <h3 className="m-2 text-lg font-medium">Tags</h3>
-            <div className="flex items-center gap-2 justify-center">
+            <div className="flex gap-2">
                 <Input type="text" placeholder="Ajouter un tag" onChange={(e) => setNewTag(e.target.value)} value={newTag} />
                 <Button disabled={!newTag.trim() || loading} onClick={handleAddTag}>
                     Ajouter un tag

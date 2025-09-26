@@ -17,11 +17,24 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                 <CardHeader className="flex flex-wrap justify-between items-center">
                     <div className="flex items-center justify-center gap-4">
                         <CardTitle className="text-lg transition-colors duration-300 group-hover:text-blue-600 group-hover:font-semibold flex gap-2">
-                            {flagUrl && <Image src={flagUrl} alt={order.shop} width={30} height={30} className="ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2" />}
+                            {flagUrl && (
+                                <Image
+                                    src={flagUrl}
+                                    alt={order.shop}
+                                    width={30}
+                                    height={30}
+                                    className="ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2"
+                                />
+                            )}
                             <div className="flex items-center gap-2">
                                 {order.name.map((name, index) => (
                                     <span key={index}>
-                                        <a className="transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-sm rounded-md p-1 -m-1" href={`https://${order.shop}/admin/orders/${order.legacyResourceId[index]}`} target="_blank" rel="noopener noreferrer">
+                                        <a
+                                            className="transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-sm rounded-md p-1 -m-1"
+                                            href={`https://${order.shop}/admin/orders/${order.legacyResourceId[index]}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
                                             {name}
                                         </a>
                                     </span>
@@ -31,7 +44,10 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                         <p className="text-sm text-gray-600">
                             {order.totalPriceSet.shopMoney.amount} {order.totalPriceSet.shopMoney.currencyCode}
                         </p>
-                        <p onClick={() => handleCopy(order.customer.email)} className="cursor-pointer transition-all duration-200 ease-in-out hover:font-bold rounded-md p-2 -m-2">
+                        <p
+                            onClick={() => handleCopy(order.customer.email)}
+                            className="cursor-pointer transition-all duration-200 ease-in-out hover:font-bold rounded-md p-2 -m-2"
+                        >
                             {order.customer.email}
                         </p>
                     </div>

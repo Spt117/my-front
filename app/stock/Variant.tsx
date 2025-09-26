@@ -11,6 +11,7 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Card } from "@/components/ui/card";
 import { boutiqueFromDomain } from "@/library/params/paramsShopify";
 import { sleep } from "@/library/utils/helpers";
+import UpdateStock from "./UpdateStock";
 
 export function Variant({ variant }: { variant: TVariant }) {
     const { setVariantsBuy, setVariantsBuyLater } = useVariantStore();
@@ -79,15 +80,6 @@ export function Variant({ variant }: { variant: TVariant }) {
             <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
                 <p className="text-sm text-gray-600">SKU: {variant.sku}</p>
             </a>
-            <p className="text-sm text-gray-600">
-                Quantité en stock: {variant.quantity}
-                {numberInput > 0 && variant.quantity && (
-                    <span className="font-bold">
-                        {"  -> "}
-                        {numberInput + variant.quantity}
-                    </span>
-                )}{" "}
-            </p>
             <div>
                 <div className="flex items-center align-center rounded">
                     <p className="text-sm text-gray-600 w-50">Rebuy:</p>
@@ -110,19 +102,7 @@ export function Variant({ variant }: { variant: TVariant }) {
                     </div>
                 </div>
             </div>
-            <div className="mt-4 flex space-x-2">
-                <Input
-                    value={numberInput}
-                    placeholder="Quantité"
-                    type="number"
-                    className="w-min"
-                    onChange={(e) => {
-                        setNumberInput(Number(e.target.value));
-                    }}
-                />
-                {!isLoading && <Button onClick={handleUpdateVariantStock}>Ajouter</Button>}
-                {isLoading && <Spinner className="h-6 w-6" />}{" "}
-            </div>
+            <UpdateStock params={{ sku: variant.sku, quantity: variant.quantity || 0, domain: domain }} action={storeData} />
         </Card>
     );
 }
