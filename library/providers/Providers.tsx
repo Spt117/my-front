@@ -50,6 +50,9 @@ export default function Providers({ children }: Readonly<{ children: React.React
                 case "orders/fulfilled":
                     toast.success(`Commande ${data.name} expédiée !`);
                     break;
+                case "inventory_levels/update":
+                    setEvent(eventName);
+                    break;
                 default:
                     toast.info(`Événement reçu : ${eventName}`);
                     break;
