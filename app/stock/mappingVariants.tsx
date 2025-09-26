@@ -22,6 +22,8 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     };
     const getData = async () => {
         setIsLoading(true);
+        console.log("Récupération des données mises à jour...");
+
         await sleep(1500);
         try {
             const dataUpdated = await getStockVariant();
