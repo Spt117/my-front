@@ -55,7 +55,6 @@ export default function Providers({ children }: Readonly<{ children: React.React
                     break;
                 case "inventory_levels/update":
                     emit("inventory_levels/update", { domain: data.shop });
-                    // setEvent(eventName);
                     break;
                 default:
                     toast.info(`Événement reçu : ${eventName}`);

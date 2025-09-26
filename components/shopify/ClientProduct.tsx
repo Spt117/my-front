@@ -6,8 +6,17 @@ import { toast } from "sonner";
 import Product from "./Product/Product";
 import { ResponseServer } from "./typesShopify";
 import { ProductGET } from "@/library/types/graph";
+import { TVariant } from "@/library/models/produits/Variant";
 
-export default function ClientProduct({ productData, shopify }: { productData: ResponseServer<ProductGET>; shopify: IShopify }) {
+export default function ClientProduct({
+    productData,
+    shopify,
+    variant,
+}: {
+    productData: ResponseServer<ProductGET>;
+    shopify: IShopify;
+    variant: TVariant | null;
+}) {
     const { setShopifyBoutique, product, setProduct } = useShopifyStore();
     const boutique = boutiqueFromDomain(shopify.domain);
 
@@ -15,8 +24,8 @@ export default function ClientProduct({ productData, shopify }: { productData: R
         setShopifyBoutique(boutique);
         setProduct(productData.response);
         if (productData.error) toast.error(productData.error);
-        if (productData.message) toast.success(productData.message);
     }, []);
+
     if (!productData.response || !product) return <div>Produit non trouvé</div>;
     return <Product />;
 }

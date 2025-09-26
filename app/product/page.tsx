@@ -1,10 +1,9 @@
 import ClientProduct from "@/components/shopify/ClientProduct";
 import { getProduct } from "@/components/shopify/serverActions";
-import { authOptions } from "@/library/auth/authOption";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
-import { getServerSession } from "next-auth";
 import AddImage from "../../components/shopify/Product/AddImage";
+import { variantController } from "@/library/models/produits/variantController";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
     const query = (await searchParams) as { id?: string; shopify?: TLocationHome };
@@ -18,12 +17,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
     const data = { productId: query.id, domain: shopify?.domain };
     const product = await getProduct(data);
     if (!product) return <div>Erreur lors de la récupération du produit (mauvaise url)</div>;
-    const session = await getServerSession(authOptions);
-    if (!session) return null;
+
+    const sku = product.response.variants?.nodes[0]?.sku;
+    const variant = await variantController.getVariantBySku(sku);
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:p-6">
-            <ClientProduct productData={product} shopify={shopify} />
+            <ClientProduct productData={product} shopify={shopify} variant={variant} />
             <AddImage />
         </div>
     );

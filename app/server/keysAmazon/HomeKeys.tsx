@@ -5,7 +5,6 @@ import { statusKeys } from "./server";
 
 export default async function HomeKeys() {
     const data = await statusKeys();
-    console.log("HomeKeys");
 
     return (
         <Card className="m-2 p-2">
