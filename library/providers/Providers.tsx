@@ -54,7 +54,7 @@ export default function Providers({ children }: Readonly<{ children: React.React
                     toast.success(`Commande ${data.name} expédiée !`);
                     break;
                 case "inventory_levels/update":
-                    emit("inventory_levels/update", { domain: data.domain });
+                    emit("inventory_levels/update", { domain: data.shop });
                     // setEvent(eventName);
                     break;
                 default:

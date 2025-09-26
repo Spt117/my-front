@@ -8,7 +8,7 @@ export default function ToggleMode() {
         setMode(mode === "now" ? "later" : "now");
     };
     return (
-        <div onClick={toggleMode} className="absolute top-0 m-3 group cursor-pointer flex items-center gap-2">
+        <div onClick={toggleMode} className="group cursor-pointer flex items-center gap-2">
             <div className="flex items-center gap-2">
                 <Switch checked={mode === "now"} className="" />
             </div>
