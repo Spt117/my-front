@@ -39,13 +39,7 @@ export default function Providers({ children }: Readonly<{ children: React.React
                     const msg = (
                         <p className="flex items-center gap-1 whitespace-nowrap">
                             Nouvelle commande reçue sur {boutique.vendor}
-                            <Image
-                                src={boutique.flag}
-                                alt={boutique.langue}
-                                width={20}
-                                height={20}
-                                className="inline-block ml-1"
-                            />
+                            <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline-block ml-1" />
                         </p>
                     );
                     toast.success(msg);
@@ -56,6 +50,8 @@ export default function Providers({ children }: Readonly<{ children: React.React
                     toast.success(`Commande ${data.name} expédiée !`);
                     break;
                 case "products/update":
+                    console.log(data.body);
+
                     emit("products/update", { domain: data.shop, sku: data.body.variants[0].sku });
                     break;
                 default:
