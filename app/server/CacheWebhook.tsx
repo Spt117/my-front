@@ -11,7 +11,7 @@ export default function CacheWebhook() {
         const getCache = async () => {
             const url = "http://localhost:3001/cache";
             const res = await getServer(url);
-            setCacheData(JSON.stringify(res.res, null, 2));
+            setCacheData(JSON.stringify(res, null, 2));
         };
         const interval = setInterval(() => {
             getCache();
