@@ -7,11 +7,13 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { boutiqueFromDomain } from "../params/paramsShopify";
 import { socket } from "../utils/utils";
+import { useEvent } from "../hooks/useEvent/useEvents";
 
 export default function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
     const { setSearchTerm } = useShopifyStore();
     const path = usePathname();
-    const { setEvent } = useShopifyStore();
+    // const { setEvent } = useShopifyStore();
+    const { emit } = useEvent();
     const router = useRouter();
 
     useEffect(() => {
@@ -45,13 +47,15 @@ export default function Providers({ children }: Readonly<{ children: React.React
                         </p>
                     );
                     toast.success(msg);
-                    setEvent(eventName);
+                    emit("orders/paid", { shop: data.shop });
+                    // setEvent(eventName);
                     break;
                 case "orders/fulfilled":
                     toast.success(`Commande ${data.name} expédiée !`);
                     break;
                 case "inventory_levels/update":
-                    setEvent(eventName);
+                    emit("inventory_levels/update", { domain: data.domain });
+                    // setEvent(eventName);
                     break;
                 default:
                     toast.info(`Événement reçu : ${eventName}`);

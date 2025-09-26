@@ -10,12 +10,13 @@ import Products from "./ModeProducts/Products";
 import { revalidateOrders } from "./serverAction";
 import { ProductInOrder } from "./store";
 import ToggleMode from "./ToggleMode";
+import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 
 export default function RefreshOders({ products, orders }: { products: ProductInOrder[]; orders: GroupedShopifyOrder[] }) {
     const [isLoading, setIsLoading] = useState(false);
     const path = usePathname();
-    const { event, setEvent, setShopifyBoutique } = useShopifyStore();
     const router = useRouter();
+    useEventListener("orders/paid", () => handleGetOrders());
 
     const handleGetOrders = async () => {
         setIsLoading(true);
@@ -23,14 +24,6 @@ export default function RefreshOders({ products, orders }: { products: ProductIn
         await revalidateOrders();
         setIsLoading(false);
     };
-
-    useEffect(() => {
-        setShopifyBoutique(null);
-        if (event === "orders/paid") {
-            setEvent(null);
-            handleGetOrders();
-        }
-    }, [event]);
 
     return (
         <>

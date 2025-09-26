@@ -4,7 +4,7 @@ import Selecteur from "@/components/selecteur";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
 import Image from "next/image";
-import useOrdersStore from "../orders/store";
+import useOrdersStore from "../shopify/orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
 
 export default function ShopifySelect() {

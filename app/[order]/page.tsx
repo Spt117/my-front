@@ -1,9 +1,15 @@
 import { TDomainsShopify } from "@/library/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
-import Order from "../../components/orders/Order";
-import { getOrderById } from "../../components/orders/serverAction";
+import Order from "../../components/shopify/orders/Order";
+import { getOrderById } from "../../components/shopify/orders/serverAction";
 
-export default async function Page({ params, searchParams }: { params: Promise<SegmentParams>; searchParams: Promise<SegmentParams> }) {
+export default async function Page({
+    params,
+    searchParams,
+}: {
+    params: Promise<SegmentParams>;
+    searchParams: Promise<SegmentParams>;
+}) {
     const query = (await searchParams) as { domain: TDomainsShopify };
     const p = (await params) as { order: string };
     const order = await getOrderById({ orderId: p.order, domain: query.domain });

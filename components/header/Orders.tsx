@@ -1,7 +1,7 @@
 "use client";
-import ListOrdersSearch from "@/components/orders/search/ListOrdersSearch";
-import { searchOrders } from "@/components/orders/serverAction";
-import useOrdersStore from "@/components/orders/store";
+import ListOrdersSearch from "@/components/shopify/orders/search/ListOrdersSearch";
+import { searchOrders } from "@/components/shopify/orders/serverAction";
+import useOrdersStore from "@/components/shopify/orders/store";
 import { ShopifyOrder } from "@/library/shopify/orders";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -59,10 +59,22 @@ export default function Orders() {
     return (
         <div className="relative w-full">
             <div className="relative w-full">
-                <Input disabled={!shopifyBoutique} type="text" value={searchTerm} onChange={handleInputChange} placeholder="Commande Shopify" className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10" />
+                <Input
+                    disabled={!shopifyBoutique}
+                    type="text"
+                    value={searchTerm}
+                    onChange={handleInputChange}
+                    placeholder="Commande Shopify"
+                    className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
+                />
 
                 {searchTerm && (
-                    <button type="button" onClick={() => setSearchTerm("")} className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Effacer la recherche">
+                    <button
+                        type="button"
+                        onClick={() => setSearchTerm("")}
+                        className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                        aria-label="Effacer la recherche"
+                    >
                         <X size={16} />
                     </button>
                 )}

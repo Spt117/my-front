@@ -1,6 +1,6 @@
 import { pokeUriServer } from "@/library/utils/uri";
-import RefreshOders from "../components/orders/RefreshOders";
-import { getOrders } from "../components/orders/serverAction";
+import RefreshOders from "../components/shopify/orders/RefreshOders";
+import { getOrders } from "../components/shopify/orders/serverAction";
 
 export default async function Page() {
     const url = `${pokeUriServer}/shopify/orders`;

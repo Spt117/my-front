@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 import { getStockVariant } from "@/library/models/produits/middlewareVariants";
 import { postServer } from "@/library/utils/fetchServer";
 import { sleep } from "@/library/utils/helpers";
@@ -16,6 +17,7 @@ interface IUpdateStockProps {
 export default function UpdateStock({ params, action }: { params: IUpdateStockProps; action?: (data: any) => Promise<void> }) {
     const [numberInput, setNumberInput] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    useEventListener("inventory_levels/update", (fsd) => console.log(fsd));
 
     const handleUpdateVariantStock = async () => {
         if (!params.quantity) {
@@ -45,7 +47,7 @@ export default function UpdateStock({ params, action }: { params: IUpdateStockPr
         <>
             <p className="text-sm text-gray-600">
                 Quantité en stock: {params.quantity}
-                {numberInput > 0 && params.quantity && (
+                {numberInput !== 0 && params.quantity && (
                     <span className="font-bold">
                         {"  -> "}
                         {numberInput + params.quantity}
