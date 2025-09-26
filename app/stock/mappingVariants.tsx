@@ -21,8 +21,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
         setVariantsBuyLater(variantsBuyLater);
     };
     const getData = async () => {
-        setIsLoading;
-        true;
+        setIsLoading(true);
         await sleep(1500);
         try {
             const dataUpdated = await getStockVariant();

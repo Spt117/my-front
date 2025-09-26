@@ -1,16 +1,15 @@
 "use client";
-import useShopifyStore from "@/components/shopify/shopifyStore";
+import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import { sleep } from "@/library/utils/helpers";
 import { Archive, ArrowBigLeft, RefreshCcw } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MappingOrders from "./MappingOrders";
 import Products from "./ModeProducts/Products";
 import { revalidateOrders } from "./serverAction";
 import { ProductInOrder } from "./store";
 import ToggleMode from "./ToggleMode";
-import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 
 export default function RefreshOders({ products, orders }: { products: ProductInOrder[]; orders: GroupedShopifyOrder[] }) {
     const [isLoading, setIsLoading] = useState(false);
