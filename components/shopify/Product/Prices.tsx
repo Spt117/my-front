@@ -6,7 +6,7 @@ import { postServer } from "@/library/utils/fetchServer";
 import { Label } from "@radix-ui/react-label";
 import { Separator } from "@radix-ui/react-select";
 import { Check, Tag, X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import useShopifyStore from "../shopifyStore";
 
@@ -17,6 +17,7 @@ export default function Prices() {
     const [isUpdatingComparePrice, setIsUpdatingComparePrice] = useState(false);
     const [compareAtPrice, setCompareAtPrice] = useState(product?.variants.nodes[0].compareAtPrice || "0");
     if (!product || !shopifyBoutique) return null;
+    const ref = useRef<HTMLInputElement>(null);
 
     const inputNumberStyle = `
   input[type="number"]::-webkit-outer-spin-button,
@@ -47,6 +48,8 @@ export default function Prices() {
         } catch (error) {
             toast.error("Erreur lors de la mise à jour du prix");
         } finally {
+            if (ref.current) ref.current.value = "";
+            setPrice(mainVariant.price);
             setIsUpdatingPrice(false);
         }
     };
@@ -97,7 +100,7 @@ export default function Prices() {
                     <div className="flex items-center gap-2">
                         <div className="flex-1">
                             <div className="relative w-fit">
-                                <Input id="price" type="number" step="0.1" placeholder={price} onChange={(e) => setPrice(e.target.value)} className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500" />
+                                <Input ref={ref} id="price" type="number" step="0.1" placeholder={price} onChange={(e) => setPrice(e.target.value)} className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500" />
                                 <span className="absolute bottom-2 right-2 text-slate-500 text-sm font-medium">{shopifyBoutique.devise}</span>
                             </div>
                         </div>

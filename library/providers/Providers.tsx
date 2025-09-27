@@ -32,6 +32,7 @@ export default function Providers({ children }: Readonly<{ children: React.React
         socket.onAny((eventName: TTopics, data) => {
             const msg = `Événement reçu: ${eventName} - de ${data.shop || data.domain || "unknown"}`;
             console.log(msg);
+            console.log(data);
 
             switch (eventName) {
                 case "orders/paid":
@@ -50,7 +51,7 @@ export default function Providers({ children }: Readonly<{ children: React.React
                     toast.success(`Commande ${data.name} expédiée !`);
                     break;
                 case "products/update":
-                    emit("products/update", { domain: data.shop, sku: data.variants[0].sku });
+                    emit("products/update", { domain: data.shop, sku: data.variants[0].sku, productId: data.id });
                     break;
                 default:
                     toast.info(`Événement reçu : ${eventName}`);
