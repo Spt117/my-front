@@ -16,7 +16,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
     const shopify = boutiqueFromLocation(query.shopify) as IShopify;
     const data = { productId: query.id, domain: shopify?.domain };
     const product = await getProduct(data);
-    if (!product) return <div>Erreur lors de la récupération du produit (mauvaise url)</div>;
+
+    if (!product?.response) return <div>Erreur lors de la récupération du produit</div>;
 
     const sku = product.response.variants?.nodes[0]?.sku;
     const variant = await variantController.getVariantBySku(sku);

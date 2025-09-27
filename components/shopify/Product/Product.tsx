@@ -32,12 +32,16 @@ export default function Product() {
                     {/* Carrousel d'images */}
                     <ImagesProduct />
                     {/* Détails du produit */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 flex flex-wrap justify-start">
                         <Prices />
                         {/* SKU, stock et politique d'inventaire */}
                         <div className="text-sm text-muted-foreground flex flex-col gap-1">
-                            <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(product.id.split("/").pop() || "")} title="Cliquer pour copier l'ID">
-                                Id: {product.id.split("/").pop()}
+                            <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(product.id)} title="Cliquer pour copier l'ID">
+                                IdProduct: {product.id}
+                                <Copy size={12} className="text-gray-500" />
+                            </p>
+                            <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(product.variants.nodes[0].id)} title="Cliquer pour copier l'ID">
+                                IdProduct: {product.variants.nodes[0].id}
                                 <Copy size={12} className="text-gray-500" />
                             </p>
                             <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(mainVariant.sku)} title="Cliquer pour copier le SKU">

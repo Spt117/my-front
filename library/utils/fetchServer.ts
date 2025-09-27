@@ -7,7 +7,7 @@ export interface IResponseFetch {
     message?: string;
 }
 
-export async function postServer(url: string, data: any) {
+export async function postServer(url: string, data: any): Promise<IResponseFetch> {
     let body = typeof data === "string" ? data : JSON.stringify(data);
     try {
         const response = await fetch(url, {
