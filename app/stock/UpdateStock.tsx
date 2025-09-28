@@ -13,7 +13,7 @@ interface IUpdateStockProps {
     domain: string;
 }
 
-export default function UpdateStock({ params, action }: { params: IUpdateStockProps; action?: (data: any) => Promise<void> }) {
+export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
     const [numberInput, setNumberInput] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -37,7 +37,6 @@ export default function UpdateStock({ params, action }: { params: IUpdateStockPr
             toast.success(res.message);
             await sleep(500);
         }
-        if (action) await action(vUpdated);
         setIsLoading(false);
         setNumberInput(0);
     };

@@ -14,13 +14,15 @@ export default function ClientProduct({ productData, shopify, variant }: { produ
     const { setShopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
     const boutique = boutiqueFromDomain(shopify.domain);
 
-    const getProductUpdated = async () => {
+    const getProductUpdated = async (datas: any) => {
+        console.log("Product updated event received:", datas);
+
         const data = { productId: productData.response.id, domain: shopify.domain };
         const product = await getProduct(data);
         if (product) setProduct(product.response);
     };
 
-    useEventListener("products/update", () => getProductUpdated());
+    useEventListener("products/update", (data) => getProductUpdated(data));
 
     useEffect(() => {
         setShopifyBoutique(boutique);

@@ -63,7 +63,7 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
                         </div>
                     </div>
                 </div>
-                <UpdateStock params={{ sku: variant.sku, quantity: variant.quantity, domain: shopifyBoutique.domain }} action={storeData} />
+                <UpdateStock params={{ sku: variant.sku, quantity: variant.quantity, domain: shopifyBoutique.domain }} />
             </CardContent>
         </Card>
     );
