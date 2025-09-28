@@ -4,7 +4,7 @@ import { getServer, postServer } from "@/library/utils/fetchServer";
 import { revalidatePath } from "next/cache";
 import { ProductInOrder } from "./store";
 
-export async function getOrders(url: string) {
+export async function getOrders(url: string, archived: boolean) {
     const response = await getServer(url);
     if (!response || !response.response) return null;
     const data: ShopifyOrder[] = response.response;
@@ -44,7 +44,9 @@ export async function getOrders(url: string) {
         return acc;
     }, []);
 
-    const groupedOrders = groupOrdersByCustomerEmail(filterOrdersProductsUnfulfilled);
+    const groupedOrders = archived
+        ? groupOrdersByCustomerEmail(data)
+        : groupOrdersByCustomerEmail(filterOrdersProductsUnfulfilled);
 
     return { orders: groupedOrders, products: groupedProducts };
 }
