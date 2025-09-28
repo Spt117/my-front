@@ -30,9 +30,10 @@ export default function ShopifySelect() {
     };
 
     const handleEscape = () => {
-        if (path === "/product") return;
-        setShopifyBoutique(null);
-        setFilterOrders(orders);
+        if (path !== "/product") {
+            setShopifyBoutique(null);
+            setFilterOrders(orders);
+        }
         setSearchTerm("");
     };
     useKeyboardShortcuts("Escape", handleEscape);

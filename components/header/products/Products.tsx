@@ -1,26 +1,20 @@
 import { IShopifyProductSearch } from "@/components/header/products/shopifySearch";
 import Image from "next/image";
+import Link from "next/link";
 import useShopifyStore from "../../shopify/shopifyStore";
 import ProductToClick from "./ProductToClick";
-import Link from "next/link";
-import { getProduct } from "@/components/shopify/serverActions";
-import { useRouter } from "next/navigation";
 
 export default function ProductList({ products }: { products: IShopifyProductSearch[] }) {
     const { shopifyBoutique } = useShopifyStore();
-    const router = useRouter();
     if (!shopifyBoutique) return;
     const productBoutique = products.find((p) => p.domain === shopifyBoutique.domain);
     if (!productBoutique || products.length === 0) return <div>Aucun produit trouvé</div>;
     const id = productBoutique.id.split("/").pop();
     const url = `/product?id=${id}&shopify=${shopifyBoutique.locationHome}`;
 
-    function getProduct() {
-        router.refresh();
-    }
     return (
         <div className="flex items-center">
-            <Link href={url} onClick={getProduct}>
+            <Link href={url} className="flex-1">
                 <div className="cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm w-sm">
                     <div className="relative w-12 h-12 flex-shrink-0">
                         <Image

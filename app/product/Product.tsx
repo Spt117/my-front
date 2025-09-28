@@ -21,7 +21,6 @@ export default function Product({
     variantData: TVariant | null;
 }) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
-    const boutique = boutiqueFromDomain(shopify.domain);
 
     const getProductUpdated = async (sku: string) => {
         if (variantData?.sku !== sku) return;
@@ -35,11 +34,12 @@ export default function Product({
     useEventListener("products/update", (data) => getProductUpdated(data.sku));
 
     useEffect(() => {
+        const boutique = boutiqueFromDomain(shopify.domain);
         setShopifyBoutique(boutique);
         setProduct(productData.response);
         if (variantData) setVariant(variantData);
         if (productData.error) toast.error(productData.error);
-    }, []);
+    }, [shopify.domain, productData.response, variantData]);
 
     if (!product || !shopifyBoutique) {
         return <div className="text-center py-8 text-muted-foreground">Aucun produit sélectionné</div>;
