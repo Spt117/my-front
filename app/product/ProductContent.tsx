@@ -1,22 +1,18 @@
 import HeaderProduct from "@/components/shopify/Product/HeaderProduct";
 import ImagesProduct from "@/components/shopify/Product/Images";
 import LinkToShops from "@/components/shopify/Product/LinkToShops";
-import Amazon from "@/components/shopify/Product/Metafields/Amazon";
 import TagsShopify from "@/components/shopify/Product/Tags/Tags";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
-import { useCopy } from "@/library/hooks/useCopy";
 import { getVariantBySku } from "@/library/models/produits/middlewareVariants";
-import { Separator } from "@radix-ui/react-select";
-import { Copy } from "lucide-react";
 import { VariantStock } from "../stock/VariantStock";
-import Prices from "./Prices";
 import AboutProduct from "./AboutProduct";
 import Description from "./Description";
+import Prices from "./Prices";
 
 export default function ProductContent() {
     const { variant, setVariant, product } = useShopifyStore();
-    if (!product || !variant) return;
+    if (!product) return;
 
     const actionStoreVariant = async () => {
         if (!variant) return;
