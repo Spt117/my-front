@@ -2,6 +2,7 @@ import { IShopifyProductSearch } from "@/components/header/products/shopifySearc
 import Image from "next/image";
 import useShopifyStore from "../../shopify/shopifyStore";
 import ProductToClick from "./ProductToClick";
+import Link from "next/link";
 
 export default function ProductList({ products }: { products: IShopifyProductSearch[] }) {
     const { shopifyBoutique } = useShopifyStore();
@@ -14,17 +15,10 @@ export default function ProductList({ products }: { products: IShopifyProductSea
 
     return (
         <div className="flex items-center">
-            <a href={url}>
+            <Link href={url}>
                 <div className="cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm w-sm">
                     <div className="relative w-12 h-12 flex-shrink-0">
-                        <Image
-                            src={products[0].images.edges[0]?.node.url || "/no_image.png"}
-                            alt={products[0].title}
-                            fill
-                            className="object-cover rounded-md"
-                            sizes="48px"
-                            priority={false}
-                        />
+                        <Image src={products[0].images.edges[0]?.node.url || "/no_image.png"} alt={products[0].title} fill className="object-cover rounded-md" sizes="48px" priority={false} />
                     </div>
                     <div className="ml-4 flex-1">
                         <h3 className="text-sm font-medium text-foreground line-clamp-1">{products[0].title}</h3>
@@ -32,7 +26,7 @@ export default function ProductList({ products }: { products: IShopifyProductSea
                         <div className="text-sm font-semibold text-primary">{`${products[0].variants.edges[0].node.price} ${shopifyBoutique?.devise}`}</div>
                     </div>
                 </div>
-            </a>
+            </Link>
 
             <div className="flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
                 <div className="flex items-center gap-1">

@@ -1,4 +1,4 @@
-import ClientProduct from "@/app/product/ClientProduct";
+import ClientProduct from "@/app/product/Product";
 import { getProduct } from "@/components/shopify/serverActions";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
@@ -24,7 +24,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:p-6">
-            <ClientProduct productData={product} shopify={shopify} variant={variant} />
+            <ClientProduct productData={product} shopify={shopify} variantData={variant} />
             <AddImage />
         </div>
     );

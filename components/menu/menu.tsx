@@ -3,6 +3,7 @@ import { cn } from "@/library/utils/utils";
 import { IconCirclePlusFilled } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
+import Link from "next/link";
 
 export interface MenuProps {
     path: string;
@@ -14,19 +15,17 @@ export default function Menu({ path, label }: MenuProps) {
     const isActive = currentPath === path;
 
     const baseClasses = "min-w-8 duration-200 ease-linear flex items-center gap-2";
-    const activeClasses =
-        "bg-primary text-primary-foreground opacity-97 hover:bg-primary hover:text-primary-foreground active:bg-primary/97 ";
-    const inactiveClasses =
-        "bg-accent/100 hover:bg-primary/80 hover:text-primary-foreground active:bg-accent/90 active:text-accent-foreground";
+    const activeClasses = "bg-primary text-primary-foreground opacity-97 hover:bg-primary hover:text-primary-foreground active:bg-primary/97 ";
+    const inactiveClasses = "bg-accent/100 hover:bg-primary/80 hover:text-primary-foreground active:bg-accent/90 active:text-accent-foreground";
 
     return (
-        <a href={path}>
+        <Link href={path}>
             <SidebarMenuItem className="flex items-center gap-2">
                 <SidebarMenuButton className={cn(baseClasses, isActive ? activeClasses : inactiveClasses)}>
                     <IconCirclePlusFilled className={cn(isActive && "text-primary-foreground")} />
                     {label}
                 </SidebarMenuButton>
             </SidebarMenuItem>
-        </a>
+        </Link>
     );
 }

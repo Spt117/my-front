@@ -9,6 +9,7 @@ import { addTag } from "../../serverActions";
 import useShopifyStore from "../../shopifyStore";
 import { ITagRequest } from "../../typesShopify";
 import TagShopify from "./TagShopify";
+import { TagsIcon } from "lucide-react";
 
 export default function Tags() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -42,7 +43,10 @@ export default function Tags() {
     return (
         <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white w-min h-min">
             <CardContent className="space-y-6">
-                <h3 className="m-2 text-lg font-medium">Tags</h3>
+                <h3 className="m-2 text-sm font-medium flex items-center gap-2">
+                    <TagsIcon size={15} />
+                    Tags
+                </h3>
                 <div className="flex gap-2">
                     <Input type="text" placeholder="Ajouter un tag" onChange={(e) => setNewTag(e.target.value)} value={newTag} />
                     <Button disabled={!newTag.trim() || loading} onClick={handleAddTag}>

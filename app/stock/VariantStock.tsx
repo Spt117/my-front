@@ -3,12 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { toggleRebuy, toggleRebuyLater } from "@/library/models/produits/middlewareVariants";
 import { TVariant } from "@/library/models/produits/Variant";
-import useVariantStore from "./store";
-import UpdateStock from "./UpdateStock";
 import { usePathname } from "next/navigation";
+import UpdateStock from "./UpdateStock";
+import Link from "next/link";
 
 export function VariantStock({ variant, action }: { variant: TVariant; action: () => void }) {
-    const { setVariantsBuy, setVariantsBuyLater } = useVariantStore();
     const { shopifyBoutique } = useShopifyStore();
     const path = usePathname();
     if (!shopifyBoutique) return null;
@@ -30,9 +29,9 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
             <CardContent className="space-y-6">
                 {path === "/stock" && (
                     <h2 className="text-lg font-semibold">
-                        <a href={urlProduct} rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                        <Link href={urlProduct} rel="noopener noreferrer" className="text-blue-500 hover:underline">
                             {variant.title}
-                        </a>
+                        </Link>
                     </h2>
                 )}
 

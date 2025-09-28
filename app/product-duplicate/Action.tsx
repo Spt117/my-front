@@ -7,14 +7,18 @@ import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
 import Image from "next/image";
 import { useState } from "react";
-import Product from "../product/Product";
 import { MultiSelect, MultiSelectOption } from "./Multiselect";
 import { ProductType } from "@/components/shopify/ProductType";
 import { toast } from "sonner";
 import { sleep } from "@/library/utils/helpers";
+import HeaderProduct from "@/components/shopify/Product/HeaderProduct";
+import ProductContent from "../product/ProductContent";
+import { Card } from "@/components/ui/card";
 
 export default function Action() {
     const { shopifyBoutique, product, selectedType, selectedBrand } = useShopifyStore();
+    console.log(product);
+
     const [domainsDest, setDomainsDest] = useState<TDomainsShopify[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -89,7 +93,9 @@ export default function Action() {
                     <Spinner size={35} />
                 </div>
             )}
-            {product && <Product />}
+            <Card className="">
+                <ProductContent />
+            </Card>
         </>
     );
 }

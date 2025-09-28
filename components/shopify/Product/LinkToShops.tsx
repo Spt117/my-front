@@ -48,10 +48,17 @@ export default function LinkToShops({ variant }: { variant: TVariant | null }) {
                         SKU: {variant.sku}
                         <Copy size={12} className="text-gray-500" />
                     </p>
-                    <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(variant.barcode || "Non disponible", "Barcode copié !")}>
-                        Barcode: {variant?.barcode || "Non disponible"}
-                        <Copy size={12} className="text-gray-500" />
-                    </p>
+                    {variant.barcode && (
+                        <p
+                            className={"flex items-center gap-1 text-gray-700 " + classCopy}
+                            onClick={() => {
+                                if (variant.barcode) handleCopy(variant.barcode, "Barcode copié !");
+                            }}
+                        >
+                            Barcode: {variant.barcode}
+                            <Copy size={12} className="text-gray-500" />
+                        </p>
+                    )}
 
                     <Amazon />
                 </div>

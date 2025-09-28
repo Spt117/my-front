@@ -1,11 +1,6 @@
 import { TMetafield } from "@/library/types/graph";
-import React from "react";
-import useShopifyStore from "../../shopifyStore";
-import Amazon from "./Amazon";
 
 export default function Metafields({ metafields }: { metafields: TMetafield[] }) {
-    const { product, shopifyBoutique } = useShopifyStore();
-
     const keys = ["id_video_youtube", "url_video", "amazon_activate", "asin"];
     const filteredMetafields = metafields.filter((mf) => !keys.includes(mf.key));
 

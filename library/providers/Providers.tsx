@@ -2,7 +2,7 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { SessionProvider } from "next-auth/react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { boutiqueFromDomain } from "../params/paramsShopify";
@@ -13,13 +13,10 @@ import { TTopics } from "./utilSocket";
 export default function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
     const { setSearchTerm } = useShopifyStore();
     const path = usePathname();
-    // const { setEvent } = useShopifyStore();
     const { emit } = useEvent();
-    const router = useRouter();
 
     useEffect(() => {
         setSearchTerm("");
-        router.refresh();
     }, [path]);
 
     useEffect(() => {
@@ -32,8 +29,6 @@ export default function Providers({ children }: Readonly<{ children: React.React
         socket.onAny((eventName: TTopics, data) => {
             const msg = `Événement reçu: ${eventName} - de ${data.shop || data.domain || "unknown"}`;
             console.log(msg);
-            console.log(data);
-
             switch (eventName) {
                 case "orders/paid":
                     const boutique = boutiqueFromDomain(data.shop);
