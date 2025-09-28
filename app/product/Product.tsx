@@ -24,7 +24,7 @@ export default function Product({
     const { variant } = useShopifyStore();
     const boutique = boutiqueFromDomain(shopify.domain);
 
-    const getProductUpdated = async (sku: any) => {
+    const getProductUpdated = async (sku: string) => {
         console.log("Updating product for SKU:", sku);
         console.log("Current variant SKU:", variant);
         console.log("Current variantData SKU:", variantData);
@@ -37,7 +37,7 @@ export default function Product({
         if (v) setVariant(v);
     };
 
-    useEventListener("products/update", (data) => getProductUpdated(data));
+    useEventListener("products/update", (data) => getProductUpdated(data.sku));
 
     useEffect(() => {
         setShopifyBoutique(boutique);
