@@ -6,9 +6,9 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { getVariantBySku } from "@/library/models/produits/middlewareVariants";
 import { Separator } from "@radix-ui/react-select";
-import { Tags } from "lucide-react";
 import { VariantStock } from "../stock/VariantStock";
 import Prices from "./Prices";
+import TagsShopify from "@/components/shopify/Product/Tags/Tags";
 
 export default function ProductContent() {
     const { variant, setVariant, product } = useShopifyStore();
@@ -31,7 +31,7 @@ export default function ProductContent() {
                 <div className="flex gap-2 flex-wrap">
                     <Prices />
                     {variant && <VariantStock variant={variant} action={actionStoreVariant} />}
-                    <Tags />
+                    <TagsShopify />
 
                     <LinkToShops variant={variant} />
 

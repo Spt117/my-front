@@ -11,7 +11,7 @@ import { ITagRequest } from "../../typesShopify";
 import TagShopify from "./TagShopify";
 import { TagsIcon } from "lucide-react";
 
-export default function Tags() {
+export default function TagsShopify() {
     const { product, shopifyBoutique } = useShopifyStore();
     const [newTag, setNewTag] = useState("");
     const { getProductUpdate } = useProduct();
