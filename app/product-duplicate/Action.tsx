@@ -89,7 +89,7 @@ export default function Action() {
                     <Spinner size={35} />
                 </div>
             )}
-            {product && <Product variantStock={null} />}
+            {product && <Product />}
         </>
     );
 }
