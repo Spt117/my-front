@@ -3,14 +3,22 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { boutiqueFromDomain, IShopify } from "@/library/params/paramsShopify";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import Product from "./Product/Product";
-import { ResponseServer } from "./typesShopify";
+import Product from "./Product";
+import { ResponseServer } from "../../components/shopify/typesShopify";
 import { ProductGET } from "@/library/types/graph";
 import { TVariant } from "@/library/models/produits/Variant";
-import { getProduct } from "./serverActions";
+import { getProduct } from "../../components/shopify/serverActions";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 
-export default function ClientProduct({ productData, shopify, variant }: { productData: ResponseServer<ProductGET>; shopify: IShopify; variant: TVariant | null }) {
+export default function ClientProduct({
+    productData,
+    shopify,
+    variant,
+}: {
+    productData: ResponseServer<ProductGET>;
+    shopify: IShopify;
+    variant: TVariant | null;
+}) {
     const { setShopifyBoutique, product, setProduct } = useShopifyStore();
     const boutique = boutiqueFromDomain(shopify.domain);
 

@@ -1,4 +1,4 @@
-import ClientProduct from "@/components/shopify/ClientProduct";
+import ClientProduct from "@/app/product/ClientProduct";
 import { getProduct } from "@/components/shopify/serverActions";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";

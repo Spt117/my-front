@@ -6,18 +6,23 @@ import { postServer } from "@/library/utils/fetchServer";
 import { Label } from "@radix-ui/react-label";
 import { Separator } from "@radix-ui/react-select";
 import { Check, Tag, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import useShopifyStore from "../shopifyStore";
+import useShopifyStore from "../../components/shopify/shopifyStore";
 
 export default function Prices() {
     const { product, shopifyBoutique } = useShopifyStore();
-    const [price, setPrice] = useState(product?.variants.nodes[0].price);
+    const [price, setPrice] = useState("0");
     const [isUpdatingPrice, setIsUpdatingPrice] = useState(false);
     const [isUpdatingComparePrice, setIsUpdatingComparePrice] = useState(false);
-    const [compareAtPrice, setCompareAtPrice] = useState(product?.variants.nodes[0].compareAtPrice || "0");
+    const [compareAtPrice, setCompareAtPrice] = useState("0");
     if (!product || !shopifyBoutique) return null;
     const ref = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        setPrice(product?.variants.nodes[0].price);
+        setCompareAtPrice(product?.variants.nodes[0].compareAtPrice || "0");
+    }, [product.variants.nodes[0].price, product.variants.nodes[0].compareAtPrice]);
 
     const inputNumberStyle = `
   input[type="number"]::-webkit-outer-spin-button,
@@ -76,7 +81,10 @@ export default function Prices() {
 
     const isPriceChanged = price !== mainVariant.price;
     const isCompareAtPriceChanged = compareAtPrice !== (mainVariant.compareAtPrice || "0");
-    const discount = compareAtPrice && price ? Math.round(((parseFloat(compareAtPrice) - parseFloat(price)) / parseFloat(compareAtPrice)) * 100) : 0;
+    const discount =
+        compareAtPrice && price
+            ? Math.round(((parseFloat(compareAtPrice) - parseFloat(price)) / parseFloat(compareAtPrice)) * 100)
+            : 0;
 
     return (
         <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white w-min h-min">
@@ -100,12 +108,26 @@ export default function Prices() {
                     <div className="flex items-center gap-2">
                         <div className="flex-1">
                             <div className="relative w-fit">
-                                <Input ref={ref} id="price" type="number" step="0.1" placeholder={price} onChange={(e) => setPrice(e.target.value)} className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500" />
-                                <span className="absolute bottom-2 right-2 text-slate-500 text-sm font-medium">{shopifyBoutique.devise}</span>
+                                <Input
+                                    ref={ref}
+                                    id="price"
+                                    type="number"
+                                    step="0.1"
+                                    placeholder={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                                />
+                                <span className="absolute bottom-2 right-2 text-slate-500 text-sm font-medium">
+                                    {shopifyBoutique.devise}
+                                </span>
                             </div>
                         </div>
 
-                        <Button disabled={!isPriceChanged} onClick={handleUpdatePrice} className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 min-w-[150px]">
+                        <Button
+                            disabled={!isPriceChanged}
+                            onClick={handleUpdatePrice}
+                            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 min-w-[150px]"
+                        >
                             {isUpdatingPrice ? (
                                 <div className="flex items-center gap-2">
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -152,12 +174,25 @@ export default function Prices() {
                     <div className="flex items-center gap-2">
                         <div className="flex-1">
                             <div className="relative w-fit">
-                                <Input id="comparePrice" type="number" min={product.variants.nodes[0].price} placeholder={compareAtPrice} onChange={(e) => setCompareAtPrice(e.target.value)} className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500" />
-                                <span className="absolute bottom-2 right-2 text-slate-500 text-sm font-medium">{shopifyBoutique.devise}</span>
+                                <Input
+                                    id="comparePrice"
+                                    type="number"
+                                    min={product.variants.nodes[0].price}
+                                    placeholder={compareAtPrice}
+                                    onChange={(e) => setCompareAtPrice(e.target.value)}
+                                    className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                                />
+                                <span className="absolute bottom-2 right-2 text-slate-500 text-sm font-medium">
+                                    {shopifyBoutique.devise}
+                                </span>
                             </div>
                         </div>
 
-                        <Button disabled={!isCompareAtPriceChanged} onClick={handleUpdateCompareAtPrice} className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 min-w-[150px]">
+                        <Button
+                            disabled={!isCompareAtPriceChanged}
+                            onClick={handleUpdateCompareAtPrice}
+                            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 min-w-[150px]"
+                        >
                             {isUpdatingComparePrice ? (
                                 <div className="flex items-center gap-2">
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

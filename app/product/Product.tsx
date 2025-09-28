@@ -5,12 +5,12 @@ import { CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCopy } from "@/library/hooks/useCopy";
 import { Copy } from "lucide-react";
-import HeaderProduct from "./HeaderProduct";
-import ImagesProduct from "./Images";
-import Amazon from "./Metafields/Amazon";
-import Metafields from "./Metafields/Metafields";
+import HeaderProduct from "../../components/shopify/Product/HeaderProduct";
+import ImagesProduct from "../../components/shopify/Product/Images";
+import Amazon from "../../components/shopify/Product/Metafields/Amazon";
+import Metafields from "../../components/shopify/Product/Metafields/Metafields";
 import Prices from "./Prices";
-import Tags from "./Tags/Tags";
+import Tags from "../../components/shopify/Product/Tags/Tags";
 
 export default function Product() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -36,20 +36,37 @@ export default function Product() {
                         <Prices />
                         {/* SKU, stock et politique d'inventaire */}
                         <div className="text-sm text-muted-foreground flex flex-col gap-1">
-                            <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(product.id)} title="Cliquer pour copier l'ID">
+                            <p
+                                className={"flex items-center gap-1 text-gray-700 " + classCopy}
+                                onClick={() => handleCopy(product.id)}
+                                title="Cliquer pour copier l'ID"
+                            >
                                 IdProduct: {product.id}
                                 <Copy size={12} className="text-gray-500" />
                             </p>
-                            <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(product.variants.nodes[0].id)} title="Cliquer pour copier l'ID">
+                            <p
+                                className={"flex items-center gap-1 text-gray-700 " + classCopy}
+                                onClick={() => handleCopy(product.variants.nodes[0].id)}
+                                title="Cliquer pour copier l'ID"
+                            >
                                 IdProduct: {product.variants.nodes[0].id}
                                 <Copy size={12} className="text-gray-500" />
                             </p>
-                            <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(mainVariant.sku)} title="Cliquer pour copier le SKU">
+                            <p
+                                className={"flex items-center gap-1 text-gray-700 " + classCopy}
+                                onClick={() => handleCopy(mainVariant.sku)}
+                                title="Cliquer pour copier le SKU"
+                            >
                                 SKU: {mainVariant.sku}
                                 <Copy size={12} className="text-gray-500" />
                             </p>
                             <p>Barcode: {mainVariant?.barcode || "Non disponible"}</p>
-                            <p>Stock: {mainVariant?.inventoryQuantity > 0 ? `${mainVariant.inventoryQuantity} disponibles` : "Rupture de stock"}</p>
+                            <p>
+                                Stock:{" "}
+                                {mainVariant?.inventoryQuantity > 0
+                                    ? `${mainVariant.inventoryQuantity} disponibles`
+                                    : "Rupture de stock"}
+                            </p>
                             <Amazon />
                         </div>
 
@@ -60,7 +77,8 @@ export default function Product() {
                                 <div className="text-sm text-muted-foreground">
                                     {product.options.map((option, index) => (
                                         <p key={index}>
-                                            {option.name}: {option.values.map((v) => (typeof v === "string" ? v : v.name)).join(", ")}
+                                            {option.name}:{" "}
+                                            {option.values.map((v) => (typeof v === "string" ? v : v.name)).join(", ")}
                                         </p>
                                     ))}
                                 </div>
