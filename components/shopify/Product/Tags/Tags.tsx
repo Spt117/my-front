@@ -12,7 +12,7 @@ import TagShopify from "./TagShopify";
 import { TagsIcon } from "lucide-react";
 
 export default function TagsShopify() {
-    const { product, shopifyBoutique } = useShopifyStore();
+    const { product, shopifyBoutique, cssCard } = useShopifyStore();
     const [newTag, setNewTag] = useState("");
     const { getProductUpdate } = useProduct();
     const [loading, setLoading] = useState(false);
@@ -41,7 +41,7 @@ export default function TagsShopify() {
     };
 
     return (
-        <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white w-min h-min">
+        <Card className={cssCard}>
             <CardContent className="space-y-6">
                 <h3 className="m-2 text-sm font-medium flex items-center gap-2">
                     <TagsIcon size={15} />

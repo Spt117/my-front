@@ -8,7 +8,7 @@ import UpdateStock from "./UpdateStock";
 import Link from "next/link";
 
 export function VariantStock({ variant, action }: { variant: TVariant; action: () => void }) {
-    const { shopifyBoutique } = useShopifyStore();
+    const { shopifyBoutique, cssCard } = useShopifyStore();
     const path = usePathname();
     if (!shopifyBoutique) return null;
 
@@ -22,10 +22,12 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
     };
 
     const id = variant.ids.find((p) => p.shop === shopifyBoutique.domain);
-    const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${shopifyBoutique.locationHome}`;
+    const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${
+        shopifyBoutique.locationHome
+    }`;
 
     return (
-        <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white w-min flex justify-center">
+        <Card className={cssCard}>
             <CardContent className="space-y-6">
                 {path === "/stock" && (
                     <h2 className="text-lg font-semibold">
@@ -51,7 +53,10 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
                     <div className="flex items-center align-center rounded">
                         <p className="text-sm text-gray-600 w-50">Rebuy Later:</p>
                         <div>
-                            <Switch checked={variant.rebuyLater} onCheckedChange={() => handleRebuyLaterChange(!variant.rebuyLater)} />
+                            <Switch
+                                checked={variant.rebuyLater}
+                                onCheckedChange={() => handleRebuyLaterChange(!variant.rebuyLater)}
+                            />
                         </div>
                     </div>
                 </div>

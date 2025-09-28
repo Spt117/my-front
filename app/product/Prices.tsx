@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import useShopifyStore from "../../components/shopify/shopifyStore";
 
 export default function Prices() {
-    const { product, shopifyBoutique } = useShopifyStore();
+    const { product, shopifyBoutique, cssCard } = useShopifyStore();
     const [price, setPrice] = useState("0");
     const [isUpdatingPrice, setIsUpdatingPrice] = useState(false);
     const [isUpdatingComparePrice, setIsUpdatingComparePrice] = useState(false);
@@ -88,63 +88,59 @@ export default function Prices() {
             : 0;
 
     return (
-        <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white w-min h-min">
-            <CardContent className="space-y-6">
+        <Card className={cssCard}>
+            <CardContent className="flex flex-col gap-2">
                 {/* Prix principal */}
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="price" className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                            <Tag className="h-4 w-4" />
-                            Prix de vente
-                        </Label>
-                        {/* {isPriceChanged && ( */}
-                        <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">
-                            Modifié
-                        </Badge>
-                        {/* )} */}
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                    <Label htmlFor="price" className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                        <Tag className="h-4 w-4" />
+                        Prix de vente
+                    </Label>
+                    {/* {isPriceChanged && ( */}
+                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">
+                        Modifié
+                    </Badge>
+                    {/* )} */}
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                    <div className="relative w-fit">
+                        <Input
+                            ref={ref}
+                            id="price"
+                            type="number"
+                            step="0.1"
+                            placeholder={price}
+                            onChange={(e) => setPrice(e.target.value)}
+                            className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                        />
+                        <span className="absolute bottom-2 right-2 text-slate-500 text-sm font-medium">
+                            {shopifyBoutique.devise}
+                        </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <div className="flex-1">
-                            <div className="relative w-fit">
-                                <Input
-                                    ref={ref}
-                                    id="price"
-                                    type="number"
-                                    step="0.1"
-                                    placeholder={price}
-                                    onChange={(e) => setPrice(e.target.value)}
-                                    className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
-                                />
-                                <span className="absolute bottom-2 right-2 text-slate-500 text-sm font-medium">
-                                    {shopifyBoutique.devise}
-                                </span>
+                    <Button
+                        disabled={!isPriceChanged}
+                        onClick={handleUpdatePrice}
+                        className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 min-w-[150px]"
+                    >
+                        {isUpdatingPrice ? (
+                            <div className="flex items-center gap-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                <span className="text-xs">Mise à jour...</span>
                             </div>
-                        </div>
-
-                        <Button
-                            disabled={!isPriceChanged}
-                            onClick={handleUpdatePrice}
-                            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 min-w-[150px]"
-                        >
-                            {isUpdatingPrice ? (
-                                <div className="flex items-center gap-2">
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    <span className="text-xs">Mise à jour...</span>
-                                </div>
-                            ) : isPriceChanged ? (
-                                <div className="flex items-center gap-1">
-                                    <Check className="h-4 w-4" />
-                                    <span className="text-xs">Mettre à jour</span>
-                                </div>
-                            ) : (
-                                <div className="flex items-center gap-1">
-                                    <X className="h-4 w-4" />
-                                    <span className="text-xs">À jour</span>
-                                </div>
-                            )}
-                        </Button>
-                    </div>
+                        ) : isPriceChanged ? (
+                            <div className="flex items-center gap-1">
+                                <Check className="h-4 w-4" />
+                                <span className="text-xs">Mettre à jour</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1">
+                                <X className="h-4 w-4" />
+                                <span className="text-xs">À jour</span>
+                            </div>
+                        )}
+                    </Button>
                 </div>
 
                 <Separator className="bg-slate-200" />
@@ -170,22 +166,20 @@ export default function Prices() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <div className="flex-1">
-                            <div className="relative w-fit">
-                                <Input
-                                    ref={refCompare}
-                                    id="comparePrice"
-                                    type="number"
-                                    min={product.variants.nodes[0].price}
-                                    placeholder={compareAtPrice}
-                                    onChange={(e) => setCompareAtPrice(e.target.value)}
-                                    className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
-                                />
-                                <span className="absolute bottom-2 right-2 text-slate-500 text-sm font-medium">
-                                    {shopifyBoutique.devise}
-                                </span>
-                            </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <div className="relative w-fit">
+                            <Input
+                                ref={refCompare}
+                                id="comparePrice"
+                                type="number"
+                                min={product.variants.nodes[0].price}
+                                placeholder={compareAtPrice}
+                                onChange={(e) => setCompareAtPrice(e.target.value)}
+                                className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                            />
+                            <span className="absolute bottom-2 right-2 text-slate-500 text-sm font-medium">
+                                {shopifyBoutique.devise}
+                            </span>
                         </div>
 
                         <Button

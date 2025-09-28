@@ -22,7 +22,7 @@ export default function ImagesProduct() {
         setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     };
     return (
-        <div className="relative w-full max-w-md min-w-[250px] flex flex-col gap-2">
+        <div className="relative w-[400] flex flex-col gap-2">
             {/* Image principale */}
             <div className="relative aspect-square">
                 <Image
