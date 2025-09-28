@@ -1,9 +1,9 @@
-import ClientProduct from "@/app/product/Product";
+import Product from "@/app/product/Product";
 import { getProduct } from "@/components/shopify/serverActions";
+import { variantController } from "@/library/models/produits/variantController";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
 import AddImage from "../../components/shopify/Product/AddImage";
-import { variantController } from "@/library/models/produits/variantController";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
     const query = (await searchParams) as { id?: string; shopify?: TLocationHome };
@@ -24,7 +24,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
 
     return (
         <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:p-6">
-            <ClientProduct productData={product} shopify={shopify} variantData={variant} />
+            <Product productData={product} shopify={shopify} variantData={variant} />
             <AddImage />
         </div>
     );

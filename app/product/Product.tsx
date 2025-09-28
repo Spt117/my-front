@@ -11,12 +11,23 @@ import { getProduct } from "../../components/shopify/serverActions";
 import { ResponseServer } from "../../components/shopify/typesShopify";
 import ProductContent from "./ProductContent";
 
-export default function Product({ productData, shopify, variantData }: { productData: ResponseServer<ProductGET>; shopify: IShopify; variantData: TVariant | null }) {
+export default function Product({
+    productData,
+    shopify,
+    variantData,
+}: {
+    productData: ResponseServer<ProductGET>;
+    shopify: IShopify;
+    variantData: TVariant | null;
+}) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
     const { variant } = useShopifyStore();
     const boutique = boutiqueFromDomain(shopify.domain);
 
     const getProductUpdated = async (sku: string) => {
+        console.log("Updating product for SKU:", sku);
+        console.log("Current variant SKU:", variant?.sku);
+
         if (variant?.sku !== sku) return;
         const data = { productId: productData.response.id, domain: shopify.domain };
         const product = await getProduct(data);

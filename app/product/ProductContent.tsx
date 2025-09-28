@@ -15,7 +15,7 @@ import AboutProduct from "./AboutProduct";
 import Description from "./Description";
 
 export default function ProductContent() {
-    const { variant, setVariant, product, cssCard } = useShopifyStore();
+    const { variant, setVariant, product } = useShopifyStore();
     if (!product || !variant) return;
 
     const actionStoreVariant = async () => {
