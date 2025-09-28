@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { getStockVariant } from "@/library/models/produits/middlewareVariants";
 import { postServer } from "@/library/utils/fetchServer";
 import { sleep } from "@/library/utils/helpers";
 import { useState } from "react";
@@ -31,7 +30,6 @@ export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
             quantity: numberInput + params.quantity,
         };
         const res = await postServer(url, data);
-        const vUpdated = await getStockVariant();
         if (res.error) toast.error("Erreur lors de la mise à jour du stock");
         if (res.message) {
             toast.success(res.message);

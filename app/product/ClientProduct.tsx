@@ -9,20 +9,22 @@ import { ProductGET } from "@/library/types/graph";
 import { TVariant } from "@/library/models/produits/Variant";
 import { getProduct } from "../../components/shopify/serverActions";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
+import { getVariantBySku } from "@/library/models/produits/middlewareVariants";
 
 export default function ClientProduct({ productData, shopify, variant }: { productData: ResponseServer<ProductGET>; shopify: IShopify; variant: TVariant | null }) {
     const { setShopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
     const boutique = boutiqueFromDomain(shopify.domain);
 
-    const getProductUpdated = async (datas: any) => {
-        console.log("Product updated event received:", datas);
-
+    const getProductUpdated = async (sku: string) => {
+        if (variant?.sku !== sku) return;
         const data = { productId: productData.response.id, domain: shopify.domain };
         const product = await getProduct(data);
         if (product) setProduct(product.response);
+        const v = await getVariantBySku(sku);
+        if (v) setVariant(v);
     };
 
-    useEventListener("products/update", (data) => getProductUpdated(data));
+    useEventListener("products/update", (data) => getProductUpdated(data.sku));
 
     useEffect(() => {
         setShopifyBoutique(boutique);

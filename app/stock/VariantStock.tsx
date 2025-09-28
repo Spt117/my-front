@@ -22,13 +22,6 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
         if (data) action();
     };
 
-    const storeData = async (data: TVariant[]) => {
-        const variantsBuy = data.filter((variant) => variant.rebuy === true);
-        const variantsBuyLater = data.filter((variant) => variant.rebuyLater === true);
-        setVariantsBuy(variantsBuy);
-        setVariantsBuyLater(variantsBuyLater);
-    };
-
     const id = variant.ids.find((p) => p.shop === shopifyBoutique.domain);
     const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${shopifyBoutique.locationHome}`;
 
