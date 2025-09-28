@@ -25,7 +25,7 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
     const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${shopifyBoutique.locationHome}`;
 
     return (
-        <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white w-min h-min">
+        <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white w-min flex justify-center">
             <CardContent className="space-y-6">
                 {path === "/stock" && (
                     <h2 className="text-lg font-semibold">
