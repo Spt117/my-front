@@ -21,14 +21,9 @@ export default function Product({
     variantData: TVariant | null;
 }) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
-    const { variant } = useShopifyStore();
     const boutique = boutiqueFromDomain(shopify.domain);
 
     const getProductUpdated = async (sku: string) => {
-        console.log("Updating product for SKU:", sku);
-        console.log("Current variant SKU:", variant);
-        console.log("Current variantData SKU:", variantData);
-
         if (variantData?.sku !== sku) return;
         const data = { productId: productData.response.id, domain: shopify.domain };
         const product = await getProduct(data);
