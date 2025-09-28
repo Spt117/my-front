@@ -9,6 +9,7 @@ import { Check, Tag, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import useShopifyStore from "../../components/shopify/shopifyStore";
+import { set } from "mongoose";
 
 export default function Prices() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -18,6 +19,7 @@ export default function Prices() {
     const [compareAtPrice, setCompareAtPrice] = useState("0");
     if (!product || !shopifyBoutique) return null;
     const ref = useRef<HTMLInputElement>(null);
+    const refCompare = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         setPrice(product?.variants.nodes[0].price);
@@ -54,6 +56,7 @@ export default function Prices() {
             toast.error("Erreur lors de la mise à jour du prix");
         } finally {
             if (ref.current) ref.current.value = "";
+            setPrice(mainVariant.price);
             setIsUpdatingPrice(false);
         }
     };
@@ -74,7 +77,8 @@ export default function Prices() {
         } catch (error) {
             toast.error("Erreur lors de la mise à jour du prix barré");
         } finally {
-            if (ref.current) ref.current.value = "";
+            if (refCompare.current) refCompare.current.value = "";
+            setCompareAtPrice(mainVariant.compareAtPrice || "0");
             setIsUpdatingComparePrice(false);
         }
     };
@@ -175,6 +179,7 @@ export default function Prices() {
                         <div className="flex-1">
                             <div className="relative w-fit">
                                 <Input
+                                    ref={refCompare}
                                     id="comparePrice"
                                     type="number"
                                     min={product.variants.nodes[0].price}
