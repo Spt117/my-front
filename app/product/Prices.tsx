@@ -54,7 +54,6 @@ export default function Prices() {
             toast.error("Erreur lors de la mise à jour du prix");
         } finally {
             if (ref.current) ref.current.value = "";
-            setPrice(mainVariant.price);
             setIsUpdatingPrice(false);
         }
     };
@@ -75,6 +74,7 @@ export default function Prices() {
         } catch (error) {
             toast.error("Erreur lors de la mise à jour du prix barré");
         } finally {
+            if (ref.current) ref.current.value = "";
             setIsUpdatingComparePrice(false);
         }
     };
