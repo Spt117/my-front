@@ -1,4 +1,3 @@
-import LinkToShops from "@/components/shopify/Product/LinkToShops";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -16,11 +15,11 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
 
     const handleRebuyChange = async (bool: boolean) => {
         const data = await toggleRebuy(variant.sku, bool);
-        action();
+        if (data) action();
     };
     const handleRebuyLaterChange = async (bool: boolean) => {
         const data = await toggleRebuyLater(variant.sku, bool);
-        action();
+        if (data) action();
     };
 
     const storeData = async (data: TVariant[]) => {
