@@ -12,7 +12,7 @@ export default function Metafields({ metafields }: { metafields: TMetafield[] })
     if (filteredMetafields.length === 0) return null;
 
     return (
-        <div>
+        <div className="bg-green-500">
             <h3 className="text-lg font-medium mb-">Metafields supplémentaires</h3>
             <div className="text-sm text-muted-foreground">
                 <ul className="list-disc list-inside flex flex-col gap-1">

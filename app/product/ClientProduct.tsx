@@ -39,5 +39,5 @@ export default function ClientProduct({
     }, []);
 
     if (!productData.response || !product) return <div>Produit non trouvé</div>;
-    return <Product />;
+    return <Product variantStock={variant} />;
 }

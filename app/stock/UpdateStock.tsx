@@ -57,12 +57,11 @@ export default function UpdateStock({ params, action }: { params: IUpdateStockPr
                     value={numberInput}
                     placeholder="Quantité"
                     type="number"
-                    className="w-min"
                     onChange={(e) => {
                         setNumberInput(Number(e.target.value));
                     }}
                 />
-                {!isLoading && <Button onClick={handleUpdateVariantStock}>Ajouter</Button>}
+                {!isLoading && <Button onClick={handleUpdateVariantStock}>Ajuster</Button>}
                 {isLoading && <Spinner className="h-6 w-6" />}{" "}
             </div>
         </>

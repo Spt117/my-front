@@ -58,7 +58,8 @@ class ControllerVariant {
     async getVariantBySku(sku: string) {
         try {
             const Variant = await this.getVariantModel();
-            return await Variant.findOne({ sku }).lean<TVariant>();
+            const v = await Variant.findOne({ sku }).lean<TVariant>();
+            return JSON.parse(JSON.stringify(v)) as TVariant;
         } catch (err) {
             console.error("getVariantBySku error:", err);
             return null;

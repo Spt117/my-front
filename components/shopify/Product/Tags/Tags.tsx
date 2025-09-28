@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { useProduct } from "@/library/hooks/useProduct";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -7,7 +9,6 @@ import { addTag } from "../../serverActions";
 import useShopifyStore from "../../shopifyStore";
 import { ITagRequest } from "../../typesShopify";
 import TagShopify from "./TagShopify";
-import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 
 export default function Tags() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -39,22 +40,24 @@ export default function Tags() {
     };
 
     return (
-        <div>
-            <h3 className="m-2 text-lg font-medium">Tags</h3>
-            <div className="flex gap-2">
-                <Input type="text" placeholder="Ajouter un tag" onChange={(e) => setNewTag(e.target.value)} value={newTag} />
-                <Button disabled={!newTag.trim() || loading} onClick={handleAddTag}>
-                    Ajouter un tag
-                    <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />
-                </Button>
-            </div>
-            {product.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                    {product.tags.map((tag) => (
-                        <TagShopify key={tag} tag={tag} />
-                    ))}
+        <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white w-min h-min">
+            <CardContent className="space-y-6">
+                <h3 className="m-2 text-lg font-medium">Tags</h3>
+                <div className="flex gap-2">
+                    <Input type="text" placeholder="Ajouter un tag" onChange={(e) => setNewTag(e.target.value)} value={newTag} />
+                    <Button disabled={!newTag.trim() || loading} onClick={handleAddTag}>
+                        Ajouter un tag
+                        <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />
+                    </Button>
                 </div>
-            )}
-        </div>
+                {product.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {product.tags.map((tag) => (
+                            <TagShopify key={tag} tag={tag} />
+                        ))}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
     );
 }

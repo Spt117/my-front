@@ -4,15 +4,18 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCopy } from "@/library/hooks/useCopy";
+import { TVariant } from "@/library/models/produits/Variant";
 import { Copy } from "lucide-react";
 import HeaderProduct from "../../components/shopify/Product/HeaderProduct";
 import ImagesProduct from "../../components/shopify/Product/Images";
 import Amazon from "../../components/shopify/Product/Metafields/Amazon";
 import Metafields from "../../components/shopify/Product/Metafields/Metafields";
-import Prices from "./Prices";
 import Tags from "../../components/shopify/Product/Tags/Tags";
+import { VariantStock } from "../stock/VariantStock";
+import Prices from "./Prices";
+import LinkToShops from "@/components/shopify/Product/LinkToShops";
 
-export default function Product() {
+export default function Product({ variantStock }: { variantStock: TVariant | null }) {
     const { product, shopifyBoutique } = useShopifyStore();
     const { handleCopy } = useCopy();
 
@@ -32,46 +35,15 @@ export default function Product() {
                     {/* Carrousel d'images */}
                     <ImagesProduct />
                     {/* Détails du produit */}
-                    <div className="space-y-4 flex flex-wrap justify-start">
+                    <div className="grid gap-6 mb-4">
                         <Prices />
-                        {/* SKU, stock et politique d'inventaire */}
-                        <div className="text-sm text-muted-foreground flex flex-col gap-1">
-                            <p
-                                className={"flex items-center gap-1 text-gray-700 " + classCopy}
-                                onClick={() => handleCopy(product.id)}
-                                title="Cliquer pour copier l'ID"
-                            >
-                                IdProduct: {product.id}
-                                <Copy size={12} className="text-gray-500" />
-                            </p>
-                            <p
-                                className={"flex items-center gap-1 text-gray-700 " + classCopy}
-                                onClick={() => handleCopy(product.variants.nodes[0].id)}
-                                title="Cliquer pour copier l'ID"
-                            >
-                                IdProduct: {product.variants.nodes[0].id}
-                                <Copy size={12} className="text-gray-500" />
-                            </p>
-                            <p
-                                className={"flex items-center gap-1 text-gray-700 " + classCopy}
-                                onClick={() => handleCopy(mainVariant.sku)}
-                                title="Cliquer pour copier le SKU"
-                            >
-                                SKU: {mainVariant.sku}
-                                <Copy size={12} className="text-gray-500" />
-                            </p>
-                            <p>Barcode: {mainVariant?.barcode || "Non disponible"}</p>
-                            <p>
-                                Stock:{" "}
-                                {mainVariant?.inventoryQuantity > 0
-                                    ? `${mainVariant.inventoryQuantity} disponibles`
-                                    : "Rupture de stock"}
-                            </p>
-                            <Amazon />
-                        </div>
+                        {variantStock && <VariantStock variant={variantStock} />}
+                        <Tags />
+
+                        <LinkToShops variant={variantStock} />
 
                         {/* Options */}
-                        {product.options.length > 1 && (
+                        {/* {product.options.length > 1 && (
                             <div>
                                 <h3 className="text-lg font-medium">Options</h3>
                                 <div className="text-sm text-muted-foreground">
@@ -83,11 +55,10 @@ export default function Product() {
                                     ))}
                                 </div>
                             </div>
-                        )}
+                        )} */}
 
                         {/* Metafields */}
                         <Metafields metafields={product.metafields.nodes} />
-                        <Tags />
                     </div>
                 </CardContent>
                 <Separator />

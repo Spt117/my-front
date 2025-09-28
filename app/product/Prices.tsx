@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { postServer } from "@/library/utils/fetchServer";
 import { Label } from "@radix-ui/react-label";
 import { Separator } from "@radix-ui/react-select";
@@ -9,7 +10,6 @@ import { Check, Tag, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import useShopifyStore from "../../components/shopify/shopifyStore";
-import { set } from "mongoose";
 
 export default function Prices() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -26,16 +26,13 @@ export default function Prices() {
         setCompareAtPrice(product?.variants.nodes[0].compareAtPrice || "0");
     }, [product.variants.nodes[0].price, product.variants.nodes[0].compareAtPrice]);
 
-    const inputNumberStyle = `
-  input[type="number"]::-webkit-outer-spin-button,
-  input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  input[type="number"] {
-    -moz-appearance: textfield;
-  }
-`;
+    const handleEscape = () => {
+        if (ref.current) ref.current.value = "";
+        setPrice(product.variants.nodes[0].price);
+        if (refCompare.current) refCompare.current.value = "";
+        setCompareAtPrice(product.variants.nodes[0].compareAtPrice || "0");
+    };
+    useKeyboardShortcuts("Escape", handleEscape);
 
     const mainVariant = product.variants.nodes[0];
 
@@ -92,8 +89,6 @@ export default function Prices() {
 
     return (
         <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white w-min h-min">
-            <style dangerouslySetInnerHTML={{ __html: inputNumberStyle }} />
-
             <CardContent className="space-y-6">
                 {/* Prix principal */}
                 <div className="space-y-3">
@@ -219,7 +214,7 @@ export default function Prices() {
                 </div>
 
                 {/* Résumé visuel */}
-                {compareAtPrice && price && (
+                {compareAtPrice && price && Number(compareAtPrice) > 0 && (
                     <div className="bg-gradient-to-r from-emerald-50 to-blue-50 p-4 rounded-lg border border-emerald-200">
                         <div className="flex items-center justify-between text-sm">
                             <span className="text-slate-600">Économie client</span>

@@ -6,10 +6,12 @@ import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/library/params
 import Image from "next/image";
 import useOrdersStore from "../shopify/orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
+import { usePathname } from "next/navigation";
 
 export default function ShopifySelect() {
     const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm } = useShopifyStore();
     const { setFilterOrders, orders } = useOrdersStore();
+    const path = usePathname();
 
     const option2 = boutiques.map((boutique) => ({
         label: (
@@ -28,6 +30,7 @@ export default function ShopifySelect() {
     };
 
     const handleEscape = () => {
+        if (path === "/product") return;
         setShopifyBoutique(null);
         setFilterOrders(orders);
         setSearchTerm("");

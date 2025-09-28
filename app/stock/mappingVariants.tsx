@@ -7,8 +7,8 @@ import { RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import useVariantStore from "./store";
 import ToggleMode from "./ToggleMode";
-import { Variant } from "./Variant";
 import { toast } from "sonner";
+import { VariantStock } from "./VariantStock";
 
 export default function mappingVariants({ data }: { data: TVariant[] }) {
     const { variantsBuy, setVariantsBuy, setVariantsBuyLater, mode, variantsBuyLater } = useVariantStore();
@@ -48,8 +48,8 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
                 <ToggleMode />
                 {isLoading && <RefreshCcw size={20} className={`transition-transform duration-300 ease-in-out animate-spin`} />}
             </div>
-            {mode === "now" && variantsBuy.map((variant, index) => <Variant key={index} variant={variant} />)}
-            {mode === "later" && variantsBuyLater.map((variant, index) => <Variant key={index} variant={variant} />)}
+            {mode === "now" && variantsBuy.map((variant, index) => <VariantStock key={index} variant={variant} />)}
+            {mode === "later" && variantsBuyLater.map((variant, index) => <VariantStock key={index} variant={variant} />)}
         </div>
     );
 }
