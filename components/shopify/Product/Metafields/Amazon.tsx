@@ -9,14 +9,14 @@ import { IMetafieldRequest } from "../../typesShopify";
 
 export default function Amazon() {
     const { product, shopifyBoutique } = useShopifyStore();
+    const [loading, setLoading] = useState(false);
+    const { getProductUpdate } = useProduct();
     const metafieldKey = "amazon_activate";
     const metafield = product?.metafields.nodes.find((mf) => mf.key === metafieldKey);
     if (!metafield) return null;
     const asin = product?.metafields.nodes.find((mf) => mf.key === "asin");
     if (!asin) return <p className="text-red-500">ASIN non défini, veuillez le renseigner pour activer l'affiliation Amazon.</p>;
 
-    const [loading, setLoading] = useState(false);
-    const { getProductUpdate } = useProduct();
     if (!product || !shopifyBoutique) return;
     const handleToggle = async () => {
         setLoading(true);
@@ -44,11 +44,11 @@ export default function Amazon() {
         <>
             <p className="flex items-center justify-space-between gap-4">
                 Affiliation Amazon: <span className="font-semibold">{metafield.value === "true" ? "Activée" : "Désactivée"}</span>
-                <Switch checked={metafield.value === "true"} onCheckedChange={(checked) => handleToggle()} disabled={loading} />
+                <Switch checked={metafield.value === "true"} onCheckedChange={() => handleToggle()} disabled={loading} />
                 <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />
             </p>
             <a
-                href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${metafield.value}`}
+                href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${asin.value}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:underline"
