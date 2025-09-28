@@ -20,10 +20,10 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
         setVariantsBuy(variantsBuy);
         setVariantsBuyLater(variantsBuyLater);
     };
+
     const getData = async () => {
         setIsLoading(true);
         console.log("Récupération des données mises à jour...");
-
         await sleep(1500);
         try {
             const dataUpdated = await getStockVariant();
@@ -48,8 +48,8 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
                 <ToggleMode />
                 {isLoading && <RefreshCcw size={20} className={`transition-transform duration-300 ease-in-out animate-spin`} />}
             </div>
-            {mode === "now" && variantsBuy.map((variant, index) => <VariantStock key={index} variant={variant} />)}
-            {mode === "later" && variantsBuyLater.map((variant, index) => <VariantStock key={index} variant={variant} />)}
+            {mode === "now" && variantsBuy.map((variant, index) => <VariantStock key={index} variant={variant} action={getData} />)}
+            {mode === "later" && variantsBuyLater.map((variant, index) => <VariantStock key={index} variant={variant} action={getData} />)}
         </div>
     );
 }

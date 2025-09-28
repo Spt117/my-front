@@ -10,13 +10,20 @@ import Metafields from "../../components/shopify/Product/Metafields/Metafields";
 import Tags from "../../components/shopify/Product/Tags/Tags";
 import { VariantStock } from "../stock/VariantStock";
 import Prices from "./Prices";
+import { getVariantBySku } from "@/library/models/produits/middlewareVariants";
 
 export default function Product() {
-    const { product, shopifyBoutique, variant } = useShopifyStore();
+    const { product, shopifyBoutique, variant, setVariant } = useShopifyStore();
 
     if (!product || !shopifyBoutique) {
         return <div className="text-center py-8 text-muted-foreground">Aucun produit sélectionné</div>;
     }
+
+    const actionStoreVariant = async () => {
+        if (!variant) return;
+        const variantUpdated = await getVariantBySku(variant.sku);
+        if (variantUpdated) setVariant(variantUpdated);
+    };
 
     if (product)
         return (
@@ -29,7 +36,7 @@ export default function Product() {
                     {/* Détails du produit */}
                     <div className="flex gap-2 flex-wrap">
                         <Prices />
-                        {variant && <VariantStock variant={variant} />}
+                        {variant && <VariantStock variant={variant} action={actionStoreVariant} />}
                         <Tags />
 
                         <LinkToShops variant={variant} />

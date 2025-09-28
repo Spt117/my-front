@@ -66,21 +66,24 @@ class ControllerVariant {
         }
     }
 
-    async rebuyBySku(sku: string, rebuy: boolean) {
+    async rebuyBySku(sku: string, rebuy: boolean): Promise<Boolean> {
         try {
             const Variant = await this.getVariantModel();
             const res = await Variant.findOneAndUpdate({ sku }, { $set: { rebuy: rebuy } });
-            return res;
+            return res ? true : false;
         } catch (err) {
             console.error("activeRebuyBySku error:", err);
+            return false;
         }
     }
-    async rebuyLaterBySku(sku: string, rebuyLater: boolean) {
+    async rebuyLaterBySku(sku: string, rebuyLater: boolean): Promise<Boolean> {
         try {
             const Variant = await this.getVariantModel();
             const res = await Variant.updateOne({ sku }, { $set: { rebuyLater: rebuyLater } });
+            return res ? true : false;
         } catch (err) {
             console.error("activeRebuyLaterBySku error:", err);
+            return false;
         }
     }
 

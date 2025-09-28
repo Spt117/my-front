@@ -8,7 +8,7 @@ import useVariantStore from "./store";
 import UpdateStock from "./UpdateStock";
 import { usePathname } from "next/navigation";
 
-export function VariantStock({ variant }: { variant: TVariant }) {
+export function VariantStock({ variant, action }: { variant: TVariant; action: () => void }) {
     const { setVariantsBuy, setVariantsBuyLater } = useVariantStore();
     const { shopifyBoutique } = useShopifyStore();
     const path = usePathname();
@@ -16,11 +16,11 @@ export function VariantStock({ variant }: { variant: TVariant }) {
 
     const handleRebuyChange = async (bool: boolean) => {
         const data = await toggleRebuy(variant.sku, bool);
-        storeData(data);
+        action();
     };
     const handleRebuyLaterChange = async (bool: boolean) => {
         const data = await toggleRebuyLater(variant.sku, bool);
-        storeData(data);
+        action();
     };
 
     const storeData = async (data: TVariant[]) => {
@@ -31,9 +31,7 @@ export function VariantStock({ variant }: { variant: TVariant }) {
     };
 
     const id = variant.ids.find((p) => p.shop === shopifyBoutique.domain);
-    const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${
-        shopifyBoutique.locationHome
-    }`;
+    const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${shopifyBoutique.locationHome}`;
 
     return (
         <Card className="shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white w-min h-min">
@@ -62,17 +60,11 @@ export function VariantStock({ variant }: { variant: TVariant }) {
                     <div className="flex items-center align-center rounded">
                         <p className="text-sm text-gray-600 w-50">Rebuy Later:</p>
                         <div>
-                            <Switch
-                                checked={variant.rebuyLater}
-                                onCheckedChange={() => handleRebuyLaterChange(!variant.rebuyLater)}
-                            />
+                            <Switch checked={variant.rebuyLater} onCheckedChange={() => handleRebuyLaterChange(!variant.rebuyLater)} />
                         </div>
                     </div>
                 </div>
-                <UpdateStock
-                    params={{ sku: variant.sku, quantity: variant.quantity, domain: shopifyBoutique.domain }}
-                    action={storeData}
-                />
+                <UpdateStock params={{ sku: variant.sku, quantity: variant.quantity, domain: shopifyBoutique.domain }} action={storeData} />
             </CardContent>
         </Card>
     );
