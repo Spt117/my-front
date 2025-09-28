@@ -27,8 +27,9 @@ export default function Product({
     const getProductUpdated = async (sku: any) => {
         console.log("Updating product for SKU:", sku);
         console.log("Current variant SKU:", variant);
+        console.log("Current variantData SKU:", variantData);
 
-        if (variant?.sku !== sku) return;
+        if (variantData?.sku !== sku) return;
         const data = { productId: productData.response.id, domain: shopify.domain };
         const product = await getProduct(data);
         if (product) setProduct(product.response);
