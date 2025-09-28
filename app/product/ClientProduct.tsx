@@ -9,25 +9,21 @@ import { ProductGET } from "@/library/types/graph";
 import { TVariant } from "@/library/models/produits/Variant";
 import { getProduct } from "../../components/shopify/serverActions";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
+import { getVariantBySku } from "@/library/models/produits/middlewareVariants";
 
-export default function ClientProduct({
-    productData,
-    shopify,
-    variant,
-}: {
-    productData: ResponseServer<ProductGET>;
-    shopify: IShopify;
-    variant: TVariant | null;
-}) {
-    const { setShopifyBoutique, product, setProduct } = useShopifyStore();
+export default function ClientProduct({ productData, shopify, variant }: { productData: ResponseServer<ProductGET>; shopify: IShopify; variant: TVariant | null }) {
+    const { setShopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
     const boutique = boutiqueFromDomain(shopify.domain);
 
     const getProductUpdated = async () => {
         const data = { productId: productData.response.id, domain: shopify.domain };
-        console.log("Récupération du produit avec les données:", data);
         const product = await getProduct(data);
-        console.log("Produit mis à jour:", product);
         if (product) setProduct(product.response);
+        const sku = product?.response.variants?.nodes[0]?.sku;
+        if (sku) {
+            const variantUpdated = await getVariantBySku(sku);
+            if (variantUpdated) setVariant(variantUpdated);
+        }
     };
 
     useEventListener("products/update", () => getProductUpdated());
@@ -35,9 +31,10 @@ export default function ClientProduct({
     useEffect(() => {
         setShopifyBoutique(boutique);
         setProduct(productData.response);
+        if (variant) setVariant(variant);
         if (productData.error) toast.error(productData.error);
     }, []);
 
     if (!productData.response || !product) return <div>Produit non trouvé</div>;
-    return <Product variantStock={variant} />;
+    return <Product />;
 }

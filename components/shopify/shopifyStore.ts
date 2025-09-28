@@ -3,6 +3,7 @@ import { ProductGET } from "@/library/types/graph";
 import { IShopifyProductSearch } from "@/components/header/products/shopifySearch";
 import { create } from "zustand";
 import { TBrand, TProductType } from "./ProductType";
+import { TVariant } from "@/library/models/produits/Variant";
 
 interface StoreState {
     searchTerm: string;
@@ -19,13 +20,11 @@ interface StoreState {
     setSelectedType: (type: TProductType | null) => void;
     selectedBrand: TBrand | null;
     setSelectedBrand: (brand: TBrand | null) => void;
-    // event: string | null;
-    // setEvent: (event: string | null) => void;
+    variant: TVariant | null;
+    setVariant: (variant: TVariant | null) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
-    // event: null,
-    // setEvent: (event) => set({ event }),
     loading: false,
     setLoading: (loading) => set({ loading }),
     searchTerm: "",
@@ -40,6 +39,8 @@ const useShopifyStore = create<StoreState>((set) => ({
     setSelectedType: (type) => set({ selectedType: type }),
     selectedBrand: null,
     setSelectedBrand: (brand) => set({ selectedBrand: brand }),
+    variant: null,
+    setVariant: (variant) => set({ variant }),
 }));
 
 export default useShopifyStore;

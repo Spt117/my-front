@@ -7,6 +7,11 @@ export async function getStockVariant() {
     return data;
 }
 
+export async function getVariantBySku(sku: string) {
+    const data = await variantController.getVariantBySku(sku);
+    return data;
+}
+
 export async function toggleRebuy(sku: string, rebuy: boolean) {
     await variantController.rebuyBySku(sku, rebuy);
     const data = await getStockVariant();

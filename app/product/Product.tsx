@@ -1,30 +1,22 @@
 "use client";
 
+import LinkToShops from "@/components/shopify/Product/LinkToShops";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useCopy } from "@/library/hooks/useCopy";
-import { TVariant } from "@/library/models/produits/Variant";
-import { Copy } from "lucide-react";
 import HeaderProduct from "../../components/shopify/Product/HeaderProduct";
 import ImagesProduct from "../../components/shopify/Product/Images";
-import Amazon from "../../components/shopify/Product/Metafields/Amazon";
 import Metafields from "../../components/shopify/Product/Metafields/Metafields";
 import Tags from "../../components/shopify/Product/Tags/Tags";
 import { VariantStock } from "../stock/VariantStock";
 import Prices from "./Prices";
-import LinkToShops from "@/components/shopify/Product/LinkToShops";
 
-export default function Product({ variantStock }: { variantStock: TVariant | null }) {
-    const { product, shopifyBoutique } = useShopifyStore();
-    const { handleCopy } = useCopy();
+export default function Product() {
+    const { product, shopifyBoutique, variant } = useShopifyStore();
 
     if (!product || !shopifyBoutique) {
         return <div className="text-center py-8 text-muted-foreground">Aucun produit sélectionné</div>;
     }
-
-    const mainVariant = product.variants.nodes[0];
-    const classCopy = "cursor-pointer transition-transform duration-500 ease-out active:scale-93";
 
     if (product)
         return (
@@ -35,12 +27,12 @@ export default function Product({ variantStock }: { variantStock: TVariant | nul
                     {/* Carrousel d'images */}
                     <ImagesProduct />
                     {/* Détails du produit */}
-                    <div className="grid gap-6 mb-4">
+                    <div className="flex gap-2 flex-wrap">
                         <Prices />
-                        {variantStock && <VariantStock variant={variantStock} />}
+                        {variant && <VariantStock variant={variant} />}
                         <Tags />
 
-                        <LinkToShops variant={variantStock} />
+                        <LinkToShops variant={variant} />
 
                         {/* Options */}
                         {/* {product.options.length > 1 && (
