@@ -67,16 +67,6 @@ export default function AddImage() {
                     })
                 )
             );
-
-            // Récupérer le produit mis à jour
-            const paramsProduct = {
-                domain: shopifyBoutique!.domain,
-                productId: product!.id,
-            };
-
-            // const updatedProduct = await getProduct(paramsProduct);
-            // setProduct(updatedProduct);
-
             // Réinitialiser le formulaire
             setImages([{ ...EMPTY_IMAGE }]);
         } catch (error) {
@@ -98,7 +88,14 @@ export default function AddImage() {
 
             <div className="space-y-4">
                 {images.map((image, index) => (
-                    <ImageField key={index} image={image} index={index} showRemove={images.length > 1} onRemove={handleRemoveImageField} onChange={handleImageChange} />
+                    <ImageField
+                        key={index}
+                        image={image}
+                        index={index}
+                        showRemove={images.length > 1}
+                        onRemove={handleRemoveImageField}
+                        onChange={handleImageChange}
+                    />
                 ))}
             </div>
 
@@ -188,7 +185,12 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
     return (
         <div className="relative p-4 border rounded-md bg-gray-50">
             {showRemove && (
-                <button type="button" onClick={handleRemove} className="cursor-pointer absolute right-0 top-0 p-1 rounded-full hover:bg-gray-200 transition-colors z-10" aria-label={`Supprimer l'image ${index + 1}`}>
+                <button
+                    type="button"
+                    onClick={handleRemove}
+                    className="cursor-pointer absolute right-0 top-0 p-1 rounded-full hover:bg-gray-200 transition-colors z-10"
+                    aria-label={`Supprimer l'image ${index + 1}`}
+                >
                     <X size={16} />
                 </button>
             )}
@@ -199,7 +201,17 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
                     <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center bg-white overflow-hidden">
                         {isValidUrl ? (
                             <>
-                                {!imageError && <img src={image.url} alt={image.altText || "Aperçu"} className={`w-full h-full object-cover transition-opacity duration-200 ${imageLoaded ? "opacity-100" : "opacity-0"}`} onLoad={handleImageLoad} onError={handleImageError} />}
+                                {!imageError && (
+                                    <img
+                                        src={image.url}
+                                        alt={image.altText || "Aperçu"}
+                                        className={`w-full h-full object-cover transition-opacity duration-200 ${
+                                            imageLoaded ? "opacity-100" : "opacity-0"
+                                        }`}
+                                        onLoad={handleImageLoad}
+                                        onError={handleImageError}
+                                    />
+                                )}
                                 {!imageLoaded && !imageError && (
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -221,8 +233,16 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
                 {/* Champs de saisie */}
                 <div className="flex-1 grid gap-3">
                     <div>
-                        <Input value={image.url} onChange={handleUrlChange} placeholder="URL de l'image *" required className={imageError ? "border-red-300 focus:border-red-500" : ""} />
-                        {imageError && <p className="text-xs text-red-500 mt-1">Impossible de charger l'image depuis cette URL</p>}
+                        <Input
+                            value={image.url}
+                            onChange={handleUrlChange}
+                            placeholder="URL de l'image *"
+                            required
+                            className={imageError ? "border-red-300 focus:border-red-500" : ""}
+                        />
+                        {imageError && (
+                            <p className="text-xs text-red-500 mt-1">Impossible de charger l'image depuis cette URL</p>
+                        )}
                     </div>
                     <Input value={image.name} onChange={handleNameChange} placeholder="Nom de l'image *" required />
                     <Input value={image.altText} onChange={handleAltTextChange} placeholder="Texte alternatif (optionnel)" />
@@ -232,8 +252,14 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
             {/* Indicateur de statut */}
             {image.url && (
                 <div className="mt-3 flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${imageError ? "bg-red-500" : imageLoaded ? "bg-green-500" : "bg-yellow-500"}`} />
-                    <span className="text-xs text-gray-600">{imageError ? "URL invalide" : imageLoaded ? "Image chargée" : "Chargement..."}</span>
+                    <div
+                        className={`w-2 h-2 rounded-full ${
+                            imageError ? "bg-red-500" : imageLoaded ? "bg-green-500" : "bg-yellow-500"
+                        }`}
+                    />
+                    <span className="text-xs text-gray-600">
+                        {imageError ? "URL invalide" : imageLoaded ? "Image chargée" : "Chargement..."}
+                    </span>
                 </div>
             )}
         </div>
