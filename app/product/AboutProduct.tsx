@@ -5,10 +5,10 @@ import { useCopy } from "@/library/hooks/useCopy";
 import { Copy } from "lucide-react";
 
 export default function AboutProduct() {
-    const { variant, product, cssCard } = useShopifyStore();
-    if (!product || !variant) return;
+    const { product, cssCard } = useShopifyStore();
+    if (!product) return;
     const { handleCopy } = useCopy();
-
+    const variant = product.variants?.nodes[0];
     const classCopy = "cursor-pointer transition-transform duration-500 ease-out active:scale-93";
 
     return (

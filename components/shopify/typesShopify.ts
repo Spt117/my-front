@@ -9,7 +9,7 @@ export interface ITagRequest extends IGetProduct {
     tag: string;
 }
 export interface IMetafieldRequest extends IGetProduct {
-    value: boolean;
+    value: boolean | string;
     key: string;
 }
 

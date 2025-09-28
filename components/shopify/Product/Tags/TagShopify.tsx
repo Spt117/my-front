@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { useCopy } from "@/library/hooks/useCopy";
-import { useProduct } from "@/library/hooks/useProduct";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -12,7 +11,6 @@ import { ITagRequest } from "../../typesShopify";
 export default function TagShopify({ tag }: { tag: string }) {
     const { product, shopifyBoutique } = useShopifyStore();
     const [loading, setLoading] = useState(false);
-    const { getProductUpdate } = useProduct();
     const { handleCopy } = useCopy();
     if (!product || !shopifyBoutique) return null;
 
@@ -23,10 +21,7 @@ export default function TagShopify({ tag }: { tag: string }) {
             const params: ITagRequest = { tag, productId: product.id, domain: shopifyBoutique.domain };
             const res = await deleteTag(params);
             if (res?.error) toast.error(res.error);
-            if (res?.message) {
-                await getProductUpdate();
-                toast.success(res.message);
-            }
+            if (res?.message) toast.success(res.message);
         } catch (error) {
             toast.error("An error occurred while deleting the tag.");
         } finally {

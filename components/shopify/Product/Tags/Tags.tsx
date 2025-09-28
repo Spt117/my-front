@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { useProduct } from "@/library/hooks/useProduct";
 import { useState } from "react";
 import { toast } from "sonner";
 import { addTag } from "../../serverActions";
@@ -14,7 +13,6 @@ import { TagsIcon } from "lucide-react";
 export default function TagsShopify() {
     const { product, shopifyBoutique, cssCard } = useShopifyStore();
     const [newTag, setNewTag] = useState("");
-    const { getProductUpdate } = useProduct();
     const [loading, setLoading] = useState(false);
     if (!product || !shopifyBoutique) return null;
 
@@ -29,7 +27,6 @@ export default function TagsShopify() {
             const res = await addTag(data);
             if (res?.error) toast.error(res.error);
             if (res?.message) {
-                await getProductUpdate();
                 setNewTag("");
                 toast.success(res.message);
             }

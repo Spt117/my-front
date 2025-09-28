@@ -26,3 +26,9 @@ export async function setAmazonActivateMetafield(data: IMetafieldRequest): Promi
     const response = await postServer(url, data);
     return response;
 }
+
+export async function setAsin(data: IMetafieldRequest): Promise<ResponseServer<any> | null> {
+    const url = "http://localhost:9100/shopify/set-asin";
+    const response = await postServer(url, data);
+    return response;
+}
