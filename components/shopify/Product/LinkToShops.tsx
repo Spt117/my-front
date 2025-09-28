@@ -26,7 +26,7 @@ export default function LinkToShops({ variant }: { variant: TVariant | null }) {
         <Card className={cssCard}>
             <CardContent className="flex flex-col gap-4">
                 {shopifyUrls.map((d, index) => (
-                    <div key={index} className="flex flex-col gap-1">
+                    <div key={index} className="flex flex-col gap-2">
                         <a
                             key={d.nameShop}
                             href={d.urlShopify}
@@ -39,7 +39,7 @@ export default function LinkToShops({ variant }: { variant: TVariant | null }) {
                         </a>
 
                         <p
-                            className={"flex items-center gap-1 text-gray-700 m-0 p-0" + classCopy}
+                            className={"flex items-center gap-1 text-gray-700 " + classCopy}
                             onClick={() => handleCopy(d.idProduct)}
                         >
                             IdProduct: {d.idProduct}
