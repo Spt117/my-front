@@ -1,4 +1,3 @@
-"use client";
 import { IShopifyProductSearch } from "@/components/header/products/shopifySearch";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -65,6 +64,7 @@ export default function SearchProduct() {
 
         if (!searchTerm) {
             setProductsSearch([]);
+            setLoading(false);
             return;
         }
 
