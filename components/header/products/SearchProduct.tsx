@@ -1,10 +1,11 @@
 import { IShopifyProductSearch } from "@/components/header/products/shopifySearch";
+import useClickOutside from "@/library/hooks/useClickOutside";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
-import ListProducts from "./ListProducts";
 import useShopifyStore from "../../shopify/shopifyStore";
 import { Input } from "../../ui/input";
 import { search } from "../serverSearch";
+import ListProducts from "./ListProducts";
 
 /**
  * Groupe un array de produits Shopify par le SKU de leur première variante
@@ -39,6 +40,7 @@ export function groupProductsBySku(products: IShopifyProductSearch[]): IShopifyP
 export default function SearchProduct() {
     const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const ref = useClickOutside<HTMLDivElement>(() => setSearchTerm(""));
 
     // Fonction de recherche qui utilise toujours la valeur actuelle de shopifyBoutique
     const handleSearch = async (query: string) => {
@@ -87,7 +89,7 @@ export default function SearchProduct() {
     };
 
     return (
-        <div className="relative w-full">
+        <div className="relative w-full" ref={ref}>
             <div className="relative w-full">
                 <Input
                     disabled={!shopifyBoutique}

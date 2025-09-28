@@ -2,20 +2,14 @@
 import { Separator } from "@/components/ui/separator";
 import useShopifyStore from "../../shopify/shopifyStore";
 import ProductList from "./Products";
-import useClickOutside from "@/library/hooks/useClickOutside";
 
 export default function ListProducts() {
-    const { productsSearch, searchTerm, loading, setSearchTerm } = useShopifyStore();
-
-    const t = useClickOutside<HTMLDivElement>(() => setSearchTerm(""));
+    const { productsSearch, searchTerm, loading } = useShopifyStore();
 
     if (productsSearch.length === 0 && !searchTerm) return null;
 
     return (
-        <div
-            ref={t}
-            className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto"
-        >
+        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
             {productsSearch.map((product, index) => (
                 <ProductList products={product} key={index} />
             ))}
