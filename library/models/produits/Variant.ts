@@ -1,11 +1,5 @@
-import { TDomainsShopify } from "@/library/params/paramsShopify";
-import { Model, model, models, Schema } from "mongoose";
-
-interface ids {
-    shop: TDomainsShopify;
-    idProduct: string;
-    idVariant: string;
-}
+// Variant.ts
+import { Schema, Model, model, models } from "mongoose";
 
 export type TVariant = {
     title: string;
@@ -17,39 +11,38 @@ export type TVariant = {
     compareAtPrice?: number;
     barcode?: string;
     quantity: number;
-    ids: ids[];
+    ids: { shop: string; idProduct: string; idVariant: string }[];
 };
 
 export const VariantSchema = new Schema<TVariant>(
     {
         title: { type: String, required: true },
-        sku: { type: String, required: true },
-        rebuy: { type: Boolean, required: false, default: false },
-        rebuyLater: { type: Boolean, required: false, default: false },
-        bought: { type: Boolean, required: false },
+        sku: { type: String, required: true, index: true },
+        rebuy: { type: Boolean, default: false },
+        rebuyLater: { type: Boolean, default: false },
+        bought: { type: Boolean, default: false },
         price: { type: Number, required: true },
-        compareAtPrice: { type: Number, required: false },
-        barcode: { type: String, required: false },
-        quantity: { type: Number, required: false },
-        ids: {
-            type: [
-                new Schema(
-                    {
-                        shop: { type: String, required: true },
-                        idProduct: { type: String, required: true },
-                        idVariant: { type: String, required: true },
-                    },
-                    { _id: false }
-                ),
-            ],
-            required: true,
-        },
+        compareAtPrice: { type: Number },
+        barcode: { type: String },
+        quantity: { type: Number, required: true, default: 0 },
+        ids: [
+            new Schema(
+                {
+                    shop: { type: String, required: true },
+                    idProduct: { type: String, required: true },
+                    idVariant: { type: String, required: true },
+                },
+                { _id: false }
+            ),
+        ],
     },
     {
         versionKey: false,
         timestamps: true,
+        strict: true,
+        collection: "variants", // <-- aligne avec ta collection réelle
     }
 );
-VariantSchema.index({ sku: 1 }, { unique: true });
 
-export const VariantModel: Model<TVariant> = models.variant || model<TVariant>("variants", VariantSchema);
+// Laisse ce default model pour l'environnement single-connection éventuel
+export const VariantModel: Model<TVariant> = models.variant || model<TVariant>("variant", VariantSchema);
