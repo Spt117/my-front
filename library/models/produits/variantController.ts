@@ -6,10 +6,17 @@ class ControllerVariant {
     /**
      * Récupère le modèle Mongoose de l'utilisateur.
      */
-    private async getVariantModel(): Promise<Model<TVariant>> {
+    async getVariantModel(): Promise<Model<TVariant>> {
         const manager = await getMongoConnectionManager();
         const connection = await manager.getConnection("Pokemon");
-        return connection.model<TVariant>("variants", VariantModel.schema);
+        const Variant = connection.model<TVariant>("variants", VariantModel.schema);
+        console.log({
+            db: Variant.db.name,
+            coll: Variant.collection.name,
+            hasBought: !!Variant.schema.path("bought"),
+            paths: Object.keys(Variant.schema.paths).slice(0, 10), // échantillon
+        });
+        return Variant;
     }
 
     async createVariant(payload: TVariant) {
