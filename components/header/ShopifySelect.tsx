@@ -30,12 +30,12 @@ export default function ShopifySelect() {
     };
 
     const handleEscape = () => {
+        setSearchTerm("");
         if (path === "/stock") return null;
         if (path !== "/product") {
             setShopifyBoutique(null);
             setFilterOrders(orders);
         }
-        setSearchTerm("");
     };
     useKeyboardShortcuts("Escape", handleEscape);
     if (path === "/stock") return null;

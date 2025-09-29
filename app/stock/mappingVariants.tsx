@@ -1,4 +1,5 @@
 "use client";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 import { getStockVariant } from "@/library/models/produits/middlewareVariants";
 import { TVariant } from "@/library/models/produits/Variant";
@@ -10,6 +11,8 @@ import { VariantStock } from "./VariantStock";
 
 export default function mappingVariants({ data }: { data: TVariant[] }) {
     const { variants, setVariants, setVariantsFilter, mode, variantsFilter } = useVariantStore();
+    const { searchTerm } = useShopifyStore();
+
     const [isLoading, setIsLoading] = useState(false);
 
     const handleStoreVariants = (dataVariants: TVariant[]) => {
@@ -49,6 +52,12 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     useEffect(() => {
         handleStoreVariants(variants);
     }, [mode, variants]);
+
+    useEffect(() => {
+        if (!searchTerm) {
+            handleStoreVariants(variants);
+        }
+    }, [searchTerm]);
 
     return (
         <div className="w-full relative pl-5 pr-5 flex gap-4 flex-wrap">
