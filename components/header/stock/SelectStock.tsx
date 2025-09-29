@@ -4,9 +4,10 @@ import useVariantStore, { stockMode, TStockMode } from "@/app/stock/store";
 import Selecteur from "@/components/selecteur";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { RefreshCcw } from "lucide-react";
 
 export default function ShopifySelect() {
-    const { mode, setMode } = useVariantStore();
+    const { mode, setMode, loading } = useVariantStore();
     const { setSearchTerm } = useShopifyStore();
 
     const options = stockMode.map((mode) => ({
@@ -24,5 +25,10 @@ export default function ShopifySelect() {
     };
     useKeyboardShortcuts("Escape", handleEscape);
 
-    return <Selecteur array={options} value={mode} onChange={handleSelectOrigin} placeholder="Choisir l'origine" />;
+    return (
+        <>
+            {loading && <RefreshCcw size={20} className={`transition-transform duration-300 ease-in-out animate-spin`} />}
+            <Selecteur array={options} value={mode} onChange={handleSelectOrigin} placeholder="Choisir l'origine" />
+        </>
+    );
 }

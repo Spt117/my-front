@@ -10,10 +10,8 @@ import useVariantStore from "./store";
 import { VariantStock } from "./VariantStock";
 
 export default function mappingVariants({ data }: { data: TVariant[] }) {
-    const { variants, setVariants, setVariantsFilter, mode, variantsFilter } = useVariantStore();
+    const { variants, setVariants, setVariantsFilter, mode, variantsFilter, setLoading } = useVariantStore();
     const { searchTerm } = useShopifyStore();
-
-    const [isLoading, setIsLoading] = useState(false);
 
     const handleStoreVariants = (dataVariants: TVariant[]) => {
         if (mode === "now") {
@@ -31,7 +29,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     };
 
     const getData = async () => {
-        setIsLoading(true);
+        setLoading(true);
         try {
             const dataUpdated = await getStockVariant();
             setVariants(dataUpdated);
@@ -39,7 +37,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
             console.error("Erreur lors de la récupération des données mises à jour:", error);
             toast.error("Erreur lors de la récupération des données mises à jour");
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
@@ -65,10 +63,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     }, [searchTerm]);
 
     return (
-        <div className="w-full relative pl-5 pr-5 flex gap-4 flex-wrap">
-            <div className="w-full flex items-center gap-2 mt-3">
-                {isLoading && <RefreshCcw size={20} className={`transition-transform duration-300 ease-in-out animate-spin`} />}
-            </div>
+        <div className="w-full relative pl-5 pr-5 flex gap-4 flex-wrap mt-2">
             {variantsFilter.map((variant, index) => (
                 <VariantStock key={index} variant={variant} action={getData} />
             ))}

@@ -5,6 +5,8 @@ export const stockMode = ["later", "now", "bought"] as const;
 export type TStockMode = (typeof stockMode)[number];
 
 interface StoreState {
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
     variants: TVariant[];
     setVariants: (variants: TVariant[]) => void;
     variantsFilter: TVariant[];
@@ -14,6 +16,8 @@ interface StoreState {
 }
 
 const useVariantStore = create<StoreState>((set) => ({
+    loading: false,
+    setLoading: (loading) => set({ loading }),
     variants: [],
     setVariants: (variants) => set({ variants }),
     variantsFilter: [],
