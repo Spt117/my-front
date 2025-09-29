@@ -42,7 +42,6 @@ export default function SearchProduct() {
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const ref = useClickOutside<HTMLDivElement>(() => setSearchTerm(""));
 
-    // Fonction de recherche qui utilise toujours la valeur actuelle de shopifyBoutique
     const handleSearch = async (query: string) => {
         if (!query.trim() || !shopifyBoutique) return;
 
@@ -88,6 +87,7 @@ export default function SearchProduct() {
         setSearchTerm(e.target.value);
     };
 
+    if (!shopifyBoutique) return null;
     return (
         <div className="relative w-full" ref={ref}>
             <div className="relative w-full">

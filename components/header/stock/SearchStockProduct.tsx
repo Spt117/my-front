@@ -3,15 +3,11 @@ import { X } from "lucide-react";
 import { useEffect } from "react";
 import useShopifyStore from "../../shopify/shopifyStore";
 import { Input } from "../../ui/input";
-import { usePathname } from "next/navigation";
 
 export default function SearchStockProduct() {
     const { shopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
     const { setVariantsFilter, variantsFilter } = useVariantStore();
-    const path = usePathname();
-    if (path !== "/stock") return null;
 
-    // Effet de debounce
     useEffect(() => {
         const result = variantsFilter.filter(
             (variant) =>
@@ -19,7 +15,7 @@ export default function SearchStockProduct() {
                 variant.sku.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setVariantsFilter(result);
-    }, [searchTerm]); // Seulement searchTerm dans les dépendances
+    }, [searchTerm]);
 
     return (
         <div className="relative w-full">

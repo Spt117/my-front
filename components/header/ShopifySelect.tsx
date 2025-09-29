@@ -38,7 +38,6 @@ export default function ShopifySelect() {
         }
     };
     useKeyboardShortcuts("Escape", handleEscape);
-    if (path === "/stock") return null;
 
     return (
         <Selecteur
