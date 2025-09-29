@@ -26,7 +26,7 @@ class ControllerVariant {
     private async getVariantModel(): Promise<Model<TVariant>> {
         const manager = await getMongoConnectionManager();
         const connection: Connection = await manager.getConnection("Pokemon");
-        const name = "variant";
+        const name = "variants";
         const coll = "variants"; // <-- même nom que dans le schéma
         // Si déjà chargé sur cette connexion, vérifie que le schéma contient 'bought'.
         const existing = connection.models[name] as Model<TVariant> | undefined;
