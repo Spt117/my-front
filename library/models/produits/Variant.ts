@@ -52,4 +52,4 @@ export const VariantSchema = new Schema<TVariant>(
 );
 VariantSchema.index({ sku: 1 }, { unique: true });
 
-export const VariantModel: Model<TVariant> = models.variant || model<TVariant>("variant", VariantSchema);
+export const VariantModel: Model<TVariant> = models.variants || model<TVariant>("variants", VariantSchema);

@@ -9,7 +9,7 @@ class ControllerVariant {
     private async getVariantModel(): Promise<Model<TVariant>> {
         const manager = await getMongoConnectionManager();
         const connection = await manager.getConnection("Pokemon");
-        return connection.model<TVariant>("variant", VariantModel.schema);
+        return connection.model<TVariant>("variants", VariantModel.schema);
     }
 
     async createVariant(payload: TVariant) {
