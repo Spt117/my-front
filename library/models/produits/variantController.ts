@@ -12,7 +12,7 @@ class ControllerVariant {
         const existingModel = connection.models.variants;
         if (existingModel) {
             console.log("Modèle existant trouvé :", Object.keys(existingModel.schema.paths));
-        }
+        } else console.log("Aucun modèle existant trouvé, création d'un nouveau modèle.");
         const Variant = connection.model<TVariant>("variants", VariantModel.schema);
         console.log({
             db: Variant.db.name,
