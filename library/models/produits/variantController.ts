@@ -91,6 +91,8 @@ class ControllerVariant {
         try {
             const Variant = await this.getVariantModel();
             const res = await Variant.updateOne({ sku }, { $set: { bought: bought } });
+            console.log(res);
+
             return res ? true : false;
         } catch (err) {
             console.error("activeBoughtBySku error:", err);
