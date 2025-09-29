@@ -87,6 +87,17 @@ class ControllerVariant {
         }
     }
 
+    async boughtBySku(sku: string, bought: boolean): Promise<Boolean> {
+        try {
+            const Variant = await this.getVariantModel();
+            const res = await Variant.updateOne({ sku }, { $set: { bought: bought } });
+            return res ? true : false;
+        } catch (err) {
+            console.error("activeBoughtBySku error:", err);
+            return false;
+        }
+    }
+
     async getVariantById(id: string) {
         try {
             const Variant = await this.getVariantModel();

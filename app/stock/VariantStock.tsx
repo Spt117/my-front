@@ -1,23 +1,28 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { toggleRebuy, toggleRebuyLater } from "@/library/models/produits/middlewareVariants";
+import { toggleBought, toggleRebuy, toggleRebuyLater } from "@/library/models/produits/middlewareVariants";
 import { TVariant } from "@/library/models/produits/Variant";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import UpdateStock from "./UpdateStock";
-import Link from "next/link";
 
 export function VariantStock({ variant, action }: { variant: TVariant; action: () => void }) {
     const { shopifyBoutique, cssCard } = useShopifyStore();
     const path = usePathname();
     if (!shopifyBoutique) return null;
 
-    const handleRebuyChange = async (bool: boolean) => {
-        const data = await toggleRebuy(variant.sku, bool);
+    const handleRebuyChange = async () => {
+        const data = await toggleRebuy(variant.sku, !variant.rebuy);
         if (data) action();
     };
-    const handleRebuyLaterChange = async (bool: boolean) => {
-        const data = await toggleRebuyLater(variant.sku, bool);
+    const handleRebuyLaterChange = async () => {
+        const data = await toggleRebuyLater(variant.sku, !variant.rebuyLater);
+        if (data) action();
+    };
+
+    const handleBoughtChange = async () => {
+        const data = await toggleBought(variant, !variant.bought);
         if (data) action();
     };
 
@@ -36,7 +41,6 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
                         </Link>
                     </h2>
                 )}
-
                 <div className="space-y-1">
                     {path === "/stock" && (
                         <>
@@ -47,19 +51,23 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
                     <div className="flex items-center align-center rounded">
                         <p className="text-sm text-gray-600 w-50">Rebuy:</p>
                         <div>
-                            <Switch checked={variant.rebuy} onCheckedChange={() => handleRebuyChange(!variant.rebuy)} />
+                            <Switch checked={variant.rebuy} onCheckedChange={handleRebuyChange} />
                         </div>
                     </div>
                     <div className="flex items-center align-center rounded">
                         <p className="text-sm text-gray-600 w-50">Rebuy Later:</p>
                         <div>
-                            <Switch
-                                checked={variant.rebuyLater}
-                                onCheckedChange={() => handleRebuyLaterChange(!variant.rebuyLater)}
-                            />
+                            <Switch checked={variant.rebuyLater} onCheckedChange={handleRebuyLaterChange} />
+                        </div>
+                    </div>
+                    <div className="flex items-center align-center rounded">
+                        <p className="text-sm text-gray-600 w-50">Bought:</p>
+                        <div>
+                            <Switch checked={variant.bought} onCheckedChange={handleBoughtChange} />
                         </div>
                     </div>
                 </div>
+                <div className="border-t border-gray-200" /> {/* Ligne de séparation */}
                 <UpdateStock params={{ sku: variant.sku, quantity: variant.quantity, domain: shopifyBoutique.domain }} />
             </CardContent>
         </Card>

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Orders from "./Orders";
 import SearchProduct from "./products/SearchProduct";
 import ShopifySelect from "./ShopifySelect";
+import SelectStock from "./stock/SelectStock";
 
 export function SiteHeader() {
     const pathname = usePathname();
@@ -16,6 +17,7 @@ export function SiteHeader() {
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
                 <ShopifySelect />
+                <SelectStock />
                 {searchProductsPaths.includes(pathname) && <SearchProduct />}
                 {pathname === "/" && <Orders />}
             </div>

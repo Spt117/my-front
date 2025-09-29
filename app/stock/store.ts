@@ -1,20 +1,23 @@
 import { TVariant } from "@/library/models/produits/Variant";
 import { create } from "zustand";
 
+export const stockMode = ["later", "now", "bought"] as const;
+export type TStockMode = (typeof stockMode)[number];
+
 interface StoreState {
-    variantsBuy: TVariant[];
-    setVariantsBuy: (variantsBuy: TVariant[]) => void;
-    variantsBuyLater: TVariant[];
-    setVariantsBuyLater: (variantsBuyLater: TVariant[]) => void;
-    mode: "later" | "now";
-    setMode: (mode: "later" | "now") => void;
+    variants: TVariant[];
+    setVariants: (variants: TVariant[]) => void;
+    variantsFilter: TVariant[];
+    setVariantsFilter: (variantsFilter: TVariant[]) => void;
+    mode: TStockMode;
+    setMode: (mode: TStockMode) => void;
 }
 
 const useVariantStore = create<StoreState>((set) => ({
-    variantsBuy: [],
-    setVariantsBuy: (variantsBuy) => set({ variantsBuy }),
-    variantsBuyLater: [],
-    setVariantsBuyLater: (variantsBuyLater) => set({ variantsBuyLater }),
+    variants: [],
+    setVariants: (variants) => set({ variants }),
+    variantsFilter: [],
+    setVariantsFilter: (variantsFilter) => set({ variantsFilter }),
     mode: "now",
     setMode: (mode) => set({ mode }),
 }));

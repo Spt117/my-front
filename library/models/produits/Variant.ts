@@ -12,6 +12,7 @@ export type TVariant = {
     sku: string;
     rebuy?: boolean;
     rebuyLater?: boolean;
+    bought?: boolean;
     price: number;
     compareAtPrice?: number;
     barcode?: string;
@@ -25,6 +26,7 @@ const VariantSchema = new Schema<TVariant>(
         sku: { type: String, required: true },
         rebuy: { type: Boolean, required: false, default: false },
         rebuyLater: { type: Boolean, required: false, default: false },
+        bought: { type: Boolean, required: false, default: false },
         price: { type: Number, required: true },
         compareAtPrice: { type: Number, required: false },
         barcode: { type: String, required: false },

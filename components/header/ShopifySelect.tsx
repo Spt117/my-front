@@ -30,6 +30,7 @@ export default function ShopifySelect() {
     };
 
     const handleEscape = () => {
+        if (path === "/stock") return null;
         if (path !== "/product") {
             setShopifyBoutique(null);
             setFilterOrders(orders);
@@ -37,6 +38,7 @@ export default function ShopifySelect() {
         setSearchTerm("");
     };
     useKeyboardShortcuts("Escape", handleEscape);
+    if (path === "/stock") return null;
 
     return (
         <Selecteur
