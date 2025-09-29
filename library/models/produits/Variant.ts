@@ -26,7 +26,7 @@ const VariantSchema = new Schema<TVariant>(
         sku: { type: String, required: true },
         rebuy: { type: Boolean, required: false, default: false },
         rebuyLater: { type: Boolean, required: false, default: false },
-        bought: { type: Boolean, required: false, default: false },
+        bought: { type: Boolean, required: false },
         price: { type: Number, required: true },
         compareAtPrice: { type: Number, required: false },
         barcode: { type: String, required: false },
