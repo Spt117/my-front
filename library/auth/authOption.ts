@@ -4,6 +4,7 @@ import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import { authSecret, email, googleId, googleSecret } from "../utils/uri";
 import { getClientNextAuth } from "./authUser";
+import { getMongoClientForAuth } from "./connectorAuth";
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -23,7 +24,7 @@ export const authOptions: AuthOptions = {
             from: email.server,
         }),
     ],
-    adapter: MongoDBAdapter(() => getClientNextAuth(), {
+    adapter: MongoDBAdapter(getMongoClientForAuth(), {
         databaseName: "NextAuth-my-front",
     }),
     secret: authSecret,
