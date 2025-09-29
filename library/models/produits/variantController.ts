@@ -90,10 +90,19 @@ class ControllerVariant {
     async boughtBySku(sku: string, bought: boolean): Promise<Boolean> {
         try {
             const Variant = await this.getVariantModel();
-            const res = await Variant.updateOne({ sku }, { $set: { bought: bought } });
-            console.log(res);
 
-            return res ? true : false;
+            // Vérifier le document avant
+            const before = await Variant.findOne({ sku });
+            console.log("Before update:", before);
+
+            const res = await Variant.updateOne({ sku }, { $set: { bought: bought } });
+            console.log("Update result:", res);
+
+            // Vérifier le document après
+            const after = await Variant.findOne({ sku });
+            console.log("After update:", after);
+
+            return res.matchedCount > 0;
         } catch (err) {
             console.error("activeBoughtBySku error:", err);
             return false;
