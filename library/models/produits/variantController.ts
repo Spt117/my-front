@@ -9,6 +9,10 @@ class ControllerVariant {
     async getVariantModel(): Promise<Model<TVariant>> {
         const manager = await getMongoConnectionManager();
         const connection = await manager.getConnection("Pokemon");
+        const existingModel = connection.models.variants;
+        if (existingModel) {
+            console.log("Modèle existant trouvé :", Object.keys(existingModel.schema.paths));
+        }
         const Variant = connection.model<TVariant>("variants", VariantModel.schema);
         console.log({
             db: Variant.db.name,
