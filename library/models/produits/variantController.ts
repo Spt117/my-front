@@ -111,7 +111,9 @@ class ControllerVariant {
     async getVariantRebuy(): Promise<TVariant[]> {
         try {
             const Variant = await this.getVariantModel();
-            const data = await Variant.find({ $or: [{ rebuy: true }, { rebuyLater: true }] }).lean<TVariant[]>();
+            const data = await Variant.find({ $or: [{ rebuy: true }, { rebuyLater: true }, { bought: true }] }).lean<
+                TVariant[]
+            >();
             return JSON.parse(JSON.stringify(data));
         } catch (err) {
             console.error("getVariantRebuy error:", err);
