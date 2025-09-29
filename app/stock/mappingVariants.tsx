@@ -52,8 +52,13 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     useEffect(() => {
         if (!searchTerm) handleStoreVariants(variants);
         else {
+            console.log("filter with search term ", searchTerm);
+
             const skus = new Set(variantsFilter.map((v) => v.sku));
+            console.log("SKUs to filter:", skus);
+
             const v = variants.filter((variant) => skus.has(variant.sku));
+            console.log("Filtered variants:", v);
             handleStoreVariants(v);
         }
     }, [mode, variants]);
