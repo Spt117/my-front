@@ -23,7 +23,7 @@ export const authOptions: AuthOptions = {
             from: email.server,
         }),
     ],
-    adapter: MongoDBAdapter(getClientNextAuth(), {
+    adapter: MongoDBAdapter(() => getClientNextAuth(), {
         databaseName: "NextAuth-my-front",
     }),
     secret: authSecret,
