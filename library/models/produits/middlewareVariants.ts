@@ -19,6 +19,7 @@ export async function toggleRebuy(sku: string, rebuy: boolean) {
 }
 
 export async function toggleRebuyLater(sku: string, rebuyLater: boolean) {
+    if (rebuyLater) await variantController.rebuyBySku(sku, false);
     const data = await variantController.rebuyLaterBySku(sku, rebuyLater);
     return data;
 }
