@@ -90,7 +90,7 @@ class ControllerVariant {
     async boughtBySku(sku: string, bought: boolean): Promise<Boolean> {
         try {
             const Variant = await this.getVariantModel();
-            const res = await Variant.findByIdAndUpdate({ sku }, { $set: { bought: bought } });
+            const res = await Variant.findOneAndUpdate({ sku }, { $set: { bought: bought } });
             return res ? true : false;
         } catch (err) {
             console.error("activeBoughtBySku error:", err);
