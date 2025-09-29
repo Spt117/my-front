@@ -15,7 +15,7 @@ export type TVariant = {
     ids: { shop: TDomainsShopify; idProduct: string; idVariant: string }[];
 };
 
-export const VariantSchema = new Schema<TVariant>(
+const VariantSchema = new Schema<TVariant>(
     {
         title: { type: String, required: true },
         sku: { type: String, required: true, index: true },
@@ -41,9 +41,7 @@ export const VariantSchema = new Schema<TVariant>(
         versionKey: false,
         timestamps: true,
         strict: true,
-        collection: "variants", // <-- aligne avec ta collection réelle
     }
 );
 
-// Laisse ce default model pour l'environnement single-connection éventuel
 export const VariantModel: Model<TVariant> = models.variants || model<TVariant>("variants", VariantSchema);

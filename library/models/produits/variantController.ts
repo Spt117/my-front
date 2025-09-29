@@ -1,6 +1,6 @@
-import { Connection, Model } from "mongoose";
-import { TVariant, VariantModel, VariantSchema } from "./Variant";
 import { getMongoConnectionManager } from "@/library/auth/connector";
+import { Model } from "mongoose";
+import { TVariant, VariantModel } from "./Variant";
 
 class ControllerVariant {
     /**
