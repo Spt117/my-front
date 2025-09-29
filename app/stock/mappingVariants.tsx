@@ -50,8 +50,12 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     }, [data]);
 
     useEffect(() => {
-        const v = variants.filter((variant) => variantsFilter.find((v) => v.sku === variant.sku));
-        handleStoreVariants(v);
+        if (!searchTerm) handleStoreVariants(variants);
+        else {
+            const skus = new Set(variantsFilter.map((v) => v.sku));
+            const v = variants.filter((variant) => skus.has(variant.sku));
+            handleStoreVariants(v);
+        }
     }, [mode, variants]);
 
     useEffect(() => {
