@@ -6,50 +6,11 @@ class ControllerVariant {
     /**
      * Récupère le modèle Mongoose de l'utilisateur.
      */
-    async getVariantModelold(): Promise<Model<TVariant>> {
+    async getVariantModel(): Promise<Model<TVariant>> {
         const manager = await getMongoConnectionManager();
         const connection = await manager.getConnection("Pokemon");
         const Variant = connection.model<TVariant>("variants", VariantModel.schema);
         console.log({
-            db: Variant.db.name,
-            coll: Variant.collection.name,
-            hasBought: !!Variant.schema.path("bought"),
-            paths: Object.keys(Variant.schema.paths).slice(0, 10), // échantillon
-        });
-        return Variant;
-    }
-
-    /**
-     * Récupère le modèle Mongoose de l'utilisateur.
-     */
-
-    private async getVariantModel(): Promise<Model<TVariant>> {
-        const manager = await getMongoConnectionManager();
-        const connection: Connection = await manager.getConnection("Pokemon");
-        const name = "variants";
-        const coll = "variants"; // <-- même nom que dans le schéma
-        // Si déjà chargé sur cette connexion, vérifie que le schéma contient 'bought'.
-        const existing = connection.models[name] as Model<TVariant> | undefined;
-
-        if (existing) {
-            const hasBought = !!existing.schema.path("bought");
-            const rightColl = existing.collection?.name === coll;
-            if (hasBought && rightColl) return existing;
-
-            // modèle obsolète → le supprimer de CETTE connexion et recompiler
-            if (typeof (connection as any).deleteModel === "function") {
-                (connection as any).deleteModel(name);
-            } else {
-                // In recent Mongoose versions, models is readonly; fallback to deleteModel if available
-                if (typeof connection.deleteModel === "function") {
-                    connection.deleteModel(name);
-                }
-            }
-        }
-
-        // Compile proprement sur la connexion, en forçant la collection
-        const Variant = connection.model<TVariant>(name, VariantSchema, coll);
-        console.log("Recompiled model:", {
             db: Variant.db.name,
             coll: Variant.collection.name,
             hasBought: !!Variant.schema.path("bought"),
