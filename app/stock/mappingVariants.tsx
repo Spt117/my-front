@@ -32,9 +32,9 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     const getData = async () => {
         setLoading(true);
         try {
-            await sleep(1000); // Pour voir l'animation de chargement
             const dataUpdated = await getStockVariant();
             setVariants(dataUpdated);
+            await sleep(500); // Pour voir l'animation de chargement
         } catch (error) {
             console.error("Erreur lors de la récupération des données mises à jour:", error);
             toast.error("Erreur lors de la récupération des données mises à jour");
