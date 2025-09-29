@@ -1,6 +1,6 @@
 // Variant.ts
 import { TDomainsShopify } from "@/library/params/paramsShopify";
-import { Schema, Model, model, models } from "mongoose";
+import mongoose, { Model, model, models, Schema } from "mongoose";
 
 export type TVariant = {
     title: string;
@@ -15,7 +15,7 @@ export type TVariant = {
     ids: { shop: TDomainsShopify; idProduct: string; idVariant: string }[];
 };
 
-const VariantSchema = new Schema<TVariant>(
+export const VariantSchema = new Schema<TVariant>(
     {
         title: { type: String, required: true },
         sku: { type: String, required: true, index: true },
@@ -43,5 +43,3 @@ const VariantSchema = new Schema<TVariant>(
         strict: true,
     }
 );
-
-export const VariantModel: Model<TVariant> = models.variants || model<TVariant>("variants", VariantSchema);
