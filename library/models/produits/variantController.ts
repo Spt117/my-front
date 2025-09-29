@@ -47,13 +47,6 @@ class ControllerVariant {
             }
         }
 
-        // console.log({
-        //     db: existing.db.name,
-        //     coll: Variant.collection.name,
-        //     hasBought: !!Variant.schema.path("bought"),
-        //     paths: Object.keys(Variant.schema.paths).slice(0, 10), // échantillon
-        // });
-
         // Compile proprement sur la connexion, en forçant la collection
         const Variant = connection.model<TVariant>(name, VariantSchema, coll);
         console.log("Recompiled model:", {

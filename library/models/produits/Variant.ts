@@ -1,4 +1,5 @@
 // Variant.ts
+import { TDomainsShopify } from "@/library/params/paramsShopify";
 import { Schema, Model, model, models } from "mongoose";
 
 export type TVariant = {
@@ -11,7 +12,7 @@ export type TVariant = {
     compareAtPrice?: number;
     barcode?: string;
     quantity: number;
-    ids: { shop: string; idProduct: string; idVariant: string }[];
+    ids: { shop: TDomainsShopify; idProduct: string; idVariant: string }[];
 };
 
 export const VariantSchema = new Schema<TVariant>(
