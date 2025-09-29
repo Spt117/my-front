@@ -89,6 +89,8 @@ class ControllerVariant {
 
     async boughtBySku(sku: string, bought: boolean): Promise<Boolean> {
         try {
+            console.log("updating bought status... " + sku + " to " + bought);
+
             const Variant = await this.getVariantModel();
             const res = await Variant.findOneAndUpdate({ sku }, { $set: { bought: bought } });
             return res ? true : false;
