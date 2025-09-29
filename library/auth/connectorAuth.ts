@@ -2,6 +2,7 @@
 "use server";
 
 import { MongoClient } from "mongodb";
+import { uriMongodb } from "../utils/uri";
 
 let cachedClient: MongoClient | null = null;
 
@@ -10,14 +11,7 @@ export async function getMongoClientForAuth(): Promise<MongoClient> {
         return cachedClient;
     }
 
-    // Utilisez votre URI MongoDB (probablement la même que pour mongoose)
-    const uri = process.env.MONGODB_URI || process.env.DATABASE_URL;
-
-    if (!uri) {
-        throw new Error("MongoDB URI is not defined in environment variables");
-    }
-
-    cachedClient = new MongoClient(uri);
+    cachedClient = new MongoClient(uriMongodb);
     await cachedClient.connect();
 
     return cachedClient;
