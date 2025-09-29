@@ -12,27 +12,9 @@ class ControllerVariant {
 
         // Vérifier si le modèle existe déjà sur cette connexion
         const existingModel = connection.models[modelName];
-
-        if (existingModel) {
-            console.log("Modèle existant trouvé :", Object.keys(existingModel.schema.paths));
-            console.log("Collection utilisée :", existingModel.collection.name);
-            return existingModel as Model<TVariant>;
-        }
-
-        console.log("Aucun modèle existant trouvé, création d'un nouveau modèle.");
-
+        if (existingModel) return existingModel as Model<TVariant>;
         // Créer le modèle avec le nom de collection personnalisé
         const Variant = connection.model<TVariant>(modelName, VariantSchema, collectionName);
-
-        console.log({
-            db: Variant.db.name,
-            coll: Variant.collection.name,
-            modelName: modelName,
-            hasBought: !!Variant.schema.path("bought"),
-            hasQuantity: !!Variant.schema.path("quantity"),
-            paths: Object.keys(Variant.schema.paths).slice(0, 10), // échantillon
-        });
-
         return Variant;
     }
 

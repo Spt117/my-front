@@ -6,10 +6,10 @@ import { Input } from "../../ui/input";
 
 export default function SearchStockProduct() {
     const { shopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
-    const { setVariantsFilter, variantsFilter } = useVariantStore();
+    const { setVariantsFilter, variants } = useVariantStore();
 
     useEffect(() => {
-        const result = variantsFilter.filter(
+        const result = variants.filter(
             (variant) =>
                 variant.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 variant.sku.toLowerCase().includes(searchTerm.toLowerCase())
