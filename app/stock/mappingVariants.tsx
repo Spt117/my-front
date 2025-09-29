@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import useVariantStore from "./store";
 import { VariantStock } from "./VariantStock";
+import { sleep } from "@/library/utils/helpers";
 
 export default function mappingVariants({ data }: { data: TVariant[] }) {
     const { variants, setVariants, setVariantsFilter, mode, variantsFilter, setLoading } = useVariantStore();
@@ -31,6 +32,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     const getData = async () => {
         setLoading(true);
         try {
+            await sleep(1000); // Pour voir l'animation de chargement
             const dataUpdated = await getStockVariant();
             setVariants(dataUpdated);
         } catch (error) {
