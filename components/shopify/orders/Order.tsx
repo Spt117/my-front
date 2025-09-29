@@ -8,8 +8,7 @@ import ProductSection from "./ProductSection";
 
 export default function Order({ order }: { order: GroupedShopifyOrder }) {
     const { handleCopy } = useCopy();
-
-    const flagUrl = boutiqueFromDomain(order.shop)?.flag;
+    const flagUrl = boutiqueFromDomain(order.shop).flag;
 
     return (
         <div className="container mx-auto p-3">
@@ -48,7 +47,12 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                             onClick={() => handleCopy(order.customer.email)}
                             className="cursor-pointer transition-all duration-200 ease-in-out hover:font-bold rounded-md p-2 -m-2"
                         >
-                            {order.customer.email}
+                            {order.customer.email}{" "}
+                            <span className="text-sm text-gray-500">
+                                ({order.customer.numberOfOrders} commande{Number(order.customer.numberOfOrders) > 1 ? "s" : ""}
+                                {" -> "}
+                                {order.customer.amountSpent.amount} {order.customer.amountSpent.currencyCode})
+                            </span>
                         </p>
                     </div>
                     <p className="text-sm text-gray-600">

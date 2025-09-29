@@ -13,6 +13,8 @@ interface TotalPriceSet {
 
 interface Customer {
     email: string;
+    numberOfOrders: string;
+    amountSpent: ShopMoney;
 }
 
 interface ShippingAddress {
