@@ -95,7 +95,7 @@ class ControllerVariant {
             const before = await Variant.findOne({ sku });
             console.log("Before update:", before);
 
-            const res = await Variant.updateOne({ sku }, { $set: { bought: bought } });
+            const res = await Variant.updateOne({ sku }, { $set: { bought: true } });
             console.log("Update result:", res);
 
             // Vérifier le document après
