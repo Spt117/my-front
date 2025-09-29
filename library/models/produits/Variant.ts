@@ -46,4 +46,4 @@ export const VariantSchema = new Schema<TVariant>(
 );
 
 // Laisse ce default model pour l'environnement single-connection éventuel
-export const VariantModel: Model<TVariant> = models.variant || model<TVariant>("variant", VariantSchema);
+export const VariantModel: Model<TVariant> = models.variants || model<TVariant>("variants", VariantSchema);
