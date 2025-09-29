@@ -3,9 +3,6 @@ import { Model } from "mongoose";
 import { TVariant, VariantSchema } from "./Variant";
 
 class ControllerVariant {
-    /**
-     * Récupère le modèle Mongoose de l'utilisateur pour la collection 'mesProduits'.
-     */
     async getVariantModel(): Promise<Model<TVariant>> {
         const manager = await getMongoConnectionManager();
         const connection = await manager.getConnection("Pokemon");
@@ -38,6 +35,7 @@ class ControllerVariant {
 
         return Variant;
     }
+
     async createVariant(payload: TVariant) {
         try {
             const Variant = await this.getVariantModel();
