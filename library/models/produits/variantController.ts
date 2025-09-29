@@ -1,15 +1,19 @@
-import { Model } from "mongoose";
-import { TVariant, VariantModel } from "./Variant";
 import { getMongoConnectionManager } from "@/library/auth/connector";
+import { Model } from "mongoose";
+import { TVariant, VariantSchema } from "./Variant";
 
 class ControllerVariant {
     /**
-     * Récupère le modèle Mongoose de l'utilisateur.
+     * Récupère le modèle Mongoose sur LA connexion demandée.
+     * Compile le modèle UNE seule fois par connexion, en utilisant TOUJOURS le même schéma.
      */
     private async getVariantModel(): Promise<Model<TVariant>> {
         const manager = await getMongoConnectionManager();
         const connection = await manager.getConnection("Pokemon");
-        return connection.model<TVariant>("variant", VariantModel.schema);
+
+        // Critique : n’essaie PAS de "ré-attacher" un model existant défini ailleurs.
+        // Utilise le même VariantSchema, et protège-toi d'une double compilation.
+        return (connection.models.variant as Model<TVariant>) || connection.model<TVariant>("variant", VariantSchema);
     }
 
     async createVariant(payload: TVariant) {

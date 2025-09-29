@@ -20,7 +20,7 @@ export type TVariant = {
     ids: ids[];
 };
 
-const VariantSchema = new Schema<TVariant>(
+export const VariantSchema = new Schema<TVariant>(
     {
         title: { type: String, required: true },
         sku: { type: String, required: true },
@@ -30,6 +30,7 @@ const VariantSchema = new Schema<TVariant>(
         price: { type: Number, required: true },
         compareAtPrice: { type: Number, required: false },
         barcode: { type: String, required: false },
+        quantity: { type: Number, required: false },
         ids: {
             type: [
                 new Schema(
