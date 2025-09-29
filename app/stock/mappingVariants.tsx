@@ -50,7 +50,8 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     }, [data]);
 
     useEffect(() => {
-        handleStoreVariants(variants);
+        const v = variants.filter((variant) => variantsFilter.find((v) => v.sku === variant.sku));
+        handleStoreVariants(v);
     }, [mode, variants]);
 
     useEffect(() => {
