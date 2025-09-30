@@ -5,7 +5,6 @@ import { getVariantBySku } from "@/library/models/produits/middlewareVariants";
 import { TVariant } from "@/library/models/produits/Variant";
 import { boutiqueFromDomain, IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
-import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { getProduct } from "../../components/shopify/serverActions";
@@ -21,14 +20,11 @@ export default function Product({
     shopify: IShopify;
     variantData: TVariant | null;
 }) {
-    const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
-    const searchParams = useSearchParams();
-    const id = searchParams.get("id");
-    const boutique = searchParams.get("shopify");
+    const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, variant } = useShopifyStore();
 
     const getProductUpdated = async (sku: string) => {
         console.log("Updating product for SKU:", sku);
-        console.log("Current variant SKU:", variantData?.sku);
+        console.log("Current variant SKU:", variant?.sku);
         if (variantData?.sku !== sku) return;
         const data = { productId: productData.response.id, domain: shopify.domain };
         const product = await getProduct(data);
@@ -36,13 +32,6 @@ export default function Product({
         const v = await getVariantBySku(sku);
         if (v) setVariant(v);
     };
-
-    useEffect(() => {
-        const id = searchParams.get("id");
-        if (id) {
-            getProductUpdated(id);
-        }
-    }, [searchParams]);
 
     useEventListener("products/update", (data) => getProductUpdated(data.sku));
 

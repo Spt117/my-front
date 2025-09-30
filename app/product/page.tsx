@@ -3,7 +3,6 @@ import { getProduct } from "@/components/shopify/serverActions";
 import { variantController } from "@/library/models/produits/variantController";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
-import AddImage from "../../components/shopify/Product/AddImage";
 import ProductContent from "./ProductContent";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
