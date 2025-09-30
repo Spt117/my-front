@@ -39,27 +39,15 @@ export default function Product({
     }, [variantData, variant]);
 
     const getProductUpdated = async (sku: string) => {
-        // Récupérer les valeurs fraîches directement du store
-        // const currentVariant = useShopifyStore.getState().variant;
-        // const currentProduct = useShopifyStore.getState().product;
-
-        // if (!currentProduct) {
-        //     console.log("No current product in store. Cannot update.");
-        //     return;
-        // }
-        // if (currentVariant?.sku !== sku) {
-        //     console.log("SKU does not match the current variant. No update needed.");
-        //     return;
-        // }
-
-        // console.log("Fetching updated product data...");
-        // const data = { productId: currentProduct.id, domain: shopify.domain };
-        // const product = await getProduct(data);
-        // if (product) setProduct(product.response);
-        // const v = await getVariantBySku(sku);
-        // if (v) setVariant(v);
-        router.refresh();
-        toast.success(`Le produit ${sku} a été mis à jour`);
+        const currentVariant = useShopifyStore.getState().variant;
+        if (!currentVariant) {
+            console.log("No current variant in store. Cannot update.");
+            return;
+        }
+        if (currentVariant.sku === sku) {
+            router.refresh();
+            toast.success(`${currentVariant.title} a été mis à jour`);
+        } else console.log("SKU does not match. No update needed.");
     };
 
     if (!product || !shopifyBoutique) {
