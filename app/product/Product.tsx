@@ -38,14 +38,19 @@ export default function Product({
     }, [variantData, variant]);
 
     const getProductUpdated = async (sku: string) => {
-        console.log("Variant Data ", variantData);
-        console.log("Variant Store ", variant);
+        // Récupérer les valeurs fraîches directement du store
+        const currentVariant = useShopifyStore.getState().variant;
+        const currentProduct = useShopifyStore.getState().product;
+
+        console.log("Variant Store (fresh):", currentVariant);
         console.log("Updating product for SKU:", sku);
-        console.log("Current variant SKU:", variant?.sku);
-        if (variantData?.sku !== sku) {
+        console.log("Current variant SKU:", currentVariant?.sku);
+
+        if (currentVariant?.sku !== sku) {
             console.log("SKU does not match the current variant. No update needed.");
             return;
         }
+
         console.log("Fetching updated product data...");
         const data = { productId: productData.response.id, domain: shopify.domain };
         const product = await getProduct(data);
