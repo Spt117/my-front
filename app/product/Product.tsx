@@ -22,6 +22,21 @@ export default function Product({
 }) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, variant } = useShopifyStore();
 
+    useEventListener("products/update", (data) => getProductUpdated(data.sku));
+
+    useEffect(() => {
+        const boutique = boutiqueFromDomain(shopify.domain);
+        setShopifyBoutique(boutique);
+        setProduct(productData.response);
+        if (variantData) setVariant(variantData);
+        if (productData.error) toast.error(productData.error);
+    }, [shopify.domain, productData.response, variantData]);
+
+    useEffect(() => {
+        console.log("Variant Data ", variantData);
+        console.log("Variant Store ", variant);
+    }, [variantData, variant]);
+
     const getProductUpdated = async (sku: string) => {
         console.log("Variant Data ", variantData);
         console.log("Variant Store ", variant);
@@ -38,21 +53,6 @@ export default function Product({
         const v = await getVariantBySku(sku);
         if (v) setVariant(v);
     };
-
-    useEventListener("products/update", (data) => getProductUpdated(data.sku));
-
-    useEffect(() => {
-        const boutique = boutiqueFromDomain(shopify.domain);
-        setShopifyBoutique(boutique);
-        setProduct(productData.response);
-        if (variantData) setVariant(variantData);
-        if (productData.error) toast.error(productData.error);
-    }, [shopify.domain, productData.response, variantData]);
-
-    useEffect(() => {
-        console.log("Variant Data ", variantData);
-        console.log("Variant Store ", variant);
-    }, [variantData, variant]);
 
     if (!product || !shopifyBoutique) {
         return <div className="text-center py-8 text-muted-foreground">Aucun produit sélectionné</div>;
