@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { postServer } from "@/library/utils/fetchServer";
 import { sleep } from "@/library/utils/helpers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface IUpdateStockProps {
@@ -38,11 +38,17 @@ export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
         setIsLoading(false);
         setNumberInput(0);
     };
+
+    useEffect(() => {
+        console.log(params);
+        console.log(numberInput);
+    }, [params, numberInput]);
+
     return (
         <>
             <p className="text-sm text-gray-600">
                 Quantité en stock: {params.quantity}
-                {numberInput !== 0 && params.quantity && (
+                {numberInput !== 0 && (
                     <span className="font-bold">
                         {"  -> "}
                         {numberInput + params.quantity}
