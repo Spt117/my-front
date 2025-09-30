@@ -17,10 +17,6 @@ export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleUpdateVariantStock = async () => {
-        if (!params.quantity) {
-            toast.error("Quantité actuelle invalide");
-            return;
-        }
         setIsLoading(true);
         const url = `http://localhost:9100/shopify/update-stock`;
 
