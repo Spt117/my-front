@@ -40,11 +40,6 @@ export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
         }
     };
 
-    useEffect(() => {
-        console.log(params);
-        console.log(numberInput);
-    }, [params, numberInput]);
-
     return (
         <>
             <p className="text-sm text-gray-600">
