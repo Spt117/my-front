@@ -3,12 +3,11 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 import { getStockVariant } from "@/library/models/produits/middlewareVariants";
 import { TVariant } from "@/library/models/produits/Variant";
-import { RefreshCcw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { sleep } from "@/library/utils/helpers";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import useVariantStore from "./store";
 import { VariantStock } from "./VariantStock";
-import { sleep } from "@/library/utils/helpers";
 
 export default function mappingVariants({ data }: { data: TVariant[] }) {
     const { variants, setVariants, setVariantsFilter, mode, variantsFilter, setLoading } = useVariantStore();

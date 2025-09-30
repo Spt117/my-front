@@ -23,6 +23,8 @@ export default function Product({
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
 
     const getProductUpdated = async (sku: string) => {
+        console.log("Updating product for SKU:", sku);
+        console.log("Current variant SKU:", variantData?.sku);
         if (variantData?.sku !== sku) return;
         const data = { productId: productData.response.id, domain: shopify.domain };
         const product = await getProduct(data);
