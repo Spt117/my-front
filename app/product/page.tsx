@@ -20,5 +20,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
     const sku = product.response.variants?.nodes[0]?.sku;
     const variant = await variantController.getVariantBySku(sku);
 
+    if (!variant) return <h2>Erreur lors de la récupération de la variante {sku}</h2>;
+
     return <Product productData={product} shopify={shopify} variantData={variant} />;
 }
