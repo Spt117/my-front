@@ -42,17 +42,17 @@ export default function Product({
         const currentVariant = useShopifyStore.getState().variant;
         const currentProduct = useShopifyStore.getState().product;
 
-        console.log("Variant Store (fresh):", currentVariant);
-        console.log("Updating product for SKU:", sku);
-        console.log("Current variant SKU:", currentVariant?.sku);
-
+        if (!currentProduct) {
+            console.log("No current product in store. Cannot update.");
+            return;
+        }
         if (currentVariant?.sku !== sku) {
             console.log("SKU does not match the current variant. No update needed.");
             return;
         }
 
         console.log("Fetching updated product data...");
-        const data = { productId: productData.response.id, domain: shopify.domain };
+        const data = { productId: currentProduct.id, domain: shopify.domain };
         const product = await getProduct(data);
         if (product) setProduct(product.response);
         const v = await getVariantBySku(sku);
