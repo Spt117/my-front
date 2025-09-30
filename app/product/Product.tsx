@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { getProduct } from "../../components/shopify/serverActions";
 import { ResponseServer } from "../../components/shopify/typesShopify";
 import ProductContent from "./ProductContent";
+import { useRouter } from "next/navigation";
 
 export default function Product({
     productData,
@@ -21,7 +22,7 @@ export default function Product({
     variantData: TVariant | null;
 }) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, variant } = useShopifyStore();
-
+    const router = useRouter();
     useEventListener("products/update", (data) => getProductUpdated(data.sku));
 
     useEffect(() => {
@@ -39,24 +40,26 @@ export default function Product({
 
     const getProductUpdated = async (sku: string) => {
         // Récupérer les valeurs fraîches directement du store
-        const currentVariant = useShopifyStore.getState().variant;
-        const currentProduct = useShopifyStore.getState().product;
+        // const currentVariant = useShopifyStore.getState().variant;
+        // const currentProduct = useShopifyStore.getState().product;
 
-        if (!currentProduct) {
-            console.log("No current product in store. Cannot update.");
-            return;
-        }
-        if (currentVariant?.sku !== sku) {
-            console.log("SKU does not match the current variant. No update needed.");
-            return;
-        }
+        // if (!currentProduct) {
+        //     console.log("No current product in store. Cannot update.");
+        //     return;
+        // }
+        // if (currentVariant?.sku !== sku) {
+        //     console.log("SKU does not match the current variant. No update needed.");
+        //     return;
+        // }
 
-        console.log("Fetching updated product data...");
-        const data = { productId: currentProduct.id, domain: shopify.domain };
-        const product = await getProduct(data);
-        if (product) setProduct(product.response);
-        const v = await getVariantBySku(sku);
-        if (v) setVariant(v);
+        // console.log("Fetching updated product data...");
+        // const data = { productId: currentProduct.id, domain: shopify.domain };
+        // const product = await getProduct(data);
+        // if (product) setProduct(product.response);
+        // const v = await getVariantBySku(sku);
+        // if (v) setVariant(v);
+        router.refresh();
+        toast.success(`Le produit ${sku} a été mis à jour`);
     };
 
     if (!product || !shopifyBoutique) {
