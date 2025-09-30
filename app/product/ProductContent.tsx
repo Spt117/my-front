@@ -10,7 +10,7 @@ import { getVariantBySku } from "@/library/models/produits/middlewareVariants";
 import { VariantStock } from "../stock/VariantStock";
 import AboutProduct from "./AboutProduct";
 import Description from "./Description";
-import Prices from "./Prices";
+import Prices from "./Prices/Prices";
 
 export default function ProductContent() {
     const { variant, setVariant, product } = useShopifyStore();
@@ -27,12 +27,11 @@ export default function ProductContent() {
         <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:p-6">
             <Card className="m-0 p-0 border-0 shadow-none">
                 <HeaderProduct />
-
-                <CardContent className="flex gap-2 flex-wrap">
+                <CardContent className="flex gap-2 flex-wrap max-[1270px]:justify-center">
                     {/* Carrousel d'images */}
                     <ImagesProduct />
-                    <div className="flex-1 min-w-0 p-1">
-                        <div className="flex flex-wrap gap-2">
+                    <div className="flex-1 p-1">
+                        <div className="flex flex-wrap gap-6 max-[1270px]:justify-center">
                             {/* Détails du produit */}
                             <Prices />
                             {variant && <VariantStock variant={variant} action={actionStoreVariant} />}

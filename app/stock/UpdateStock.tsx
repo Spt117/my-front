@@ -60,7 +60,11 @@ export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
                         setNumberInput(Number(e.target.value));
                     }}
                 />
-                {!isLoading && <Button onClick={handleUpdateVariantStock}>Ajuster</Button>}
+                {!isLoading && (
+                    <Button disabled={!numberInput} onClick={handleUpdateVariantStock}>
+                        Ajuster
+                    </Button>
+                )}
                 {isLoading && <Spinner className="h-6 w-6" />}{" "}
             </div>
         </>

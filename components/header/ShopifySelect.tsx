@@ -7,10 +7,12 @@ import Image from "next/image";
 import useOrdersStore from "../shopify/orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
 import { usePathname } from "next/navigation";
+import usePriceStore from "@/app/product/Prices/storePrice";
 
 export default function ShopifySelect() {
     const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm } = useShopifyStore();
     const { setFilterOrders, orders } = useOrdersStore();
+    const { setPrice, setCompareAtPrice } = usePriceStore();
     const path = usePathname();
 
     const option2 = boutiques.map((boutique) => ({
@@ -34,6 +36,9 @@ export default function ShopifySelect() {
         if (path !== "/product") {
             setShopifyBoutique(null);
             setFilterOrders(orders);
+        } else if (product) {
+            setPrice(product?.variants.nodes[0].price);
+            setCompareAtPrice(product?.variants.nodes[0].compareAtPrice || "0");
         }
     };
     useKeyboardShortcuts("Escape", handleEscape);

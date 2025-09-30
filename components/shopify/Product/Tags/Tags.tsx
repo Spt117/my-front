@@ -44,7 +44,7 @@ export default function TagsShopify() {
                     <TagsIcon size={15} />
                     Tags
                 </h3>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap justify-center">
                     <Input type="text" placeholder="Ajouter un tag" onChange={(e) => setNewTag(e.target.value)} value={newTag} />
                     <Button disabled={!newTag.trim() || loading} onClick={handleAddTag}>
                         Ajouter un tag
@@ -52,7 +52,7 @@ export default function TagsShopify() {
                     </Button>
                 </div>
                 {product.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    <div className="flex flex-wrap gap-2 mt-2 justify-center">
                         {product.tags.map((tag) => (
                             <TagShopify key={tag} tag={tag} />
                         ))}

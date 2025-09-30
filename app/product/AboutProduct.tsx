@@ -13,34 +13,32 @@ export default function AboutProduct() {
 
     return (
         <Card className={cssCard}>
-            <CardContent className="flex justify-between flex-wrap gap-4">
-                <div className="text-sm text-muted-foreground flex flex-col gap-1">
-                    <p>Type de produit: {product.productType || "Non spécifié"}</p>
-                    <p>Statut: {product.status}</p>
-                    <p>Créé le: {new Date(product.createdAt).toLocaleDateString("fr-FR")}</p>
-                    <p>Mis à jour le: {new Date(product.updatedAt).toLocaleDateString("fr-FR")}</p>
+            <CardContent className="flex flex-col justify-between h-full text-sm text-muted-foreground gap-2">
+                <p>Type de produit: {product.productType || "Non spécifié"}</p>
+                <p>Statut: {product.status}</p>
+                <p>Créé le: {new Date(product.createdAt).toLocaleDateString("fr-FR")}</p>
+                <p>Mis à jour le: {new Date(product.updatedAt).toLocaleDateString("fr-FR")}</p>
+                <p
+                    className={"flex items-center gap-1 text-gray-700 " + classCopy}
+                    onClick={() => handleCopy(variant.sku)}
+                    title="Cliquer pour copier le SKU"
+                >
+                    SKU: {variant.sku}
+                    <Copy size={12} className="text-gray-500" />
+                </p>
+                {variant.barcode && (
                     <p
                         className={"flex items-center gap-1 text-gray-700 " + classCopy}
-                        onClick={() => handleCopy(variant.sku)}
-                        title="Cliquer pour copier le SKU"
+                        onClick={() => {
+                            if (variant.barcode) handleCopy(variant.barcode, "Barcode copié !");
+                        }}
                     >
-                        SKU: {variant.sku}
+                        Barcode: {variant.barcode}
                         <Copy size={12} className="text-gray-500" />
                     </p>
-                    {variant.barcode && (
-                        <p
-                            className={"flex items-center gap-1 text-gray-700 " + classCopy}
-                            onClick={() => {
-                                if (variant.barcode) handleCopy(variant.barcode, "Barcode copié !");
-                            }}
-                        >
-                            Barcode: {variant.barcode}
-                            <Copy size={12} className="text-gray-500" />
-                        </p>
-                    )}
+                )}
 
-                    <Amazon />
-                </div>
+                <Amazon />
             </CardContent>
         </Card>
     );
