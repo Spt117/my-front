@@ -7,7 +7,6 @@ import TagsShopify from "@/components/shopify/Product/Tags/Tags";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { getVariantBySku } from "@/library/models/produits/middlewareVariants";
-import { useSearchParams } from "next/navigation";
 import { VariantStock } from "../stock/VariantStock";
 import AboutProduct from "./AboutProduct";
 import Description from "./Description";
@@ -15,11 +14,6 @@ import Prices from "./Prices";
 
 export default function ProductContent() {
     const { variant, setVariant, product } = useShopifyStore();
-    console.log(product);
-
-    const searchParams = useSearchParams();
-    const id = searchParams.get("id");
-    const boutique = searchParams.get("shopify");
 
     if (!product) return <div className="text-center py-8 text-muted-foreground">Aucun produit sélectionné</div>;
 

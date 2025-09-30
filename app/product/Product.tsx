@@ -23,6 +23,8 @@ export default function Product({
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, variant } = useShopifyStore();
 
     const getProductUpdated = async (sku: string) => {
+        console.log("Variant Data ", variantData);
+        console.log("Variant Store ", variant);
         console.log("Updating product for SKU:", sku);
         console.log("Current variant SKU:", variant?.sku);
         if (variantData?.sku !== sku) return;
@@ -42,6 +44,11 @@ export default function Product({
         if (variantData) setVariant(variantData);
         if (productData.error) toast.error(productData.error);
     }, [shopify.domain, productData.response, variantData]);
+
+    useEffect(() => {
+        console.log("Variant Data ", variantData);
+        console.log("Variant Store ", variant);
+    }, [variantData, variant]);
 
     if (!product || !shopifyBoutique) {
         return <div className="text-center py-8 text-muted-foreground">Aucun produit sélectionné</div>;
