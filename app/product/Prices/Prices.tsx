@@ -1,16 +1,21 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-select";
 import { cssCard } from "../util";
+import ButtonPrices from "./ButtonPrices";
 import CompareAtPriceUpdate from "./CompareAtPriceUpdate";
 import PriceUpdate from "./PriceUpdate";
 import ResumePrice from "./ResumePrice";
-import DatePicker from "../Tasks/DatePicker";
+import Tasks from "../Tasks/Tasks";
+import { TaskShopifyController } from "@/library/models/tasksShopify/taskController";
 
-export default function Prices() {
+export default async function Prices({ sku }: { sku: string }) {
+    const tasks = await TaskShopifyController.getTaskBySkuAndStockActivation(sku);
     return (
         <Card className={cssCard}>
             <CardContent className="flex flex-col gap-2">
                 {/* Prix principal */}
+                <ButtonPrices />
+
                 <PriceUpdate />
 
                 <Separator className="bg-slate-200" />
@@ -19,10 +24,10 @@ export default function Prices() {
                 <CompareAtPriceUpdate />
 
                 {/* Résumé visuel */}
-                <ResumePrice />
+                <ResumePrice tasksData={tasks} />
 
                 <Separator className="bg-slate-200" />
-                <DatePicker />
+                <Tasks />
             </CardContent>
         </Card>
     );

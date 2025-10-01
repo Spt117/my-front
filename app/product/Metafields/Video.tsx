@@ -1,4 +1,4 @@
-import useShopifyStore from "../../shopifyStore";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 
 export default function Video() {
     const { product } = useShopifyStore();

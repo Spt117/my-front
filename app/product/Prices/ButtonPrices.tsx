@@ -1,69 +1,41 @@
+"use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
-import { postServer } from "@/library/utils/fetchServer";
 import { Check, X } from "lucide-react";
 import { useEffect } from "react";
-import { toast } from "sonner";
+import useTaskStore from "../Tasks/storeTasks";
+import usePrices from "./hooksPrices";
 import usePriceStore from "./storePrice";
 
 export default function ButtonPrices() {
     const { product, shopifyBoutique } = useShopifyStore();
+    const { param } = useTaskStore();
     const { setPrice, setCompareAtPrice, setIsUpdatingPrice, price, compareAtPrice, isUpdatingPrice, isChanged } =
         usePriceStore();
-
-    if (!product || !shopifyBoutique) return null;
+    const actionsPrices = usePrices();
 
     useEffect(() => {
-        setPrice(product.variants.nodes[0].price);
-        setCompareAtPrice(product.variants.nodes[0].compareAtPrice || "0");
-    }, [product.variants.nodes[0].price, product.variants.nodes[0].compareAtPrice]);
+        setPrice(product?.variants.nodes[0].price || "0");
+        setCompareAtPrice(product?.variants.nodes[0].compareAtPrice || "0");
+    }, [product?.variants.nodes[0].price, product?.variants.nodes[0].compareAtPrice]);
 
+    if (!product || !shopifyBoutique) return null;
     const mainVariant = product.variants.nodes[0];
 
     const handleUpdatePrice = async () => {
         setIsUpdatingPrice(true);
-        if (Number(price) !== Number(mainVariant.price)) {
-            const url = "http://localhost:9100/shopify/update-price";
-            const data = {
-                domain: shopifyBoutique.domain,
-                productId: product.id,
-                variantId: mainVariant.id,
-                price: Number(price),
-            };
-            try {
-                const res = await postServer(url, data);
-                if (res.error) toast.error(res.error);
-                if (res.message) toast.success(res.message);
-            } catch (error) {
-                toast.error("Erreur lors de la mise à jour du prix");
-            } finally {
-                setPrice(mainVariant.price);
-            }
-        }
-        if (Number(compareAtPrice) !== Number(mainVariant.compareAtPrice || "0")) {
-            const url = "http://localhost:9100/shopify/update-compare-at-price";
-            const data = {
-                domain: shopifyBoutique.domain,
-                productId: product.id,
-                variantId: mainVariant.id,
-                compareAtPrice: Number(compareAtPrice),
-            };
-            try {
-                const res = await postServer(url, data);
-                if (res.error) toast.error(res.error);
-                if (res.message) toast.success(res.message);
-            } catch (error) {
-                toast.error("Erreur lors de la mise à jour du prix barré");
-            } finally {
-                setCompareAtPrice(mainVariant.compareAtPrice || "0");
-            }
-        }
+
+        if (param > 0) await actionsPrices?.addTaskStopPromotion();
+        if (Number(price) !== Number(mainVariant.price)) await actionsPrices?.handleUpdatePrice();
+        if (Number(compareAtPrice) !== Number(mainVariant.compareAtPrice || "0"))
+            await actionsPrices?.handleUpdateCompareAtPrice();
+
         setIsUpdatingPrice(false);
     };
 
     return (
         <Button
-            disabled={!isChanged}
+            disabled={!isChanged && !param}
             onClick={handleUpdatePrice}
             className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 min-w-[150px]"
         >
@@ -72,7 +44,7 @@ export default function ButtonPrices() {
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span className="text-xs">Mise à jour...</span>
                 </div>
-            ) : isChanged ? (
+            ) : isChanged || param ? (
                 <div className="flex items-center gap-1">
                     <Check className="h-4 w-4" />
                     <span className="text-xs">Mettre à jour</span>

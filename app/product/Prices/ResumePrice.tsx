@@ -3,16 +3,21 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import usePriceStore from "./storePrice";
 import { Badge } from "@/components/ui/badge";
 import { useEffect } from "react";
+import { TTaskShopifyProducts } from "@/library/models/tasksShopify/taskType";
+import useTaskStore from "../Tasks/storeTasks";
+import Task from "../Tasks/Task";
 
-export default function ResumePrice() {
+export default function ResumePrice({ tasksData }: { tasksData: TTaskShopifyProducts[] }) {
     const { product, shopifyBoutique } = useShopifyStore();
     const { price, compareAtPrice, setPrice, setCompareAtPrice } = usePriceStore();
+    const { tasks, setTasks } = useTaskStore();
 
     useEffect(() => {
+        setTasks(tasksData);
         if (!product) return;
         setPrice(product.variants.nodes[0].price);
         setCompareAtPrice(product.variants.nodes[0].compareAtPrice || "0");
-    }, [product?.variants.nodes[0].price, product?.variants.nodes[0].compareAtPrice]);
+    }, [product?.variants.nodes[0].price, product?.variants.nodes[0].compareAtPrice, tasksData]);
 
     if (!product || !shopifyBoutique) return null;
 
@@ -36,6 +41,13 @@ export default function ResumePrice() {
                         </Badge>
                     </div>
                 </div>
+                {tasks.length > 0 && (
+                    <div className="flex flex-col w-full w-min">
+                        {tasks.map((task, index) => (
+                            <Task key={index} task={task} index={index} />
+                        ))}
+                    </div>
+                )}
             </div>
         );
 }

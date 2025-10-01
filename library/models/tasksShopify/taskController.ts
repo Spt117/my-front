@@ -21,7 +21,7 @@ class ControllerTaskShopify {
         try {
             const Task = await this.getTaskModel();
             const doc = await Task.create(payload);
-            return doc as TTaskShopifyProducts;
+            return JSON.parse(JSON.stringify(doc));
         } catch (err) {
             console.error("createTask error:", err);
             return null;
@@ -50,14 +50,14 @@ class ControllerTaskShopify {
         }
     }
 
-    async getTaskBySkuAndStockActivation(sku: string): Promise<TTaskShopifyProducts | null> {
+    async getTaskBySkuAndStockActivation(sku: string): Promise<TTaskShopifyProducts[]> {
         try {
             const Task = await this.getTaskModel();
-            const doc = await Task.findOne({ sku, activation: "stock", status: "scheduled" }).lean<TTaskShopifyProducts>();
-            return doc;
+            const docs = await Task.find({ sku, status: "scheduled" }).lean<TTaskShopifyProducts[]>();
+            return JSON.parse(JSON.stringify(docs));
         } catch (err) {
             console.error("getTaskBySkuAndStockActivation error:", err);
-            return null;
+            return [];
         }
     }
 
@@ -74,6 +74,17 @@ class ControllerTaskShopify {
         } catch (e) {
             console.error("Error getting tasks. ControllerTaskShopify ", e);
             return [];
+        }
+    }
+
+    async deleteTaskById(id: string): Promise<Boolean> {
+        try {
+            const Task = await this.getTaskModel();
+            const res = await Task.findByIdAndDelete(id);
+            return res ? true : false;
+        } catch (err) {
+            console.error("deleteTaskById error:", err);
+            return false;
         }
     }
 }

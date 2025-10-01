@@ -1,9 +1,9 @@
 "use client";
-import Amazon from "@/components/shopify/Product/Metafields/Amazon";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCopy } from "@/library/hooks/useCopy";
 import { Copy } from "lucide-react";
+import Amazon from "./Metafields/Amazon";
 import { cssCard } from "./util";
 
 export default function AboutProduct() {
@@ -20,7 +20,11 @@ export default function AboutProduct() {
                 <p>Statut: {product.status}</p>
                 <p>Créé le: {new Date(product.createdAt).toLocaleDateString("fr-FR")}</p>
                 <p>Mis à jour le: {new Date(product.updatedAt).toLocaleDateString("fr-FR")}</p>
-                <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(variant.sku)} title="Cliquer pour copier le SKU">
+                <p
+                    className={"flex items-center gap-1 text-gray-700 " + classCopy}
+                    onClick={() => handleCopy(variant.sku)}
+                    title="Cliquer pour copier le SKU"
+                >
                     SKU: {variant.sku}
                     <Copy size={12} className="text-gray-500" />
                 </p>

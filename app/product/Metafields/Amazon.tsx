@@ -1,13 +1,13 @@
 "use client";
+import { setAmazonActivateMetafield, setAsin } from "@/components/shopify/serverActions";
+import useShopifyStore from "@/components/shopify/shopifyStore";
+import { IMetafieldRequest } from "@/components/shopify/typesShopify";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { toast } from "sonner";
-import { setAmazonActivateMetafield, setAsin } from "../../serverActions";
-import useShopifyStore from "../../shopifyStore";
-import { IMetafieldRequest } from "../../typesShopify";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 export default function Amazon() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -42,11 +42,17 @@ export default function Amazon() {
         return (
             <>
                 <p className="flex items-center justify-space-between gap-4">
-                    Affiliation Amazon: <span className="font-semibold">{metafield.value === "true" ? "Activée" : "Désactivée"}</span>
+                    Affiliation Amazon:{" "}
+                    <span className="font-semibold">{metafield.value === "true" ? "Activée" : "Désactivée"}</span>
                     <Switch checked={metafield.value === "true"} onCheckedChange={() => handleToggle()} disabled={loading} />
                     <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />
                 </p>
-                <a href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${asin.value}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                <a
+                    href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${asin.value}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                >
                     ASIN: {asin.value}
                 </a>
             </>

@@ -9,7 +9,15 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-export default function ProductClient({ productData, shopify, variantData }: { productData: ResponseServer<ProductGET>; shopify: IShopify; variantData: TVariant | null }) {
+export default function ProductClient({
+    productData,
+    shopify,
+    variantData,
+}: {
+    productData: ResponseServer<ProductGET>;
+    shopify: IShopify;
+    variantData: TVariant;
+}) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
     const router = useRouter();
     useEventListener("products/update", (data) => getProductUpdated(data.sku));

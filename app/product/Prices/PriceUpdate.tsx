@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@radix-ui/react-label";
 import { Tag } from "lucide-react";
 import { useEffect, useRef } from "react";
-import ButtonPrices from "./ButtonPrices";
 import InputPrice from "./InputPrice";
 import usePriceStore from "./storePrice";
 
@@ -37,7 +36,6 @@ export default function PriceUpdate() {
             </div>
             <div className="flex items-center gap-2 flex-wrap">
                 <InputPrice ref={ref} price={price} action={setPrice} priceOrigin={product.variants.nodes[0].price} />
-                <ButtonPrices />
             </div>
         </>
     );

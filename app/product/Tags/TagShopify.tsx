@@ -4,9 +4,9 @@ import { useCopy } from "@/library/hooks/useCopy";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteTag } from "../../serverActions";
-import useShopifyStore from "../../shopifyStore";
-import { ITagRequest } from "../../typesShopify";
+import { deleteTag } from "../../../components/shopify/serverActions";
+import useShopifyStore from "../../../components/shopify/shopifyStore";
+import { ITagRequest } from "../../../components/shopify/typesShopify";
 
 export default function TagShopify({ tag }: { tag: string }) {
     const { product, shopifyBoutique } = useShopifyStore();
