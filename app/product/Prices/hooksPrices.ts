@@ -6,11 +6,13 @@ import useTaskStore from "../Tasks/storeTasks";
 import usePriceStore from "./storePrice";
 import { postServer } from "@/library/utils/fetchServer";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function usePrices() {
     const { product, shopifyBoutique } = useShopifyStore();
     const { typeTask, param, setParam } = useTaskStore();
     const { setPrice, setCompareAtPrice, price, compareAtPrice } = usePriceStore();
+    const router = useRouter();
 
     useEffect(() => {
         setParam(0);
@@ -69,6 +71,7 @@ export default function usePrices() {
         };
         try {
             const res = await createTaskShopify(task);
+            router.refresh();
             if (res.error) {
                 toast.error(res.error);
             } else {
