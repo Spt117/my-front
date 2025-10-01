@@ -6,9 +6,10 @@ import { TVariant } from "@/library/models/produits/Variant";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import UpdateStock from "./UpdateStock";
+import { cssCard } from "../product/util";
 
 export function VariantStock({ variant, action }: { variant: TVariant; action: () => void }) {
-    const { shopifyBoutique, cssCard } = useShopifyStore();
+    const { shopifyBoutique } = useShopifyStore();
     const path = usePathname();
     if (!shopifyBoutique) return null;
 
@@ -27,9 +28,7 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
     };
 
     const id = variant.ids.find((p) => p.shop === shopifyBoutique.domain);
-    const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${
-        shopifyBoutique.locationHome
-    }`;
+    const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${shopifyBoutique.locationHome}`;
 
     return (
         <Card className={cssCard}>

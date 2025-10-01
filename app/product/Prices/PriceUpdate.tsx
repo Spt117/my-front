@@ -1,3 +1,4 @@
+"use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@radix-ui/react-label";

@@ -1,5 +1,6 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
+import { ResponseServer } from "@/components/shopify/typesShopify";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 import { TVariant } from "@/library/models/produits/Variant";
 import { boutiqueFromDomain, IShopify } from "@/library/params/paramsShopify";
@@ -7,19 +8,9 @@ import { ProductGET } from "@/library/types/graph";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { ResponseServer } from "../../components/shopify/typesShopify";
-import ProductContent from "./ProductContent";
 
-export default function Product({
-    productData,
-    shopify,
-    variantData,
-}: {
-    productData: ResponseServer<ProductGET>;
-    shopify: IShopify;
-    variantData: TVariant | null;
-}) {
-    const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, variant } = useShopifyStore();
+export default function ProductClient({ productData, shopify, variantData }: { productData: ResponseServer<ProductGET>; shopify: IShopify; variantData: TVariant | null }) {
+    const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
     const router = useRouter();
     useEventListener("products/update", (data) => getProductUpdated(data.sku));
 
@@ -46,6 +37,4 @@ export default function Product({
     if (!product || !shopifyBoutique) {
         return <div className="text-center py-8 text-muted-foreground">Aucun produit sélectionné</div>;
     }
-
-    return <ProductContent />;
 }

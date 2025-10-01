@@ -1,8 +1,8 @@
-import Product from "@/app/product/Product";
 import { getProduct } from "@/components/shopify/serverActions";
 import { variantController } from "@/library/models/produits/variantController";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
+import ProductClient from "./ProductClient";
 import ProductContent from "./ProductContent";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
@@ -21,5 +21,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
 
     if (!variant) return <h2>Erreur lors de la récupération de la variante {sku}</h2>;
 
-    return <Product productData={product} shopify={shopify} variantData={variant} />;
+    return (
+        <>
+            <ProductClient productData={product} shopify={shopify} variantData={variant} />;
+            <ProductContent />
+        </>
+    );
 }

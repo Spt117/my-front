@@ -1,10 +1,19 @@
+"use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import usePriceStore from "./storePrice";
 import { Badge } from "@/components/ui/badge";
+import { useEffect } from "react";
 
 export default function ResumePrice() {
     const { product, shopifyBoutique } = useShopifyStore();
-    const { price, compareAtPrice } = usePriceStore();
+    const { price, compareAtPrice, setPrice, setCompareAtPrice } = usePriceStore();
+
+    useEffect(() => {
+        if (!product) return;
+        setPrice(product.variants.nodes[0].price);
+        setCompareAtPrice(product.variants.nodes[0].compareAtPrice || "0");
+    }, [product?.variants.nodes[0].price, product?.variants.nodes[0].compareAtPrice]);
+
     if (!product || !shopifyBoutique) return null;
 
     if (compareAtPrice && price && Number(compareAtPrice) > Number(price))

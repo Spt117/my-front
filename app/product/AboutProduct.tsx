@@ -1,16 +1,18 @@
+"use client";
 import Amazon from "@/components/shopify/Product/Metafields/Amazon";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCopy } from "@/library/hooks/useCopy";
 import { Copy } from "lucide-react";
+import { cssCard } from "./util";
 
 export default function AboutProduct() {
-    const { product, cssCard } = useShopifyStore();
-    if (!product) return;
+    const { product } = useShopifyStore();
     const { handleCopy } = useCopy();
-    const variant = product.variants?.nodes[0];
+    const variant = product?.variants?.nodes[0];
     const classCopy = "cursor-pointer transition-transform duration-500 ease-out active:scale-93";
 
+    if (!product || !variant) return null;
     return (
         <Card className={cssCard}>
             <CardContent className="flex flex-col justify-between h-full text-sm text-muted-foreground gap-2">
@@ -18,11 +20,7 @@ export default function AboutProduct() {
                 <p>Statut: {product.status}</p>
                 <p>Créé le: {new Date(product.createdAt).toLocaleDateString("fr-FR")}</p>
                 <p>Mis à jour le: {new Date(product.updatedAt).toLocaleDateString("fr-FR")}</p>
-                <p
-                    className={"flex items-center gap-1 text-gray-700 " + classCopy}
-                    onClick={() => handleCopy(variant.sku)}
-                    title="Cliquer pour copier le SKU"
-                >
+                <p className={"flex items-center gap-1 text-gray-700 " + classCopy} onClick={() => handleCopy(variant.sku)} title="Cliquer pour copier le SKU">
                     SKU: {variant.sku}
                     <Copy size={12} className="text-gray-500" />
                 </p>

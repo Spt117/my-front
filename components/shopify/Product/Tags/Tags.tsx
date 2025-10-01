@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,9 +10,10 @@ import useShopifyStore from "../../shopifyStore";
 import { ITagRequest } from "../../typesShopify";
 import TagShopify from "./TagShopify";
 import { TagsIcon } from "lucide-react";
+import { cssCard } from "@/app/product/util";
 
 export default function TagsShopify() {
-    const { product, shopifyBoutique, cssCard } = useShopifyStore();
+    const { product, shopifyBoutique } = useShopifyStore();
     const [newTag, setNewTag] = useState("");
     const [loading, setLoading] = useState(false);
     if (!product || !shopifyBoutique) return null;

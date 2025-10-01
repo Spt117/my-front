@@ -1,3 +1,4 @@
+"use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@radix-ui/react-label";
@@ -21,10 +22,7 @@ export default function CompareAtPriceUpdate() {
 
     if (!product || !shopifyBoutique) return null;
 
-    const discount =
-        compareAtPrice && price
-            ? Math.round(((parseFloat(compareAtPrice) - parseFloat(price)) / parseFloat(compareAtPrice)) * 100)
-            : 0;
+    const discount = compareAtPrice && price ? Math.round(((parseFloat(compareAtPrice) - parseFloat(price)) / parseFloat(compareAtPrice)) * 100) : 0;
     return (
         <>
             <div className="space-y-3">
@@ -36,12 +34,7 @@ export default function CompareAtPriceUpdate() {
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
-                    <InputPrice
-                        ref={refCompare}
-                        price={compareAtPrice}
-                        action={setCompareAtPrice}
-                        priceOrigin={product.variants.nodes[0].compareAtPrice || "0"}
-                    />
+                    <InputPrice ref={refCompare} price={compareAtPrice} action={setCompareAtPrice} priceOrigin={product.variants.nodes[0].compareAtPrice || "0"} />
                     {discount > 0 && (
                         <Badge variant="destructive" className="bg-red-50 text-red-700 border-red-200">
                             -{discount}%

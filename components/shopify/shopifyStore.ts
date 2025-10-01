@@ -22,7 +22,6 @@ interface StoreState {
     setSelectedBrand: (brand: TBrand | null) => void;
     variant: TVariant | null;
     setVariant: (variant: TVariant | null) => void;
-    cssCard: string;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
@@ -42,7 +41,6 @@ const useShopifyStore = create<StoreState>((set) => ({
     setSelectedBrand: (brand) => set({ selectedBrand: brand }),
     variant: null,
     setVariant: (variant) => set({ variant }),
-    cssCard: "shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white min-[450px]:w-[450px]",
 }));
 
 export default useShopifyStore;

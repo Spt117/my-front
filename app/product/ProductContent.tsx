@@ -1,43 +1,31 @@
-"use client";
 import AddImage from "@/components/shopify/Product/AddImage";
 import HeaderProduct from "@/components/shopify/Product/HeaderProduct";
 import ImagesProduct from "@/components/shopify/Product/Images";
 import LinkToShops from "@/components/shopify/Product/LinkToShops";
 import TagsShopify from "@/components/shopify/Product/Tags/Tags";
-import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
-import { getVariantBySku } from "@/library/models/produits/middlewareVariants";
-import { VariantStock } from "../stock/VariantStock";
 import AboutProduct from "./AboutProduct";
 import Description from "./Description";
 import Prices from "./Prices/Prices";
+import VariantClient from "./VariantClient";
 
 export default function ProductContent() {
-    const { variant, setVariant, product } = useShopifyStore();
-
-    if (!product) return <div className="text-center py-8 text-muted-foreground">Aucun produit sélectionné</div>;
-
-    const actionStoreVariant = async () => {
-        if (!variant) return;
-        const variantUpdated = await getVariantBySku(variant.sku);
-        if (variantUpdated) setVariant(variantUpdated);
-    };
-
     return (
-        <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:p-6">
+        <div className="@container/main flex flex-1 flex-col md:p-6">
             <Card className="m-0 p-0 border-0 shadow-none">
                 <HeaderProduct />
-                <CardContent className="flex gap-2 flex-wrap max-[1270px]:justify-center">
+                <CardContent className="flex gap-2 flex-wrap max-[1270px]:justify-center p-0">
                     {/* Carrousel d'images */}
                     <ImagesProduct />
                     <div className="flex-1 p-1">
-                        <div className="flex flex-wrap gap-6 max-[1270px]:justify-center">
+                        <div className="flex flex-wrap gap-1 max-[1270px]:justify-center">
                             {/* Détails du produit */}
+
                             <Prices />
-                            {variant && <VariantStock variant={variant} action={actionStoreVariant} />}
+                            <VariantClient />
                             <TagsShopify />
                             <AboutProduct />
-                            <LinkToShops variant={variant} />
+                            <LinkToShops />
                             <Description />
                         </div>
                     </div>
