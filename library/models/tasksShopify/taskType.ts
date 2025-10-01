@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 import { TDomainsShopify } from "../../params/paramsShopify";
 
-const taskStatus = ["scheduled", "done", "error", "canceled", "running"] as const;
+const taskStatus = ["scheduled", "done", "error", "canceled", "processing"] as const;
 export type TStatusTask = (typeof taskStatus)[number];
 const activationTypes = ["timestamp", "quantity"] as const;
 export type TActivationType = (typeof activationTypes)[number];
@@ -13,9 +13,11 @@ export type TTaskShopifyProducts = {
     timestampActivation: number;
     stockActivation: number;
     sku: string;
+    productId: string;
+    variantId: string;
     boutique: TDomainsShopify;
     priceUpdate: number;
-    compareAtPrice?: number;
+    compareAtPrice: number;
 };
 
 export const TaskSchema = new Schema<TTaskShopifyProducts>(
@@ -25,9 +27,11 @@ export const TaskSchema = new Schema<TTaskShopifyProducts>(
         timestampActivation: { type: Number, required: false },
         stockActivation: { type: Number, required: false },
         sku: { type: String, required: true },
+        productId: { type: String, required: true },
+        variantId: { type: String, required: true },
         boutique: { type: String, required: true },
-        priceUpdate: { type: Number, required: false },
-        compareAtPrice: { type: Number, required: false },
+        priceUpdate: { type: Number, required: true },
+        compareAtPrice: { type: Number, required: true },
     },
     {
         versionKey: false,

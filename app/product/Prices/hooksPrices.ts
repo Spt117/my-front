@@ -66,8 +66,11 @@ export default function usePrices() {
             timestampActivation: typeTask === "timestamp" ? param : 0,
             stockActivation: typeTask === "quantity" ? param : 0,
             sku: mainVariant.sku,
+            productId: product.id,
+            variantId: mainVariant.id,
             boutique: shopifyBoutique.domain,
             priceUpdate: Number(compareAtPrice),
+            compareAtPrice: 0,
         };
         try {
             const res = await createTaskShopify(task);
