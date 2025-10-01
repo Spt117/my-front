@@ -24,16 +24,13 @@ export default function DatePicker() {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    className={`w-full justify-start text-left font-normal ${!param ? "text-muted-foreground" : ""}`}
-                >
+                <Button variant="outline" className={`w-full justify-start text-left font-normal ${!param ? "text-muted-foreground" : ""}`}>
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {param ? format(new Date(param), "PPP", { locale: fr }) : <span>Choisir une date</span>}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" selected={new Date(param)} onSelect={handleSelect} disabled={{ before: new Date() }} />
+                <Calendar mode="single" selected={new Date(param)} onSelect={handleSelect} disabled={{ before: new Date() }} locale={fr} />
             </PopoverContent>
         </Popover>
     );
