@@ -11,7 +11,7 @@ import useTaskStore from "./storeTasks";
 
 export default function DatePicker() {
     const [open, setOpen] = useState(false);
-    const { setParam, param } = useTaskStore();
+    const { setParam, param, tasks } = useTaskStore();
 
     const handleSelect = (selectedDate: Date | undefined) => {
         if (selectedDate) {
@@ -21,10 +21,12 @@ export default function DatePicker() {
         }
     };
 
+    const bool = tasks.find((task) => task.activation === "timestamp") ? true : false;
+
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="outline" className={`w-full justify-start text-left font-normal ${!param ? "text-muted-foreground" : ""}`}>
+                <Button disabled={bool} variant="outline" className={`w-full justify-start text-left font-normal ${!param ? "text-muted-foreground" : ""}`}>
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {param ? format(new Date(param), "PPP", { locale: fr }) : <span>Choisir une date</span>}
                 </Button>
