@@ -1,6 +1,7 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { ShopifyOrder } from "@/library/shopify/orders";
 import Image from "next/image";
+import UsefullLinks from "../UsefullLinks";
 
 export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     const { shopifyBoutique } = useShopifyStore();
@@ -39,27 +40,7 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
                     </div>
                 </div>
             </a>
-            <div className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600">
-                <a href={orderUrl} target="_blank" rel="noopener noreferrer">
-                    <div className="w-[50px] h-[50px] relative">
-                        <Image src="/shopify.png" alt="Shopify" fill sizes="50px" className="object-contain" />
-                    </div>
-                </a>
-            </div>
-            <div className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600">
-                <a href={colissimoUrl} target="_blank" rel="noopener noreferrer">
-                    <div className="w-[50px] h-[50px] relative">
-                        <Image src="/colissimo.png" alt="Colissimo" fill sizes="50px" className="object-contain" />
-                    </div>
-                </a>
-            </div>
-            <div className="cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600">
-                <a href={invoiceUrl} target="_blank" rel="noopener noreferrer">
-                    <div className="w-[50px] h-[50px] relative">
-                        <Image src="/invoice.png" alt="invoice" fill sizes="50px" className="object-contain" />
-                    </div>
-                </a>
-            </div>
+            <UsefullLinks domain={shopifyBoutique.domain} orderId={order.id} px="50px" />
         </div>
     );
 }

@@ -5,26 +5,34 @@ import { boutiqueFromDomain } from "@/library/params/paramsShopify";
 import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import Image from "next/image";
 import ProductSection from "./ProductSection";
+import UsefullLinks from "./UsefullLinks";
 
 export default function Order({ order }: { order: GroupedShopifyOrder }) {
     const { handleCopy } = useCopy();
-    const flagUrl = boutiqueFromDomain(order.shop).flag;
+    const boutique = boutiqueFromDomain(order.shop);
+
+    const colissimoUrl = `https://${boutique.domain}/admin/apps/colissimo-officiel/home?id=${order.id.split("/").pop()}`;
+    const invoiceUrl = `https://${boutique.domain}/admin/apps/simple-invoice-1/orders/invoice/quick-edit?id=${order.id
+        .split("/")
+        .pop()}`;
+    const orderUrl = `https://${boutique.domain}/admin/orders/${order.id.split("/").pop()}`;
+
+    const classA = "cursor-pointer hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm ";
 
     return (
         <div className="container mx-auto p-3">
             <Card key={order.id} className="m-0 p-1 gap-1">
                 <CardHeader className="flex flex-wrap justify-between items-center">
                     <div className="flex items-center justify-center gap-4">
-                        <CardTitle className="text-lg transition-colors duration-300 group-hover:text-blue-600 group-hover:font-semibold flex gap-2">
-                            {flagUrl && (
-                                <Image
-                                    src={flagUrl}
-                                    alt={order.shop}
-                                    width={30}
-                                    height={30}
-                                    className="ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2"
-                                />
-                            )}
+                        <CardTitle className="text-lg transition-colors duration-300 group-hover:text-blue-600 group-hover:font-semibold flex gap-0.5">
+                            <Image
+                                src={boutique.flag}
+                                alt={order.shop}
+                                width={30}
+                                height={30}
+                                className="ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2"
+                            />
+
                             <div className="flex items-center gap-2">
                                 {order.name.map((name, index) => (
                                     <span key={index}>
@@ -39,7 +47,25 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                     </span>
                                 ))}
                             </div>
+                            <UsefullLinks domain={boutique.domain} orderId={order.id} px="20px" />
                         </CardTitle>
+
+                        {/* <a href={orderUrl} target="_blank" rel="noopener noreferrer" className={classA}>
+                            <div className="w-[20px] h-[20px] relative">
+                                <Image src="/shopify.png" alt="Shopify" fill sizes="20px" className="object-contain" />
+                            </div>
+                        </a>
+                        <a href={colissimoUrl} target="_blank" rel="noopener noreferrer" className={classA}>
+                            <div className="w-[20px] h-[20px] relative">
+                                <Image src="/colissimo.png" alt="Colissimo" fill sizes="20px" className="object-contain" />
+                            </div>
+                        </a>
+                        <a href={invoiceUrl} target="_blank" rel="noopener noreferrer" className={classA}>
+                            <div className="w-[20px] h-[20px] relative">
+                                <Image src="/invoice.png" alt="invoice" fill sizes="20px" className="object-contain" />
+                            </div>
+                        </a> */}
+
                         <p className="text-sm text-gray-600">
                             {order.totalPriceSet.shopMoney.amount} {order.totalPriceSet.shopMoney.currencyCode}
                         </p>

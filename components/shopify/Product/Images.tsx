@@ -1,10 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useCopy } from "@/library/hooks/useCopy";
-import { ChevronLeft, ChevronRight, Video } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import useShopifyStore from "../shopifyStore";
+import Video from "@/app/product/Metafields/Video";
 
 export default function ImagesProduct() {
     const { product } = useShopifyStore();
