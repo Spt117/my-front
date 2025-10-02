@@ -7,11 +7,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import UpdateStock from "./UpdateStock";
 import { cssCard } from "../product/util";
+import { boutiqueFromDomain } from "@/library/params/paramsShopify";
 
 export function VariantStock({ variant, action }: { variant: TVariant; action: () => void }) {
-    const { shopifyBoutique } = useShopifyStore();
     const path = usePathname();
-    if (!shopifyBoutique) return null;
+
+    const domain = variant.ids[0].shop;
 
     const handleRebuyChange = async () => {
         const data = await toggleRebuy(variant.sku, !variant.rebuy);
@@ -27,8 +28,11 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
         if (data) action();
     };
 
-    const id = variant.ids.find((p) => p.shop === shopifyBoutique.domain);
-    const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${shopifyBoutique.locationHome}`;
+    const id = variant.ids.find((p) => p.shop === domain);
+    const shopifyBoutique = boutiqueFromDomain(domain);
+    const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${
+        shopifyBoutique?.locationHome
+    }`;
 
     return (
         <Card className={cssCard}>
@@ -67,7 +71,7 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
                     </div>
                 </div>
                 <div className="border-t border-gray-200" /> {/* Ligne de séparation */}
-                <UpdateStock params={{ sku: variant.sku, quantity: variant.quantity, domain: shopifyBoutique.domain }} />
+                <UpdateStock params={{ sku: variant.sku, quantity: variant.quantity, domain: domain }} />
             </CardContent>
         </Card>
     );
