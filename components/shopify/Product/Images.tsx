@@ -89,13 +89,14 @@ export default function ImagesProduct() {
                     ))}
                 </div>
             )}
-            <div className="flex flex-col gap-1">
-                <p
+            <div>
+                Vidéo:{" "}
+                <span
                     className="text-xs text-muted-foreground break-all cursor-pointer hover:underline active:text-primary "
                     onClick={() => handleCopy(dataToCupy || "", "ID vidéo copié !")}
                 >
                     {dataToCupy}
-                </p>
+                </span>
             </div>
         </div>
     );
