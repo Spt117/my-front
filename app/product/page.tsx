@@ -50,7 +50,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
         else variant = response.response;
     }
 
-    if (!variant) return <h2>Variante introuvable</h2>;
+    if (!variant)
+        return (
+            <div className="w-full flex align-center justify-center h-full p-10">
+                <h5>Erreur lors de la récupération ou création de la variante avec le SKU {sku}</h5>
+            </div>
+        );
     return (
         <>
             <ProductClient productData={product} shopify={shopify} variantData={variant} />
