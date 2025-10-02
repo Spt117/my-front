@@ -1,6 +1,6 @@
 import { boutiques, IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
-import { IShopifyProductSearch } from "@/components/header/products/shopifySearch";
+import { ProductNode } from "@/components/header/products/shopifySearch";
 import { create } from "zustand";
 import { TBrand, TProductType } from "./ProductType";
 import { TVariant } from "@/library/models/produits/Variant";
@@ -10,8 +10,8 @@ interface StoreState {
     setSearchTerm: (term: string) => void;
     shopifyBoutique: IShopify | null;
     setShopifyBoutique: (boutique: IShopify | null) => void;
-    productsSearch: IShopifyProductSearch[][];
-    setProductsSearch: (products: IShopifyProductSearch[][]) => void;
+    productsSearch: ProductNode[][];
+    setProductsSearch: (products: ProductNode[][]) => void;
     product: ProductGET | null;
     setProduct: (product: ProductGET | null) => void;
     loading: boolean;
@@ -22,6 +22,8 @@ interface StoreState {
     setSelectedBrand: (brand: TBrand | null) => void;
     variant: TVariant | null;
     setVariant: (variant: TVariant | null) => void;
+    mySpinner: boolean;
+    setMySpinner: (loading: boolean) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
@@ -41,6 +43,8 @@ const useShopifyStore = create<StoreState>((set) => ({
     setSelectedBrand: (brand) => set({ selectedBrand: brand }),
     variant: null,
     setVariant: (variant) => set({ variant }),
+    mySpinner: false,
+    setMySpinner: (loading) => set({ mySpinner: loading }),
 }));
 
 export default useShopifyStore;

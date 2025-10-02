@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { IShopifyProductSearch } from "./shopifySearch";
+import { ProductNode } from "./shopifySearch";
 import { boutiqueFromDomain } from "@/library/params/paramsShopify";
 
-export default function ProductToClick({ product }: { product: IShopifyProductSearch }) {
+export default function ProductToClick({ product }: { product: ProductNode }) {
     const classFlag =
         "w-[50px] h-[50px] relative cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600";
     if (!product.domain) return null;

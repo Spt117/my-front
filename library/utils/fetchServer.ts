@@ -45,7 +45,7 @@ export async function postServerOld(url: string, data: any) {
     }
 }
 
-export async function getServer(url: string) {
+export async function getServer(url: string): Promise<IResponseFetch> {
     try {
         const response = await fetch(url, {
             method: "GET",

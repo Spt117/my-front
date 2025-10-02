@@ -1,12 +1,12 @@
 "use server";
 
 import { boutiques } from "@/library/params/paramsShopify";
-import { IShopifyProductSearch } from "@/components/header/products/shopifySearch";
+import { ProductNode } from "@/components/header/products/shopifySearch";
 import { postServer } from "@/library/utils/fetchServer";
 import { toast } from "sonner";
 
 export const search2 = async (query: string) => {
-    const result: IShopifyProductSearch[] = [];
+    const result: ProductNode[] = [];
     for (const boutique of boutiques) {
         try {
             const uri = "http://localhost:9100/shopify/search";
@@ -15,7 +15,7 @@ export const search2 = async (query: string) => {
                 query: query,
             });
             if (res && res.response) {
-                res.response.map((p: IShopifyProductSearch) => (p.domain = boutique.domain));
+                res.response.map((p: ProductNode) => (p.domain = boutique.domain));
                 result.push(...res.response);
             }
         } catch (error) {
@@ -27,12 +27,12 @@ export const search2 = async (query: string) => {
     }
     return result;
 };
-export const search = async (query: string): Promise<IShopifyProductSearch[]> => {
+export const search = async (query: string): Promise<ProductNode[]> => {
     const uri = "http://localhost:9100/shopify/search";
 
     const promises = boutiques.map((boutique) =>
         postServer(uri, { domain: boutique.domain, query })
-            .then((res) => res?.response?.map((p: IShopifyProductSearch) => ({ ...p, domain: boutique.domain })) || [])
+            .then((res) => res?.response?.map((p: ProductNode) => ({ ...p, domain: boutique.domain })) || [])
             .catch((error) => {
                 console.error(`Erreur ${boutique.domain}:`, error);
                 return [];

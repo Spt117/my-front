@@ -23,7 +23,7 @@ interface ProductVariant {
 }
 
 // Type principal pour le produit Beyblade
-interface IShopifyProductSearch {
+interface ProductNode {
     id: string;
     title: string;
     handle: string;
@@ -49,4 +49,4 @@ interface IGetProduct {
 }
 
 // Export du type pour utilisation
-export type { IGetProduct, IShopifyProductSearch, ProductImage, ProductVariant };
+export type { IGetProduct, ProductNode, ProductImage, ProductVariant };

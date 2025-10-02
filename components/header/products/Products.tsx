@@ -1,10 +1,10 @@
-import { IShopifyProductSearch } from "@/components/header/products/shopifySearch";
+import { ProductNode } from "@/components/header/products/shopifySearch";
 import Image from "next/image";
 import Link from "next/link";
 import useShopifyStore from "../../shopify/shopifyStore";
 import ProductToClick from "./ProductToClick";
 
-export default function ProductList({ products }: { products: IShopifyProductSearch[] }) {
+export default function ProductList({ products }: { products: ProductNode[] }) {
     const { shopifyBoutique, setSearchTerm } = useShopifyStore();
     if (!shopifyBoutique) return;
     const productBoutique = products.find((p) => p.domain === shopifyBoutique.domain);

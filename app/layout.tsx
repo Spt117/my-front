@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import MySpinner from "@/components/layout/my-spinner";
 export const dynamic = "force-dynamic";
 
 const geistSans = Geist({
@@ -29,6 +30,7 @@ export default function RootLayout({
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                 <Providers>
+                    <MySpinner />
                     <Toaster position="top-center" richColors />
                     <BackendProvider>{children}</BackendProvider>
                 </Providers>

@@ -1,4 +1,4 @@
-import { IShopifyProductSearch } from "@/components/header/products/shopifySearch";
+import { ProductNode } from "@/components/header/products/shopifySearch";
 import useClickOutside from "@/library/hooks/useClickOutside";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -12,9 +12,9 @@ import ListProducts from "./ListProducts";
  * @param products Array de produits Shopify
  * @returns Array d'arrays de produits groupés par SKU identique
  */
-export function groupProductsBySku(products: IShopifyProductSearch[]): IShopifyProductSearch[][] {
+export function groupProductsBySku(products: ProductNode[]): ProductNode[][] {
     // Créer une Map pour grouper les produits par SKU
-    const skuGroups = new Map<string, IShopifyProductSearch[]>();
+    const skuGroups = new Map<string, ProductNode[]>();
 
     products.forEach((product) => {
         // Récupérer le SKU de la première variante
