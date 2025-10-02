@@ -4,15 +4,9 @@ import Image from "next/image";
 import UsefullLinks from "../UsefullLinks";
 
 export default function OrderSearch({ order }: { order: ShopifyOrder }) {
-    const { shopifyBoutique } = useShopifyStore();
-    console.log(order);
+    const { shopifyBoutique, setSearchTerm } = useShopifyStore();
 
     if (!shopifyBoutique) return null;
-    const orderUrl = `https://${shopifyBoutique.domain}/admin/orders/${order.id.split("/").pop()}`;
-    const colissimoUrl = `https://${shopifyBoutique.domain}/admin/apps/colissimo-officiel/home?id=${order.id.split("/").pop()}`;
-    const invoiceUrl = `https://${shopifyBoutique.domain}/admin/apps/simple-invoice-1/orders/invoice/quick-edit?id=${order.id
-        .split("/")
-        .pop()}`;
     const appUrl = `/${order.id.split("/").pop()}?domain=${shopifyBoutique?.domain}`;
 
     return (

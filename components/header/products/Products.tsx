@@ -5,7 +5,7 @@ import useShopifyStore from "../../shopify/shopifyStore";
 import ProductToClick from "./ProductToClick";
 
 export default function ProductList({ products }: { products: IShopifyProductSearch[] }) {
-    const { shopifyBoutique } = useShopifyStore();
+    const { shopifyBoutique, setSearchTerm } = useShopifyStore();
     if (!shopifyBoutique) return;
     const productBoutique = products.find((p) => p.domain === shopifyBoutique.domain);
     if (!productBoutique || products.length === 0) return <div>Aucun produit trouvé</div>;
@@ -14,7 +14,7 @@ export default function ProductList({ products }: { products: IShopifyProductSea
 
     return (
         <div className="flex items-center">
-            <Link href={url} className="flex-1">
+            <Link href={url} className="flex-1" onClick={() => setSearchTerm("")}>
                 <div className="cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm w-sm">
                     <div className="relative w-12 h-12 flex-shrink-0">
                         <Image

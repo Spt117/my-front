@@ -13,9 +13,10 @@ export default function Amazon() {
     const { product, shopifyBoutique } = useShopifyStore();
     const [asinToAdd, setAsinToAdd] = useState("");
     const [loading, setLoading] = useState(false);
-    const metafieldKey = "amazon_activate";
-    const metafield = product?.metafields.nodes.find((mf) => mf.key === metafieldKey);
-    if (!metafield) return null;
+
+    let activeAmazon = product?.metafields.nodes.find((mf) => mf.key === "amazon_activate");
+    if (!activeAmazon) activeAmazon = { key: "amazon_activate", value: "false", namespace: "custom", type: "boolean" };
+
     const asin = product?.metafields.nodes.find((mf) => mf.key === "asin");
 
     if (!product || !shopifyBoutique) return;
@@ -24,8 +25,8 @@ export default function Amazon() {
         const data: IMetafieldRequest = {
             productId: product.id,
             domain: shopifyBoutique.domain,
-            key: metafield.key,
-            value: metafield.value === "true" ? false : true,
+            key: activeAmazon?.key,
+            value: activeAmazon?.value === "true" ? false : true,
         };
         try {
             const res = await setAmazonActivateMetafield(data);
@@ -43,8 +44,8 @@ export default function Amazon() {
             <>
                 <p className="flex items-center justify-space-between gap-4">
                     Affiliation Amazon:{" "}
-                    <span className="font-semibold">{metafield.value === "true" ? "Activée" : "Désactivée"}</span>
-                    <Switch checked={metafield.value === "true"} onCheckedChange={() => handleToggle()} disabled={loading} />
+                    <span className="font-semibold">{activeAmazon.value === "true" ? "Activée" : "Désactivée"}</span>
+                    <Switch checked={activeAmazon.value === "true"} onCheckedChange={() => handleToggle()} disabled={loading} />
                     <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />
                 </p>
                 <a
