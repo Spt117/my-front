@@ -22,6 +22,11 @@ export default function ImagesProduct() {
     const handleNextImage = () => {
         setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     };
+
+    const metafieldVideo = product?.metafields.nodes.find((mf) => mf.key === "id_video_youtube");
+    const metafieldUrl = product?.metafields.nodes.find((mf) => mf.key === "url_video");
+    const dataToCupy = metafieldVideo ? metafieldVideo.value : metafieldUrl?.value;
+
     return (
         <div className="relative w-1/4 flex flex-col gap-2">
             {/* Image principale */}
@@ -85,16 +90,12 @@ export default function ImagesProduct() {
                 </div>
             )}
             <div className="flex flex-col gap-1">
-                {images.length > 1 &&
-                    images.map((img, index) => (
-                        <p
-                            key={index}
-                            className="text-xs text-muted-foreground break-all cursor-pointer hover:underline active:text-primary "
-                            onClick={() => handleCopy(img.image?.url || "")}
-                        >
-                            {img.image?.url}
-                        </p>
-                    ))}
+                <p
+                    className="text-xs text-muted-foreground break-all cursor-pointer hover:underline active:text-primary "
+                    onClick={() => handleCopy(dataToCupy || "", "ID vidéo copié !")}
+                >
+                    {dataToCupy}
+                </p>
             </div>
         </div>
     );

@@ -2,9 +2,10 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 
 export default function Video() {
     const { product } = useShopifyStore();
-    const metafieldKey = "id_video_youtube";
-    const metafieldVideo = product?.metafields.nodes.find((mf) => mf.key === metafieldKey);
+    const metafieldVideo = product?.metafields.nodes.find((mf) => mf.key === "id_video_youtube");
     const metafieldUrl = product?.metafields.nodes.find((mf) => mf.key === "url_video");
+
+    const dataToCupy = metafieldVideo ? metafieldVideo.value : metafieldUrl?.value;
 
     if (metafieldVideo) {
         return (
