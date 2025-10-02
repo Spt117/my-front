@@ -29,7 +29,7 @@ const useShopifyStore = create<StoreState>((set) => ({
     setLoading: (loading) => set({ loading }),
     searchTerm: "",
     setSearchTerm: (term) => set({ searchTerm: term }),
-    shopifyBoutique: boutiques[1],
+    shopifyBoutique: null,
     setShopifyBoutique: (boutique) => set({ shopifyBoutique: boutique }),
     productsSearch: [],
     setProductsSearch: (products) => set({ productsSearch: products }),
