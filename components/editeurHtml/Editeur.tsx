@@ -65,7 +65,7 @@ export default function ShopifyProductEditor({ htlm }: { htlm?: string }) {
             setOriginalHtml(initial);
             setModifiedHtml(initial);
         }
-    }, [editor, originalHtml]);
+    }, [editor, originalHtml, htlm]);
 
     // Mettre à jour hasChanges dans le store à chaque modification
     useEffect(() => {
