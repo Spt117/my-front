@@ -9,6 +9,10 @@ interface EditorHtmlStore {
     setHasChanges: (hasChanges: boolean) => void;
     modifiedHtml: string;
     setModifiedHtml: (html: string) => void;
+
+    linkDialogOpen: boolean;
+    openLinkDialog: () => void;
+    closeLinkDialog: () => void;
 }
 
 const useEditorHtmlStore = create<EditorHtmlStore>((set) => ({
@@ -20,6 +24,9 @@ const useEditorHtmlStore = create<EditorHtmlStore>((set) => ({
     setHasChanges: (hasChanges) => set({ hasChanges }),
     modifiedHtml: "",
     setModifiedHtml: (html) => set({ modifiedHtml: html }),
+    linkDialogOpen: false,
+    openLinkDialog: () => set({ linkDialogOpen: true }),
+    closeLinkDialog: () => set({ linkDialogOpen: false }),
 }));
 
 export default useEditorHtmlStore;
