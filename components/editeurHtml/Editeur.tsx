@@ -50,8 +50,13 @@ export default function ShopifyProductEditor({ html }: { html?: string }) {
             },
             parseOptions: { preserveWhitespace: false },
             onUpdate: ({ editor }) => {
-                // Mise à jour du HTML modifié à chaque changement dans l'éditeur
-                const newHtml = editor.getHTML();
+                // Mise à jour du HTML modifié avec conversion des espaces autour des liens
+                let newHtml = editor.getHTML();
+
+                // Convertit les espaces normaux autour des liens en &nbsp;
+                newHtml = newHtml.replace(/([^\s>])(\s+)<a/g, "$1&nbsp;<a");
+                newHtml = newHtml.replace(/<\/a>(\s+)([^\s<])/g, "</a>&nbsp;$2");
+
                 setModifiedHtml(newHtml);
             },
         },
