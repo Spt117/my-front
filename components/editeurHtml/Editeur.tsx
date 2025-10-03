@@ -48,7 +48,7 @@ export default function ShopifyProductEditor({ htlm }: { htlm?: string }) {
                     mousedown: (_view, _event) => false,
                 },
             },
-            parseOptions: { preserveWhitespace: "full" },
+            parseOptions: { preserveWhitespace: false },
             onUpdate: ({ editor }) => {
                 // Mise à jour du HTML modifié à chaque changement dans l'éditeur
                 const newHtml = editor.getHTML();
