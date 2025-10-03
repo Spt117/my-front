@@ -58,27 +58,38 @@ export default function ShopifyProductEditor({ html }: { html?: string }) {
         [html]
     );
 
-    // Initialiser l'original une fois l'éditeur chargé
+    // Réinitialiser quand la prop html change (après sauvegarde par exemple)
+    useEffect(() => {
+        if (editor && html) {
+            const initial = editor.getHTML();
+            setOriginalHtml(initial);
+            setModifiedHtml(initial);
+            setHasChanges(false);
+        }
+    }, [html, editor]);
+
+    // Initialiser l'original une fois l'éditeur chargé (première fois seulement)
     useEffect(() => {
         if (editor && !originalHtml) {
             const initial = editor.getHTML();
             setOriginalHtml(initial);
             setModifiedHtml(initial);
         }
-    }, [editor, originalHtml, html]);
+    }, [editor, originalHtml]);
 
     // Mettre à jour hasChanges dans le store à chaque modification
     useEffect(() => {
+        if (!originalHtml) return; // Attendre que l'original soit défini
         const changes = normalizeHTML(modifiedHtml) !== normalizeHTML(originalHtml);
         setHasChanges(changes);
-    }, [modifiedHtml, originalHtml, setHasChanges, html]);
+    }, [modifiedHtml, originalHtml, setHasChanges]);
 
     // Quand on passe en mode code, on prend un snapshot UNE FOIS (formaté) depuis l'éditeur
     useEffect(() => {
         if (showCodeView && editor) {
             setCode(formatHTML(editor.getHTML()));
         }
-    }, [showCodeView, editor, setCode, html]);
+    }, [showCodeView, editor, setCode]);
 
     // Pendant la saisie en mode code, on applique au document TipTap avec un léger debounce
     useEffect(() => {
