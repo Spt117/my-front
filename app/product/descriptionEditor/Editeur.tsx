@@ -9,10 +9,12 @@ import StarterKit from "@tiptap/starter-kit";
 import { MenuBar } from "./MenuBar";
 import useEditorHtmlStore from "./storeEditor";
 import { formatHTML, ImageInline, LinkStrict, PlainListItem } from "./utils";
+import { useEffect, useState } from "react";
 
 export default function ShopifyProductEditor() {
     const { showCodeView } = useEditorHtmlStore();
     const { product } = useShopifyStore();
+    const [code, setCode] = useState("");
 
     const editor = useEditor(
         {
@@ -55,6 +57,22 @@ export default function ShopifyProductEditor() {
         [product]
     );
 
+    // Quand on passe en mode code, on prend un snapshot UNE FOIS (formaté) depuis l’éditeur
+    useEffect(() => {
+        if (showCodeView && editor) {
+            setCode(formatHTML(editor.getHTML()));
+        }
+    }, [showCodeView, editor]);
+
+    // Pendant la saisie, on applique au document TipTap avec un léger debounce
+    useEffect(() => {
+        if (!showCodeView || !editor) return;
+        const id = setTimeout(() => {
+            editor.commands.setContent(code, { emitUpdate: false }); // false = n’émet pas d’update pour éviter les boucles/caret jump
+        }, 250);
+        return () => clearTimeout(id);
+    }, [code, showCodeView, editor]);
+
     const test = () => {
         if (editor) {
             console.log("HTML Output:", formatHTML(editor.getHTML()));
@@ -73,6 +91,7 @@ export default function ShopifyProductEditor() {
                 <MenuBar editor={editor} />
                 <div className="bg-white w-full ">
                     {showCodeView ? (
+                        // ⬇️ Remplace ton <textarea ... /> par celui-ci
                         <textarea
                             ref={(el) => {
                                 if (!el) return;
@@ -84,10 +103,24 @@ export default function ShopifyProductEditor() {
                                 el.style.height = "auto";
                                 el.style.height = `${el.scrollHeight}px`;
                             }}
+                            onKeyDown={(e) => {
+                                // insertion de tabulation sans perdre le caret
+                                if (e.key === "Tab") {
+                                    e.preventDefault();
+                                    const target = e.currentTarget;
+                                    const start = target.selectionStart ?? 0;
+                                    const end = target.selectionEnd ?? 0;
+                                    const next = code.slice(0, start) + "  " + code.slice(end);
+                                    setCode(next);
+                                    queueMicrotask(() => {
+                                        target.selectionStart = target.selectionEnd = start + 2;
+                                    });
+                                }
+                            }}
                             rows={1}
                             className="w-full p-4 font-mono text-sm border-0 outline-none focus:outline focus:outline-2 focus:outline-blue-500 resize-none overflow-hidden"
-                            value={formatHTML(editor?.getHTML() || "")}
-                            onChange={(e) => editor.commands.setContent(e.target.value)}
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
                             placeholder="Code HTML..."
                         />
                     ) : (
