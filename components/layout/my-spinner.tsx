@@ -2,10 +2,10 @@
 
 import useShopifyStore from "../shopify/shopifyStore";
 
-export default function MySpinner() {
+export default function MySpinner({ active }: { active?: boolean }) {
     const { mySpinner } = useShopifyStore();
 
-    if (!mySpinner) return null;
+    if (!mySpinner && !active) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-sm">

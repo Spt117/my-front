@@ -78,7 +78,7 @@ const formatHTML = (html: string): string => {
     let indent = 0;
 
     // Remplacer &nbsp; par espace normal
-    html = html.replace(/&nbsp;/g, " ");
+    // html = html.replace(/&nbsp;/g, " ");
 
     // Découper par balises
     html.split(/(<[^>]+>)/g).forEach((part) => {

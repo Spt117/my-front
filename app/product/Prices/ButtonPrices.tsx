@@ -37,7 +37,7 @@ export default function ButtonPrices() {
         <Button
             disabled={!isChanged && !param}
             onClick={handleUpdatePrice}
-            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 min-w-[150px]"
+            className="bg-emerald-600 enable:hover:bg-emerald-700 disabled:bg-slate-300 min-w-[150px]"
         >
             {isUpdatingPrice ? (
                 <div className="flex items-center gap-2">

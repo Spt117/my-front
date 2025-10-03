@@ -81,7 +81,7 @@ export default function ShopifyProductEditor() {
 
     if (!product || !editor) return null;
     return (
-        <Card className="w-full">
+        <Card className="w-full h-min">
             <CardHeader className="flex flex-row items-center justify-between">
                 <Button onClick={test} variant="outline" size="sm">
                     Sauvegarder

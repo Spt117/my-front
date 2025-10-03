@@ -94,7 +94,7 @@ export default function Action() {
                 </div>
             )}
             <Card className="">
-                <ProductContent variantData={undefined} />
+                <ProductContent />
             </Card>
         </>
     );

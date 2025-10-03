@@ -100,7 +100,14 @@ export function LinkControls({ editor }: { editor: Editor }) {
                         </div>
 
                         <div className="mt-4 flex items-center justify-between gap-2">
-                            <Button type="button" size="sm" variant="outline" onClick={onRemove} title="Retirer le lien">
+                            <Button
+                                disabled={!href}
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={onRemove}
+                                title="Retirer le lien"
+                            >
                                 <Unlink className="mr-2 h-4 w-4" />
                                 Retirer
                             </Button>

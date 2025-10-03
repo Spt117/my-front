@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { useCopy } from "@/library/hooks/useCopy";
-import { Copy } from "lucide-react";
+import { Copy, Tag } from "lucide-react";
 import useShopifyStore from "../shopifyStore";
 
 export default function HeaderProduct() {
@@ -13,7 +13,7 @@ export default function HeaderProduct() {
     const productUrl = `https://${shopifyBoutique.domain}/products/${product.handle}`;
 
     return (
-        <CardHeader>
+        <CardHeader className="sticky top-12 w-full z-10 p-1 bg-gray-50 ">
             <div className="flex items-center justify-between">
                 <CardTitle
                     onClick={() => {
@@ -22,20 +22,27 @@ export default function HeaderProduct() {
                     className="flex items-center gap-2 text-lg font-semibold cursor-pointer transition-transform duration-500 ease-out active:scale-85"
                     title="Cliquer pour copier le titre"
                 >
+                    <Tag size={18} className={`text-gray-500`} />
                     {product.title}
-                    <Copy size={18} className={`text-gray-500`} />
                 </CardTitle>
                 <div className="flex gap-2">
-                    <a href={`https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                    <a
+                        href={`https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                    >
                         <Button className="hover:bg-gray-600">Edit in Shopify</Button>
                     </a>
-                    <a href={productUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                    <a
+                        href={productUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                    >
                         <Button className="hover:bg-gray-600">Aperçu</Button>
                     </a>
                 </div>
-            </div>
-            <div className="text-sm text-muted-foreground">
-                Vendu par {product.vendor} | Catégorie: {product.category?.name || "Non spécifié"}
             </div>
         </CardHeader>
     );

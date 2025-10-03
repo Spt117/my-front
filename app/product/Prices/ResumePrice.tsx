@@ -3,21 +3,19 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import usePriceStore from "./storePrice";
 import { Badge } from "@/components/ui/badge";
 import { useEffect } from "react";
-import { TTaskShopifyProducts } from "@/library/models/tasksShopify/taskType";
 import useTaskStore from "../Tasks/storeTasks";
 import Task from "../Tasks/Task";
 
-export default function ResumePrice({ tasksData }: { tasksData: TTaskShopifyProducts[] }) {
+export default function ResumePrice() {
     const { product, shopifyBoutique } = useShopifyStore();
     const { price, compareAtPrice, setPrice, setCompareAtPrice } = usePriceStore();
-    const { tasks, setTasks } = useTaskStore();
+    const { tasks } = useTaskStore();
 
     useEffect(() => {
-        setTasks(tasksData);
         if (!product) return;
         setPrice(product.variants.nodes[0].price);
         setCompareAtPrice(product.variants.nodes[0].compareAtPrice || "0");
-    }, [product?.variants.nodes[0].price, product?.variants.nodes[0].compareAtPrice, tasksData]);
+    }, [product?.variants.nodes[0].price, product?.variants.nodes[0].compareAtPrice]);
 
     if (!product || !shopifyBoutique) return null;
 

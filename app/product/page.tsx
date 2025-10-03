@@ -1,13 +1,14 @@
 import { getProduct } from "@/components/shopify/serverActions";
+import { TVariant } from "@/library/models/produits/Variant";
 import { variantController } from "@/library/models/produits/variantController";
+import { TaskShopifyController } from "@/library/models/tasksShopify/taskController";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
+import { postServer } from "@/library/utils/fetchServer";
+import { sendToTelegram } from "@/library/utils/telegram";
 import { pokeUriServer, telegram } from "@/library/utils/uri";
 import ProductClient from "./ProductClient";
 import ProductContent from "./ProductContent";
-import { TVariant } from "@/library/models/produits/Variant";
-import { postServer } from "@/library/utils/fetchServer";
-import { sendToTelegram } from "@/library/utils/telegram";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
     const query = (await searchParams) as { id?: string; shopify?: TLocationHome };
@@ -56,10 +57,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
                 <h5>Erreur lors de la récupération ou création de la variante avec le SKU {sku}</h5>
             </div>
         );
+
+    const tasks = await TaskShopifyController.getTaskBySkuAndStockActivation(sku);
+
     return (
         <>
-            <ProductClient productData={product} shopify={shopify} variantData={variant} />
-            <ProductContent variantData={variant} />
+            <ProductClient productData={product} shopify={shopify} variantData={variant} tasksData={tasks} />
+            <ProductContent />
         </>
     );
 }

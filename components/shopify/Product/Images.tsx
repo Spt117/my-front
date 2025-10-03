@@ -1,11 +1,12 @@
 "use client";
+import Video from "@/app/product/Metafields/Video";
 import { Button } from "@/components/ui/button";
 import { useCopy } from "@/library/hooks/useCopy";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import useShopifyStore from "../shopifyStore";
-import Video from "@/app/product/Metafields/Video";
+import AddImage from "./AddImage";
 
 export default function ImagesProduct() {
     const { product } = useShopifyStore();
@@ -89,15 +90,18 @@ export default function ImagesProduct() {
                     ))}
                 </div>
             )}
-            <div>
-                Vidéo:{" "}
-                <span
-                    className="text-xs text-muted-foreground break-all cursor-pointer hover:underline active:text-primary "
-                    onClick={() => handleCopy(dataToCupy || "", "ID vidéo copié !")}
-                >
-                    {dataToCupy}
-                </span>
-            </div>
+            {dataToCupy && (
+                <div>
+                    Vidéo:{" "}
+                    <span
+                        className="text-xs text-muted-foreground break-all cursor-pointer hover:underline active:text-primary "
+                        onClick={() => handleCopy(dataToCupy || "", "ID vidéo copié !")}
+                    >
+                        {dataToCupy}
+                    </span>
+                </div>
+            )}
+            <AddImage />
         </div>
     );
 }

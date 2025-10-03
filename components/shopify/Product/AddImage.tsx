@@ -86,20 +86,7 @@ export default function AddImage() {
         <div className="mx-4 my-8 p-4 border rounded-lg">
             <h3 className="mb-6 text-lg font-semibold text-center">Ajouter des images à {product.title}</h3>
 
-            <div className="space-y-4">
-                {images.map((image, index) => (
-                    <ImageField
-                        key={index}
-                        image={image}
-                        index={index}
-                        showRemove={images.length > 1}
-                        onRemove={handleRemoveImageField}
-                        onChange={handleImageChange}
-                    />
-                ))}
-            </div>
-
-            <div className="flex flex-col items-center gap-4 mt-6">
+            <div className="flex flex-col items-center gap-4 mb-6">
                 <Button onClick={handleAddImageField} variant="outline" className="w-full max-w-xs">
                     <Plus size={16} className="mr-2" />
                     Ajouter un autre champ d'image
@@ -115,6 +102,18 @@ export default function AddImage() {
                         `Ajouter ${images.length} image${images.length > 1 ? "s" : ""}`
                     )}
                 </Button>
+            </div>
+            <div className="space-y-4">
+                {images.map((image, index) => (
+                    <ImageField
+                        key={index}
+                        image={image}
+                        index={index}
+                        showRemove={images.length > 1}
+                        onRemove={handleRemoveImageField}
+                        onChange={handleImageChange}
+                    />
+                ))}
             </div>
         </div>
     );

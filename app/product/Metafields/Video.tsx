@@ -5,6 +5,7 @@ export default function Video() {
     const metafieldVideo = product?.metafields.nodes.find((mf) => mf.key === "id_video_youtube");
     const metafieldUrl = product?.metafields.nodes.find((mf) => mf.key === "url_video");
 
+    if (!metafieldVideo && !metafieldUrl) return null;
     if (metafieldVideo) {
         return (
             <div className="w-full aspect-video">

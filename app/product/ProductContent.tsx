@@ -1,29 +1,39 @@
+"use client";
 import TagsShopify from "@/app/product/Tags/Tags";
-import AddImage from "@/components/shopify/Product/AddImage";
 import HeaderProduct from "@/components/shopify/Product/HeaderProduct";
 import ImagesProduct from "@/components/shopify/Product/Images";
 import LinkToShops from "@/components/shopify/Product/LinkToShops";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
-import { TVariant } from "@/library/models/produits/Variant";
+import { useEffect } from "react";
 import AboutProduct from "./AboutProduct";
 import ShopifyProductEditor from "./descriptionEditor/Editeur";
 import Prices from "./Prices/Prices";
 import VariantClient from "./VariantClient";
 
-export default function ProductContent({ variantData }: { variantData: TVariant | undefined }) {
-    if (!variantData) return null;
+export default function ProductContent() {
+    const { setMySpinner, shopifyBoutique, product } = useShopifyStore();
+
+    useEffect(() => {
+        if (product && shopifyBoutique) setMySpinner(false);
+    }, [product, shopifyBoutique]);
+
+    if (!product || !shopifyBoutique) {
+        return null;
+    }
     return (
-        <div className="@container/main flex flex-1 flex-col md:p-6">
+        <div className="@container/main flex flex-1 flex-col relative">
             <Card className="m-0 p-0 border-0 shadow-none">
                 <HeaderProduct />
-                <CardContent className="flex gap-5 p-0  max-[1600px]:justify-center">
+                <CardContent className="flex gap-5 p-2 max-[1600px]:justify-center">
                     {/* Carrousel d'images */}
                     <ImagesProduct />
+
                     <div className="flex-1 flex p-1 gap-5 w-full max-[1600px]:flex-col">
                         <ShopifyProductEditor />
                         <div className="flex flex-wrap gap-3 justify-center w-full">
                             {/* Détails du produit */}
-                            <Prices sku={variantData.sku} />
+                            <Prices />
                             <VariantClient />
                             <TagsShopify />
                             <AboutProduct />
@@ -34,7 +44,8 @@ export default function ProductContent({ variantData }: { variantData: TVariant 
                 {/* <Metafields metafields={product.metafields.nodes} /> */}
                 {/* Metafields */}
             </Card>
-            <AddImage />
+            {/* <Metafields metafields={product.metafields.nodes} /> */}
+            {/* Metafields */}
         </div>
     );
 }
