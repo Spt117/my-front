@@ -30,7 +30,7 @@ export default function ProductContent() {
                     <ImagesProduct />
 
                     <div className="flex-1 flex p-1 gap-5 w-full max-[1600px]:flex-col">
-                        <ShopifyProductEditor htlm={product.descriptionHtml} />
+                        <ShopifyProductEditor html={product.descriptionHtml} />
                         <div className="flex flex-wrap gap-3 justify-center w-full">
                             {/* Détails du produit */}
                             <Prices />

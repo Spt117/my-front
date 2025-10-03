@@ -18,7 +18,7 @@ const normalizeHTML = (html: string): string => {
         .trim();
 };
 
-export default function ShopifyProductEditor({ htlm }: { htlm?: string }) {
+export default function ShopifyProductEditor({ html }: { html?: string }) {
     const { modifiedHtml, setModifiedHtml, showCodeView, code, setCode, hasChanges, setHasChanges } = useEditorHtmlStore();
     const [originalHtml, setOriginalHtml] = useState<string>("");
 
@@ -26,7 +26,7 @@ export default function ShopifyProductEditor({ htlm }: { htlm?: string }) {
         {
             immediatelyRender: false,
             extensions: [StarterKit.configure({ listItem: false }), PlainListItem, Underline, LinkStrict, TextAlign.configure({ types: ["heading", "paragraph"] }), ImageInline],
-            content: htlm || " ",
+            content: html || " ",
             editorProps: {
                 attributes: {
                     class: "prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4",
@@ -55,7 +55,7 @@ export default function ShopifyProductEditor({ htlm }: { htlm?: string }) {
                 setModifiedHtml(newHtml);
             },
         },
-        [htlm]
+        [html]
     );
 
     // Initialiser l'original une fois l'éditeur chargé
@@ -65,20 +65,20 @@ export default function ShopifyProductEditor({ htlm }: { htlm?: string }) {
             setOriginalHtml(initial);
             setModifiedHtml(initial);
         }
-    }, [editor, originalHtml, htlm]);
+    }, [editor, originalHtml, html]);
 
     // Mettre à jour hasChanges dans le store à chaque modification
     useEffect(() => {
         const changes = normalizeHTML(modifiedHtml) !== normalizeHTML(originalHtml);
         setHasChanges(changes);
-    }, [modifiedHtml, originalHtml, setHasChanges]);
+    }, [modifiedHtml, originalHtml, setHasChanges, html]);
 
     // Quand on passe en mode code, on prend un snapshot UNE FOIS (formaté) depuis l'éditeur
     useEffect(() => {
         if (showCodeView && editor) {
             setCode(formatHTML(editor.getHTML()));
         }
-    }, [showCodeView, editor, setCode]);
+    }, [showCodeView, editor, setCode, html]);
 
     // Pendant la saisie en mode code, on applique au document TipTap avec un léger debounce
     useEffect(() => {
