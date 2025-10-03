@@ -89,7 +89,7 @@ export default function AddImage() {
             <div className="flex flex-col items-center gap-4 mb-6">
                 <Button onClick={handleAddImageField} variant="outline" className="w-full max-w-xs">
                     <Plus size={16} className="mr-2" />
-                    Ajouter un autre champ d'image
+                    Ajouter
                 </Button>
 
                 <Button onClick={handleAddImages} disabled={!canAddImages || loading} className="w-full max-w-xs">
@@ -99,20 +99,13 @@ export default function AddImage() {
                             Ajout en cours...
                         </>
                     ) : (
-                        `Ajouter ${images.length} image${images.length > 1 ? "s" : ""}`
+                        `Enregister ${images.length} image${images.length > 1 ? "s" : ""}`
                     )}
                 </Button>
             </div>
             <div className="space-y-4">
                 {images.map((image, index) => (
-                    <ImageField
-                        key={index}
-                        image={image}
-                        index={index}
-                        showRemove={images.length > 1}
-                        onRemove={handleRemoveImageField}
-                        onChange={handleImageChange}
-                    />
+                    <ImageField key={index} image={image} index={index} showRemove={images.length > 1} onRemove={handleRemoveImageField} onChange={handleImageChange} />
                 ))}
             </div>
         </div>
@@ -184,33 +177,18 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
     return (
         <div className="relative p-4 border rounded-md bg-gray-50">
             {showRemove && (
-                <button
-                    type="button"
-                    onClick={handleRemove}
-                    className="cursor-pointer absolute right-0 top-0 p-1 rounded-full hover:bg-gray-200 transition-colors z-10"
-                    aria-label={`Supprimer l'image ${index + 1}`}
-                >
+                <button type="button" onClick={handleRemove} className="cursor-pointer absolute right-0 top-0 p-1 rounded-full hover:bg-gray-200 transition-colors z-10" aria-label={`Supprimer l'image ${index + 1}`}>
                     <X size={16} />
                 </button>
             )}
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
                 {/* Miniature de l'image */}
                 <div className="flex-shrink-0">
                     <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center bg-white overflow-hidden">
                         {isValidUrl ? (
                             <>
-                                {!imageError && (
-                                    <img
-                                        src={image.url}
-                                        alt={image.altText || "Aperçu"}
-                                        className={`w-full h-full object-cover transition-opacity duration-200 ${
-                                            imageLoaded ? "opacity-100" : "opacity-0"
-                                        }`}
-                                        onLoad={handleImageLoad}
-                                        onError={handleImageError}
-                                    />
-                                )}
+                                {!imageError && <img src={image.url} alt={image.altText || "Aperçu"} className={`w-full h-full object-cover transition-opacity duration-200 ${imageLoaded ? "opacity-100" : "opacity-0"}`} onLoad={handleImageLoad} onError={handleImageError} />}
                                 {!imageLoaded && !imageError && (
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -232,16 +210,8 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
                 {/* Champs de saisie */}
                 <div className="flex-1 grid gap-3">
                     <div>
-                        <Input
-                            value={image.url}
-                            onChange={handleUrlChange}
-                            placeholder="URL de l'image *"
-                            required
-                            className={imageError ? "border-red-300 focus:border-red-500" : ""}
-                        />
-                        {imageError && (
-                            <p className="text-xs text-red-500 mt-1">Impossible de charger l'image depuis cette URL</p>
-                        )}
+                        <Input value={image.url} onChange={handleUrlChange} placeholder="URL de l'image *" required className={imageError ? "border-red-300 focus:border-red-500" : ""} />
+                        {imageError && <p className="text-xs text-red-500 mt-1">Impossible de charger l'image depuis cette URL</p>}
                     </div>
                     <Input value={image.name} onChange={handleNameChange} placeholder="Nom de l'image *" required />
                     <Input value={image.altText} onChange={handleAltTextChange} placeholder="Texte alternatif (optionnel)" />
@@ -251,14 +221,8 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
             {/* Indicateur de statut */}
             {image.url && (
                 <div className="mt-3 flex items-center gap-2">
-                    <div
-                        className={`w-2 h-2 rounded-full ${
-                            imageError ? "bg-red-500" : imageLoaded ? "bg-green-500" : "bg-yellow-500"
-                        }`}
-                    />
-                    <span className="text-xs text-gray-600">
-                        {imageError ? "URL invalide" : imageLoaded ? "Image chargée" : "Chargement..."}
-                    </span>
+                    <div className={`w-2 h-2 rounded-full ${imageError ? "bg-red-500" : imageLoaded ? "bg-green-500" : "bg-yellow-500"}`} />
+                    <span className="text-xs text-gray-600">{imageError ? "URL invalide" : imageLoaded ? "Image chargée" : "Chargement..."}</span>
                 </div>
             )}
         </div>

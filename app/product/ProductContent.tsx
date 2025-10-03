@@ -1,13 +1,13 @@
 "use client";
 import TagsShopify from "@/app/product/Tags/Tags";
-import HeaderProduct from "@/components/shopify/Product/HeaderProduct";
-import ImagesProduct from "@/components/shopify/Product/Images";
+import HeaderProduct from "@/app/product/HeaderProduct";
+import ImagesProduct from "@/app/product/images/Images";
 import LinkToShops from "@/components/shopify/Product/LinkToShops";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect } from "react";
 import AboutProduct from "./AboutProduct";
-import ShopifyProductEditor from "./descriptionEditor/Editeur";
+import ShopifyProductEditor from "../../components/editeurHtml/Editeur";
 import Prices from "./Prices/Prices";
 import VariantClient from "./VariantClient";
 
@@ -30,7 +30,7 @@ export default function ProductContent() {
                     <ImagesProduct />
 
                     <div className="flex-1 flex p-1 gap-5 w-full max-[1600px]:flex-col">
-                        <ShopifyProductEditor />
+                        <ShopifyProductEditor htlm={product.descriptionHtml} />
                         <div className="flex flex-wrap gap-3 justify-center w-full">
                             {/* Détails du produit */}
                             <Prices />

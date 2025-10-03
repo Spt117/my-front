@@ -11,7 +11,7 @@ import { MultiSelect, MultiSelectOption } from "./Multiselect";
 import { ProductType } from "@/components/shopify/ProductType";
 import { toast } from "sonner";
 import { sleep } from "@/library/utils/helpers";
-import HeaderProduct from "@/components/shopify/Product/HeaderProduct";
+import HeaderProduct from "@/app/product/HeaderProduct";
 import ProductContent from "../product/ProductContent";
 import { Card } from "@/components/ui/card";
 

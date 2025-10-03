@@ -1,5 +1,4 @@
 "use client";
-import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import TextAlign from "@tiptap/extension-text-align";
@@ -11,24 +10,23 @@ import useEditorHtmlStore from "./storeEditor";
 import { formatHTML, ImageInline, LinkStrict, PlainListItem } from "./utils";
 import { useEffect, useState } from "react";
 
-export default function ShopifyProductEditor() {
-    const { showCodeView } = useEditorHtmlStore();
-    const { product } = useShopifyStore();
-    const [code, setCode] = useState("");
+// Fonction pour normaliser le HTML avant comparaison
+const normalizeHTML = (html: string): string => {
+    return html
+        .replace(/\s+/g, " ") // Remplace les espaces multiples par un seul
+        .replace(/>\s+</g, "><") // Enlève les espaces entre les balises
+        .trim();
+};
+
+export default function ShopifyProductEditor({ htlm }: { htlm?: string }) {
+    const { modifiedHtml, setModifiedHtml, showCodeView, code, setCode, hasChanges, setHasChanges } = useEditorHtmlStore();
+    const [originalHtml, setOriginalHtml] = useState<string>("");
 
     const editor = useEditor(
         {
             immediatelyRender: false,
-            extensions: [
-                StarterKit.configure({ listItem: false }),
-                PlainListItem, // (ta version qui évite <p> dans <li>)
-                Underline,
-                LinkStrict, // <= ici
-                TextAlign.configure({ types: ["heading", "paragraph"] }),
-                ImageInline, // <= ici
-            ],
-            content: product?.descriptionHtml || "<p>Commencez à écrire la description du produit...</p>",
-            // Remplace ton editorProps par celui-ci (on enlève le mousedown bloquant, on gère proprement via handleClick)
+            extensions: [StarterKit.configure({ listItem: false }), PlainListItem, Underline, LinkStrict, TextAlign.configure({ types: ["heading", "paragraph"] }), ImageInline],
+            content: htlm || " ",
             editorProps: {
                 attributes: {
                     class: "prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4",
@@ -36,62 +34,71 @@ export default function ShopifyProductEditor() {
                 handleClick: (_view, _pos, event) => {
                     const el = (event.target as HTMLElement) || null;
 
-                    // Autorise l’ouverture volontaire (Ctrl/Cmd + clic)
                     if ((event as MouseEvent).metaKey || (event as MouseEvent).ctrlKey) {
                         return false;
                     }
 
                     if (el && el.closest("a[href]")) {
-                        event.preventDefault(); // empêche la navigation
-                        return true; // mais laisse le curseur/edit fonctionner
+                        event.preventDefault();
+                        return true;
                     }
                     return false;
                 },
                 handleDOMEvents: {
-                    // Laisse ProseMirror gérer le placement du curseur au mousedown
                     mousedown: (_view, _event) => false,
                 },
             },
             parseOptions: { preserveWhitespace: "full" },
+            onUpdate: ({ editor }) => {
+                // Mise à jour du HTML modifié à chaque changement dans l'éditeur
+                const newHtml = editor.getHTML();
+                setModifiedHtml(newHtml);
+            },
         },
-        [product]
+        [htlm]
     );
 
-    // Quand on passe en mode code, on prend un snapshot UNE FOIS (formaté) depuis l’éditeur
+    // Initialiser l'original une fois l'éditeur chargé
+    useEffect(() => {
+        if (editor && !originalHtml) {
+            const initial = editor.getHTML();
+            setOriginalHtml(initial);
+            setModifiedHtml(initial);
+        }
+    }, [editor, originalHtml]);
+
+    // Mettre à jour hasChanges dans le store à chaque modification
+    useEffect(() => {
+        const changes = normalizeHTML(modifiedHtml) !== normalizeHTML(originalHtml);
+        setHasChanges(changes);
+    }, [modifiedHtml, originalHtml, setHasChanges]);
+
+    // Quand on passe en mode code, on prend un snapshot UNE FOIS (formaté) depuis l'éditeur
     useEffect(() => {
         if (showCodeView && editor) {
             setCode(formatHTML(editor.getHTML()));
         }
-    }, [showCodeView, editor]);
+    }, [showCodeView, editor, setCode]);
 
-    // Pendant la saisie, on applique au document TipTap avec un léger debounce
+    // Pendant la saisie en mode code, on applique au document TipTap avec un léger debounce
     useEffect(() => {
         if (!showCodeView || !editor) return;
         const id = setTimeout(() => {
-            editor.commands.setContent(code, { emitUpdate: false }); // false = n’émet pas d’update pour éviter les boucles/caret jump
+            editor.commands.setContent(code, { emitUpdate: false });
+            // Mise à jour du HTML modifié même en mode code
+            setModifiedHtml(code);
         }, 250);
         return () => clearTimeout(id);
     }, [code, showCodeView, editor]);
 
-    const test = () => {
-        if (editor) {
-            console.log("HTML Output:", formatHTML(editor.getHTML()));
-        }
-    };
-
-    if (!product || !editor) return null;
+    if (!editor) return null;
     return (
-        <Card className="w-full h-min">
-            <CardHeader className="flex flex-row items-center justify-between">
-                <Button onClick={test} variant="outline" size="sm">
-                    Sauvegarder
-                </Button>
-            </CardHeader>
-            <CardContent className="p-0 bg-red-500/5 ">
+        <Card className="w-full h-min p-0">
+            <CardHeader className=" m-0 p-3">Description</CardHeader>
+            <CardContent className="p-0 m-0">
                 <MenuBar editor={editor} />
                 <div className="bg-white w-full ">
                     {showCodeView ? (
-                        // ⬇️ Remplace ton <textarea ... /> par celui-ci
                         <textarea
                             ref={(el) => {
                                 if (!el) return;
@@ -104,7 +111,6 @@ export default function ShopifyProductEditor() {
                                 el.style.height = `${el.scrollHeight}px`;
                             }}
                             onKeyDown={(e) => {
-                                // insertion de tabulation sans perdre le caret
                                 if (e.key === "Tab") {
                                     e.preventDefault();
                                     const target = e.currentTarget;
@@ -124,10 +130,7 @@ export default function ShopifyProductEditor() {
                             placeholder="Code HTML..."
                         />
                     ) : (
-                        <EditorContent
-                            editor={editor}
-                            className="prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4 leading-snug [&_p]:my-1 [&_img]:inline-block [&_img]:align-middle [&_img]:m-0"
-                        />
+                        <EditorContent editor={editor} className="prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4 leading-snug [&_p]:my-1 [&_img]:inline-block [&_img]:align-middle [&_img]:m-0" />
                     )}
                 </div>
             </CardContent>
