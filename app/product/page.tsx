@@ -13,18 +13,26 @@ import ProductContent from "./ProductContent";
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
     const query = (await searchParams) as { id?: string; shopify?: TLocationHome };
 
-    if (!query.id || !query.shopify) return null;
+    if (!query.id || !query.shopify) return <ProductContent />;
 
     const shopify = boutiqueFromLocation(query.shopify) as IShopify;
     const data = { productId: query.id, domain: shopify.domain };
     const product = await getProduct(data);
 
-    if (!product?.response) return <div>Erreur lors de la récupération du produit</div>;
+    if (product?.error || !product?.response) {
+        return (
+            <div className="p-4 flex flex-col items-center justify-center">
+                <h2>Erreur lors de la récupération du produit</h2>
+                <p>{product?.error}</p>
+            </div>
+        );
+    }
 
     const sku = product.response.variants.nodes[0].sku;
-    let variant = await variantController.getVariantBySku(sku);
+    let variant = null;
 
-    if (!variant) {
+    if (sku) variant = await variantController.getVariantBySku(sku);
+    if (!variant && sku) {
         sendToTelegram(`Variant with SKU: ${sku} not found in local database. Creating...`, telegram.rapports);
         const url = `${pokeUriServer}/shopify/create-variant`;
         const variantProduct = product.response.variants.nodes[0];
@@ -47,16 +55,15 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
             ],
         };
         const response = await postServer(url, { variant: variantData, domain: shopify.domain });
-        if (response.error) return <h2>Erreur lors de la récupération de la variante {sku}</h2>;
+        if (response.error)
+            return (
+                <div className="p-4 flex flex-col items-center justify-center">
+                    <h2>Erreur lors de la récupération de la variante {sku}</h2>
+                    <p>{response.error}</p>
+                </div>
+            );
         else variant = response.response;
     }
-
-    if (!variant)
-        return (
-            <div className="w-full flex align-center justify-center h-full p-10">
-                <h5>Erreur lors de la récupération ou création de la variante avec le SKU {sku}</h5>
-            </div>
-        );
 
     const tasks = await TaskShopifyController.getTaskBySkuAndStockActivation(sku);
 

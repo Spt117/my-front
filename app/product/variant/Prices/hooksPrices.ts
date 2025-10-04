@@ -4,10 +4,10 @@ import { TTaskShopifyProducts } from "@/library/models/tasksShopify/taskType";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { updateVariant } from "../serverAction";
-import useProductStore from "../storeProduct";
-import useTaskStore from "../Tasks/storeTasks";
-import { TFieldVariant } from "../util";
+import { updateVariant } from "../../serverAction";
+import useProductStore from "../../storeProduct";
+import useTaskStore from "../../Tasks/storeTasks";
+import { TFieldVariant } from "../../util";
 
 export default function usePrices() {
     const { product, shopifyBoutique } = useShopifyStore();

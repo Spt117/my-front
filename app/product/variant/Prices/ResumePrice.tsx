@@ -2,9 +2,9 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Badge } from "@/components/ui/badge";
 import { useEffect } from "react";
-import useTaskStore from "../Tasks/storeTasks";
-import Task from "../Tasks/Task";
-import useProductStore from "../storeProduct";
+import useTaskStore from "../../Tasks/storeTasks";
+import Task from "../../Tasks/Task";
+import useProductStore from "../../storeProduct";
 
 export default function ResumePrice() {
     const { product, shopifyBoutique } = useShopifyStore();

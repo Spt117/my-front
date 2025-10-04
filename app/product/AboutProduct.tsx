@@ -4,13 +4,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCopy } from "@/library/hooks/useCopy";
 import { Copy } from "lucide-react";
 import Amazon from "./Metafields/Amazon";
-import { cssCard } from "./util";
+import { classCopy, cssCard } from "./util";
 
 export default function AboutProduct() {
     const { product } = useShopifyStore();
     const { handleCopy } = useCopy();
     const variant = product?.variants?.nodes[0];
-    const classCopy = "cursor-pointer transition-transform duration-500 ease-out active:scale-93";
 
     if (!product || !variant) return null;
     return (

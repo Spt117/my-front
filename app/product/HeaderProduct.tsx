@@ -1,31 +1,32 @@
 "use client";
 import useEditorHtmlStore from "@/components/editeurHtml/storeEditor";
 import { formatHTML } from "@/components/editeurHtml/utils";
-import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { useCopy } from "@/library/hooks/useCopy";
-import { Tag } from "lucide-react";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { Globe, Save, Tag } from "lucide-react";
+import Image from "next/image";
 import { toast } from "sonner";
 import useShopifyStore from "../../components/shopify/shopifyStore";
 import { updateProduct } from "./serverAction";
 import useProductStore from "./storeProduct";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
 export default function HeaderProduct() {
     const { handleCopy } = useCopy();
-    const { product, shopifyBoutique, loading, setLoading } = useShopifyStore();
-    const { newTitle } = useProductStore();
+    const { product, shopifyBoutique } = useShopifyStore();
+    const { newTitle, loadingSave, setLoadingSave } = useProductStore();
     const { hasChanges, modifiedHtml } = useEditorHtmlStore();
 
     if (!product || !shopifyBoutique) return null;
 
     const productUrl = `https://${shopifyBoutique.domain}/products/${product.handle}`;
 
-    const disabledSave = (!hasChanges && newTitle === product.title) || loading;
+    const disabledSave = (!hasChanges && newTitle === product.title) || loadingSave;
 
     const handleSave = async () => {
-        setLoading(true);
+        if (disabledSave || !product) return;
+        setLoadingSave(true);
         if (hasChanges) {
             try {
                 const descriptionHtml = formatHTML(modifiedHtml);
@@ -47,7 +48,7 @@ export default function HeaderProduct() {
                 toast.error("Erreur lors de la sauvegarde");
             }
         }
-        setLoading(false);
+        setLoadingSave(false);
     };
 
     const handleSaveShortcut = () => {
@@ -61,6 +62,7 @@ export default function HeaderProduct() {
     };
 
     useKeyboardShortcuts("Enter", handleSaveShortcut);
+    useKeyboardShortcuts({ key: "Enter", ctrl: true }, handleSave);
 
     return (
         <CardHeader className="sticky top-12 w-full z-10 p-1 bg-gray-50 ">
@@ -72,30 +74,39 @@ export default function HeaderProduct() {
                     className="flex items-center gap-2 text-lg font-semibold cursor-pointer transition-transform duration-500 ease-out active:scale-85"
                     title="Cliquer pour copier le titre"
                 >
-                    <Tag size={18} className={`text-gray-500`} />
+                    <Tag size={20} className={`text-gray-500`} />
                     {product.title}
                 </CardTitle>
-                <div className="flex gap-2">
-                    <Button disabled={disabledSave} className="hover:bg-gray-600" onClick={handleSave}>
-                        Save
-                        {loading && <Spinner className="ml-2" />}
-                    </Button>
-
+                <div className="flex gap-2 items-center mr-2">
+                    {!loadingSave && (
+                        <span title="Sauvegarder les modifications" className="text-sm text-gray-500 italic">
+                            <Save
+                                color={disabledSave ? "gray" : "black"}
+                                size={33}
+                                className={disabledSave ? "cursor-not-allowed" : "cursor-pointer"}
+                                onClick={!disabledSave ? handleSave : undefined}
+                            />
+                        </span>
+                    )}
+                    {loadingSave && <Spinner className="ml-2" />}
+                    <a href={productUrl} target="_blank" rel="noopener noreferrer">
+                        <span title="Voir le produit sur la boutique">
+                            <Globe size={33} className="ml-2" />
+                        </span>
+                    </a>
                     <a
                         href={`https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline"
                     >
-                        <Button className="hover:bg-gray-600">Edit in Shopify</Button>
-                    </a>
-                    <a
-                        href={productUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline"
-                    >
-                        <Button className="hover:bg-gray-600">Aperçu</Button>
+                        <Image
+                            title="Editer sur Shopify"
+                            src="/shopify.png"
+                            alt="Flag"
+                            width={20}
+                            height={20}
+                            className="ml-2 object-contain w-auto h-auto"
+                        />
                     </a>
                 </div>
             </div>

@@ -1,6 +1,8 @@
 import { create } from "zustand";
 
 interface StoreState {
+    loadingSave: boolean;
+    setLoadingSave: (loading: boolean) => void;
     price: string;
     setPrice: (price: string) => void;
     compareAtPrice: string;
@@ -11,9 +13,14 @@ interface StoreState {
     setIsChanged: (isChanged: boolean) => void;
     newTitle: string;
     setNewTitle: (title: string) => void;
+    addProductDialogOpen: boolean;
+    openAddProductDialog: () => void;
+    closeAddProductDialog: () => void;
 }
 
 const useProductStore = create<StoreState>((set) => ({
+    loadingSave: false,
+    setLoadingSave: (loading) => set({ loadingSave: loading }),
     price: "0",
     setPrice: (price) => set({ price }),
     compareAtPrice: "0",
@@ -24,6 +31,9 @@ const useProductStore = create<StoreState>((set) => ({
     setIsChanged: (isChanged) => set({ isChanged }),
     newTitle: "",
     setNewTitle: (title) => set({ newTitle: title }),
+    addProductDialogOpen: false,
+    openAddProductDialog: () => set({ addProductDialogOpen: true }),
+    closeAddProductDialog: () => set({ addProductDialogOpen: false }),
 }));
 
 export default useProductStore;

@@ -8,20 +8,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useEffect } from "react";
 import AboutProduct from "./AboutProduct";
 import EditeurHtml from "../../components/editeurHtml/Editeur";
-import Prices from "./Prices/Prices";
+import Prices from "./variant/Prices/Prices";
 import VariantClient from "./VariantClient";
 import HeaderEditeur from "./HeaderEditeur";
+import { boutiques } from "@/library/params/paramsShopify";
+import Sku from "./variant/Sku";
 
 export default function ProductContent() {
-    const { setMySpinner, shopifyBoutique, product } = useShopifyStore();
+    const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
+
+    useEffect(() => {
+        if (!shopifyBoutique) setShopifyBoutique(boutiques[0]);
+    }, [shopifyBoutique, setShopifyBoutique]);
 
     useEffect(() => {
         if (product && shopifyBoutique) setMySpinner(false);
     }, [product, shopifyBoutique]);
 
-    if (!product || !shopifyBoutique) {
-        return null;
-    }
+    if (!product || !shopifyBoutique) return null;
     return (
         <div className="@container/main flex flex-1 flex-col relative">
             <Card className="m-0 p-0 border-0 shadow-none">
@@ -31,16 +35,17 @@ export default function ProductContent() {
                     <ImagesProduct />
 
                     <div className="flex-1 flex p-1 gap-5 w-full max-[1600px]:flex-col">
-                        <EditeurHtml html={product.descriptionHtml}>
+                        <EditeurHtml html={product?.descriptionHtml}>
                             <HeaderEditeur />
                         </EditeurHtml>
                         <div className="flex flex-wrap gap-3 justify-center w-full">
                             {/* Détails du produit */}
-                            <Prices />
-                            <VariantClient />
                             <TagsShopify />
+                            <Prices />
+                            <Sku />
                             <AboutProduct />
                             <LinkToShops />
+                            <VariantClient />
                         </div>
                     </div>
                 </CardContent>

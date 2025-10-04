@@ -5,7 +5,7 @@ import { Label } from "@radix-ui/react-label";
 import { Tag } from "lucide-react";
 import { useEffect, useRef } from "react";
 import InputPrice from "./InputPrice";
-import useProductStore from "../storeProduct";
+import useProductStore from "../../storeProduct";
 
 export default function CompareAtPriceUpdate() {
     const { product, shopifyBoutique } = useShopifyStore();

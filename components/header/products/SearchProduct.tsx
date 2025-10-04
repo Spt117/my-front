@@ -1,6 +1,9 @@
+import AddProduct from "@/app/product/newProduct/AddProduct";
+import useProductStore from "@/app/product/storeProduct";
 import { ProductNode } from "@/components/header/products/shopifySearch";
+import { Button } from "@/components/ui/button";
 import useClickOutside from "@/library/hooks/useClickOutside";
-import { X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import useShopifyStore from "../../shopify/shopifyStore";
 import { Input } from "../../ui/input";
@@ -41,6 +44,7 @@ export default function SearchProduct() {
     const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const ref = useClickOutside<HTMLDivElement>(() => setSearchTerm(""));
+    const { openAddProductDialog } = useProductStore();
 
     const handleSearch = async (query: string) => {
         if (!query.trim() || !shopifyBoutique) return;
@@ -90,34 +94,39 @@ export default function SearchProduct() {
     if (!shopifyBoutique) return null;
     return (
         <div className="relative w-full" ref={ref}>
-            <div className="relative w-full">
-                <Input
-                    disabled={!shopifyBoutique}
-                    type="text"
-                    value={searchTerm}
-                    onChange={handleInputChange}
-                    placeholder="Produit Shopify"
-                    className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
-                />
+            <div className="w-full flex gap-2">
+                <div className="relative w-full">
+                    <Input
+                        disabled={!shopifyBoutique}
+                        type="text"
+                        value={searchTerm}
+                        onChange={handleInputChange}
+                        placeholder="Produit Shopify"
+                        className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
+                    />
 
-                {searchTerm && (
-                    <button
-                        type="button"
-                        onClick={() => setSearchTerm("")}
-                        className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
-                        aria-label="Effacer la recherche"
-                    >
-                        <X size={16} />
-                    </button>
-                )}
+                    {searchTerm && (
+                        <button
+                            type="button"
+                            onClick={() => setSearchTerm("")}
+                            className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                            aria-label="Effacer la recherche"
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
 
-                {loading && (
-                    <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
-                        <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                    </div>
-                )}
+                    {loading && (
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                        </div>
+                    )}
+                </div>
+                <Button onClick={openAddProductDialog} aria-label="Ajouter un produit" className="p-2" title="Ajouter un produit">
+                    <Plus size={16} />
+                </Button>
+                <AddProduct />
             </div>
-
             {/* Liste des produits positionnée sous l'input */}
             <ListProducts />
         </div>

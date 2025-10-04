@@ -3,9 +3,9 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
 import { useEffect } from "react";
-import useTaskStore from "../Tasks/storeTasks";
+import useTaskStore from "../../Tasks/storeTasks";
 import usePrices from "./hooksPrices";
-import useProductStore from "../storeProduct";
+import useProductStore from "../../storeProduct";
 
 export default function ButtonPrices() {
     const { product, shopifyBoutique } = useShopifyStore();

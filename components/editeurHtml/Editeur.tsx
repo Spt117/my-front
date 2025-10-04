@@ -39,6 +39,13 @@ export default function EditeurHtml({ html, children }: { html?: string; childre
                 attributes: {
                     class: "prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4",
                 },
+                handleKeyDown: (_view, event) => {
+                    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+                        event.preventDefault();
+                        return true;
+                    }
+                    return false;
+                },
                 handleClick: (_view, _pos, event) => {
                     const el = (event.target as HTMLElement) || null;
 
@@ -137,6 +144,10 @@ export default function EditeurHtml({ html, children }: { html?: string; childre
                                 el.style.height = `${el.scrollHeight}px`;
                             }}
                             onKeyDown={(e) => {
+                                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                                    e.preventDefault();
+                                    return;
+                                }
                                 if (e.key === "Tab") {
                                     e.preventDefault();
                                     const target = e.currentTarget;
