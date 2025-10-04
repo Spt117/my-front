@@ -46,10 +46,11 @@ export default function ProductClient({
             console.log("No current variant in store. Cannot update.");
             return;
         }
-        if (product?.id === productId) {
+        const idProduct = product?.id.replace("gid://shopify/Product/", "");
+        if (idProduct === productId) {
             router.refresh();
             toast.success(`${currentVariant.title} a été mis à jour`);
-        } else console.log("SKU does not match. No update needed.");
+        } else console.log("Product ID does not match. No update needed.");
     };
 
     if (!product || !shopifyBoutique) {
