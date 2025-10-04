@@ -27,7 +27,7 @@ export default function ProductClient({
     const router = useRouter();
     const { setTasks } = useTaskStore();
 
-    useEventListener("products/update", (data) => getProductUpdated(data.sku));
+    useEventListener("products/update", (data) => getProductUpdated(data.productId));
 
     useEffect(() => {
         const boutique = boutiqueFromDomain(shopify.domain);
@@ -38,13 +38,13 @@ export default function ProductClient({
         if (productData.error) toast.error(productData.error);
     }, [shopify.domain, productData.response, variantData, tasksData]);
 
-    const getProductUpdated = async (sku: string) => {
+    const getProductUpdated = async (productId: string) => {
         const currentVariant = useShopifyStore.getState().variant;
         if (!currentVariant) {
             console.log("No current variant in store. Cannot update.");
             return;
         }
-        if (currentVariant.sku === sku) {
+        if (product?.id === productId) {
             router.refresh();
             toast.success(`${currentVariant.title} a été mis à jour`);
         } else console.log("SKU does not match. No update needed.");
