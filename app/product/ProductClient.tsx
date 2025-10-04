@@ -41,17 +41,17 @@ export default function ProductClient({
     const getProductUpdated = async (productId: string) => {
         console.log("Received products/update event for productId:", productId);
 
-        const currentVariant = useShopifyStore.getState().variant;
-        if (!currentVariant) {
-            console.log("No current variant in store. Cannot update.");
+        const currentProduct = useShopifyStore.getState().product;
+        if (!currentProduct) {
+            console.log("No current product in store. Cannot update.");
             return;
         }
-        const idProduct = product?.id.replace("gid://shopify/Product/", "");
+        const idProduct = currentProduct?.id.replace("gid://shopify/Product/", "");
         console.log("Current product ID:", idProduct);
         console.log("Id received:", productId);
         if (idProduct === productId) {
             router.refresh();
-            toast.success(`${currentVariant.title} a été mis à jour`);
+            toast.success(`${currentProduct.title} a été mis à jour`);
         } else console.log("Product ID does not match. No update needed.");
     };
 
