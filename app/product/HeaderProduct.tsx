@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import useShopifyStore from "../../components/shopify/shopifyStore";
 import { updateProduct } from "./serverAction";
 import useProductStore from "./storeProduct";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
 export default function HeaderProduct() {
     const { handleCopy } = useCopy();
@@ -21,7 +22,11 @@ export default function HeaderProduct() {
 
     const productUrl = `https://${shopifyBoutique.domain}/products/${product.handle}`;
 
+    const disabledSave = (!hasChanges && newTitle === product.title) || loading;
+
     const handleSave = async () => {
+        if (disabledSave) return;
+
         setLoading(true);
         if (hasChanges) {
             try {
@@ -47,6 +52,8 @@ export default function HeaderProduct() {
         setLoading(false);
     };
 
+    useKeyboardShortcuts("Enter", handleSave);
+
     return (
         <CardHeader className="sticky top-12 w-full z-10 p-1 bg-gray-50 ">
             <div className="flex items-center justify-between">
@@ -61,11 +68,7 @@ export default function HeaderProduct() {
                     {product.title}
                 </CardTitle>
                 <div className="flex gap-2">
-                    <Button
-                        disabled={(!hasChanges && newTitle === product.title) || loading}
-                        className="hover:bg-gray-600"
-                        onClick={handleSave}
-                    >
+                    <Button disabled={disabledSave} className="hover:bg-gray-600" onClick={handleSave}>
                         Save
                         {loading && <Spinner className="ml-2" />}
                     </Button>

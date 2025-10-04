@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -8,9 +8,6 @@ import { useEffect, useState } from "react";
 import { MenuBar } from "./MenuBar";
 import useEditorHtmlStore from "./storeEditor";
 import { formatHTML, ImageInline, LinkStrict, PlainListItem } from "./utils";
-import { Title } from "@radix-ui/react-dialog";
-import { Input } from "../ui/input";
-import { Label } from "@radix-ui/react-label";
 
 // Fonction pour normaliser le HTML avant comparaison
 const normalizeHTML = (html: string): string => {
@@ -124,7 +121,7 @@ export default function EditeurHtml({ html, children }: { html?: string; childre
     return (
         <Card className="w-full h-min p-5 gap-0 ">
             {children}
-            <CardContent className="p-0 pt-0 border border-slate-400 bg-slate-50 rounded-xl">
+            <CardContent className="p-0 pt-0 border border-slate-400 bg-slate-50 rounded-xl overflow-hidden">
                 <MenuBar editor={editor} />
                 <div className="bg-white w-full ">
                     {showCodeView ? (
