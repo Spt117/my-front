@@ -25,8 +25,6 @@ export default function HeaderProduct() {
     const disabledSave = (!hasChanges && newTitle === product.title) || loading;
 
     const handleSave = async () => {
-        if (disabledSave) return;
-
         setLoading(true);
         if (hasChanges) {
             try {
@@ -52,7 +50,17 @@ export default function HeaderProduct() {
         setLoading(false);
     };
 
-    useKeyboardShortcuts("Enter", handleSave);
+    const handleSaveShortcut = () => {
+        if (disabledSave) return;
+        const activeElement = document.activeElement;
+        const isInEditor = activeElement?.closest(".ProseMirror") !== null;
+        const isInTextarea = activeElement?.tagName === "TEXTAREA";
+        if (isInEditor || isInTextarea) {
+            return; // Ne pas sauvegarder
+        } else handleSave();
+    };
+
+    useKeyboardShortcuts("Enter", handleSaveShortcut);
 
     return (
         <CardHeader className="sticky top-12 w-full z-10 p-1 bg-gray-50 ">
