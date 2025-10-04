@@ -39,6 +39,8 @@ export default function ProductClient({
     }, [shopify.domain, productData.response, variantData, tasksData]);
 
     const getProductUpdated = async (productId: string) => {
+        console.log("Received products/update event for productId:", productId);
+
         const currentVariant = useShopifyStore.getState().variant;
         if (!currentVariant) {
             console.log("No current variant in store. Cannot update.");
