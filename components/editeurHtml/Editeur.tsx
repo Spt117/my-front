@@ -1,14 +1,16 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { useEffect, useState } from "react";
 import { MenuBar } from "./MenuBar";
 import useEditorHtmlStore from "./storeEditor";
 import { formatHTML, ImageInline, LinkStrict, PlainListItem } from "./utils";
-import { useEffect, useState } from "react";
+import { Title } from "@radix-ui/react-dialog";
+import { Input } from "../ui/input";
+import { Label } from "@radix-ui/react-label";
 
 // Fonction pour normaliser le HTML avant comparaison
 const normalizeHTML = (html: string): string => {
@@ -18,14 +20,23 @@ const normalizeHTML = (html: string): string => {
         .trim();
 };
 
-export default function ShopifyProductEditor({ html }: { html?: string }) {
+import { ReactNode } from "react";
+
+export default function EditeurHtml({ html, children }: { html?: string; children?: ReactNode }) {
     const { modifiedHtml, setModifiedHtml, showCodeView, code, setCode, hasChanges, setHasChanges } = useEditorHtmlStore();
     const [originalHtml, setOriginalHtml] = useState<string>("");
 
     const editor = useEditor(
         {
             immediatelyRender: false,
-            extensions: [StarterKit.configure({ listItem: false }), PlainListItem, Underline, LinkStrict, TextAlign.configure({ types: ["heading", "paragraph"] }), ImageInline],
+            extensions: [
+                StarterKit.configure({ listItem: false }),
+                PlainListItem,
+                Underline,
+                LinkStrict,
+                TextAlign.configure({ types: ["heading", "paragraph"] }),
+                ImageInline,
+            ],
             content: html || " ",
             editorProps: {
                 attributes: {
@@ -106,12 +117,14 @@ export default function ShopifyProductEditor({ html }: { html?: string }) {
         }, 250);
         return () => clearTimeout(id);
     }, [code, showCodeView, editor]);
-
+    {
+        children;
+    }
     if (!editor) return null;
     return (
-        <Card className="w-full h-min p-0">
-            <CardHeader className=" m-0 p-3">Description</CardHeader>
-            <CardContent className="p-0 m-0">
+        <Card className="w-full h-min p-5 gap-0 ">
+            {children}
+            <CardContent className="p-0 pt-0 border border-slate-400 bg-slate-50 rounded-xl">
                 <MenuBar editor={editor} />
                 <div className="bg-white w-full ">
                     {showCodeView ? (
@@ -146,7 +159,10 @@ export default function ShopifyProductEditor({ html }: { html?: string }) {
                             placeholder="Code HTML..."
                         />
                     ) : (
-                        <EditorContent editor={editor} className="prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4 leading-snug [&_p]:my-1 [&_img]:inline-block [&_img]:align-middle [&_img]:m-0" />
+                        <EditorContent
+                            editor={editor}
+                            className="prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4 leading-snug [&_p]:my-1 [&_img]:inline-block [&_img]:align-middle [&_img]:m-0"
+                        />
                     )}
                 </div>
             </CardContent>

@@ -4,19 +4,24 @@ import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import { sleep } from "@/library/utils/helpers";
 import { Archive, ArrowBigLeft, RefreshCcw } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MappingOrders from "./MappingOrders";
 import Products from "./ModeProducts/Products";
 import { revalidateOrders } from "./serverAction";
 import { ProductInOrder } from "./store";
 import ToggleMode from "./ToggleMode";
+import useShopifyStore from "../shopifyStore";
 
 export default function RefreshOders({ products, orders }: { products: ProductInOrder[]; orders: GroupedShopifyOrder[] }) {
     const [isLoading, setIsLoading] = useState(false);
+    const { setShopifyBoutique } = useShopifyStore();
     const path = usePathname();
     const router = useRouter();
     useEventListener("orders/paid", () => handleGetOrders());
 
+    useEffect(() => {
+        setShopifyBoutique(null);
+    }, []);
     const handleGetOrders = async () => {
         setIsLoading(true);
         await sleep(2000);

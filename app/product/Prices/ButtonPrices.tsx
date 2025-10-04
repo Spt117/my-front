@@ -5,13 +5,13 @@ import { Check, X } from "lucide-react";
 import { useEffect } from "react";
 import useTaskStore from "../Tasks/storeTasks";
 import usePrices from "./hooksPrices";
-import usePriceStore from "./storePrice";
+import useProductStore from "../storeProduct";
 
 export default function ButtonPrices() {
     const { product, shopifyBoutique } = useShopifyStore();
     const { param } = useTaskStore();
     const { setPrice, setCompareAtPrice, setIsUpdatingPrice, price, compareAtPrice, isUpdatingPrice, isChanged } =
-        usePriceStore();
+        useProductStore();
     const actionsPrices = usePrices();
 
     useEffect(() => {
@@ -26,9 +26,9 @@ export default function ButtonPrices() {
         setIsUpdatingPrice(true);
 
         if (param > 0) await actionsPrices?.addTaskStopPromotion();
-        if (Number(price) !== Number(mainVariant.price)) await actionsPrices?.handleUpdatePrice();
+        if (Number(price) !== Number(mainVariant.price)) await actionsPrices?.handleUpdatePrices("price", Number(price));
         if (Number(compareAtPrice) !== Number(mainVariant.compareAtPrice || "0"))
-            await actionsPrices?.handleUpdateCompareAtPrice();
+            await actionsPrices?.handleUpdatePrices("compareAtPrice", Number(compareAtPrice));
 
         setIsUpdatingPrice(false);
     };

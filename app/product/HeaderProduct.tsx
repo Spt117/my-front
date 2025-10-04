@@ -1,18 +1,20 @@
 "use client";
+import useEditorHtmlStore from "@/components/editeurHtml/storeEditor";
+import { formatHTML } from "@/components/editeurHtml/utils";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { useCopy } from "@/library/hooks/useCopy";
 import { Tag } from "lucide-react";
-import useShopifyStore from "../../components/shopify/shopifyStore";
-import useEditorHtmlStore from "@/components/editeurHtml/storeEditor";
-import { saveDescriptionProduct } from "./serverAction";
 import { toast } from "sonner";
-import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { formatHTML } from "@/components/editeurHtml/utils";
+import useShopifyStore from "../../components/shopify/shopifyStore";
+import { updateProduct } from "./serverAction";
+import useProductStore from "./storeProduct";
 
 export default function HeaderProduct() {
     const { handleCopy } = useCopy();
     const { product, shopifyBoutique, loading, setLoading } = useShopifyStore();
+    const { newTitle } = useProductStore();
     const { hasChanges, modifiedHtml } = useEditorHtmlStore();
 
     if (!product || !shopifyBoutique) return null;
@@ -24,10 +26,21 @@ export default function HeaderProduct() {
         if (hasChanges) {
             try {
                 const descriptionHtml = formatHTML(modifiedHtml);
-                const res = await saveDescriptionProduct(shopifyBoutique.domain, product.id, descriptionHtml);
-                if (res.error) toast.error("Erreur lors de la sauvegarde");
-                if (res.message) toast.success("Description sauvegardée");
+                const res = await updateProduct(shopifyBoutique.domain, product.id, "descriptionHtml", descriptionHtml);
+                if (res.error) toast.error(res.error);
+                if (res.message) toast.success(res.message);
             } catch (err) {
+                console.log(err);
+                toast.error("Erreur lors de la sauvegarde");
+            }
+        }
+        if (newTitle !== product.title) {
+            try {
+                const res = await updateProduct(shopifyBoutique.domain, product.id, "title", newTitle);
+                if (res.error) toast.error(res.error);
+                if (res.message) toast.success(res.message);
+            } catch (err) {
+                console.log(err);
                 toast.error("Erreur lors de la sauvegarde");
             }
         }
@@ -48,15 +61,29 @@ export default function HeaderProduct() {
                     {product.title}
                 </CardTitle>
                 <div className="flex gap-2">
-                    <Button disabled={!hasChanges || loading} className="hover:bg-gray-600" onClick={handleSave}>
+                    <Button
+                        disabled={(!hasChanges && newTitle === product.title) || loading}
+                        className="hover:bg-gray-600"
+                        onClick={handleSave}
+                    >
                         Save
                         {loading && <Spinner className="ml-2" />}
                     </Button>
 
-                    <a href={`https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                    <a
+                        href={`https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                    >
                         <Button className="hover:bg-gray-600">Edit in Shopify</Button>
                     </a>
-                    <a href={productUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                    <a
+                        href={productUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                    >
                         <Button className="hover:bg-gray-600">Aperçu</Button>
                     </a>
                 </div>

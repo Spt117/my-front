@@ -9,9 +9,11 @@ interface StoreState {
     setIsUpdatingPrice: (isUpdating: boolean) => void;
     isChanged: boolean;
     setIsChanged: (isChanged: boolean) => void;
+    newTitle: string;
+    setNewTitle: (title: string) => void;
 }
 
-const usePriceStore = create<StoreState>((set) => ({
+const useProductStore = create<StoreState>((set) => ({
     price: "0",
     setPrice: (price) => set({ price }),
     compareAtPrice: "0",
@@ -20,6 +22,8 @@ const usePriceStore = create<StoreState>((set) => ({
     setIsUpdatingPrice: (isUpdatingPrice) => set({ isUpdatingPrice }),
     isChanged: false,
     setIsChanged: (isChanged) => set({ isChanged }),
+    newTitle: "",
+    setNewTitle: (title) => set({ newTitle: title }),
 }));
 
-export default usePriceStore;
+export default useProductStore;

@@ -7,12 +7,12 @@ import Image from "next/image";
 import useOrdersStore from "../shopify/orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
 import { usePathname } from "next/navigation";
-import usePriceStore from "@/app/product/Prices/storePrice";
+import useProductStore from "@/app/product/storeProduct";
 
 export default function ShopifySelect() {
     const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm } = useShopifyStore();
     const { setFilterOrders, orders } = useOrdersStore();
-    const { setPrice, setCompareAtPrice } = usePriceStore();
+    const { setPrice, setCompareAtPrice } = useProductStore();
     const path = usePathname();
 
     const option2 = boutiques.map((boutique) => ({

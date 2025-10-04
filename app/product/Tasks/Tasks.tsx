@@ -4,14 +4,14 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { TActivationType } from "@/library/models/tasksShopify/taskType";
 import useTaskStore from "./storeTasks";
 import DatePicker from "./DatePicker";
-import usePriceStore from "../Prices/storePrice";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
+import useProductStore from "../storeProduct";
 
 export default function Tasks() {
     const { product, shopifyBoutique } = useShopifyStore();
     const { setTypeTask, typeTask, setParam, param, tasks } = useTaskStore();
-    const { price, compareAtPrice } = usePriceStore();
+    const { price, compareAtPrice } = useProductStore();
 
     useEffect(() => {
         const typeExist = tasks.find((task) => task.activation === "timestamp");
@@ -42,9 +42,24 @@ export default function Tasks() {
         <div className="flex flex-col gap-3">
             <h5>Programmer la fin de la promotion</h5>
             <div className="flex flex-col gap-2 w-min">
-                <Selecteur array={array} value={typeTask} placeholder="Test" onChange={handleChange} disabled={tasks.length === 2} />
+                <Selecteur
+                    array={array}
+                    value={typeTask}
+                    placeholder="Test"
+                    onChange={handleChange}
+                    disabled={tasks.length === 2}
+                />
                 {typeTask === "timestamp" && <DatePicker />}
-                {typeTask === "quantity" && <Input onChange={(e) => setParam(Number(e.target.value))} className="w-full" type="number" min={1} placeholder="Quantité restante" value={param} />}
+                {typeTask === "quantity" && (
+                    <Input
+                        onChange={(e) => setParam(Number(e.target.value))}
+                        className="w-full"
+                        type="number"
+                        min={1}
+                        placeholder="Quantité restante"
+                        value={param}
+                    />
+                )}
             </div>
         </div>
     );

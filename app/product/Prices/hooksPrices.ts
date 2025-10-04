@@ -1,17 +1,18 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { createTaskShopify } from "@/library/models/tasksShopify/taskMiddleware";
 import { TTaskShopifyProducts } from "@/library/models/tasksShopify/taskType";
-import { toast } from "sonner";
-import useTaskStore from "../Tasks/storeTasks";
-import usePriceStore from "./storePrice";
-import { postServer } from "@/library/utils/fetchServer";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { updateVariant } from "../serverAction";
+import useProductStore from "../storeProduct";
+import useTaskStore from "../Tasks/storeTasks";
+import { TFieldVariant } from "../util";
 
 export default function usePrices() {
     const { product, shopifyBoutique } = useShopifyStore();
     const { typeTask, param, setParam } = useTaskStore();
-    const { setPrice, setCompareAtPrice, price, compareAtPrice } = usePriceStore();
+    const { setPrice, setCompareAtPrice, price, compareAtPrice } = useProductStore();
     const router = useRouter();
 
     useEffect(() => {
@@ -21,41 +22,15 @@ export default function usePrices() {
     if (!product || !shopifyBoutique) return null;
     const mainVariant = product.variants.nodes[0];
 
-    const handleUpdatePrice = async () => {
-        const url = "http://localhost:9100/shopify/update-price";
-        const data = {
-            domain: shopifyBoutique.domain,
-            productId: product.id,
-            variantId: mainVariant.id,
-            price: Number(price),
-        };
+    const handleUpdatePrices = async (field: TFieldVariant, value: number) => {
         try {
-            const res = await postServer(url, data);
+            const res = await updateVariant(shopifyBoutique.domain, product.id, mainVariant.id, field, value);
             if (res.error) toast.error(res.error);
             if (res.message) toast.success(res.message);
         } catch (error) {
             toast.error("Erreur lors de la mise à jour du prix");
         } finally {
             setPrice(mainVariant.price);
-        }
-    };
-
-    const handleUpdateCompareAtPrice = async () => {
-        const url = "http://localhost:9100/shopify/update-compare-at-price";
-        const data = {
-            domain: shopifyBoutique.domain,
-            productId: product.id,
-            variantId: mainVariant.id,
-            compareAtPrice: Number(compareAtPrice),
-        };
-        try {
-            const res = await postServer(url, data);
-            if (res.error) toast.error(res.error);
-            if (res.message) toast.success(res.message);
-        } catch (error) {
-            toast.error("Erreur lors de la mise à jour du prix barré");
-        } finally {
-            setCompareAtPrice(mainVariant.compareAtPrice || "0");
         }
     };
 
@@ -88,8 +63,7 @@ export default function usePrices() {
     };
 
     return {
-        handleUpdatePrice,
-        handleUpdateCompareAtPrice,
+        handleUpdatePrices,
         addTaskStopPromotion,
     };
 }

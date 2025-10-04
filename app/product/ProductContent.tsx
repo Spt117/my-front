@@ -7,9 +7,10 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect } from "react";
 import AboutProduct from "./AboutProduct";
-import ShopifyProductEditor from "../../components/editeurHtml/Editeur";
+import EditeurHtml from "../../components/editeurHtml/Editeur";
 import Prices from "./Prices/Prices";
 import VariantClient from "./VariantClient";
+import HeaderEditeur from "./HeaderEditeur";
 
 export default function ProductContent() {
     const { setMySpinner, shopifyBoutique, product } = useShopifyStore();
@@ -30,7 +31,9 @@ export default function ProductContent() {
                     <ImagesProduct />
 
                     <div className="flex-1 flex p-1 gap-5 w-full max-[1600px]:flex-col">
-                        <ShopifyProductEditor html={product.descriptionHtml} />
+                        <EditeurHtml html={product.descriptionHtml}>
+                            <HeaderEditeur />
+                        </EditeurHtml>
                         <div className="flex flex-wrap gap-3 justify-center w-full">
                             {/* Détails du produit */}
                             <Prices />

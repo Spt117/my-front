@@ -5,11 +5,11 @@ import { Label } from "@radix-ui/react-label";
 import { Tag } from "lucide-react";
 import { useEffect, useRef } from "react";
 import InputPrice from "./InputPrice";
-import usePriceStore from "./storePrice";
+import useProductStore from "../storeProduct";
 
 export default function PriceUpdate() {
     const { product, shopifyBoutique } = useShopifyStore();
-    const { price, setPrice, setIsChanged } = usePriceStore();
+    const { price, setPrice, setIsChanged } = useProductStore();
     const ref = useRef<HTMLInputElement>(null);
 
     const mainVariant = product?.variants.nodes[0];

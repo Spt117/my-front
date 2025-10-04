@@ -1,14 +1,14 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import usePriceStore from "./storePrice";
 import { Badge } from "@/components/ui/badge";
 import { useEffect } from "react";
 import useTaskStore from "../Tasks/storeTasks";
 import Task from "../Tasks/Task";
+import useProductStore from "../storeProduct";
 
 export default function ResumePrice() {
     const { product, shopifyBoutique } = useShopifyStore();
-    const { price, compareAtPrice, setPrice, setCompareAtPrice } = usePriceStore();
+    const { price, compareAtPrice, setPrice, setCompareAtPrice } = useProductStore();
     const { tasks } = useTaskStore();
 
     useEffect(() => {
