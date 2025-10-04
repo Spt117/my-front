@@ -47,6 +47,8 @@ export default function ProductClient({
             return;
         }
         const idProduct = product?.id.replace("gid://shopify/Product/", "");
+        console.log("Current product ID:", idProduct);
+        console.log("Id received:", productId);
         if (idProduct === productId) {
             router.refresh();
             toast.success(`${currentVariant.title} a été mis à jour`);
