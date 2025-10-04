@@ -39,20 +39,16 @@ export default function ProductClient({
     }, [shopify.domain, productData.response, variantData, tasksData]);
 
     const getProductUpdated = async (productId: string) => {
-        console.log("Received products/update event for productId:", productId);
-
         const currentProduct = useShopifyStore.getState().product;
         if (!currentProduct) {
-            console.log("No current product in store. Cannot update.");
+            toast.error("No current product in store. Cannot update.");
             return;
         }
         const idProduct = currentProduct?.id.replace("gid://shopify/Product/", "");
-        console.log("Current product ID:", idProduct);
-        console.log("Id received:", productId);
-        if (idProduct === productId) {
+        if (Number(idProduct) === Number(productId)) {
             router.refresh();
             toast.success(`${currentProduct.title} a été mis à jour`);
-        } else console.log("Product ID does not match. No update needed.");
+        } else toast.error("Product ID does not match. No update needed.");
     };
 
     if (!product || !shopifyBoutique) {
