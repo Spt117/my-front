@@ -2,7 +2,7 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { Save } from "lucide-react";
+import { KeySquare, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { updateVariant } from "../serverAction";
@@ -40,11 +40,9 @@ export default function Sku() {
     return (
         <Card className={cssCard + " relative"}>
             <CardContent className="flex flex-col justify-between gap-2 ">
-                {activeSave && !loading && (
-                    <Save onClick={handleSave} className="absolute right-2 top-1 cursor-pointer" size={20} />
-                )}{" "}
-                {loading && <Spinner className="absolute right-2 top-1" size={20} />}
+                {activeSave && !loading && <Save onClick={handleSave} className="absolute right-2 top-1 cursor-pointer" size={20} />} {loading && <Spinner className="absolute right-2 top-1" size={20} />}
                 <h3 className="m-2 text-sm font-medium flex items-center gap-2">
+                    <KeySquare size={16} />
                     Sku<span className="text-gray-500">(unité de gestion des stocks)</span>
                 </h3>
                 <Input type="text" value={sku} className="w-full" onChange={(e) => setSku(e.target.value)} />
