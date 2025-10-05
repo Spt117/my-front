@@ -13,12 +13,14 @@ import VariantClient from "./VariantClient";
 import HeaderEditeur from "./HeaderEditeur";
 import { boutiques } from "@/library/params/paramsShopify";
 import Sku from "./variant/Sku";
+import { useSearchParams } from "next/navigation";
 
 export default function ProductContent() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
+    const query = useSearchParams();
 
     useEffect(() => {
-        if (!shopifyBoutique) setShopifyBoutique(boutiques[0]);
+        if (!shopifyBoutique && query.size === 0) setShopifyBoutique(boutiques[0]);
     }, [shopifyBoutique, setShopifyBoutique]);
 
     useEffect(() => {

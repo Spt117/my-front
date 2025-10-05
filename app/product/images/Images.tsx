@@ -32,7 +32,7 @@ export default function ImagesProduct() {
         <div className="relative w-1/4 flex flex-col gap-2">
             {/* Image principale */}
             {/* Boutons de navigation sur l'image principale */}
-            {images.length > 1 && (
+            {images.length > 0 && (
                 <div className="relative aspect-square">
                     <Image
                         priority={true}
