@@ -15,14 +15,14 @@ import useProductStore from "./storeProduct";
 export default function HeaderProduct() {
     const { handleCopy } = useCopy();
     const { product, shopifyBoutique } = useShopifyStore();
-    const { newTitle, loadingSave, setLoadingSave } = useProductStore();
+    const { newTitle, loadingSave, setLoadingSave, statut } = useProductStore();
     const { hasChanges, modifiedHtml } = useEditorHtmlStore();
 
     if (!product || !shopifyBoutique) return null;
 
     const productUrl = `https://${shopifyBoutique.domain}/products/${product.handle}`;
 
-    const disabledSave = (!hasChanges && newTitle === product.title) || loadingSave;
+    const disabledSave = (!hasChanges && newTitle === product.title && statut === product.status) || loadingSave;
 
     const handleSave = async () => {
         if (disabledSave || !product) return;
@@ -41,6 +41,16 @@ export default function HeaderProduct() {
         if (newTitle !== product.title) {
             try {
                 const res = await updateProduct(shopifyBoutique.domain, product.id, "title", newTitle);
+                if (res.error) toast.error(res.error);
+                if (res.message) toast.success(res.message);
+            } catch (err) {
+                console.log(err);
+                toast.error("Erreur lors de la sauvegarde");
+            }
+        }
+        if (statut !== product.status) {
+            try {
+                const res = await updateProduct(shopifyBoutique.domain, product.id, "Statut", statut);
                 if (res.error) toast.error(res.error);
                 if (res.message) toast.success(res.message);
             } catch (err) {

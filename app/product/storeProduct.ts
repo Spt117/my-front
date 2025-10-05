@@ -1,3 +1,4 @@
+import { ProductStatus } from "@/library/types/graph";
 import { create } from "zustand";
 
 interface StoreState {
@@ -13,9 +14,12 @@ interface StoreState {
     setIsChanged: (isChanged: boolean) => void;
     newTitle: string;
     setNewTitle: (title: string) => void;
-    addProductDialogOpen: boolean;
-    openAddProductDialog: () => void;
-    closeAddProductDialog: () => void;
+    statut: ProductStatus;
+    setStatut: (statut: ProductStatus) => void;
+    canaux: { id: string; name: string }[];
+    setCanaux: (canaux: { id: string; name: string }[]) => void;
+    canauxProduct: { publication: { id: string; name: string }; isPublished: boolean }[];
+    setCanauxProduct: (canaux: { publication: { id: string; name: string }; isPublished: boolean }[]) => void;
 }
 
 const useProductStore = create<StoreState>((set) => ({
@@ -31,9 +35,18 @@ const useProductStore = create<StoreState>((set) => ({
     setIsChanged: (isChanged) => set({ isChanged }),
     newTitle: "",
     setNewTitle: (title) => set({ newTitle: title }),
-    addProductDialogOpen: false,
-    openAddProductDialog: () => set({ addProductDialogOpen: true }),
-    closeAddProductDialog: () => set({ addProductDialogOpen: false }),
+    statut: "DRAFT",
+    setStatut: (statut) => set({ statut }),
+    canaux: [],
+    setCanaux: (canaux) => set({ canaux }),
+    canauxProduct: [],
+    setCanauxProduct: (canauxProduct) => set({ canauxProduct }),
+    activeCanalById: (id: string, isActive: boolean) =>
+        set((state) => ({
+            canauxProduct: state.canauxProduct.map((canal) =>
+                canal.publication.id === id ? { ...canal, isPublished: isActive } : canal
+            ),
+        })),
 }));
 
 export default useProductStore;

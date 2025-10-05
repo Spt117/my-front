@@ -2,7 +2,7 @@ import { TVendorsShopify } from "../params/paramsShopify";
 
 type GID = `gid://shopify/${string}`;
 
-type ProductStatus = "ACTIVE" | "ARCHIVED" | "DRAFT";
+export type ProductStatus = "ACTIVE" | "ARCHIVED" | "DRAFT";
 type InventoryPolicy = "DENY" | "CONTINUE";
 
 interface ProductOption {
@@ -58,7 +58,17 @@ export interface CategoryProduct {
 }
 
 type MetafieldType = "single_line_text_field" | "string" | "list.product_reference" | "boolean" | (string & {});
-const metafieldKeys = ["asin", "url_video", "id_video_youtube", "amazon_activate", "lien_amazon", "title_tag", "description_tag", "related_products", "complementary_products"] as const;
+const metafieldKeys = [
+    "asin",
+    "url_video",
+    "id_video_youtube",
+    "amazon_activate",
+    "lien_amazon",
+    "title_tag",
+    "description_tag",
+    "related_products",
+    "complementary_products",
+] as const;
 export type TMetafieldKeys = (typeof metafieldKeys)[number];
 export interface TMetafield {
     id?: GID;
@@ -84,6 +94,7 @@ export interface ProductGET {
     media: Connection<MediaImageNode>;
     variants: Connection<ProductVariantNodeGET>;
     metafields: Connection<TMetafield>;
+    resourcePublicationsV2: ResourcePublicationsV2Connection;
 }
 
 export interface ProductPOST {
@@ -132,4 +143,29 @@ export type ShopifyFile =
 interface VariantOption {
     optionName: string;
     name: string;
+}
+
+// ----------------------------------//
+//              Canaux               //
+// Les métadonnées du "catalog" d'un canal
+interface Catalog {
+    title: string | null;
+}
+
+// Une Publication (canal) Shopify
+interface Publication {
+    id: GID;
+    catalog: Catalog | null;
+    supportsFuturePublishing: boolean;
+}
+
+// Un nœud de la connexion resourcePublicationsV2
+interface ResourcePublicationV2Node {
+    isPublished: boolean;
+    publishDate: string | null;
+    publication: Publication;
+}
+
+interface ResourcePublicationsV2Connection {
+    nodes: ResourcePublicationV2Node[];
 }

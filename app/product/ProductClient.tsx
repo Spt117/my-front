@@ -1,5 +1,6 @@
 "use client";
 import MySpinner from "@/components/layout/my-spinner";
+import { CanauxPublication } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { ResponseServer } from "@/components/shopify/typesShopify";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
@@ -11,32 +12,37 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import useTaskStore from "./Tasks/storeTasks";
+import useProductStore from "./storeProduct";
 
 export default function ProductClient({
     productData,
     shopify,
     variantData,
     tasksData,
+    canaux,
 }: {
     tasksData: TTaskShopifyProducts[];
     productData: ResponseServer<ProductGET>;
     shopify: IShopify;
     variantData?: TVariant;
+    canaux: CanauxPublication[];
 }) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
+    const { setCanaux } = useProductStore();
     const router = useRouter();
     const { setTasks } = useTaskStore();
 
     useEventListener("products/update", (data) => getProductUpdated(data.productId));
 
     useEffect(() => {
+        setCanaux(canaux);
         const boutique = boutiqueFromDomain(shopify.domain);
         setShopifyBoutique(boutique);
         setTasks(tasksData);
         setProduct(productData.response);
         if (variantData) setVariant(variantData);
         if (productData.error) toast.error(productData.error);
-    }, [shopify.domain, productData.response, variantData, tasksData]);
+    }, [shopify.domain, productData.response, variantData, tasksData, canaux]);
 
     const getProductUpdated = async (productId: string) => {
         const currentProduct = useShopifyStore.getState().product;

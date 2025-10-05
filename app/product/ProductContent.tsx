@@ -14,6 +14,8 @@ import HeaderEditeur from "./HeaderEditeur";
 import { boutiques } from "@/library/params/paramsShopify";
 import Sku from "./variant/Sku";
 import { useSearchParams } from "next/navigation";
+import Statut from "./Statut";
+import Canaux from "./Canaux";
 
 export default function ProductContent() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
@@ -42,6 +44,8 @@ export default function ProductContent() {
                         </EditeurHtml>
                         <div className="flex flex-wrap gap-3 justify-center w-full">
                             {/* Détails du produit */}
+                            <Statut />
+                            <Canaux />
                             <TagsShopify />
                             <Prices />
                             <Sku />

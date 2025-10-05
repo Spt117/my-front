@@ -24,6 +24,9 @@ interface StoreState {
     setVariant: (variant: TVariant | null) => void;
     mySpinner: boolean;
     setMySpinner: (loading: boolean) => void;
+    dialogOpen: number;
+    openDialog: (n: number) => void;
+    closeDialog: () => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
@@ -45,6 +48,9 @@ const useShopifyStore = create<StoreState>((set) => ({
     setVariant: (variant) => set({ variant }),
     mySpinner: false,
     setMySpinner: (loading) => set({ mySpinner: loading }),
+    dialogOpen: 0,
+    openDialog: (n: number) => set({ dialogOpen: n }),
+    closeDialog: () => set({ dialogOpen: 0 }),
 }));
 
 export default useShopifyStore;

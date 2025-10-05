@@ -6,7 +6,7 @@ import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/library/params
 import Image from "next/image";
 import useOrdersStore from "../shopify/orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import useProductStore from "@/app/product/storeProduct";
 
 export default function ShopifySelect() {
@@ -14,6 +14,7 @@ export default function ShopifySelect() {
     const { setFilterOrders, orders } = useOrdersStore();
     const { setPrice, setCompareAtPrice } = useProductStore();
     const path = usePathname();
+    const router = useRouter();
 
     const option2 = boutiques.map((boutique) => ({
         label: (
@@ -28,7 +29,10 @@ export default function ShopifySelect() {
     const handleSelectOrigin = (domain: TDomainsShopify) => {
         const boutique = boutiqueFromDomain(domain);
         setShopifyBoutique(boutique);
-        if (product) setProduct(null);
+        if (product) {
+            setProduct(null);
+            router.push("/product");
+        }
     };
 
     const handleEscape = () => {

@@ -1,4 +1,4 @@
-import AddProduct from "@/app/product/newProduct/AddProduct";
+import AddProduct from "@/components/layout/dialogues/AddProduct";
 import useProductStore from "@/app/product/storeProduct";
 import { ProductNode } from "@/components/header/products/shopifySearch";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ export default function SearchProduct() {
     const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const ref = useClickOutside<HTMLDivElement>(() => setSearchTerm(""));
-    const { openAddProductDialog } = useProductStore();
+    const { openDialog } = useShopifyStore();
 
     const handleSearch = async (query: string) => {
         if (!query.trim() || !shopifyBoutique) return;
@@ -105,7 +105,7 @@ export default function SearchProduct() {
                         className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
                     />
 
-                    {searchTerm && (
+                    {searchTerm && !loading && (
                         <button
                             type="button"
                             onClick={() => setSearchTerm("")}
@@ -117,15 +117,14 @@ export default function SearchProduct() {
                     )}
 
                     {loading && (
-                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                             <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
                         </div>
                     )}
                 </div>
-                <Button onClick={openAddProductDialog} aria-label="Ajouter un produit" className="p-2" title="Ajouter un produit">
+                <Button onClick={() => openDialog(1)} aria-label="Ajouter un produit" className="p-2" title="Ajouter un produit">
                     <Plus size={16} />
                 </Button>
-                <AddProduct />
             </div>
             {/* Liste des produits positionnée sous l'input */}
             <ListProducts />
