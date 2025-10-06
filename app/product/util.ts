@@ -7,3 +7,5 @@ export type TFieldVariant = (typeof fieldsVariant)[number];
 
 const fieldsProduct = ["title", "descriptionHtml", "Statut", "Delete"] as const;
 export type TFieldProduct = (typeof fieldsProduct)[number];
+
+export type TCanal = { id: string; isPublished: boolean; name: string };

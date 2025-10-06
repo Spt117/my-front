@@ -9,21 +9,30 @@ import { Globe, Save, Tag } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import useShopifyStore from "../../components/shopify/shopifyStore";
-import { updateProduct } from "./serverAction";
+import { updateCanauxVente, updateProduct } from "./serverAction";
 import useProductStore from "./storeProduct";
+import { useEffect } from "react";
 
 export default function HeaderProduct() {
     const { handleCopy } = useCopy();
-    const { product, shopifyBoutique } = useShopifyStore();
-    const { newTitle, loadingSave, setLoadingSave, statut } = useProductStore();
+    const { product, shopifyBoutique, canauxBoutique } = useShopifyStore();
+    const { newTitle, loadingSave, setLoadingSave, statut, canauxProduct } = useProductStore();
     const { hasChanges, modifiedHtml } = useEditorHtmlStore();
 
     if (!product || !shopifyBoutique) return null;
 
     const productUrl = `https://${shopifyBoutique.domain}/products/${product.handle}`;
 
-    const disabledSave = (!hasChanges && newTitle === product.title && statut === product.status) || loadingSave;
+    const canauxActives = canauxBoutique.map((c) => {
+        const found = product?.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
+        if (found) return { id: c.id, isPublished: found.isPublished, name: c.name };
+        else return { id: c.id, isPublished: false, name: c.name };
+    });
 
+    const canauxToUpdate = canauxActives.filter((c) => c.isPublished !== canauxProduct.find((cp) => cp.id === c.id)?.isPublished);
+
+    const disabledSave =
+        (!hasChanges && newTitle === product.title && statut === product.status && canauxToUpdate.length === 0) || loadingSave;
     const handleSave = async () => {
         if (disabledSave || !product) return;
         setLoadingSave(true);
@@ -56,6 +65,17 @@ export default function HeaderProduct() {
             } catch (err) {
                 console.log(err);
                 toast.error("Erreur lors de la sauvegarde");
+            }
+        }
+        if (canauxToUpdate.length > 0) {
+            try {
+                console.log("canauxToUpdate", canauxToUpdate);
+                const res = await updateCanauxVente(shopifyBoutique.domain, product.id, canauxToUpdate);
+                if (res.error) toast.error(res.error);
+                if (res.message) toast.success(res.message);
+            } catch (err) {
+                console.log(err);
+                toast.error("Erreur lors de la sauvegarde des canaux de vente");
             }
         }
         setLoadingSave(false);

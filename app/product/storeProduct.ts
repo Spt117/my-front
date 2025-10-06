@@ -1,5 +1,6 @@
 import { ProductStatus } from "@/library/types/graph";
 import { create } from "zustand";
+import { TCanal } from "./util";
 
 interface StoreState {
     loadingSave: boolean;
@@ -16,10 +17,8 @@ interface StoreState {
     setNewTitle: (title: string) => void;
     statut: ProductStatus;
     setStatut: (statut: ProductStatus) => void;
-    canaux: { id: string; name: string }[];
-    setCanaux: (canaux: { id: string; name: string }[]) => void;
-    canauxProduct: { publication: { id: string; name: string }; isPublished: boolean }[];
-    setCanauxProduct: (canaux: { publication: { id: string; name: string }; isPublished: boolean }[]) => void;
+    canauxProduct: TCanal[];
+    setCanauxProduct: (canaux: TCanal[]) => void;
 }
 
 const useProductStore = create<StoreState>((set) => ({
@@ -37,16 +36,8 @@ const useProductStore = create<StoreState>((set) => ({
     setNewTitle: (title) => set({ newTitle: title }),
     statut: "DRAFT",
     setStatut: (statut) => set({ statut }),
-    canaux: [],
-    setCanaux: (canaux) => set({ canaux }),
     canauxProduct: [],
     setCanauxProduct: (canauxProduct) => set({ canauxProduct }),
-    activeCanalById: (id: string, isActive: boolean) =>
-        set((state) => ({
-            canauxProduct: state.canauxProduct.map((canal) =>
-                canal.publication.id === id ? { ...canal, isPublished: isActive } : canal
-            ),
-        })),
 }));
 
 export default useProductStore;

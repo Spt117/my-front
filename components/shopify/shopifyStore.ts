@@ -4,6 +4,7 @@ import { ProductNode } from "@/components/header/products/shopifySearch";
 import { create } from "zustand";
 import { TBrand, TProductType } from "./ProductType";
 import { TVariant } from "@/library/models/produits/Variant";
+import { TCanal } from "@/app/product/util";
 
 interface StoreState {
     searchTerm: string;
@@ -27,6 +28,8 @@ interface StoreState {
     dialogOpen: number;
     openDialog: (n: number) => void;
     closeDialog: () => void;
+    canauxBoutique: TCanal[];
+    setCanauxBoutique: (canaux: TCanal[]) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
@@ -51,6 +54,8 @@ const useShopifyStore = create<StoreState>((set) => ({
     dialogOpen: 0,
     openDialog: (n: number) => set({ dialogOpen: n }),
     closeDialog: () => set({ dialogOpen: 0 }),
+    canauxBoutique: [],
+    setCanauxBoutique: (canauxBoutique) => set({ canauxBoutique }),
 }));
 
 export default useShopifyStore;

@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import useTaskStore from "./Tasks/storeTasks";
-import useProductStore from "./storeProduct";
 
 export default function ProductClient({
     productData,
@@ -27,15 +26,15 @@ export default function ProductClient({
     variantData?: TVariant;
     canaux: CanauxPublication[];
 }) {
-    const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
-    const { setCanaux } = useProductStore();
+    const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, setCanauxBoutique } = useShopifyStore();
     const router = useRouter();
     const { setTasks } = useTaskStore();
 
     useEventListener("products/update", (data) => getProductUpdated(data.productId));
 
     useEffect(() => {
-        setCanaux(canaux);
+        const canauxActives = canaux.map((c) => ({ id: c.id, isPublished: false, name: c.name }));
+        setCanauxBoutique(canauxActives);
         const boutique = boutiqueFromDomain(shopify.domain);
         setShopifyBoutique(boutique);
         setTasks(tasksData);

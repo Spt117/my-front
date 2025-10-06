@@ -1,20 +1,40 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Trash2, ShoppingCart } from "lucide-react";
-import useProductStore from "./storeProduct";
-import { cssCard } from "./util";
 import { Label } from "@/components/ui/label";
-import { useEffect } from "react";
+import { ShoppingCart } from "lucide-react";
+import { useEffect, useState } from "react";
+import useProductStore from "./storeProduct";
+import { cssCard, TCanal } from "./util";
 
 export default function Canaux() {
-    const { product, shopifyBoutique } = useShopifyStore();
-    const { canaux } = useProductStore();
+    const { product, shopifyBoutique, canauxBoutique } = useShopifyStore();
+    const { canauxProduct, setCanauxProduct } = useProductStore();
+    const canauxActives =
+        product?.resourcePublicationsV2.nodes.map((c) => ({
+            id: c.publication.id,
+            isPublished: c.isPublished,
+        })) || [];
+
+    useEffect(() => {
+        const canauxActives = canauxBoutique.map((c) => {
+            const found = product?.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
+            if (found) return { id: c.id, isPublished: found.isPublished, name: c.name };
+            else return { id: c.id, isPublished: false, name: c.name };
+        });
+        setCanauxProduct(canauxActives);
+    }, [product]);
 
     if (!product || !shopifyBoutique) return null;
 
-    const canauxProduct = product.resourcePublicationsV2.nodes;
-    const selectedCount = canauxProduct.filter((c) => c.isPublished).length;
+    const selectedCount = canauxActives.filter((c) => c.isPublished).length;
+
+    const handleClickCanal = (canalId: string) => {
+        const thisCanal = canauxProduct.find((c) => c.id === canalId);
+        if (!thisCanal) return;
+        console.log("thisCanal", thisCanal);
+        setCanauxProduct(canauxProduct.map((c) => (c.id === canalId ? { ...c, isPublished: !c.isPublished } : c)));
+    };
 
     return (
         <Card className={cssCard}>
@@ -34,15 +54,14 @@ export default function Canaux() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {canaux.map((canal) => {
-                        const thisCanal = canauxProduct.find((c) => c.publication.id === canal.id);
-                        let isPublished = false;
-                        if (thisCanal) isPublished = thisCanal.isPublished;
+                    {canauxProduct.map((canal) => {
+                        const isPublished = canal.isPublished;
                         return (
                             <div
+                                onClick={() => handleClickCanal(canal.id)}
                                 key={canal.id}
                                 className={`
-                                flex items-center space-x-3 p-3 rounded-lg border-2 transition-all cursor-pointer
+                                flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer
                                 ${
                                     isPublished
                                         ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
@@ -50,8 +69,8 @@ export default function Canaux() {
                                 }
                             `}
                             >
-                                <Checkbox id={canal.id} checked={isPublished} />
-                                <Label htmlFor={canal.id} className="flex-1 cursor-pointer font-medium text-sm">
+                                <Checkbox className="cursor-pointer" checked={isPublished} />
+                                <Label className="flex-1 cursor-pointer font-medium text-sm w-full h-full bg-green">
                                     {canal.name}
                                 </Label>
                             </div>

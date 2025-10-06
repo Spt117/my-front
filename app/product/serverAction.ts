@@ -31,3 +31,14 @@ export async function createProductFromTitle(domain: TDomainsShopify, title: str
     const response = await postServer(url, data);
     return response;
 }
+
+export async function updateCanauxVente(
+    domain: TDomainsShopify,
+    productId: string,
+    items: { id: string; isPublished: boolean }[]
+) {
+    const url = `${pokeUriServer}/shopify/update-canaux-vente`;
+    const data = { domain, productId, items };
+    const response = await postServer(url, data);
+    return response;
+}
