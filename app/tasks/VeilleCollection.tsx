@@ -5,21 +5,16 @@ import { addWebsiteToVeille } from "@/library/models/veille/middlewareVeille";
 import { TVeille } from "@/library/models/veille/veilleType";
 import { boutiques } from "@/library/params/paramsShopify";
 import { sitesWordpress } from "@/library/params/paramsWordpress";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { MultiSelect, MultiSelectOption, MultiSelectRef } from "../product-duplicate/Multiselect";
+import { MultiSelect, MultiSelectOption } from "../product-duplicate/Multiselect";
 
 export default function VeilleCollection({ collection }: { collection: TVeille }) {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-    const multiSelectRef = React.useRef<MultiSelectRef>(null);
 
     const domainsShopify = boutiques.map((b) => b.publicDomain);
     const domainsWordpress = sitesWordpress.map((s) => s.domain);
     const allDomains = [...domainsShopify, ...domainsWordpress];
-
-    const handleReset = () => {
-        multiSelectRef.current?.reset(); // Remet les defaultValue
-    };
 
     const options = allDomains.map((domain) => ({
         label: domain,
@@ -47,8 +42,6 @@ export default function VeilleCollection({ collection }: { collection: TVeille }
     }
 
     useEffect(() => {
-        console.log("Collection websites:", collection.website);
-        console.log("Selected options before set:", selectedOptions);
         setSelectedOptions(collection.website || []);
     }, [collection.website]);
 
