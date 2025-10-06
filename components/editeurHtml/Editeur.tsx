@@ -18,6 +18,7 @@ const normalizeHTML = (html: string): string => {
 };
 
 import { ReactNode } from "react";
+import { Iframe, Video } from "./Videos";
 
 export default function EditeurHtml({ html, children }: { html?: string; children?: ReactNode }) {
     const { modifiedHtml, setModifiedHtml, showCodeView, code, setCode, hasChanges, setHasChanges } = useEditorHtmlStore();
@@ -33,6 +34,8 @@ export default function EditeurHtml({ html, children }: { html?: string; childre
                 LinkStrict,
                 TextAlign.configure({ types: ["heading", "paragraph"] }),
                 ImageInline,
+                Video,
+                Iframe,
             ],
             content: html || " ",
             editorProps: {
