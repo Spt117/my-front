@@ -69,7 +69,6 @@ export default function HeaderProduct() {
         }
         if (canauxToUpdate.length > 0) {
             try {
-                console.log("canauxToUpdate", canauxToUpdate);
                 const res = await updateCanauxVente(shopifyBoutique.domain, product.id, canauxToUpdate);
                 if (res.error) toast.error(res.error);
                 if (res.message) toast.success(res.message);

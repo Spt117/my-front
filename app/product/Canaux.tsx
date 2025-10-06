@@ -3,9 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ShoppingCart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useProductStore from "./storeProduct";
-import { cssCard, TCanal } from "./util";
+import { cssCard } from "./util";
 
 export default function Canaux() {
     const { product, shopifyBoutique, canauxBoutique } = useShopifyStore();
