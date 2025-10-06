@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { clearKeys } from "./server";
 
 export default function AddKeys() {
-    const marketplaces = amazonMarketPlaces.map((mp) => ({ label: mp.marketplace, value: mp.marketplace }));
+    const marketplaces = amazonMarketPlaces.map((mp) => ({ label: mp.domain, value: mp.domain }));
     const [data, setData] = useState<TAmazonKeys>({
         accessKeyId: "",
         secretAccessKey: "",
