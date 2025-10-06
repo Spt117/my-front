@@ -42,3 +42,10 @@ export async function updateCanauxVente(
     const response = await postServer(url, data);
     return response;
 }
+
+export async function updateMetafield(domain: TDomainsShopify, productGid: string, metafieldGid: string, value: string) {
+    const url = `${pokeUriServer}/shopify/update-metafield`;
+    const data = { domain, productGid, metafieldGid, value };
+    const response = await postServer(url, data);
+    return response;
+}

@@ -70,9 +70,11 @@ const metafieldKeys = [
     "complementary_products",
 ] as const;
 export type TMetafieldKeys = (typeof metafieldKeys)[number];
+const namespaceMetafields = ["custom", "global"] as const;
+export type TNamespaceMetafields = (typeof namespaceMetafields)[number];
 export interface TMetafield {
     id?: GID;
-    namespace: string;
+    namespace: TNamespaceMetafields;
     key: TMetafieldKeys;
     type: MetafieldType;
     value: string;

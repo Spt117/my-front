@@ -15,6 +15,14 @@ interface StoreState {
     setIsChanged: (isChanged: boolean) => void;
     newTitle: string;
     setNewTitle: (title: string) => void;
+    metaDescription: string;
+    setMetaDescription: (description: string) => void;
+    metaTitle: string;
+    setMetaTitle: (title: string) => void;
+    ancreUrl: string;
+    setAncreUrl: (url: string) => void;
+    redirectionUrl: boolean;
+    setRedirectionUrl: (redirection: boolean) => void;
     statut: ProductStatus;
     setStatut: (statut: ProductStatus) => void;
     canauxProduct: TCanal[];
@@ -38,6 +46,14 @@ const useProductStore = create<StoreState>((set) => ({
     setStatut: (statut) => set({ statut }),
     canauxProduct: [],
     setCanauxProduct: (canauxProduct) => set({ canauxProduct }),
+    metaDescription: "",
+    setMetaDescription: (metaDescription) => set({ metaDescription }),
+    metaTitle: "",
+    setMetaTitle: (metaTitle) => set({ metaTitle }),
+    ancreUrl: "",
+    setAncreUrl: (ancreUrl) => set({ ancreUrl }),
+    redirectionUrl: false,
+    setRedirectionUrl: (redirectionUrl) => set({ redirectionUrl }),
 }));
 
 export default useProductStore;

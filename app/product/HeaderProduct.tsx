@@ -9,14 +9,14 @@ import { Globe, Save, Tag } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import useShopifyStore from "../../components/shopify/shopifyStore";
-import { updateCanauxVente, updateProduct } from "./serverAction";
+import { updateCanauxVente, updateMetafield, updateProduct } from "./serverAction";
 import useProductStore from "./storeProduct";
-import { useEffect } from "react";
 
 export default function HeaderProduct() {
     const { handleCopy } = useCopy();
     const { product, shopifyBoutique, canauxBoutique } = useShopifyStore();
-    const { newTitle, loadingSave, setLoadingSave, statut, canauxProduct } = useProductStore();
+    const { newTitle, loadingSave, setLoadingSave, statut, canauxProduct, metaTitle, metaDescription, ancreUrl } =
+        useProductStore();
     const { hasChanges, modifiedHtml } = useEditorHtmlStore();
 
     if (!product || !shopifyBoutique) return null;
@@ -30,9 +30,21 @@ export default function HeaderProduct() {
     });
 
     const canauxToUpdate = canauxActives.filter((c) => c.isPublished !== canauxProduct.find((cp) => cp.id === c.id)?.isPublished);
+    const metaTitleProduct = product?.metafields.nodes.find((mf) => mf.key === "title_tag");
+    const metaDescriptionProduct = product?.metafields.nodes.find((mf) => mf.key === "description_tag");
 
+    const hasMetaChanges =
+        metaTitle.trim() !== (metaTitleProduct?.value.trim() || "") ||
+        metaDescription.trim() !== (metaDescriptionProduct?.value.trim() || "") ||
+        ancreUrl !== product.handle;
     const disabledSave =
-        (!hasChanges && newTitle === product.title && statut === product.status && canauxToUpdate.length === 0) || loadingSave;
+        (!hasChanges &&
+            newTitle === product.title &&
+            statut === product.status &&
+            canauxToUpdate.length === 0 &&
+            !hasMetaChanges) ||
+        loadingSave;
+
     const handleSave = async () => {
         if (disabledSave || !product) return;
         setLoadingSave(true);
@@ -57,6 +69,16 @@ export default function HeaderProduct() {
                 toast.error("Erreur lors de la sauvegarde");
             }
         }
+        if (ancreUrl.trim() !== product.handle) {
+            try {
+                const res = await updateProduct(shopifyBoutique.domain, product.id, "Handle", ancreUrl.trim());
+                if (res.error) toast.error(res.error);
+                if (res.message) toast.success(res.message);
+            } catch (err) {
+                console.log(err);
+                toast.error("Erreur lors de la sauvegarde de l'ancre d'URL");
+            }
+        }
         if (statut !== product.status) {
             try {
                 const res = await updateProduct(shopifyBoutique.domain, product.id, "Statut", statut);
@@ -76,6 +98,28 @@ export default function HeaderProduct() {
                 console.log(err);
                 toast.error("Erreur lors de la sauvegarde des canaux de vente");
             }
+        }
+        if (metaDescriptionProduct?.id && metaDescription !== (metaDescriptionProduct?.value || "")) {
+            try {
+                const res = await updateMetafield(shopifyBoutique.domain, product.id, metaDescriptionProduct.id, metaDescription);
+                if (res.error) toast.error(res.error);
+                if (res.message) toast.success(res.message);
+            } catch (err) {
+                console.log(err);
+                toast.error("Erreur lors de la sauvegarde");
+            }
+        }
+        if (metaTitleProduct?.id && metaTitle !== (metaTitleProduct?.value || "")) {
+            try {
+                const res = await updateMetafield(shopifyBoutique.domain, product.id, metaTitleProduct.id, metaTitle);
+                if (res.error) toast.error(res.error);
+                if (res.message) toast.success(res.message);
+            } catch (err) {
+                console.log(err);
+                toast.error("Erreur lors de la sauvegarde");
+            }
+        }
+        if (ancreUrl !== product.handle) {
         }
         setLoadingSave(false);
     };

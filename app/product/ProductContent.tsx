@@ -16,6 +16,7 @@ import Sku from "./variant/Sku";
 import { useSearchParams } from "next/navigation";
 import Statut from "./Statut";
 import Canaux from "./Canaux";
+import MetaSeo from "./Metafields/MetaSeo";
 
 export default function ProductContent() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
@@ -36,23 +37,24 @@ export default function ProductContent() {
                 <HeaderProduct />
                 <CardContent className="flex gap-5 p-2 max-[1600px]:justify-center">
                     {/* Carrousel d'images */}
-                    <ImagesProduct />
 
-                    <div className="flex-1 flex p-1 gap-5 w-full max-[1600px]:flex-col">
+                    <div className="flex-1 flex p-1 gap-5 flex-col">
                         <EditeurHtml html={product?.descriptionHtml}>
                             <HeaderEditeur />
                         </EditeurHtml>
-                        <div className="flex flex-wrap gap-3 justify-center w-full">
-                            {/* Détails du produit */}
-                            <Statut />
-                            <Canaux />
-                            <TagsShopify />
-                            <Prices />
-                            <Sku />
-                            <AboutProduct />
-                            <LinkToShops />
-                            <VariantClient />
-                        </div>
+                        <ImagesProduct />
+                    </div>
+                    <div className="flex flex-wrap gap-3 justify-center max-w-[30vw] h-min">
+                        {/* Détails du produit */}
+                        <Statut />
+                        <Canaux />
+                        <TagsShopify />
+                        <MetaSeo />
+                        <Prices />
+                        <Sku />
+                        <AboutProduct />
+                        <LinkToShops />
+                        <VariantClient />
                     </div>
                 </CardContent>
                 {/* <Metafields metafields={product.metafields.nodes} /> */}

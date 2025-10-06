@@ -29,11 +29,11 @@ export default function ImagesProduct() {
     const dataToCupy = metafieldVideo ? metafieldVideo.value : metafieldUrl?.value;
 
     return (
-        <div className="relative w-1/4 flex flex-col gap-2">
+        <div className="relative flex flex-col gap-2">
             {/* Image principale */}
             {/* Boutons de navigation sur l'image principale */}
             {images.length > 0 && (
-                <div className="relative aspect-square">
+                <div className="relative aspect-square flex items-center justify-center ">
                     <Image
                         priority={true}
                         src={images[currentImageIndex]?.image?.url || "/no_image.png"}

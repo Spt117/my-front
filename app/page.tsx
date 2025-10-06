@@ -10,7 +10,7 @@ export default async function Page() {
     if (!data || !data.orders) return <div>Erreur lors de la récupération des commandes</div>;
 
     return (
-        <div className="container flex flex-col justify-center items-center relative">
+        <div className=" flex flex-col justify-center items-center relative">
             <RefreshOders products={data.products} orders={data.orders.sort((a, b) => b.createdAt.localeCompare(a.createdAt))} />
         </div>
     );
