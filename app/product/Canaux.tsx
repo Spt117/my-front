@@ -32,7 +32,6 @@ export default function Canaux() {
     const handleClickCanal = (canalId: string) => {
         const thisCanal = canauxProduct.find((c) => c.id === canalId);
         if (!thisCanal) return;
-        console.log("thisCanal", thisCanal);
         setCanauxProduct(canauxProduct.map((c) => (c.id === canalId ? { ...c, isPublished: !c.isPublished } : c)));
     };
 
@@ -47,7 +46,7 @@ export default function Canaux() {
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900">Canaux de vente</h3>
                             <p className="text-sm text-gray-500">
-                                {selectedCount} canal{selectedCount !== 1 ? "aux" : ""} actif{selectedCount !== 1 ? "s" : ""}
+                                {selectedCount} {selectedCount !== 1 ? "canaux" : "canal"} actif{selectedCount !== 1 ? "s" : ""}
                             </p>
                         </div>
                     </div>
