@@ -5,6 +5,7 @@ export type TLangueTraduction = (typeof languesTraductions)[number];
 export interface IShopifyBase {
     vendor: string;
     domain: string;
+    publicDomain: string;
     locationHome: number;
     langue: TLangueTraduction;
     flag: string;
@@ -17,6 +18,7 @@ export const boutiques = [
     {
         vendor: "Cartes Pokémon",
         domain: "toupies-beyblade.myshopify.com",
+        publicDomain: "cartes-pokemon.com",
         locationHome: 34463252529,
         langue: "français",
         flag: "/flags/fr.png",
@@ -26,6 +28,7 @@ export const boutiques = [
     {
         vendor: "Beyblade Shop",
         domain: "bayblade-shops.myshopify.com",
+        publicDomain: "beyblade-shop.com",
         locationHome: 32727892040,
         langue: "français",
         flag: "/flags/fr.png",
@@ -35,6 +38,7 @@ export const boutiques = [
     {
         vendor: "Beyblade Shop",
         domain: "beyblade-shopde.myshopify.com",
+        publicDomain: "beyblade-shop.de",
         locationHome: 63287656610,
         langue: "allemand",
         flag: "/flags/de.png",
@@ -44,6 +48,7 @@ export const boutiques = [
     {
         vendor: "Beyblade Toys",
         domain: "beyblade-toyss.myshopify.com",
+        publicDomain: "beyblade-toys.com",
         langue: "anglais",
         locationHome: 87601742141,
         flag: "/flags/us.png",
@@ -55,6 +60,7 @@ export const boutiques = [
 // 3. Dériver les types après la définition du tableau
 export type TBoutiques = typeof boutiques;
 export type TDomainsShopify = TBoutiques[number]["domain"];
+export type TPublicDomainsShopify = TBoutiques[number]["publicDomain"];
 export type TVendorsShopify = TBoutiques[number]["vendor"];
 export type TLocationHome = TBoutiques[number]["locationHome"];
 export type TMarketplaceAmazonBoutique = TBoutiques[number]["marketplaceAmazon"];

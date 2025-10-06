@@ -1,23 +1,21 @@
 "use client";
 
+import { ProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
+import { sleep } from "@/library/utils/helpers";
 import Image from "next/image";
 import { useState } from "react";
-import { MultiSelect, MultiSelectOption } from "./Multiselect";
-import { ProductType } from "@/components/shopify/ProductType";
 import { toast } from "sonner";
-import { sleep } from "@/library/utils/helpers";
-import HeaderProduct from "@/app/product/HeaderProduct";
 import ProductContent from "../product/ProductContent";
-import { Card } from "@/components/ui/card";
+import { MultiSelect, MultiSelectOption } from "./Multiselect";
 
 export default function Action() {
     const { shopifyBoutique, product, selectedType, selectedBrand } = useShopifyStore();
-    console.log(product);
 
     const [domainsDest, setDomainsDest] = useState<TDomainsShopify[]>([]);
     const [loading, setLoading] = useState(false);

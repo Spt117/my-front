@@ -5,7 +5,7 @@ interface IPartialWordpress {
     categorie: string;
 }
 
-export const sites = [
+export const sitesWordpress = [
     {
         domain: "beyblade-x.fr",
         username: "contact@e-com-jbc.fr",
@@ -32,7 +32,7 @@ export const sites = [
     },
 ] as const satisfies readonly IPartialWordpress[];
 
-export type Sites = typeof sites;
+export type Sites = typeof sitesWordpress;
 export type TLangueWordpress = Sites[number]["language"];
 export type TCategorieWordpress = Sites[number]["categorie"];
 export type TDomainWordpress = Sites[number]["domain"];
