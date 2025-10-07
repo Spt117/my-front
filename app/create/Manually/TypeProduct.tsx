@@ -1,11 +1,16 @@
 import Selecteur from "@/components/selecteur";
 import { allProducts, pokemonProducts } from "@/library/params/paramsCreateAffiliation";
 import useCreateStore from "./storeCreate";
+import { useEffect } from "react";
 
 export default function TypeProduct() {
     const { selectedNiche, setSelectedNiche, selectedProduct, setSelectedProduct } = useCreateStore();
-    if (!selectedNiche) return null;
 
+    useEffect(() => {
+        setSelectedProduct(null);
+    }, [selectedNiche, setSelectedProduct]);
+
+    if (!selectedNiche) return null;
     const optionsProducts = allProducts[selectedNiche].map((product) => ({ label: product, value: product }));
 
     return (
