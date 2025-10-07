@@ -1,13 +1,12 @@
+import CopyComponent from "@/components/Copy";
 import useEditorHtmlStore from "@/components/editeurHtml/storeEditor";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useCopy } from "@/library/hooks/useCopy";
 import { Label } from "@radix-ui/react-label";
-import { Copy } from "lucide-react";
 import { useEffect } from "react";
 import useProductStore from "./storeProduct";
-import { classCopy } from "./util";
 
 export default function HeaderEditeur() {
     const { product } = useShopifyStore();
@@ -36,7 +35,7 @@ export default function HeaderEditeur() {
             />
             <div className="flex items-center justify-between">
                 <h6 className="mt-5 mb-2 text-lg font-medium">Description</h6>
-                <Copy className={classCopy} size={20} onClick={() => handleCopy(modifiedHtml, "Description copié !")} />
+                <CopyComponent contentToCopy={modifiedHtml || ""} message="Description copiée !" />
             </div>
         </CardHeader>
     );

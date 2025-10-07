@@ -29,6 +29,17 @@ class CTasksAffiliationController {
         }
     }
 
+    async updateStatus(id: string, status: "pending" | "done" | "error"): Promise<boolean> {
+        try {
+            const model = await this.getModel();
+            const result = await model.findByIdAndUpdate(id, { status }, { new: true }).exec();
+            return result !== null;
+        } catch (err) {
+            console.error("Error in updateStatus:", err);
+            return false;
+        }
+    }
+
     static instance: CTasksAffiliationController;
 
     public static getInstance(): CTasksAffiliationController {

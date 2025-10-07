@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 import { TNameMarketplace } from "../../params/paramsAmazon";
 import { TPublicDomainsShopify } from "../../params/paramsShopify";
 import { TDomainWordpress } from "../../params/paramsWordpress";
+import { AffiliationsProducts } from "@/library/params/paramsCreateAffiliation";
 
 export type TAffiliationTask = {
     _id?: string;
@@ -9,6 +10,7 @@ export type TAffiliationTask = {
     image: string;
     brand?: string;
     asin: string;
+    productType: AffiliationsProducts;
     marketplace: TNameMarketplace;
     website: TDomainWordpress | TPublicDomainsShopify;
     status: "pending" | "done" | "error";
@@ -22,6 +24,7 @@ export const createAffiliationTaskSchema = (collectionName: string) => {
             title: { type: String, required: true },
             image: { type: String, required: true },
             asin: { type: String, required: true },
+            productType: { type: String, required: true },
             brand: { type: String, required: false },
             marketplace: { type: String, required: true },
             website: { type: String, required: true },

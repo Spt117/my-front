@@ -1,0 +1,95 @@
+import CopyComponent from "@/components/Copy";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import { IconCategoryFilled } from "@tabler/icons-react";
+import { Globe, Package } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { archiveTaskStatus } from "../serverTasksAffiliation";
+import { useAffiliationTask } from "./ContextTaskAffiliation";
+import Inputs from "./Inputs";
+
+export default function TaskAffiliation() {
+    const { task, productType, setProductType, loading, setLoading, handleCreateProduct, disabledPush } = useAffiliationTask();
+    const router = useRouter();
+
+    const handleArchive = async () => {
+        setLoading(true);
+        try {
+            const res = await archiveTaskStatus(task._id!);
+            toast.success("Tâche archivée avec succès " + res);
+            // Optionally, you can add a success message or update the UI accordingly
+            router.refresh();
+        } catch (error) {
+            toast.error("Échec de l'archivage de la tâche");
+            console.error("Failed to archive task:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Couleurs des badges selon le statut
+    const statusStyles: Record<string, string> = {
+        pending: "bg-yellow-100 text-yellow-800",
+        done: "bg-green-100 text-green-800",
+        error: "bg-red-100 text-red-800",
+    };
+
+    return (
+        <Card className="relative flex-1 min-w-[350px] max-w-[400px] shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <Badge className={`${statusStyles[task.status]} capitalize absolute top-1 right-2`}>{task.status}</Badge>
+            <CardHeader className="flex flex-row items-center gap-4">
+                <img src={task.image} alt={task.title} className="w-16 h-16 object-cover rounded-md" />
+                <div>
+                    <a
+                        href={`https://${task.marketplace}/dp/${task.asin}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-800 hover:underline"
+                    >
+                        <CardTitle className="text-lg font-semibold line-clamp-2">{task.title}</CardTitle>
+                    </a>
+                    {task.brand && <p className="text-sm text-gray-500">{task.brand}</p>}
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-2">
+                <div className="flex items-center gap-2">
+                    <Package className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm flex items-center gap-1">
+                        ASIN:
+                        <CopyComponent size={18} contentToCopy={task.asin} message="ASIN copié !">
+                            {task.asin}
+                        </CopyComponent>
+                    </span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <IconCategoryFilled className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm flex items-center">Type:</span>
+                    <Input className="w-max h-7" value={productType} onChange={(e) => setProductType(e.target.value)} />
+                </div>
+                <Inputs />
+                <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm">Marketplace: {task.marketplace}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm">Site: {task.website}</span>
+                </div>
+
+                <div className="mt-4 flex items-center gap-2">
+                    <Button disabled={loading || disabledPush} size="sm" onClick={handleCreateProduct}>
+                        Créer le produit
+                    </Button>
+                    <Button disabled={loading} variant="outline" onClick={handleArchive}>
+                        Archiver
+                    </Button>
+                    {loading && <Spinner size={20} />}
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
