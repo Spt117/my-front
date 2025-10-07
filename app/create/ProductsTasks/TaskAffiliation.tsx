@@ -14,6 +14,8 @@ import Inputs from "./Inputs";
 
 export default function TaskAffiliation() {
     const { task, productType, setProductType, loading, setLoading, handleCreateProduct, disabledPush } = useAffiliationTask();
+    const { size, setSize, setNamePokemon, namePokemon } = useAffiliationTask();
+
     const router = useRouter();
 
     const handleArchive = async () => {
@@ -70,7 +72,13 @@ export default function TaskAffiliation() {
                     <span className="text-sm flex items-center">Type:</span>
                     <Input className="w-max h-7" value={productType} onChange={(e) => setProductType(e.target.value)} />
                 </div>
-                <Inputs />
+                <Inputs
+                    size={size}
+                    setSize={setSize}
+                    productType={productType}
+                    setNamePokemon={setNamePokemon}
+                    namePokemon={namePokemon}
+                />
                 <div className="flex items-center gap-2">
                     <Globe className="w-4 h-4 text-gray-500" />
                     <span className="text-sm">Marketplace: {task.marketplace}</span>

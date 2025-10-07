@@ -1,14 +1,13 @@
 "use client";
 
-import useAffiliationStore from "@/app/tasks/storeTasksAffiliation";
+import useAffiliationStore from "@/app/create/storeTasksAffiliation";
 import Selecteur from "@/components/selecteur";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { ar } from "date-fns/locale";
+import { websites } from "@/library/params/paramsCreateAffiliation";
 
 export default function SelectAffiliationSite() {
-    const { tasksAffil, websiteFilter, setWebsiteFilter, arraySites } = useAffiliationStore();
-
-    const option = arraySites.map((website) => ({
+    const { websiteFilter, setWebsiteFilter } = useAffiliationStore();
+    const option = websites.map((website) => ({
         label: website,
         value: website,
     }));
@@ -22,12 +21,5 @@ export default function SelectAffiliationSite() {
     };
     useKeyboardShortcuts("Escape", handleEscape);
 
-    return (
-        <Selecteur
-            array={option}
-            value={arraySites.length === 1 ? arraySites[0] : websiteFilter}
-            onChange={handleSelect}
-            placeholder="Choisir l'origine"
-        />
-    );
+    return <Selecteur array={option} value={websiteFilter} onChange={handleSelect} placeholder="Choisir l'origine" />;
 }

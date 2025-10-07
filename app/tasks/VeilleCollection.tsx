@@ -32,7 +32,7 @@ export default function VeilleCollection({ collection }: { collection: TVeille }
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            const res = await addWebsiteToVeille(collection._id!, selectedOptions);
+            await addWebsiteToVeille(collection._id!, selectedOptions);
             toast.success("Websites updated successfully");
         } catch (error) {
             toast.error("Failed to update websites");
@@ -121,6 +121,7 @@ export default function VeilleCollection({ collection }: { collection: TVeille }
                         Monitored Websites
                     </label>
                     <MultiSelect
+                        disabled={!collection.active}
                         defaultValue={collection.website || []}
                         options={options}
                         onValueChange={handleSelectDest}

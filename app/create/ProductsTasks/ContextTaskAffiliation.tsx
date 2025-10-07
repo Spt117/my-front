@@ -1,9 +1,9 @@
 import { TAffiliationTask } from "@/library/models/tasksAffiliation/tasksAffiliation";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { ICreateAffiliationProduct } from "../util";
-import { affiliationsProductsOk } from "@/library/params/paramsCreateAffiliation";
 import { createProduct } from "../serverTasksAffiliation";
 import { toast } from "sonner";
+import { pokemonProducts } from "@/library/params/paramsCreateAffiliation";
 
 interface AffiliationTaskContextType {
     task: TAffiliationTask;
@@ -34,7 +34,7 @@ export function AffiliationTaskProvider({ children, task }: { children: ReactNod
             alert("Veuillez sélectionner un type de produit.");
             return;
         }
-        if (affiliationsProductsOk.includes(productType as any) === false) {
+        if (pokemonProducts.includes(productType as any) === false) {
             alert("Type de produit non valide.");
             return;
         }

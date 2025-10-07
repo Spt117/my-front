@@ -1,10 +1,19 @@
 import { Input } from "@/components/ui/input";
 import { FileText, Ruler } from "lucide-react";
-import { useAffiliationTask } from "./ContextTaskAffiliation";
 
-export default function Inputs() {
-    const { size, setSize, productType, setNamePokemon, namePokemon } = useAffiliationTask();
-
+export default function Inputs({
+    size,
+    setSize,
+    productType,
+    setNamePokemon,
+    namePokemon,
+}: {
+    size: number | null;
+    setSize: (size: number | null) => void;
+    productType: string;
+    setNamePokemon: (name: string) => void;
+    namePokemon: string;
+}) {
     if (productType === "peluche pokémon")
         return (
             <>

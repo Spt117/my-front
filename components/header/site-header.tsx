@@ -11,8 +11,8 @@ import SelectAffiliationSite from "./SelectAffiliationSite";
 
 export function SiteHeader() {
     const pathname = usePathname();
-    const searchProductsPaths = ["/product-duplicate", "/product", "/product-create"];
-    const excludeShopifySelectPaths = ["/stock", "/tasks"];
+    const searchProductsPaths = ["/product-duplicate", "/product"];
+    const excludeShopifySelectPaths = ["/stock", "/tasks", "/create"];
 
     return (
         <header className="sticky top-0 z-50 bg-white flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -28,7 +28,7 @@ export function SiteHeader() {
                 )}
                 {searchProductsPaths.includes(pathname) && <SearchProduct />}
                 {pathname === "/" && <Orders />}
-                {pathname === "/tasks" && <SelectAffiliationSite />}
+                {pathname === "/create" && <SelectAffiliationSite />}
             </div>
         </header>
     );
