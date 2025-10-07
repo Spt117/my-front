@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 import { TNameMarketplace } from "../../params/paramsAmazon";
 import { TPublicDomainsShopify } from "../../params/paramsShopify";
 import { TDomainWordpress } from "../../params/paramsWordpress";
-import { pokemonProducts } from "@/library/params/paramsCreateAffiliation";
+import { TPokemonProducts } from "@/library/params/paramsCreateAffiliation";
 
 export type TAffiliationTask = {
     _id?: string;
@@ -10,7 +10,7 @@ export type TAffiliationTask = {
     image: string;
     brand?: string;
     asin: string;
-    productType: pokemonProducts;
+    productType: TPokemonProducts;
     marketplace: TNameMarketplace;
     website: TDomainWordpress | TPublicDomainsShopify;
     status: "pending" | "done" | "error";
