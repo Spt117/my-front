@@ -25,7 +25,7 @@ export default function SelectAffiliationSite() {
     return (
         <Selecteur
             array={option}
-            value={arraySites.length > 0 ? arraySites[0] : websiteFilter}
+            value={arraySites.length === 1 ? arraySites[0] : websiteFilter}
             onChange={handleSelect}
             placeholder="Choisir l'origine"
         />
