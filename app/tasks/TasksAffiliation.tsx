@@ -6,11 +6,14 @@ import { useEffect } from "react";
 import { AffiliationTaskProvider } from "./task/ContextTaskAffiliation";
 
 export default function TasksAffiliation({ tasks }: { tasks: TAffiliationTask[] }) {
-    const { setTasksAffil, tasksAffil } = useAffiliationStore();
+    const { setTasksAffil, tasksAffil, setArraySites, websiteFilter } = useAffiliationStore();
 
     useEffect(() => {
+        setArraySites(Array.from(new Set(tasks.map((task) => task.website))).sort((a, b) => a.localeCompare(b)));
         setTasksAffil(tasks);
     }, [tasks, setTasksAffil]);
+
+    const tasksFiltered = websiteFilter ? tasksAffil.filter((task) => task.website === websiteFilter) : tasksAffil;
 
     return (
         <div className="flex flex-wrap gap-4 p-4 items-center justify-center">
@@ -18,7 +21,7 @@ export default function TasksAffiliation({ tasks }: { tasks: TAffiliationTask[] 
                 Tâches d'affiliation ({tasksAffil.length} {tasksAffil.length > 1 ? "tâches" : "tâche"} en attente)
             </h2>
             <div className="flex flex-wrap gap-4">
-                {tasksAffil.map((task) => (
+                {tasksFiltered.map((task) => (
                     <AffiliationTaskProvider key={task._id} task={task}>
                         <TaskAffiliation />
                     </AffiliationTaskProvider>
