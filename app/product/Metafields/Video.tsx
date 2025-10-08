@@ -37,7 +37,7 @@ export default function Video() {
         }
     }, [metafieldVideo, metafieldUrl, product]);
 
-    const handleClick = async () => {
+    const handleClick = async (value: string) => {
         if (!srcVideo.trim()) {
             toast.error("L'ASIN ne peut pas être vide.");
             return;
@@ -46,7 +46,6 @@ export default function Video() {
         const prodcutGID = product.id;
         const key: TMetafieldKeys = metafieldUrl ? "url_video" : "id_video_youtube";
         const domain = shopifyBoutique.domain;
-        const value = srcVideo.trim();
         try {
             const res = await updateMetafieldKey(domain, prodcutGID, key, value);
             if (res?.error) toast.error(res.error);
@@ -67,7 +66,7 @@ export default function Video() {
                         <Input className="w-full" type="text" placeholder={url ? "url" : "Id Youtube"} onChange={(e) => setSrcVideo(e.target.value)} value={srcVideo} />
                         <Switch checked={url} className="ml-4" onClick={() => setUrl(!url)} />
                     </div>
-                    <Button disabled={loading} onClick={handleClick}>
+                    <Button disabled={loading} onClick={() => handleClick(srcVideo)} className="mt-4">
                         Ajouter vidéo
                         <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />
                     </Button>

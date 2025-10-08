@@ -17,7 +17,7 @@ export default function Sku() {
     const variant = product?.variants?.nodes[0];
 
     useEffect(() => {
-        if (variant) setSku(variant.sku);
+        if (variant && variant.sku) setSku(variant.sku);
     }, [variant, setSku]);
 
     if (!product || !variant || !shopifyBoutique) return null;
@@ -41,10 +41,7 @@ export default function Sku() {
     return (
         <Card className={cssCard + " relative"}>
             <CardContent className="flex flex-col justify-between gap-2 ">
-                {activeSave && !loading && (
-                    <Save onClick={handleSave} className="absolute right-2 top-1 cursor-pointer" size={20} />
-                )}{" "}
-                {loading && <Spinner className="absolute right-2 top-1" size={20} />}
+                {activeSave && !loading && <Save onClick={handleSave} className="absolute right-2 top-1 cursor-pointer" size={20} />} {loading && <Spinner className="absolute right-2 top-1" size={20} />}
                 <h3 className="m-2 text-sm font-medium flex items-center gap-2">
                     <KeySquare size={16} />
                     Sku<span className="text-gray-500">(unité de gestion des stocks)</span>
