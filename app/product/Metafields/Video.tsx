@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { setAsin } from "@/components/shopify/serverActions";
 import { IMetafieldRequest } from "@/components/shopify/typesShopify";
+import { updateMetafield } from "../serverAction";
 
 export default function Video() {
     const [loading, setLoading] = useState(false);
@@ -44,14 +45,12 @@ export default function Video() {
             return;
         }
         setLoading(true);
-        const data: IMetafieldRequest = {
-            productId: product.id,
-            domain: shopifyBoutique.domain,
-            key: url ? "url_video" : "id_video_youtube",
-            value: srcVideo.trim(),
-        };
+        const prodcutGID = product.id;
+        const metafieldGid = (url ? metafieldUrl?.id : metafieldVideo?.id) as string;
+        const domain = shopifyBoutique.domain;
+        const value = srcVideo.trim();
         try {
-            const res = await setAsin(data);
+            const res = await updateMetafield(domain, prodcutGID, metafieldGid, value);
             if (res?.error) toast.error(res.error);
             if (res?.message) toast.success(res.message);
         } catch (error) {
