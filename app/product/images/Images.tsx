@@ -1,5 +1,4 @@
 "use client";
-import Video from "@/app/product/Metafields/Video";
 import { Button } from "@/components/ui/button";
 import { useCopy } from "@/library/hooks/useCopy";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -34,55 +33,22 @@ export default function ImagesProduct() {
             {/* Boutons de navigation sur l'image principale */}
             {images.length > 0 && (
                 <div className="relative aspect-square flex items-center justify-center ">
-                    <Image
-                        priority={true}
-                        src={images[currentImageIndex]?.image?.url || "/no_image.png"}
-                        alt={images[currentImageIndex]?.alt || product.title}
-                        loading="eager"
-                        className="object-cover rounded-lg"
-                        width={750}
-                        height={750}
-                    />
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
-                        onClick={handlePrevImage}
-                    >
+                    <Image priority={true} src={images[currentImageIndex]?.image?.url || "/no_image.png"} alt={images[currentImageIndex]?.alt || product.title} loading="eager" className="object-cover rounded-lg" width={750} height={750} />
+                    <Button variant="outline" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white" onClick={handlePrevImage}>
                         <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
-                        onClick={handleNextImage}
-                    >
+                    <Button variant="outline" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white" onClick={handleNextImage}>
                         <ChevronRight className="h-4 w-4" />
                     </Button>
                 </div>
             )}
-            <Video />
 
             {/* Aperçus des images (thumbnails) */}
             {images.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto pb-2">
                     {images.map((img, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentImageIndex(index)}
-                            className={`flex-shrink-0 relative w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${
-                                index === currentImageIndex ? "border-primary shadow-md" : "border-gray-200 hover:border-gray-400"
-                            }`}
-                        >
-                            <Image
-                                src={img.image?.url || "/no_image.png"}
-                                alt={img.alt || `${product.title} ${index + 1}`}
-                                fill
-                                className="object-cover cursor-pointer"
-                                sizes="64px"
-                                loading="lazy"
-                            />
-                            w{/* Overlay pour l'image active */}
+                        <button key={index} onClick={() => setCurrentImageIndex(index)} className={`flex-shrink-0 relative w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${index === currentImageIndex ? "border-primary shadow-md" : "border-gray-200 hover:border-gray-400"}`}>
+                            <Image src={img.image?.url || "/no_image.png"} alt={img.alt || `${product.title} ${index + 1}`} fill className="object-cover cursor-pointer" sizes="64px" loading="lazy" />w{/* Overlay pour l'image active */}
                             {index === currentImageIndex && <div className="absolute inset-0 bg-primary/10" />}
                         </button>
                     ))}
@@ -91,10 +57,7 @@ export default function ImagesProduct() {
             {dataToCupy && (
                 <div>
                     Vidéo:{" "}
-                    <span
-                        className="text-xs text-muted-foreground break-all cursor-pointer hover:underline active:text-primary "
-                        onClick={() => handleCopy(dataToCupy || "", "ID vidéo copié !")}
-                    >
+                    <span className="text-xs text-muted-foreground break-all cursor-pointer hover:underline active:text-primary " onClick={() => handleCopy(dataToCupy || "", "ID vidéo copié !")}>
                         {dataToCupy}
                     </span>
                 </div>

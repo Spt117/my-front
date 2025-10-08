@@ -1,27 +1,19 @@
-"use client";
 import useEditorHtmlStore from "@/components/editeurHtml/storeEditor";
 import { formatHTML } from "@/components/editeurHtml/utils";
-import { CardHeader, CardTitle } from "@/components/ui/card";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { useCopy } from "@/library/hooks/useCopy";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { Globe, Save, Tag } from "lucide-react";
-import Image from "next/image";
+import { SaveIcon } from "lucide-react";
 import { toast } from "sonner";
-import useShopifyStore from "../../components/shopify/shopifyStore";
-import { updateCanauxVente, updateMetafield, updateProduct } from "./serverAction";
-import useProductStore from "./storeProduct";
+import { updateProduct, updateCanauxVente, updateMetafield } from "../serverAction";
+import useProductStore from "../storeProduct";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
-export default function HeaderProduct() {
-    const { handleCopy } = useCopy();
+export default function Save() {
     const { product, shopifyBoutique, canauxBoutique } = useShopifyStore();
-    const { newTitle, loadingSave, setLoadingSave, statut, canauxProduct, metaTitle, metaDescription, ancreUrl } =
-        useProductStore();
+    const { newTitle, loadingSave, setLoadingSave, statut, canauxProduct, metaTitle, metaDescription, ancreUrl } = useProductStore();
     const { hasChanges, modifiedHtml } = useEditorHtmlStore();
 
     if (!product || !shopifyBoutique) return null;
-
-    const productUrl = `https://${shopifyBoutique.domain}/products/${product.handle}`;
 
     const canauxActives = canauxBoutique.map((c) => {
         const found = product?.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
@@ -33,17 +25,8 @@ export default function HeaderProduct() {
     const metaTitleProduct = product?.metafields.nodes.find((mf) => mf.key === "title_tag");
     const metaDescriptionProduct = product?.metafields.nodes.find((mf) => mf.key === "description_tag");
 
-    const hasMetaChanges =
-        metaTitle.trim() !== (metaTitleProduct?.value.trim() || "") ||
-        metaDescription.trim() !== (metaDescriptionProduct?.value.trim() || "") ||
-        ancreUrl !== product.handle;
-    const disabledSave =
-        (!hasChanges &&
-            newTitle === product.title &&
-            statut === product.status &&
-            canauxToUpdate.length === 0 &&
-            !hasMetaChanges) ||
-        loadingSave;
+    const hasMetaChanges = metaTitle.trim() !== (metaTitleProduct?.value.trim() || "") || metaDescription.trim() !== (metaDescriptionProduct?.value.trim() || "") || ancreUrl !== product.handle;
+    const disabledSave = (!hasChanges && newTitle === product.title && statut === product.status && canauxToUpdate.length === 0 && !hasMetaChanges) || loadingSave;
 
     const handleSave = async () => {
         if (disabledSave || !product) return;
@@ -137,52 +120,11 @@ export default function HeaderProduct() {
     useKeyboardShortcuts("Enter", handleSaveShortcut);
     useKeyboardShortcuts({ key: "Enter", ctrl: true }, handleSave);
 
-    return (
-        <CardHeader className="sticky top-12 w-full z-10 p-1 bg-gray-50 ">
-            <div className="flex items-center justify-between">
-                <CardTitle
-                    onClick={() => {
-                        handleCopy(product.title);
-                    }}
-                    className="flex items-center gap-2 text-lg font-semibold cursor-pointer transition-transform duration-500 ease-out active:scale-85"
-                    title="Cliquer pour copier le titre"
-                >
-                    <Tag size={20} className={`text-gray-500`} />
-                    {product.title}
-                </CardTitle>
-                <div className="flex gap-2 items-center mr-2">
-                    {!loadingSave && (
-                        <span title="Sauvegarder les modifications" className="text-sm text-gray-500 italic">
-                            <Save
-                                color={disabledSave ? "gray" : "black"}
-                                size={33}
-                                className={disabledSave ? "cursor-not-allowed" : "cursor-pointer"}
-                                onClick={!disabledSave ? handleSave : undefined}
-                            />
-                        </span>
-                    )}
-                    {loadingSave && <Spinner className="ml-2" />}
-                    <a href={productUrl} target="_blank" rel="noopener noreferrer">
-                        <span title="Voir le produit sur la boutique">
-                            <Globe size={33} className="ml-2" />
-                        </span>
-                    </a>
-                    <a
-                        href={`https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Image
-                            title="Editer sur Shopify"
-                            src="/shopify.png"
-                            alt="Flag"
-                            width={20}
-                            height={20}
-                            className="ml-2 object-contain w-auto h-auto"
-                        />
-                    </a>
-                </div>
-            </div>
-        </CardHeader>
-    );
+    if (!loadingSave)
+        return (
+            <span title="Sauvegarder les modifications" className="text-sm text-gray-500 italic">
+                <SaveIcon color={disabledSave ? "gray" : "black"} size={33} className={disabledSave ? "cursor-not-allowed" : "cursor-pointer"} onClick={!disabledSave ? handleSave : undefined} />
+            </span>
+        );
+    else return <Spinner className="ml-2" />;
 }

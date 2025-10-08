@@ -1,6 +1,6 @@
 "use client";
 import TagsShopify from "@/app/product/Tags/Tags";
-import HeaderProduct from "@/app/product/HeaderProduct";
+import HeaderProduct from "@/app/product/Header/HeaderProduct";
 import ImagesProduct from "@/app/product/images/Images";
 import LinkToShops from "@/components/shopify/Product/LinkToShops";
 import useShopifyStore from "@/components/shopify/shopifyStore";
@@ -10,7 +10,6 @@ import AboutProduct from "./AboutProduct";
 import EditeurHtml from "../../components/editeurHtml/Editeur";
 import Prices from "./variant/Prices/Prices";
 import VariantClient from "./VariantClient";
-import HeaderEditeur from "./HeaderEditeur";
 import { boutiques } from "@/library/params/paramsShopify";
 import Sku from "./variant/Sku";
 import { useSearchParams } from "next/navigation";
@@ -18,6 +17,8 @@ import Statut from "./Statut";
 import Canaux from "./Canaux";
 import MetaSeo from "./Metafields/MetaSeo";
 import Metafields from "./Metafields/Metafields";
+import HeaderEditeur from "./Header/HeaderEditeur";
+import Video from "./Metafields/Video";
 
 export default function ProductContent() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
@@ -54,7 +55,8 @@ export default function ProductContent() {
                         <Prices />
                         <Sku />
                         <AboutProduct />
-                        <LinkToShops />
+                        <Video />
+                        {/* <LinkToShops /> */}
                         <VariantClient />
                         <Metafields metafields={product.metafields.nodes} />
                     </div>
