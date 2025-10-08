@@ -4,7 +4,7 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { SaveIcon } from "lucide-react";
 import { toast } from "sonner";
-import { updateProduct, updateCanauxVente, updateMetafield } from "../serverAction";
+import { updateProduct, updateCanauxVente, updateMetafieldGid } from "../serverAction";
 import useProductStore from "../storeProduct";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
@@ -84,7 +84,7 @@ export default function Save() {
         }
         if (metaDescriptionProduct?.id && metaDescription !== (metaDescriptionProduct?.value || "")) {
             try {
-                const res = await updateMetafield(shopifyBoutique.domain, product.id, metaDescriptionProduct.id, metaDescription);
+                const res = await updateMetafieldGid(shopifyBoutique.domain, product.id, metaDescriptionProduct.id, metaDescription);
                 if (res.error) toast.error(res.error);
                 if (res.message) toast.success(res.message);
             } catch (err) {
@@ -94,7 +94,7 @@ export default function Save() {
         }
         if (metaTitleProduct?.id && metaTitle !== (metaTitleProduct?.value || "")) {
             try {
-                const res = await updateMetafield(shopifyBoutique.domain, product.id, metaTitleProduct.id, metaTitle);
+                const res = await updateMetafieldGid(shopifyBoutique.domain, product.id, metaTitleProduct.id, metaTitle);
                 if (res.error) toast.error(res.error);
                 if (res.message) toast.success(res.message);
             } catch (err) {

@@ -4,14 +4,9 @@ import { TDomainsShopify } from "@/library/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 import { TFieldProduct, TFieldVariant } from "./util";
+import { TMetafieldKeys } from "@/library/types/graph";
 
-export async function updateVariant(
-    domain: TDomainsShopify,
-    productGid: string,
-    variantGid: string,
-    field: TFieldVariant,
-    value: number | string | boolean
-) {
+export async function updateVariant(domain: TDomainsShopify, productGid: string, variantGid: string, field: TFieldVariant, value: number | string | boolean) {
     const url = `${pokeUriServer}/shopify/update-variant`;
     const data = { domain, productGid, variantGid, field, value };
     const response = await postServer(url, data);
@@ -32,20 +27,22 @@ export async function createProductFromTitle(domain: TDomainsShopify, title: str
     return response;
 }
 
-export async function updateCanauxVente(
-    domain: TDomainsShopify,
-    productId: string,
-    items: { id: string; isPublished: boolean }[]
-) {
+export async function updateCanauxVente(domain: TDomainsShopify, productId: string, items: { id: string; isPublished: boolean }[]) {
     const url = `${pokeUriServer}/shopify/update-canaux-vente`;
     const data = { domain, productId, items };
     const response = await postServer(url, data);
     return response;
 }
 
-export async function updateMetafield(domain: TDomainsShopify, productGid: string, metafieldGid: string, value: string) {
+export async function updateMetafieldGid(domain: TDomainsShopify, productGid: string, metafieldGid: string, value: string) {
     const url = `${pokeUriServer}/shopify/update-metafield`;
     const data = { domain, productGid, metafieldGid, value };
+    const response = await postServer(url, data);
+    return response;
+}
+export async function updateMetafieldKey(domain: TDomainsShopify, productGid: string, key: TMetafieldKeys, value: string) {
+    const url = `${pokeUriServer}/shopify/update-metafield`;
+    const data = { domain, productGid, key, value };
     const response = await postServer(url, data);
     return response;
 }

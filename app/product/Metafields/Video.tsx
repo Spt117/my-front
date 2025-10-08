@@ -7,9 +7,8 @@ import { Button } from "@/components/ui/button";
 import { JSX, useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { setAsin } from "@/components/shopify/serverActions";
-import { IMetafieldRequest } from "@/components/shopify/typesShopify";
-import { updateMetafield } from "../serverAction";
+import { updateMetafieldKey } from "../serverAction";
+import { TMetafieldKeys } from "@/library/types/graph";
 
 export default function Video() {
     const [loading, setLoading] = useState(false);
@@ -21,7 +20,6 @@ export default function Video() {
     const metafieldUrl = product?.metafields.nodes.find((mf) => mf.key === "url_video");
 
     if (!product || !shopifyBoutique) return null;
-
     useEffect(() => {
         if (metafieldVideo) {
             setSrcVideo(metafieldVideo.value);
@@ -46,11 +44,11 @@ export default function Video() {
         }
         setLoading(true);
         const prodcutGID = product.id;
-        const metafieldGid = (url ? metafieldUrl?.id : metafieldVideo?.id) as string;
+        const key: TMetafieldKeys = metafieldUrl ? "url_video" : "id_video_youtube";
         const domain = shopifyBoutique.domain;
         const value = srcVideo.trim();
         try {
-            const res = await updateMetafield(domain, prodcutGID, metafieldGid, value);
+            const res = await updateMetafieldKey(domain, prodcutGID, key, value);
             if (res?.error) toast.error(res.error);
             if (res?.message) toast.success(res.message);
         } catch (error) {

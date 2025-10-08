@@ -58,17 +58,7 @@ export interface CategoryProduct {
 }
 
 type MetafieldType = "single_line_text_field" | "string" | "list.product_reference" | "boolean" | (string & {});
-const metafieldKeys = [
-    "asin",
-    "url_video",
-    "id_video_youtube",
-    "amazon_activate",
-    "lien_amazon",
-    "title_tag",
-    "description_tag",
-    "related_products",
-    "complementary_products",
-] as const;
+const metafieldKeys = ["asin", "url_video", "id_video_youtube", "amazon_activate", "lien_amazon", "title_tag", "description_tag", "related_products", "complementary_products"] as const;
 export type TMetafieldKeys = (typeof metafieldKeys)[number];
 const namespaceMetafields = ["custom", "global"] as const;
 export type TNamespaceMetafields = (typeof namespaceMetafields)[number];
