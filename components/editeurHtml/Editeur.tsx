@@ -68,12 +68,18 @@ export default function EditeurHtml({ html, children }: { html?: string; childre
             },
             parseOptions: { preserveWhitespace: false },
             onUpdate: ({ editor }) => {
-                // Mise à jour du HTML modifié avec conversion des espaces autour des liens
                 let newHtml = editor.getHTML();
 
-                // Convertit les espaces normaux autour des liens en &nbsp;
-                newHtml = newHtml.replace(/([^\s>])(\s+)<a/g, "$1&nbsp;<a");
-                newHtml = newHtml.replace(/<\/a>(\s+)([^\s<])/g, "</a>&nbsp;$2");
+                // Protection des espaces autour de TOUTES les balises inline
+                const inlineTags = ["strong", "b", "em", "i", "u", "a", "span", "code"];
+                inlineTags.forEach((tag) => {
+                    // Espace(s) AVANT la balise ouvrante : "texte <strong>" → "texte&nbsp;<strong>"
+                    newHtml = newHtml.replace(new RegExp(`([^\\s>&])(\\s+)<${tag}(\\s|>|/)`, "gi"), `$1&nbsp;<${tag}$3`);
+                    // Espace(s) APRÈS la balise fermante : "</strong> texte" → "</strong>&nbsp;texte"
+                    newHtml = newHtml.replace(new RegExp(`</${tag}>(\\s+)([^\\s<&])`, "gi"), `</${tag}>&nbsp;$2`);
+                    // Espace(s) entre : et <strong> spécifiquement
+                    newHtml = newHtml.replace(new RegExp(`(:)(\\s+)<${tag}(\\s|>|/)`, "gi"), `:&nbsp;<${tag}$3`);
+                });
 
                 setModifiedHtml(newHtml);
             },

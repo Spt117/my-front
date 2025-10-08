@@ -19,14 +19,6 @@ export default function AboutProduct() {
                 <p>Statut: {product.status}</p>
                 <p>Créé le: {new Date(product.createdAt).toLocaleDateString("fr-FR")}</p>
                 <p>Mis à jour le: {new Date(product.updatedAt).toLocaleDateString("fr-FR")}</p>
-                <p
-                    className={"flex items-center gap-1 text-gray-700 " + classCopy}
-                    onClick={() => handleCopy(variant.sku)}
-                    title="Cliquer pour copier le SKU"
-                >
-                    SKU: {variant.sku}
-                    <Copy size={12} className="text-gray-500" />
-                </p>
                 {variant.barcode && (
                     <p
                         className={"flex items-center gap-1 text-gray-700 " + classCopy}

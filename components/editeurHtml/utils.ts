@@ -77,16 +77,15 @@ const formatHTML = (html: string): string => {
     let formatted = "";
     let indent = 0;
 
-    // Remplacer &nbsp; par espace normal
-    // html = html.replace(/&nbsp;/g, " ");
+    // Découper par balises EN PRÉSERVANT le contenu texte/&nbsp; entre elles
+    const parts = html.split(/(<[^>]+>)/g);
 
-    // Découper par balises
-    html.split(/(<[^>]+>)/g).forEach((part) => {
-        if (!part.trim()) return;
+    parts.forEach((part) => {
+        // Si c'est une partie vide SANS &nbsp;, on l'ignore
+        if (!part.trim() && !/&nbsp;/.test(part)) return;
 
         // Balises inline (pas de retour à la ligne)
         const inlineTags = ["strong", "span", "em", "i", "b", "u", "a"];
-
         const isInlineOpen = inlineTags.some((tag) => part.match(new RegExp(`^<${tag}[^>]*>$`, "i")));
         const isInlineClose = inlineTags.some((tag) => part.match(new RegExp(`^</${tag}>$`, "i")));
 
@@ -114,22 +113,18 @@ const formatHTML = (html: string): string => {
                 indent++;
             }
         }
-        // Texte
+        // Texte ou &nbsp; - ON GARDE TEL QUEL
         else {
-            const trimmed = part.trim();
-            if (trimmed) {
-                formatted += trimmed;
-            }
+            formatted += part; // ⬅️ MODIFIÉ : on ne trim() plus, on garde tout
         }
     });
 
     return formatted.trim();
 };
-
 // ⬇️ Dans ShopifyProductEditor.tsx — AJOUTE ces extensions au-dessus du composant
 const PlainListItem = ListItem.extend({
     name: "listItem",
-    content: "inline*", // empêche l'injection de <p> dans les <li>
+    content: "inline*", // ⬅️ Pas de <p>
     parseHTML() {
         return [{ tag: "li" }];
     },

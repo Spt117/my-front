@@ -17,6 +17,7 @@ import { useSearchParams } from "next/navigation";
 import Statut from "./Statut";
 import Canaux from "./Canaux";
 import MetaSeo from "./Metafields/MetaSeo";
+import Metafields from "./Metafields/Metafields";
 
 export default function ProductContent() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
@@ -55,9 +56,9 @@ export default function ProductContent() {
                         <AboutProduct />
                         <LinkToShops />
                         <VariantClient />
+                        <Metafields metafields={product.metafields.nodes} />
                     </div>
                 </CardContent>
-                {/* <Metafields metafields={product.metafields.nodes} /> */}
                 {/* Metafields */}
             </Card>
             {/* <Metafields metafields={product.metafields.nodes} /> */}
