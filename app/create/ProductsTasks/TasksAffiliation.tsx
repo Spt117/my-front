@@ -11,7 +11,12 @@ export default function TasksAffiliation({ tasks }: { tasks: TAffiliationTask[] 
     const { setTasksAffil, tasksAffil, setArraySites, websiteFilter } = useAffiliationStore();
 
     const router = useRouter();
-    useEventListener("products/update", () => router.refresh());
+    useEventListener("products/update", () => {
+        console.log("Refreshing tasks affiliation after products/update event");
+        console.log("oldTasksAffil", tasks.length);
+        router.refresh();
+        console.log("newTasksAffil", tasks.length);
+    });
 
     useEffect(() => {
         setArraySites(Array.from(new Set(tasks.map((task) => task.website))).sort((a, b) => a.localeCompare(b)));
