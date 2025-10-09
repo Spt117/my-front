@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Amazon() {
@@ -39,15 +39,25 @@ export default function Amazon() {
         }
     };
 
+    useEffect(() => {
+        if (asin) setAsinToAdd("");
+    }, [asin]);
+
     if (asin)
         return (
             <>
                 <p className="flex items-center justify-space-between gap-4">
-                    Affiliation Amazon: <span className="font-semibold">{activeAmazon.value === "true" ? "Activée" : "Désactivée"}</span>
+                    Affiliation Amazon:{" "}
+                    <span className="font-semibold">{activeAmazon.value === "true" ? "Activée" : "Désactivée"}</span>
                     <Switch checked={activeAmazon.value === "true"} onCheckedChange={() => handleToggle()} disabled={loading} />
                     <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />
                 </p>
-                <a href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${asin.value}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                <a
+                    href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${asin.value}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                >
                     ASIN: {asin.value}
                 </a>
             </>
