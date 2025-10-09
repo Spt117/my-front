@@ -6,6 +6,8 @@ import { ShoppingCart } from "lucide-react";
 import { useEffect } from "react";
 import useProductStore from "./storeProduct";
 import { cssCard } from "./util";
+import { Button } from "@/components/ui/button";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
 export default function Canaux() {
     const { product, shopifyBoutique, canauxBoutique } = useShopifyStore();
@@ -16,13 +18,17 @@ export default function Canaux() {
             isPublished: c.isPublished,
         })) || [];
 
-    useEffect(() => {
+    const setInitialCanaux = () => {
         const canauxActives = canauxBoutique.map((c) => {
             const found = product?.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
             if (found) return { id: c.id, isPublished: found.isPublished, name: c.name };
             else return { id: c.id, isPublished: false, name: c.name };
         });
         setCanauxProduct(canauxActives);
+    };
+
+    useEffect(() => {
+        setInitialCanaux();
     }, [product]);
 
     if (!product || !shopifyBoutique) return null;
@@ -34,6 +40,10 @@ export default function Canaux() {
         if (!thisCanal) return;
         setCanauxProduct(canauxProduct.map((c) => (c.id === canalId ? { ...c, isPublished: !c.isPublished } : c)));
     };
+
+    useKeyboardShortcuts("Escape", () => {
+        setInitialCanaux();
+    });
 
     return (
         <Card className={cssCard}>
@@ -50,6 +60,19 @@ export default function Canaux() {
                             </p>
                         </div>
                     </div>
+                    <Button
+                        onClick={() => {
+                            const allPublished = canauxProduct.every((c) => c.isPublished);
+                            setCanauxProduct(
+                                canauxProduct.map((c) => ({
+                                    ...c,
+                                    isPublished: !allPublished,
+                                }))
+                            );
+                        }}
+                    >
+                        Tout
+                    </Button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
