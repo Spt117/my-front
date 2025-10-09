@@ -24,7 +24,7 @@ export default function Video() {
     useEffect(() => {
         if (metafieldVideo) {
             setSrcVideo(metafieldVideo.value);
-            const componenet = (
+            const component = (
                 <div className="w-full aspect-video h-full">
                     <iframe
                         className="w-full h-full"
@@ -35,11 +35,10 @@ export default function Video() {
                     />
                 </div>
             );
-            setVideoComponent(componenet);
-        }
-        if (metafieldUrl) {
+            setVideoComponent(component);
+        } else if (metafieldUrl) {
             setSrcVideo(metafieldUrl.value);
-            const componenet = (
+            const component = (
                 <video
                     src={metafieldUrl.value}
                     muted
@@ -48,8 +47,8 @@ export default function Video() {
                     className="w-full h-full object-cover"
                 />
             );
-            setVideoComponent(componenet);
-        }
+            setVideoComponent(component);
+        } else setVideoComponent(null);
     }, [metafieldVideo, metafieldUrl, product]);
 
     const handleClick = async () => {
