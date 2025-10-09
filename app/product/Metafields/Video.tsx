@@ -1,15 +1,15 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
+import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
-import { cssCard } from "../util";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { Button } from "@/components/ui/button";
-import { JSX, useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
-import { deleteMetafield, updateMetafieldGid, updateMetafieldKey } from "../serverAction";
 import { TMetafieldKeys } from "@/library/types/graph";
 import { Trash2 } from "lucide-react";
+import { JSX, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { deleteMetafield, updateMetafieldKey } from "../serverAction";
+import { cssCard } from "../util";
 
 export default function Video() {
     const [loading, setLoading] = useState(false);
@@ -48,7 +48,10 @@ export default function Video() {
                 />
             );
             setVideoComponent(component);
-        } else setVideoComponent(null);
+        } else {
+            setVideoComponent(null);
+            setSrcVideo("");
+        }
     }, [metafieldVideo, metafieldUrl, product]);
 
     const handleClick = async () => {
