@@ -1,11 +1,12 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { Check, X } from "lucide-react";
 import { useEffect } from "react";
+import useProductStore from "../../storeProduct";
 import useTaskStore from "../../Tasks/storeTasks";
 import usePrices from "./hooksPrices";
-import useProductStore from "../../storeProduct";
 
 export default function ButtonPrices() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -24,14 +25,16 @@ export default function ButtonPrices() {
 
     const handleUpdatePrice = async () => {
         setIsUpdatingPrice(true);
-
         if (param > 0) await actionsPrices?.addTaskStopPromotion();
         if (Number(price) !== Number(mainVariant.price)) await actionsPrices?.handleUpdatePrices("price", Number(price));
         if (Number(compareAtPrice) !== Number(mainVariant.compareAtPrice || "0"))
             await actionsPrices?.handleUpdatePrices("compareAtPrice", Number(compareAtPrice));
-
         setIsUpdatingPrice(false);
     };
+
+    useKeyboardShortcuts("Enter", () => {
+        if ((isChanged || param) && !isUpdatingPrice) handleUpdatePrice();
+    });
 
     return (
         <Button
