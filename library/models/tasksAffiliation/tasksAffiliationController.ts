@@ -1,4 +1,6 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
+import { TPublicDomainsShopify } from "@/library/params/paramsShopify";
+import { TDomainWordpress } from "@/library/params/paramsWordpress";
 import { Connection, Model } from "mongoose";
 import { createAffiliationTaskSchema, TAffiliationTask } from "./tasksAffiliation";
 
@@ -29,15 +31,24 @@ class CTasksAffiliationController {
         }
     }
 
-    async updateStatus(id: string, status: "pending" | "done" | "error"): Promise<boolean> {
+    async updateStatus(asin: string, website: string, status: "pending" | "done" | "error"): Promise<boolean> {
         try {
             const model = await this.getModel();
-            const result = await model.findByIdAndUpdate(id, { status }, { new: true }).exec();
+            const result = await model.updateMany({ asin, website }, { status }).exec();
             return result !== null;
         } catch (err) {
             console.error("Error in updateStatus:", err);
             return false;
         }
+    }
+
+    async archiveTask(asin: string, website: TDomainWordpress | TPublicDomainsShopify) {
+        console.log("Archiving task for ASIN:", asin, "on website:", website);
+
+        const model = await this.getModel();
+        const res = await model.updateMany({ asin, website }, { status: "done" });
+        console.log("Archive result:", res);
+        return res;
     }
 
     static instance: CTasksAffiliationController;

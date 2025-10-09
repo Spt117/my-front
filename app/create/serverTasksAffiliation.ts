@@ -1,12 +1,14 @@
 "use server";
 
 import { tasksAffiliationController } from "@/library/models/tasksAffiliation/tasksAffiliationController";
-import { ICreateAffiliationProduct } from "./util";
-import { pokeUriServer } from "@/library/utils/uri";
+import { TPublicDomainsShopify } from "@/library/params/paramsShopify";
+import { TDomainWordpress } from "@/library/params/paramsWordpress";
 import { postServer } from "@/library/utils/fetchServer";
+import { pokeUriServer } from "@/library/utils/uri";
+import { ICreateAffiliationProduct } from "./util";
 
-export async function archiveTaskStatus(id: string) {
-    return tasksAffiliationController.updateStatus(id, "done");
+export async function archiveTaskStatus(asin: string, website: TDomainWordpress | TPublicDomainsShopify) {
+    return tasksAffiliationController.archiveTask(asin, website);
 }
 
 export async function createProduct(data: ICreateAffiliationProduct<any>[]) {

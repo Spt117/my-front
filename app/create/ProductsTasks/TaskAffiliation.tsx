@@ -21,7 +21,7 @@ export default function TaskAffiliation() {
     const handleArchive = async () => {
         setLoading(true);
         try {
-            const res = await archiveTaskStatus(task._id!);
+            const res = await archiveTaskStatus(task.asin, task.website);
             toast.success("Tâche archivée avec succès " + res);
             // Optionally, you can add a success message or update the UI accordingly
             router.refresh();
