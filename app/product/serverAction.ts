@@ -50,9 +50,15 @@ export async function updateMetafieldGid(domain: TDomainsShopify, productGid: st
     const response = await postServer(url, data);
     return response;
 }
-export async function updateMetafieldKey(domain: TDomainsShopify, productGid: string, key: TMetafieldKeys, value: string) {
+export async function updateMetafieldKey(
+    domain: TDomainsShopify,
+    productGid: string,
+    key: TMetafieldKeys,
+    value: string,
+    namespace?: string
+) {
     const url = `${pokeUriServer}/shopify/update-metafield`;
-    const data = { domain, productGid, key, value };
+    const data = { domain, productGid, key, value, namespace };
     const response = await postServer(url, data);
     return response;
 }
