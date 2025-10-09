@@ -54,13 +54,11 @@ export default function Video() {
 
     const handleClick = async () => {
         setLoading(true);
-        const prodcutGID = product.id;
-        const metafieldGid = (metafieldUrl ? metafieldUrl.id : metafieldVideo?.id) as string;
+        const productGID = product.id;
+        const key: TMetafieldKeys = url ? "url_video" : "id_video_youtube";
         const domain = shopifyBoutique.domain;
-        console.log(metafieldGid);
-        if (!metafieldGid) return;
         try {
-            const res = await updateMetafieldGid(domain, prodcutGID, metafieldGid, srcVideo);
+            const res = await updateMetafieldKey(domain, productGID, key, srcVideo);
             if (res?.error) toast.error(res.error);
             if (res?.message) toast.success(res.message);
         } catch (error) {
@@ -74,6 +72,8 @@ export default function Video() {
         setLoading(true);
         const key: TMetafieldKeys = metafieldUrl ? "url_video" : "id_video_youtube";
         const domain = shopifyBoutique.domain;
+        console.log(key);
+
         if (!key) return;
         try {
             const res = await deleteMetafield(domain, product.id, key);
