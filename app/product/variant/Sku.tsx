@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { updateVariant } from "../serverAction";
 import useVariantStore from "../storeVariant";
 import { cssCard } from "../util";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
 export default function Sku() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -38,16 +39,21 @@ export default function Sku() {
         }
     };
 
+    useKeyboardShortcuts("Enter", () => handleSave());
+
     return (
         <Card className={cssCard + " relative"}>
             <CardContent className="flex flex-col justify-between gap-2 ">
-                {activeSave && !loading && <Save onClick={handleSave} className="absolute right-2 top-1 cursor-pointer" size={20} />} {loading && <Spinner className="absolute right-2 top-1" size={20} />}
+                {activeSave && !loading && (
+                    <Save onClick={handleSave} className="absolute right-2 top-1 cursor-pointer" size={20} />
+                )}{" "}
+                {loading && <Spinner className="absolute right-2 top-1" size={20} />}
                 <h3 className="m-2 text-sm font-medium flex items-center gap-2">
                     <KeySquare size={16} />
                     Sku<span className="text-gray-500">(unité de gestion des stocks)</span>
                 </h3>
-                <div className="relative">
-                    <Input type="text" value={sku} className="w-full" onChange={(e) => setSku(e.target.value)} />
+                <div className="relative w-min">
+                    <Input type="text" value={sku} onChange={(e) => setSku(e.target.value)} />
                     <CopyComponent contentToCopy={sku} className="absolute right-2 top-2" message="SKU copié !" size={20} />
                 </div>
             </CardContent>
