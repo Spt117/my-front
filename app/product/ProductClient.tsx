@@ -30,7 +30,7 @@ export default function ProductClient({
     const router = useRouter();
     const { setTasks } = useTaskStore();
 
-    useEventListener("products/update", (data) => getProductUpdated(data.productId));
+    useEventListener("products/update", (data) => getProductUpdated(data.productId, data));
 
     useEffect(() => {
         const canauxActives = canaux.map((c) => ({ id: c.id, isPublished: false, name: c.name }));
@@ -43,7 +43,7 @@ export default function ProductClient({
         if (productData.error) toast.error(productData.error);
     }, [shopify.domain, productData.response, variantData, tasksData, canaux]);
 
-    const getProductUpdated = async (productId: string) => {
+    const getProductUpdated = async (productId: string, data: any) => {
         const currentProduct = useShopifyStore.getState().product;
         if (!currentProduct) {
             toast.error("No current product in store. Cannot update.");
@@ -53,7 +53,10 @@ export default function ProductClient({
         if (Number(idProduct) === Number(productId)) {
             router.refresh();
             toast.success(`${currentProduct.title} a été mis à jour`);
-        } else toast.error("Product ID does not match. No update needed.");
+        } else {
+            toast.error("Product ID does not match. No update needed.");
+            console.log(data);
+        }
     };
 
     if (!product || !shopifyBoutique) {
