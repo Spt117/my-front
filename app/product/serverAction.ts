@@ -69,3 +69,16 @@ export async function deleteMetafield(domain: TDomainsShopify, productGid: strin
     const response = await postServer(url, data);
     return response;
 }
+export async function duplicateProductSameShop(
+    domain: TDomainsShopify,
+    productGid: string,
+    newTitle: string,
+    published: boolean
+) {
+    const url = `${pokeUriServer}/shopify/duplicate-product-same-shop`;
+    console.log(url);
+
+    const data = { domain, productGid, newTitle, published };
+    const response = await postServer(url, data);
+    return response;
+}

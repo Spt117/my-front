@@ -4,6 +4,7 @@ import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import useShopifyStore from "../../shopify/shopifyStore";
 import AddProduct from "./AddProduct";
 import DeleteProduct from "./DeleteProduct";
+import DuplicateProduct from "./DuplicateProduct";
 
 export default function BodyDialogue() {
     const { dialogOpen, closeDialog } = useShopifyStore();
@@ -20,6 +21,7 @@ export default function BodyDialogue() {
             {/* Dialogue content */}
             {dialogOpen === 1 && <AddProduct />}
             {dialogOpen === 2 && <DeleteProduct />}
+            {dialogOpen === 3 && <DuplicateProduct />}
         </div>
     );
 }

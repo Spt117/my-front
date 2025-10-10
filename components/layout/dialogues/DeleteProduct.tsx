@@ -1,4 +1,4 @@
-import { createProductFromTitle, updateProduct } from "@/app/product/serverAction";
+import { updateProduct } from "@/app/product/serverAction";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
