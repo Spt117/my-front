@@ -37,16 +37,17 @@ export default function ProductContent() {
         <div className="@container/main flex flex-1 flex-col relative">
             <Card className="m-0 p-0 border-0 shadow-none">
                 <HeaderProduct />
-                <CardContent className="flex gap-5 p-2 max-[1600px]:justify-center">
+                <CardContent className="flex flex-wrap gap-5 p-2 justify-center max-[1600px]:justify-center ">
                     {/* Carrousel d'images */}
 
-                    <div className="flex-1 flex p-1 gap-5 flex-col">
+                    <div className="flex-1 flex p-1 gap-5 flex-col lg:max-w-[40vw] ">
                         <EditeurHtml html={product?.descriptionHtml}>
                             <HeaderEditeur />
                         </EditeurHtml>
                         <ImagesProduct />
+                        <Video />
                     </div>
-                    <div className="flex flex-wrap gap-3 justify-center max-w-[30vw] h-min">
+                    <div className="flex flex-wrap gap-3 justify-center lg:max-w-[30vw] h-min">
                         {/* Détails du produit */}
                         <Statut />
                         <Canaux />
@@ -55,7 +56,6 @@ export default function ProductContent() {
                         <Prices />
                         <Sku />
                         <AboutProduct />
-                        <Video />
                         {/* <LinkToShops /> */}
                         <VariantClient />
                         <Metafields metafields={product.metafields.nodes} />

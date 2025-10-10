@@ -1,6 +1,6 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Switch } from "@/components/ui/switch";
@@ -10,6 +10,7 @@ import { JSX, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { deleteMetafield, updateMetafieldKey } from "../serverAction";
 import { cssCard } from "../util";
+import CopyComponent from "@/components/Copy";
 
 export default function Video() {
     const [loading, setLoading] = useState(false);
@@ -109,8 +110,20 @@ export default function Video() {
                     </Button>
                 </CardHeader>
             )}
-            {!loading && <Trash2 className="absolute right-1 top-1 cursor-pointer" size={20} onClick={handleDelete} />}{" "}
-            {loading && <Spinner className="absolute right-1 top-1" />} {videoComponent}
+            {!loading && (metafieldUrl || srcVideo) && (
+                <Trash2 className="absolute right-1 top-1 cursor-pointer" size={20} onClick={handleDelete} />
+            )}{" "}
+            {loading && <Spinner className="absolute right-1 top-1" />}
+            <>
+                <CardTitle className="m-2 p-0 border-0 shadow-none flex items-center gap-2">
+                    {!videoComponent && "Aucune vidéo associée"}
+                    <p>
+                        {metafieldUrl ? "URL: " : "ID: "} {srcVideo}
+                    </p>
+                    <CopyComponent contentToCopy={srcVideo} message={metafieldUrl ? "URL copiée" : "ID copié"} />
+                </CardTitle>
+                {videoComponent}
+            </>
         </Card>
     );
 }

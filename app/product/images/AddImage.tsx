@@ -83,7 +83,7 @@ export default function AddImage() {
     }
 
     return (
-        <div className="mx-4 p-4 border rounded-lg">
+        <div className="mx-4 p-4 border border-gray-500 rounded-lg flex-1 h-min">
             <h3 className="mb-6 text-lg font-semibold text-center">Ajouter des images</h3>
 
             <div className="flex flex-col items-center gap-4 mb-6">

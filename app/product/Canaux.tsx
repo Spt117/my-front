@@ -6,7 +6,6 @@ import { ShoppingCart } from "lucide-react";
 import { useEffect } from "react";
 import useProductStore from "./storeProduct";
 import { cssCard } from "./util";
-import { Button } from "@/components/ui/button";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
 export default function Canaux() {
@@ -44,6 +43,7 @@ export default function Canaux() {
     useKeyboardShortcuts("Escape", () => {
         setInitialCanaux();
     });
+    const allPublished = canauxProduct.every((c) => c.isPublished);
 
     return (
         <Card className={cssCard}>
@@ -60,19 +60,27 @@ export default function Canaux() {
                             </p>
                         </div>
                     </div>
-                    <Button
-                        onClick={() => {
-                            const allPublished = canauxProduct.every((c) => c.isPublished);
-                            setCanauxProduct(
-                                canauxProduct.map((c) => ({
-                                    ...c,
-                                    isPublished: !allPublished,
-                                }))
-                            );
-                        }}
-                    >
-                        Tout
-                    </Button>
+                </div>
+                <div
+                    onClick={() => {
+                        setCanauxProduct(
+                            canauxProduct.map((c) => ({
+                                ...c,
+                                isPublished: !allPublished,
+                            }))
+                        );
+                    }}
+                    className={`
+                                flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer mb-3
+                                ${
+                                    allPublished
+                                        ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
+                                        : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                                }
+                            `}
+                >
+                    <Checkbox className="cursor-pointer" checked={allPublished} />
+                    <Label className="flex-1 cursor-pointer font-medium text-sm w-full h-full bg-green">Tous</Label>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
