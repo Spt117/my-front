@@ -53,9 +53,6 @@ export default function ProductClient({
         if (Number(idProduct) === Number(productId)) {
             router.refresh();
             toast.success(`${currentProduct.title} a été mis à jour`);
-        } else {
-            toast.error("Product ID does not match. No update needed.");
-            console.log(data);
         }
     };
 
