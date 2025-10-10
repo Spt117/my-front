@@ -7,10 +7,12 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { IconCategoryFilled } from "@tabler/icons-react";
 import { Globe, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 import { archiveTaskStatus } from "../serverTasksAffiliation";
 import { useAffiliationTask } from "./ContextTaskAffiliation";
 import Inputs from "./Inputs";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
 export default function TaskAffiliation() {
     const { task, productType, setProductType, loading, setLoading, handleCreateProduct, disabledPush } = useAffiliationTask();
@@ -39,65 +41,95 @@ export default function TaskAffiliation() {
         done: "bg-green-100 text-green-800",
         error: "bg-red-100 text-red-800",
     };
+    const [showImageModal, setShowImageModal] = useState(false);
+    useKeyboardShortcuts("Escape", () => setShowImageModal(false));
 
     return (
-        <Card className="relative flex-1 min-w-[350px] max-w-[400px] shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <Badge className={`${statusStyles[task.status]} capitalize absolute top-1 right-2`}>{task.status}</Badge>
-            <CardHeader className="flex flex-row items-center gap-4">
-                <img src={task.image} alt={task.title} className="w-16 h-16 object-cover rounded-md" />
-                <div>
-                    <a
-                        href={`https://${task.marketplace}/dp/${task.asin}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-800 hover:underline"
-                    >
-                        <CardTitle className="text-lg font-semibold line-clamp-2">{task.title}</CardTitle>
-                    </a>
-                    {task.brand && <p className="text-sm text-gray-500">{task.brand}</p>}
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-2">
-                <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm flex items-center gap-1">
-                        ASIN:
-                        <CopyComponent size={18} contentToCopy={task.asin} message="ASIN copié !">
-                            {task.asin}
-                        </CopyComponent>
-                    </span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <IconCategoryFilled className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm flex items-center">Type:</span>
-                    <Input className="w-max h-7" value={productType} onChange={(e) => setProductType(e.target.value)} />
-                </div>
-                <Inputs
-                    size={size}
-                    setSize={setSize}
-                    productType={productType}
-                    setNamePokemon={setNamePokemon}
-                    namePokemon={namePokemon}
-                />
-                <div className="flex items-center gap-2">
-                    <Globe className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">Marketplace: {task.marketplace}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Globe className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm">Site: {task.website}</span>
-                </div>
+        <>
+            <Card className="relative flex-1 min-w-[350px] max-w-[400px] shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <Badge className={`${statusStyles[task.status]} capitalize absolute top-1 right-2`}>{task.status}</Badge>
+                <CardHeader className="flex flex-row items-center gap-4">
+                    <img
+                        src={task.image}
+                        alt={task.title}
+                        className="w-16 h-16 object-cover rounded-md cursor-pointer"
+                        onClick={() => setShowImageModal(true)}
+                    />
+                    <div>
+                        <a
+                            href={`https://${task.marketplace}/dp/${task.asin}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-800 hover:underline"
+                        >
+                            <CardTitle className="text-lg font-semibold line-clamp-2">{task.title}</CardTitle>
+                        </a>
+                        {task.brand && <p className="text-sm text-gray-500">{task.brand}</p>}
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <Package className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm flex items-center gap-1">
+                            ASIN:
+                            <CopyComponent size={18} contentToCopy={task.asin} message="ASIN copié !">
+                                {task.asin}
+                            </CopyComponent>
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <IconCategoryFilled className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm flex items-center">Type:</span>
+                        <Input className="w-max h-7" value={productType} onChange={(e) => setProductType(e.target.value)} />
+                    </div>
+                    <Inputs
+                        size={size}
+                        setSize={setSize}
+                        productType={productType}
+                        setNamePokemon={setNamePokemon}
+                        namePokemon={namePokemon}
+                    />
+                    <div className="flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm">Marketplace: {task.marketplace}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm">Site: {task.website}</span>
+                    </div>
 
-                <div className="mt-4 flex items-center gap-2">
-                    <Button disabled={loading || disabledPush} size="sm" onClick={handleCreateProduct}>
-                        Créer le produit
-                    </Button>
-                    <Button disabled={loading} variant="outline" onClick={handleArchive}>
-                        Archiver
-                    </Button>
-                    {loading && <Spinner size={20} />}
+                    <div className="mt-4 flex items-center gap-2">
+                        <Button disabled={loading || disabledPush} size="sm" onClick={handleCreateProduct}>
+                            Créer le produit
+                        </Button>
+                        <Button disabled={loading} variant="outline" onClick={handleArchive}>
+                            Archiver
+                        </Button>
+                        {loading && <Spinner size={20} />}
+                    </div>
+                </CardContent>
+            </Card>
+
+            {showImageModal && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                    onClick={() => setShowImageModal(false)}
+                >
+                    <Card className="max-w-2xl w-full shadow-2xl">
+                        <div className="relative">
+                            <img src={task.image} alt={task.title} className="w-full h-auto object-cover rounded-lg" />
+                            <button
+                                onClick={() => setShowImageModal(false)}
+                                className="absolute top-2 right-2 bg-white rounded-full p-1 hover:bg-gray-200 transition-colors"
+                            ></button>
+                            <div className="p-4 bg-white rounded-b-lg">
+                                <h2 className="font-semibold text-lg">{task.title}</h2>
+                                {task.brand && <p className="text-sm text-gray-500">{task.brand}</p>}
+                            </div>
+                        </div>
+                    </Card>
                 </div>
-            </CardContent>
-        </Card>
+            )}
+        </>
     );
 }
