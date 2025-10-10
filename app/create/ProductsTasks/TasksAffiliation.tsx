@@ -8,7 +8,7 @@ import { AffiliationTaskProvider } from "./ContextTaskAffiliation";
 import TaskAffiliation from "./TaskAffiliation";
 
 export default function TasksAffiliation({ tasks }: { tasks: TAffiliationTask[] }) {
-    const { setTasksAffil, tasksAffil, setArraySites, websiteFilter, setArrayTypesProducts, typesProducts } =
+    const { setTasksAffil, tasksAffil, setArraySites, websiteFilter, setArrayTypesProducts, typesProducts, setTypesProducts } =
         useAffiliationStore();
     const [tasksFiltered, setTasksFiltered] = useState<TAffiliationTask[]>(tasksAffil);
 
@@ -24,10 +24,18 @@ export default function TasksAffiliation({ tasks }: { tasks: TAffiliationTask[] 
     }, [tasks, setTasksAffil, setArraySites, setArrayTypesProducts]);
 
     useEffect(() => {
-        setArrayTypesProducts(
-            Array.from(new Set(tasksFiltered.map((task) => task.productType))).sort((a, b) => a.localeCompare(b))
-        );
-    }, [tasksFiltered, setArrayTypesProducts]);
+        if (!websiteFilter) return;
+        const typesProduits: { [website: string]: string[] } = {};
+        for (const task of tasks) {
+            if (!typesProduits[task.website]) {
+                typesProduits[task.website] = [task.productType];
+            } else if (!typesProduits[task.website].includes(task.productType)) {
+                typesProduits[task.website].push(task.productType);
+            }
+        }
+        setArrayTypesProducts(typesProduits[websiteFilter] || []);
+        if (!typesProduits[websiteFilter].includes(typesProducts)) setTypesProducts("");
+    }, [websiteFilter]);
 
     useEffect(() => {
         if (!websiteFilter && !typesProducts) return setTasksFiltered(tasksAffil);
