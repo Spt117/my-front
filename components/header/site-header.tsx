@@ -2,14 +2,11 @@
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
+import BulkHeader from "./bulk/BulkHeader";
 import Orders from "./Orders";
 import SearchProduct from "./products/SearchProduct";
-import ShopifySelect from "./ShopifySelect";
-import SelectStock from "./stock/SelectStock";
-import SearchStockProduct from "./stock/SearchStockProduct";
-import SelectAffiliationSite from "./SelectAffiliationSite";
 import HeaderStock from "./stock/HeaderStock";
-import BulkHeader from "./bulk/BulkHeader";
+import SelectAffiliationSite from "./taskAffiliation/SelectAffiliationSite";
 
 export function SiteHeader() {
     const pathname = usePathname();

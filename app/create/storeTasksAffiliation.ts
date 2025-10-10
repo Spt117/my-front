@@ -8,6 +8,10 @@ interface StoreState {
     setArraySites: (sites: string[]) => void;
     websiteFilter: string;
     setWebsiteFilter: (website: string) => void;
+    typesProducts: string;
+    setTypesProducts: (type: string) => void;
+    arrayTypesProducts: string[];
+    setArrayTypesProducts: (types: string[]) => void;
 }
 
 const useAffiliationStore = create<StoreState>((set) => ({
@@ -17,6 +21,10 @@ const useAffiliationStore = create<StoreState>((set) => ({
     setWebsiteFilter: (website) => set({ websiteFilter: website }),
     arraySites: [],
     setArraySites: (sites) => set({ arraySites: sites }),
+    typesProducts: "",
+    setTypesProducts: (type) => set({ typesProducts: type }),
+    arrayTypesProducts: [],
+    setArrayTypesProducts: (types) => set({ arrayTypesProducts: types }),
 }));
 
 export default useAffiliationStore;
