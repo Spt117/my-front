@@ -46,7 +46,6 @@ export default function Providers({ children }: Readonly<{ children: React.React
                     );
                     toast.success(msg);
                     emit("orders/paid", { shop: data.shop });
-                    // setEvent(eventName);
                     break;
                 case "orders/fulfilled":
                     toast.success(`Commande ${data.name} expédiée !`);
@@ -56,6 +55,7 @@ export default function Providers({ children }: Readonly<{ children: React.React
                     break;
                 default:
                     toast.info(`Événement reçu : ${eventName}`);
+                    console.log(data);
                     break;
             }
         });
