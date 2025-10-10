@@ -9,7 +9,7 @@ export default function ActionsHeader() {
 
     if (!product || !shopifyBoutique) return null;
 
-    const productUrl = `https://${shopifyBoutique.domain}/products/${product.handle}`;
+    const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
     return (
         <div className="flex gap-2 items-center mr-2">
             <Save />

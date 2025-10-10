@@ -71,6 +71,7 @@ export interface IShopify {
     domain: TDomainsShopify;
     locationHome: TLocationHome;
     langue: TLangueTraduction;
+    publicDomain: TPublicDomainsShopify;
     marketplaceAmazon: TMarketplaceAmazonBoutique;
     flag: string;
     devise: string;
