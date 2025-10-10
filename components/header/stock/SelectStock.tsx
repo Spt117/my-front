@@ -6,7 +6,7 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { RefreshCcw } from "lucide-react";
 
-export default function ShopifySelect() {
+export default function SlectStock() {
     const { mode, setMode, loading } = useVariantStore();
     const { setSearchTerm } = useShopifyStore();
 

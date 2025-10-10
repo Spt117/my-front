@@ -5,6 +5,7 @@ import { create } from "zustand";
 import { TBrand, TProductType } from "./ProductType";
 import { TVariant } from "@/library/models/produits/Variant";
 import { TCanal } from "@/app/product/util";
+import { TSearchMode } from "@/library/params/menu";
 
 interface StoreState {
     searchTerm: string;
@@ -30,6 +31,8 @@ interface StoreState {
     closeDialog: () => void;
     canauxBoutique: TCanal[];
     setCanauxBoutique: (canaux: TCanal[]) => void;
+    searchMode: TSearchMode;
+    setSearchMode: (mode: TSearchMode) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
@@ -56,6 +59,8 @@ const useShopifyStore = create<StoreState>((set) => ({
     closeDialog: () => set({ dialogOpen: 0 }),
     canauxBoutique: [],
     setCanauxBoutique: (canauxBoutique) => set({ canauxBoutique }),
+    searchMode: "standard",
+    setSearchMode: (mode) => set({ searchMode: mode }),
 }));
 
 export default useShopifyStore;

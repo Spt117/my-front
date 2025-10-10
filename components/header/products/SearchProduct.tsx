@@ -9,6 +9,8 @@ import useShopifyStore from "../../shopify/shopifyStore";
 import { Input } from "../../ui/input";
 import { search } from "../serverSearch";
 import ListProducts from "./ListProducts";
+import ShopifySelect from "../ShopifySelect";
+import { productNoSearch } from "./NoResult";
 
 /**
  * Groupe un array de produits Shopify par le SKU de leur première variante
@@ -52,6 +54,7 @@ export default function SearchProduct() {
         try {
             const res = await search(query);
             const grouped = groupProductsBySku(res);
+            if (grouped.length === 0) setProductsSearch([[productNoSearch]]);
             setProductsSearch(grouped);
         } catch (error) {
             console.error("Erreur lors de la recherche:", error);
@@ -91,43 +94,33 @@ export default function SearchProduct() {
         setSearchTerm(e.target.value);
     };
 
-    if (!shopifyBoutique) return null;
     return (
-        <div className="relative w-full" ref={ref}>
-            <div className="w-full flex gap-2">
-                <div className="relative w-full">
-                    <Input
-                        disabled={!shopifyBoutique}
-                        type="text"
-                        value={searchTerm}
-                        onChange={handleInputChange}
-                        placeholder="Produit Shopify"
-                        className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
-                    />
+        <>
+            <ShopifySelect />
+            <div className="relative w-full" ref={ref}>
+                <div className="w-full flex gap-2">
+                    <div className="relative w-full">
+                        <Input disabled={!shopifyBoutique} type="text" value={searchTerm} onChange={handleInputChange} placeholder="Produit Shopify" className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10" />
 
-                    {searchTerm && !loading && (
-                        <button
-                            type="button"
-                            onClick={() => setSearchTerm("")}
-                            className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
-                            aria-label="Effacer la recherche"
-                        >
-                            <X size={16} />
-                        </button>
-                    )}
+                        {searchTerm && !loading && (
+                            <button type="button" onClick={() => setSearchTerm("")} className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Effacer la recherche">
+                                <X size={16} />
+                            </button>
+                        )}
 
-                    {loading && (
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                        </div>
-                    )}
+                        {loading && (
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                            </div>
+                        )}
+                    </div>
+                    <Button onClick={() => openDialog(1)} aria-label="Ajouter un produit" className="p-2" title="Ajouter un produit">
+                        <Plus size={16} />
+                    </Button>
                 </div>
-                <Button onClick={() => openDialog(1)} aria-label="Ajouter un produit" className="p-2" title="Ajouter un produit">
-                    <Plus size={16} />
-                </Button>
+                {/* Liste des produits positionnée sous l'input */}
+                <ListProducts />
             </div>
-            {/* Liste des produits positionnée sous l'input */}
-            <ListProducts />
-        </div>
+        </>
     );
 }
