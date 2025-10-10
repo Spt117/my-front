@@ -7,6 +7,7 @@ import Orders from "./Orders";
 import SearchProduct from "./products/SearchProduct";
 import HeaderStock from "./stock/HeaderStock";
 import SelectAffiliationSite from "./taskAffiliation/SelectAffiliationSite";
+import ShopifySelect from "./ShopifySelect";
 
 export function SiteHeader() {
     const pathname = usePathname();
@@ -22,6 +23,7 @@ export function SiteHeader() {
                 {pathname === "/create" && <SelectAffiliationSite />}
                 {pathname === "/stock" && <HeaderStock />}
                 {pathname === "/bulk" && <BulkHeader />}
+                {pathname === "/stats" && <ShopifySelect />}
             </div>
         </header>
     );
