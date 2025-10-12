@@ -1,38 +1,38 @@
-import { ProductNode } from "./shopifySearch";
+import { ProductGET } from "@/library/types/graph";
 
-export const productNoSearch: ProductNode = {
-    id: "no_id",
+export const productNoSearch: ProductGET = {
+    id: "gid://shopify/Product/no-id",
     title: "Aucun produit trouvé",
     handle: "no-handle",
     description: "Aucun produit ne correspond à votre recherche.",
-    vendor: "N/A",
+    vendor: "Cartes Pokémon",
     productType: "N/A",
     tags: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     status: "DRAFT",
     images: {
-        edges: [
+        nodes: [
             {
-                node: {
-                    id: "no_image",
-                    url: "/no_image.png",
-                    altText: "No image available",
-                },
+                id: "gid://shopify/ProductImage/no-image",
+                url: "/no_image.png",
+                altText: "No image available",
             },
         ],
     },
     variants: {
-        edges: [
+        nodes: [
             {
-                node: {
-                    id: "no_variant",
-                    title: "N/A",
-                    price: "0.00",
-                    compareAtPrice: null,
-                    sku: "N/A",
-                    inventoryQuantity: 0,
-                },
+                id: "gid://shopify/ProductVariant/no-variant",
+                barcode: null,
+                inventoryItem: [{ id?: GID;
+    tracked: boolean;
+    requiresShipping: boolean;}],
+                title: "N/A",
+                price: "0.00",
+                compareAtPrice: null,
+                sku: "N/A",
+                inventoryQuantity: 0,
             },
         ],
     },

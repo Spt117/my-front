@@ -1,19 +1,18 @@
-import { boutiques, IShopify } from "@/library/params/paramsShopify";
+import { TCanal } from "@/app/product/util";
+import { TVariant } from "@/library/models/produits/Variant";
+import { TSearchMode } from "@/library/params/menu";
+import { IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
-import { ProductNode } from "@/components/header/products/shopifySearch";
 import { create } from "zustand";
 import { TBrand, TProductType } from "./ProductType";
-import { TVariant } from "@/library/models/produits/Variant";
-import { TCanal } from "@/app/product/util";
-import { TSearchMode } from "@/library/params/menu";
 
 interface StoreState {
     searchTerm: string;
     setSearchTerm: (term: string) => void;
     shopifyBoutique: IShopify | null;
     setShopifyBoutique: (boutique: IShopify | null) => void;
-    productsSearch: ProductNode[];
-    setProductsSearch: (products: ProductNode[]) => void;
+    productsSearch: ProductGET[];
+    setProductsSearch: (products: ProductGET[]) => void;
     product: ProductGET | null;
     setProduct: (product: ProductGET | null) => void;
     loading: boolean;

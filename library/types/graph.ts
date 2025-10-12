@@ -1,4 +1,4 @@
-import { TVendorsShopify } from "../params/paramsShopify";
+import { TDomainsShopify, TVendorsShopify } from "../params/paramsShopify";
 
 type GID = `gid://shopify/${string}`;
 
@@ -21,6 +21,12 @@ interface MediaImageNode {
     id: GID;
     alt: string;
     image: MediaImageFile;
+}
+
+interface ImageNode {
+    id: GID;
+    url: string;
+    altText: string | null;
 }
 
 interface Connection<T> {
@@ -58,9 +64,24 @@ export interface CategoryProduct {
 }
 
 type MetafieldType = "single_line_text_field" | "string" | "list.product_reference" | "boolean" | (string & {});
-const metafieldKeys = ["asin", "url_video", "id_video_youtube", "amazon_activate", "lien_amazon", "title_tag", "description_tag", "related_products", "complementary_products"] as const;
+const metafieldKeys = [
+    "asin",
+    "url_video",
+    "id_video_youtube",
+    "amazon_activate",
+    "lien_amazon",
+    "title_tag",
+    "description_tag",
+    "related_products",
+    "complementary_products",
+    "color-pattern",
+    "rarity",
+    "recommended-age-group",
+    "toy-game-material",
+    "trading-card-packaging",
+] as const;
 export type TMetafieldKeys = (typeof metafieldKeys)[number];
-const namespaceMetafields = ["custom", "global"] as const;
+const namespaceMetafields = ["custom", "global", "shopify"] as const;
 export type TNamespaceMetafields = (typeof namespaceMetafields)[number];
 export interface TMetafield {
     id?: GID;
@@ -82,11 +103,14 @@ export interface ProductGET {
     createdAt: string; // ISO
     updatedAt: string; // ISO
     descriptionHtml: string;
+    description?: string;
     options: ProductOption[];
     media: Connection<MediaImageNode>;
+    images: Connection<ImageNode>;
     variants: Connection<ProductVariantNodeGET>;
     metafields: Connection<TMetafield>;
     resourcePublicationsV2: ResourcePublicationsV2Connection;
+    domain?: TDomainsShopify;
 }
 
 export interface ProductPOST {

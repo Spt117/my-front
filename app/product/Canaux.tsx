@@ -7,9 +7,10 @@ import { useEffect } from "react";
 import useProductStore from "./storeProduct";
 import { cssCard } from "./util";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { ProductGET } from "@/library/types/graph";
 
-export default function Canaux() {
-    const { product, shopifyBoutique, canauxBoutique } = useShopifyStore();
+export default function Canaux({ product }: { product: ProductGET }) {
+    const { shopifyBoutique, canauxBoutique } = useShopifyStore();
     const { canauxProduct, setCanauxProduct } = useProductStore();
     const canauxActives =
         product?.resourcePublicationsV2.nodes.map((c) => ({
@@ -30,7 +31,7 @@ export default function Canaux() {
         setInitialCanaux();
     }, [product]);
 
-    if (!product || !shopifyBoutique) return null;
+    if (!shopifyBoutique) return null;
 
     const selectedCount = canauxActives.filter((c) => c.isPublished).length;
 

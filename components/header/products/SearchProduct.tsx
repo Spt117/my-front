@@ -93,15 +93,27 @@ export default function SearchProduct() {
     };
 
     return (
-        <>
+        <div className="w-full flex gap-2">
             <ShopifySelect />
-            <div className="relative w-full" ref={ref}>
+            <div className="relative flex-1" ref={ref}>
                 <div className="w-full flex gap-2">
                     <div className="relative w-full">
-                        <Input disabled={!shopifyBoutique} type="text" value={searchTerm} onChange={handleInputChange} placeholder="Produit Shopify" className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10" />
+                        <Input
+                            disabled={!shopifyBoutique}
+                            type="text"
+                            value={searchTerm}
+                            onChange={handleInputChange}
+                            placeholder="Produit Shopify"
+                            className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
+                        />
 
                         {searchTerm && !loading && (
-                            <button type="button" onClick={() => setSearchTerm("")} className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Effacer la recherche">
+                            <button
+                                type="button"
+                                onClick={() => setSearchTerm("")}
+                                className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                aria-label="Effacer la recherche"
+                            >
                                 <X size={16} />
                             </button>
                         )}
@@ -112,13 +124,18 @@ export default function SearchProduct() {
                             </div>
                         )}
                     </div>
-                    <Button onClick={() => openDialog(1)} aria-label="Ajouter un produit" className="p-2" title="Ajouter un produit">
+                    <Button
+                        onClick={() => openDialog(1)}
+                        aria-label="Ajouter un produit"
+                        className="p-2"
+                        title="Ajouter un produit"
+                    >
                         <Plus size={16} />
                     </Button>
                 </div>
                 {/* Liste des produits positionnée sous l'input */}
                 <ListProducts />
             </div>
-        </>
+        </div>
     );
 }

@@ -1,29 +1,157 @@
-import ProductToClick from "@/components/header/products/ProductToClick";
-import { ProductNode } from "@/components/header/products/shopifySearch";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { url } from "inspector";
+import { ProductGET } from "@/library/types/graph";
+import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import useBulkStore from "./storeBulk";
 
-export default function ProductBulk({ product }: { product: ProductNode }) {
-    const { shopifyBoutique, setSearchTerm } = useShopifyStore();
-    if (!shopifyBoutique) return;
+export default function ProductBulk({ product }: { product: ProductGET }) {
+    const { shopifyBoutique, canauxBoutique } = useShopifyStore();
+    const { selectedProducts, addProductSelected, removeProductSelected } = useBulkStore();
+    console.log(canauxBoutique);
+
     const id = product.id.split("/").pop();
-    const url = `/product?id=${id}&shopify=${shopifyBoutique.locationHome}`;
+    const url = `/product?id=${id}&shopify=${shopifyBoutique!.locationHome}`;
+
+    const isSelected = selectedProducts.some((p) => p.id === product.id);
+
+    const handleSelect = () => {
+        if (isSelected) {
+            removeProductSelected(product.id);
+        } else {
+            addProductSelected(product);
+        }
+    };
+
+    const publishedChannels = product.resourcePublicationsV2.nodes.filter((pub) => pub.isPublished);
+    const draftChannels = product.resourcePublicationsV2.nodes.filter((pub) => !pub.isPublished);
+
     return (
-        <div className="flex items-center w-full">
-            <Link href={url} className="w-full" onClick={() => setSearchTerm("")}>
-                <div className="cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm w-full">
-                    <div className="relative w-12 h-12 flex-shrink-0">
-                        <Image src={product.images.edges[0]?.node.url || "/no_image.png"} alt={product.title} fill className="object-cover rounded-md" sizes="48px" priority={false} />
-                    </div>
-                    <div className="ml-4 flex-1">
-                        <h3 className="text-sm font-medium text-foreground line-clamp-1">{product.title}</h3>
-                        <p className="text-sm text-muted-foreground">ID: {product.id.split("/").pop()}</p>
-                        <div className="text-sm font-semibold text-primary">{`${product.variants.edges[0].node.price} ${shopifyBoutique?.devise}`}</div>
+        <div onClick={handleSelect} className="w-full cursor-pointer group">
+            <div className="flex items-start gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 bg-white">
+                {/* Checkbox */}
+                <div className="flex-shrink-0 mt-1">
+                    <div
+                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                            isSelected ? "bg-blue-500 border-blue-500" : "border-gray-300 group-hover:border-blue-500"
+                        }`}
+                    >
+                        {isSelected && <Check size={16} className="text-white" />}
                     </div>
                 </div>
-            </Link>
+
+                {/* Image */}
+                <div className="flex-shrink-0">
+                    <Link href={url} className="block">
+                        <div className="relative w-20 h-20 rounded-md overflow-hidden border border-gray-200 hover:border-gray-400 transition-colors">
+                            <Image
+                                src={product.images.nodes[0].url || "/no_image.png"}
+                                alt={product.title}
+                                fill
+                                className="object-cover"
+                                sizes="80px"
+                            />
+                        </div>
+                    </Link>
+                </div>
+
+                {/* Main Info */}
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                        <div className="flex-1">
+                            <Link href={url}>
+                                <h3 className="text-sm font-semibold text-gray-900 hover:text-blue-600 line-clamp-2 transition-colors">
+                                    {product.title}
+                                </h3>
+                            </Link>
+                            <p className="text-xs text-gray-500 mt-1">{product.vendor}</p>
+                        </div>
+                        <div className="flex-shrink-0 text-right">
+                            <p className="text-sm font-bold text-gray-900">
+                                {product.variants.nodes[0].price}
+                                <span className="text-xs font-normal text-gray-600 ml-1">{shopifyBoutique?.devise}</span>
+                            </p>
+                            {product.variants.nodes[0].compareAtPrice && (
+                                <p className="text-xs text-gray-500 line-through">{product.variants.nodes[0].compareAtPrice}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Tags */}
+                    {product.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                            {product.tags.slice(0, 3).map((tag, idx) => (
+                                <span key={idx} className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
+                                    {tag}
+                                </span>
+                            ))}
+                            {product.tags.length > 3 && (
+                                <span className="inline-block text-gray-600 text-xs px-2 py-1">+{product.tags.length - 3}</span>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Status & Channels */}
+                    <div className="flex items-center gap-3 mt-2 flex-wrap">
+                        {/* Status Badge */}
+                        <span
+                            className={`inline-flex text-xs font-medium px-2 py-1 rounded ${
+                                product.status === "ACTIVE"
+                                    ? "bg-green-100 text-green-800"
+                                    : product.status === "DRAFT"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-gray-100 text-gray-800"
+                            }`}
+                        >
+                            {product.status}
+                        </span>
+
+                        {/* Published Channels */}
+                        {publishedChannels.length > 0 && (
+                            <div className="flex items-center gap-1">
+                                <span className="text-xs text-gray-600">Publié sur:</span>
+                                <div className="flex gap-1">
+                                    {publishedChannels.map((pub, idx) => (
+                                        <span
+                                            key={idx}
+                                            className="inline-block bg-green-50 text-green-700 text-xs px-2 py-0.5 rounded border border-green-200"
+                                        >
+                                            {/* {pub.publication.catalog.title} */}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Draft Channels */}
+                        {draftChannels.length > 0 && (
+                            <div className="flex items-center gap-1">
+                                <span className="text-xs text-gray-600">Brouillon:</span>
+                                <div className="flex gap-1">
+                                    {draftChannels.map((pub, idx) => (
+                                        <span
+                                            key={idx}
+                                            className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded border border-gray-300"
+                                        >
+                                            {/* {pub.publication.catalog.title} */}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Footer Info */}
+                    <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
+                        <span>SKU: {product.variants.nodes[0].sku}</span>
+                        <span>Stock: {product.variants.nodes[0].inventoryQuantity}</span>
+                        <span>
+                            {product.variants.nodes.length} variante
+                            {product.variants.nodes.length > 1 ? "s" : ""} disponibles
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

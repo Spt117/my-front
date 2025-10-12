@@ -1,13 +1,13 @@
 "use client";
-import { ProductNode } from "@/components/header/products/shopifySearch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
+import { ProductGET } from "@/library/types/graph";
 import Image from "next/image";
 import { useState } from "react";
 
 interface DataShops {
     count: number;
-    products: ProductNode[];
+    products: ProductGET[];
 }
 
 export default function ShopifyTab() {

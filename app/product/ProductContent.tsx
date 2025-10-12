@@ -50,7 +50,7 @@ export default function ProductContent() {
                     <div className="flex flex-wrap gap-3 justify-center lg:max-w-[30vw] h-min">
                         {/* Détails du produit */}
                         <Statut />
-                        <Canaux />
+                        <Canaux product={product} />
                         <TagsShopify />
                         <MetaSeo />
                         <Prices />

@@ -1,21 +1,36 @@
 "use client";
 
+import useProductStore from "@/app/product/storeProduct";
 import Selecteur from "@/components/selecteur";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
 import Image from "next/image";
-import useOrdersStore from "../shopify/orders/store";
-import useShopifyStore from "../shopify/shopifyStore";
 import { usePathname, useRouter } from "next/navigation";
-import useProductStore from "@/app/product/storeProduct";
+import { useEffect } from "react";
+import useOrdersStore from "../shopify/orders/store";
+import { getCanauxPublication } from "../shopify/serverActions";
+import useShopifyStore from "../shopify/shopifyStore";
 import SelectFull from "./SelectFull";
+import { TCanal } from "@/app/product/util";
 
 export default function ShopifySelect() {
-    const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm } = useShopifyStore();
+    const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm, setCanauxBoutique } = useShopifyStore();
     const { setFilterOrders, orders } = useOrdersStore();
     const { setPrice, setCompareAtPrice } = useProductStore();
     const path = usePathname();
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchCanaux = async () => {
+            if (!shopifyBoutique) return;
+            const canauxPublication = await getCanauxPublication(shopifyBoutique.domain);
+            const data: TCanal[] = canauxPublication.map((c) => {
+                return { ...c, isPublished: false };
+            });
+            setCanauxBoutique(data);
+        };
+        fetchCanaux();
+    }, [shopifyBoutique]);
 
     const option2 = boutiques.map((boutique) => ({
         label: (
@@ -49,9 +64,15 @@ export default function ShopifySelect() {
     useKeyboardShortcuts("Escape", handleEscape);
 
     return (
-        <>
-            <Selecteur array={option2} value={shopifyBoutique?.domain || ""} onChange={handleSelectOrigin} placeholder="Choisir l'origine" />
-            {/* <SelectFull /> */}
-        </>
+        <div className="">
+            <Selecteur
+                className="xl:hidden"
+                array={option2}
+                value={shopifyBoutique?.domain || ""}
+                onChange={handleSelectOrigin}
+                placeholder="Choisir l'origine"
+            />
+            <SelectFull />
+        </div>
     );
 }

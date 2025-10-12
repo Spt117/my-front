@@ -4,9 +4,10 @@ import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
 import { ProductNode } from "@/components/header/products/shopifySearch";
 import { postServer } from "@/library/utils/fetchServer";
 import { toast } from "sonner";
+import { ProductGET } from "@/library/types/graph";
 
 export const search2 = async (query: string) => {
-    const result: ProductNode[] = [];
+    const result: ProductGET[] = [];
     for (const boutique of boutiques) {
         try {
             const uri = "http://localhost:9100/shopify/search";
@@ -15,7 +16,7 @@ export const search2 = async (query: string) => {
                 query: query,
             });
             if (res && res.response) {
-                res.response.map((p: ProductNode) => (p.domain = boutique.domain));
+                res.response.map((p: ProductGET) => (p.domain = boutique.domain));
                 result.push(...res.response);
             }
         } catch (error) {
@@ -27,11 +28,8 @@ export const search2 = async (query: string) => {
     }
     return result;
 };
-export const search = async (query: string, domain: TDomainsShopify): Promise<ProductNode[]> => {
+export const search = async (query: string, domain: TDomainsShopify): Promise<ProductGET[]> => {
     const uri = "http://localhost:9100/shopify/search";
-
     const data = await postServer(uri, { domain, query });
-    console.log(data);
-
     return data.response;
 };
