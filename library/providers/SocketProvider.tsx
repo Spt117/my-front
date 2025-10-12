@@ -38,16 +38,14 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                 setSocket(socket);
             });
 
-            socket.onAny((eventName: TTopics, data) => {
-                console.log(eventName);
+            socket.on("webhook", (data) => {
                 console.log(data);
-                if (!data.shop) return;
 
-                const msg = `Événement reçu: ${eventName} - de ${data.shop || data.domain || "unknown"}`;
+                const msg = `Événement reçu: ${data.topic} - de ${data.domain || data.domain || "unknown"}`;
                 console.log(msg);
-                switch (eventName) {
+                switch (data.topic) {
                     case "orders/paid":
-                        const boutique = boutiqueFromDomain(data.shop);
+                        const boutique = boutiqueFromDomain(data.domain);
                         const msg = (
                             <p className="flex items-center gap-1 whitespace-nowrap">
                                 Nouvelle commande reçue sur {boutique.vendor}
@@ -61,16 +59,21 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                             </p>
                         );
                         toast.success(msg);
-                        emit("orders/paid", { shop: data.shop });
+                        emit("orders/paid", { shop: data.domain });
                         break;
                     case "orders/fulfilled":
-                        toast.success(`Commande ${data.name} expédiée !`);
+                        toast.success(`Commande ${data.body.name} expédiée !`);
                         break;
                     case "products/update":
-                        emit("products/update", { domain: data.shop, sku: data.variants[0].sku, productId: data.id, data: data });
+                        emit("products/update", {
+                            domain: data.domain,
+                            sku: data.body.variants[0].sku,
+                            productId: data.body.id,
+                            data: data.body,
+                        });
                         break;
                     default:
-                        toast.info(`Événement reçu : ${eventName}`);
+                        toast.info(`Événement reçu : ${data.topic}`);
                         console.log(data);
                         break;
                 }
