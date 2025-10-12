@@ -39,9 +39,9 @@ export default function SocketProvider({ children }: { children: React.ReactNode
             });
 
             socket.onAny((eventName: TTopics, data) => {
-                if (!data.shop) return;
                 console.log(eventName);
                 console.log(data);
+                if (!data.shop) return;
 
                 const msg = `Événement reçu: ${eventName} - de ${data.shop || data.domain || "unknown"}`;
                 console.log(msg);
