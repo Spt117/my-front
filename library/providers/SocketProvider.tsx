@@ -12,7 +12,7 @@ import { uriServerSocket } from "../utils/utils";
 import { TTopics } from "./utilSocket";
 
 export default function SocketProvider({ children }: { children: React.ReactNode }) {
-    const { setSearchTerm } = useShopifyStore();
+    const { setSearchTerm, shopifyBoutique } = useShopifyStore();
     const { setSocket } = useUserStore();
     const path = usePathname();
     const { emit } = useEvent();
@@ -39,11 +39,7 @@ export default function SocketProvider({ children }: { children: React.ReactNode
             });
 
             socket.on("webhook", (data) => {
-                console.log(data);
-
-                const msg = `Événement reçu: ${data.topic} - de ${data.domain || data.domain || "unknown"}`;
-                console.log(msg);
-                switch (data.topic) {
+                switch (data.topic as TTopics) {
                     case "orders/paid":
                         const boutique = boutiqueFromDomain(data.domain);
                         const msg = (
@@ -65,6 +61,7 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                         toast.success(`Commande ${data.body.name} expédiée !`);
                         break;
                     case "products/update":
+                        if (shopifyBoutique?.domain !== data.domain) return;
                         emit("products/update", {
                             domain: data.domain,
                             sku: data.body.variants[0].sku,
