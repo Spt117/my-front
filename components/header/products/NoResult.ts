@@ -5,12 +5,16 @@ export const productNoSearch: ProductGET = {
     title: "Aucun produit trouvé",
     handle: "no-handle",
     description: "Aucun produit ne correspond à votre recherche.",
+    descriptionHtml: "<p>Aucun produit ne correspond à votre recherche.</p>",
     vendor: "Cartes Pokémon",
     productType: "N/A",
     tags: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     status: "DRAFT",
+    options: [],
+    media: { nodes: [] },
+    metafields: { nodes: [] },
     images: {
         nodes: [
             {
@@ -25,15 +29,16 @@ export const productNoSearch: ProductGET = {
             {
                 id: "gid://shopify/ProductVariant/no-variant",
                 barcode: null,
-                inventoryItem: [{ id?: GID;
-    tracked: boolean;
-    requiresShipping: boolean;}],
+                inventoryItem: { id: "gid://shopify/InventoryItem/no-item", tracked: false, requiresShipping: false },
                 title: "N/A",
                 price: "0.00",
                 compareAtPrice: null,
                 sku: "N/A",
                 inventoryQuantity: 0,
+                inventoryPolicy: "CONTINUE",
+                selectedOptions: [],
             },
         ],
     },
+    resourcePublicationsV2: { nodes: [] },
 };

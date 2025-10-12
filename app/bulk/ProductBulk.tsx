@@ -8,8 +8,6 @@ import useBulkStore from "./storeBulk";
 export default function ProductBulk({ product }: { product: ProductGET }) {
     const { shopifyBoutique, canauxBoutique } = useShopifyStore();
     const { selectedProducts, addProductSelected, removeProductSelected } = useBulkStore();
-    console.log(canauxBoutique);
-
     const id = product.id.split("/").pop();
     const url = `/product?id=${id}&shopify=${shopifyBoutique!.locationHome}`;
 
@@ -23,34 +21,25 @@ export default function ProductBulk({ product }: { product: ProductGET }) {
         }
     };
 
-    const publishedChannels = product.resourcePublicationsV2.nodes.filter((pub) => pub.isPublished);
-    const draftChannels = product.resourcePublicationsV2.nodes.filter((pub) => !pub.isPublished);
+    const canaux = canauxBoutique.map((c) => {
+        const found = product?.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
+        if (found) return { id: c.id, isPublished: found.isPublished, name: c.name };
+        else return { id: c.id, isPublished: false, name: c.name };
+    });
 
     return (
         <div onClick={handleSelect} className="w-full cursor-pointer group">
             <div className="flex items-start gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 bg-white">
                 {/* Checkbox */}
                 <div className="flex-shrink-0 mt-1">
-                    <div
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                            isSelected ? "bg-blue-500 border-blue-500" : "border-gray-300 group-hover:border-blue-500"
-                        }`}
-                    >
-                        {isSelected && <Check size={16} className="text-white" />}
-                    </div>
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${isSelected ? "bg-blue-500 border-blue-500" : "border-gray-300 group-hover:border-blue-500"}`}>{isSelected && <Check size={16} className="text-white" />}</div>
                 </div>
 
                 {/* Image */}
                 <div className="flex-shrink-0">
                     <Link href={url} className="block">
                         <div className="relative w-20 h-20 rounded-md overflow-hidden border border-gray-200 hover:border-gray-400 transition-colors">
-                            <Image
-                                src={product.images.nodes[0].url || "/no_image.png"}
-                                alt={product.title}
-                                fill
-                                className="object-cover"
-                                sizes="80px"
-                            />
+                            <Image src={product.images.nodes[0].url || "/no_image.png"} alt={product.title} fill className="object-cover" sizes="80px" />
                         </div>
                     </Link>
                 </div>
@@ -60,9 +49,7 @@ export default function ProductBulk({ product }: { product: ProductGET }) {
                     <div className="flex items-start justify-between gap-4 mb-2">
                         <div className="flex-1">
                             <Link href={url}>
-                                <h3 className="text-sm font-semibold text-gray-900 hover:text-blue-600 line-clamp-2 transition-colors">
-                                    {product.title}
-                                </h3>
+                                <h3 className="text-sm font-semibold text-gray-900 hover:text-blue-600 line-clamp-2 transition-colors">{product.title}</h3>
                             </Link>
                             <p className="text-xs text-gray-500 mt-1">{product.vendor}</p>
                         </div>
@@ -71,9 +58,7 @@ export default function ProductBulk({ product }: { product: ProductGET }) {
                                 {product.variants.nodes[0].price}
                                 <span className="text-xs font-normal text-gray-600 ml-1">{shopifyBoutique?.devise}</span>
                             </p>
-                            {product.variants.nodes[0].compareAtPrice && (
-                                <p className="text-xs text-gray-500 line-through">{product.variants.nodes[0].compareAtPrice}</p>
-                            )}
+                            {product.variants.nodes[0].compareAtPrice && <p className="text-xs text-gray-500 line-through">{product.variants.nodes[0].compareAtPrice}</p>}
                         </div>
                     </div>
 
@@ -85,58 +70,23 @@ export default function ProductBulk({ product }: { product: ProductGET }) {
                                     {tag}
                                 </span>
                             ))}
-                            {product.tags.length > 3 && (
-                                <span className="inline-block text-gray-600 text-xs px-2 py-1">+{product.tags.length - 3}</span>
-                            )}
+                            {product.tags.length > 3 && <span className="inline-block text-gray-600 text-xs px-2 py-1">+{product.tags.length - 3}</span>}
                         </div>
                     )}
 
                     {/* Status & Channels */}
                     <div className="flex items-center gap-3 mt-2 flex-wrap">
                         {/* Status Badge */}
-                        <span
-                            className={`inline-flex text-xs font-medium px-2 py-1 rounded ${
-                                product.status === "ACTIVE"
-                                    ? "bg-green-100 text-green-800"
-                                    : product.status === "DRAFT"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : "bg-gray-100 text-gray-800"
-                            }`}
-                        >
-                            {product.status}
-                        </span>
+                        <span className={`inline-flex text-xs font-medium px-2 py-1 rounded ${product.status === "ACTIVE" ? "bg-green-100 text-green-800" : product.status === "DRAFT" ? "bg-yellow-100 text-yellow-800" : "bg-gray-100 text-gray-800"}`}>{product.status}</span>
 
                         {/* Published Channels */}
-                        {publishedChannels.length > 0 && (
-                            <div className="flex items-center gap-1">
-                                <span className="text-xs text-gray-600">Publié sur:</span>
-                                <div className="flex gap-1">
-                                    {publishedChannels.map((pub, idx) => (
-                                        <span
-                                            key={idx}
-                                            className="inline-block bg-green-50 text-green-700 text-xs px-2 py-0.5 rounded border border-green-200"
-                                        >
-                                            {/* {pub.publication.catalog.title} */}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Draft Channels */}
-                        {draftChannels.length > 0 && (
-                            <div className="flex items-center gap-1">
-                                <span className="text-xs text-gray-600">Brouillon:</span>
-                                <div className="flex gap-1">
-                                    {draftChannels.map((pub, idx) => (
-                                        <span
-                                            key={idx}
-                                            className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded border border-gray-300"
-                                        >
-                                            {/* {pub.publication.catalog.title} */}
-                                        </span>
-                                    ))}
-                                </div>
+                        {canaux.length > 0 && (
+                            <div className="flex items-center flex-wrap gap-1">
+                                {canaux.map((pub, idx) => (
+                                    <p key={idx} className={`${pub.isPublished ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"} inline-block text-xs px-2 py-0.5 rounded border`}>
+                                        {pub.name}
+                                    </p>
+                                ))}
                             </div>
                         )}
                     </div>

@@ -1,7 +1,6 @@
 "use server";
 
 import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
-import { ProductNode } from "@/components/header/products/shopifySearch";
 import { postServer } from "@/library/utils/fetchServer";
 import { toast } from "sonner";
 import { ProductGET } from "@/library/types/graph";
