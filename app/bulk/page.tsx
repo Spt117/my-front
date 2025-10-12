@@ -1,11 +1,16 @@
-import ListProducts from "@/components/header/products/ListProducts";
+"use client";
+import useShopifyStore from "@/components/shopify/shopifyStore";
+import ProductBulk from "./ProductBulk";
 
 export default function Page() {
+    const { productsSearch, searchTerm } = useShopifyStore();
+
+    if (productsSearch.length === 0 && !searchTerm) return null;
     return (
         <div className="p-4 relative">
-            <h1 className="text-2xl font-bold mb-4">Édition en masse</h1>
-            <p>Cette page est en cours de développement.</p>
-            <ListProducts />
+            {productsSearch.map((product, index) => (
+                <ProductBulk product={product} key={index} />
+            ))}
         </div>
     );
 }

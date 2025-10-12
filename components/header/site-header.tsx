@@ -2,7 +2,7 @@
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import BulkHeader from "./bulk/BulkHeader";
+import BulkHeader from "../../app/bulk/BulkHeader";
 import Orders from "./Orders";
 import SearchProduct from "./products/SearchProduct";
 import HeaderStock from "./stock/HeaderStock";

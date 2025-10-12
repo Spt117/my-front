@@ -12,8 +12,8 @@ interface StoreState {
     setSearchTerm: (term: string) => void;
     shopifyBoutique: IShopify | null;
     setShopifyBoutique: (boutique: IShopify | null) => void;
-    productsSearch: ProductNode[][];
-    setProductsSearch: (products: ProductNode[][]) => void;
+    productsSearch: ProductNode[];
+    setProductsSearch: (products: ProductNode[]) => void;
     product: ProductGET | null;
     setProduct: (product: ProductGET | null) => void;
     loading: boolean;

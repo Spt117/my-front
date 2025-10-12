@@ -52,10 +52,8 @@ export default function SearchProduct() {
         if (!query.trim() || !shopifyBoutique) return;
 
         try {
-            const res = await search(query);
-            const grouped = groupProductsBySku(res);
-            if (grouped.length === 0) setProductsSearch([[productNoSearch]]);
-            setProductsSearch(grouped);
+            const res = await search(query, shopifyBoutique.domain);
+            setProductsSearch(res);
         } catch (error) {
             console.error("Erreur lors de la recherche:", error);
         } finally {

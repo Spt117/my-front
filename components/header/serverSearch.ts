@@ -1,6 +1,6 @@
 "use server";
 
-import { boutiques } from "@/library/params/paramsShopify";
+import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
 import { ProductNode } from "@/components/header/products/shopifySearch";
 import { postServer } from "@/library/utils/fetchServer";
 import { toast } from "sonner";
@@ -27,18 +27,11 @@ export const search2 = async (query: string) => {
     }
     return result;
 };
-export const search = async (query: string): Promise<ProductNode[]> => {
+export const search = async (query: string, domain: TDomainsShopify): Promise<ProductNode[]> => {
     const uri = "http://localhost:9100/shopify/search";
 
-    const promises = boutiques.map((boutique) =>
-        postServer(uri, { domain: boutique.domain, query })
-            .then((res) => res?.response?.map((p: ProductNode) => ({ ...p, domain: boutique.domain })) || [])
-            .catch((error) => {
-                console.error(`Erreur ${boutique.domain}:`, error);
-                return [];
-            })
-    );
+    const data = await postServer(uri, { domain, query });
+    console.log(data);
 
-    const results = await Promise.all(promises);
-    return results.flat();
+    return data.response;
 };

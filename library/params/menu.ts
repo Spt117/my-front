@@ -18,6 +18,7 @@ export const modes = [
     { label: "Tags", description: "Recherche par Tags", value: "tags" },
     { label: "Collections", description: "Recherche par Collections", value: "collections" },
     { label: "Description", description: "Recherche par Description", value: "description" },
+    { label: "Canaux de publication", description: "Recherche par Canaux de publication", value: "channels" },
 ] as const;
 
 export type TSearchMode = (typeof modes)[number]["value"];

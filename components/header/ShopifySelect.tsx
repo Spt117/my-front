@@ -8,6 +8,7 @@ import useOrdersStore from "../shopify/orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
 import { usePathname, useRouter } from "next/navigation";
 import useProductStore from "@/app/product/storeProduct";
+import SelectFull from "./SelectFull";
 
 export default function ShopifySelect() {
     const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm } = useShopifyStore();
@@ -48,11 +49,9 @@ export default function ShopifySelect() {
     useKeyboardShortcuts("Escape", handleEscape);
 
     return (
-        <Selecteur
-            array={option2}
-            value={shopifyBoutique?.domain || ""}
-            onChange={handleSelectOrigin}
-            placeholder="Choisir l'origine"
-        />
+        <>
+            <Selecteur array={option2} value={shopifyBoutique?.domain || ""} onChange={handleSelectOrigin} placeholder="Choisir l'origine" />
+            {/* <SelectFull /> */}
+        </>
     );
 }
