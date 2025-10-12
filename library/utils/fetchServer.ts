@@ -21,6 +21,8 @@ export async function postServer(url: string, data: any): Promise<IResponseFetch
         const json = await response.json();
         return json;
     } catch (e) {
+        console.log("erreur sur " + url);
+
         console.error(e);
         return { response: null, error: "Erreur lors de l'envoi de la requête au serveur" };
     }

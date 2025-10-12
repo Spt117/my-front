@@ -1,17 +1,18 @@
 "use client";
 
 import useProductStore from "@/app/product/storeProduct";
+import { TCanal } from "@/app/product/util";
 import Selecteur from "@/components/selecteur";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
+import useUserStore from "@/library/stores/storeUser";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import useOrdersStore from "../shopify/orders/store";
-import { getCanauxPublication } from "../shopify/serverActions";
+import { CanauxPublication, getDataBoutique } from "../shopify/serverActions";
 import useShopifyStore from "../shopify/shopifyStore";
 import SelectFull from "./SelectFull";
-import { TCanal } from "@/app/product/util";
 
 export default function ShopifySelect() {
     const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm, setCanauxBoutique } = useShopifyStore();
@@ -19,18 +20,40 @@ export default function ShopifySelect() {
     const { setPrice, setCompareAtPrice } = useProductStore();
     const path = usePathname();
     const router = useRouter();
+    const { socket } = useUserStore();
 
     useEffect(() => {
         const fetchCanaux = async () => {
-            if (!shopifyBoutique) return;
-            const canauxPublication = await getCanauxPublication(shopifyBoutique.domain);
-            const data: TCanal[] = canauxPublication.map((c) => {
-                return { ...c, isPublished: false };
-            });
-            setCanauxBoutique(data);
+            if (!shopifyBoutique?.domain || !socket) return;
+            socket.emit("changeShop", shopifyBoutique.domain);
+            try {
+                const data = await getDataBoutique(shopifyBoutique.domain, "salesChannels");
+                const canauxPublication = data.response as CanauxPublication[];
+
+                const canauxProduits: TCanal[] = canauxPublication.map((c) => {
+                    return { ...c, isPublished: false };
+                });
+                setCanauxBoutique(canauxProduits);
+            } catch (error) {
+                console.error("Error fetching boutique data:", error);
+            }
         };
+
         fetchCanaux();
-    }, [shopifyBoutique]);
+    }, [shopifyBoutique?.domain, socket]);
+
+    useEffect(() => {
+        if (!socket) return;
+        const handleShopChanged = () => {
+            socket.on("shopChanged", (data) => {
+                console.log(`${data.tagsCount} tags chargés pour ${data.shop}`);
+            });
+        };
+        handleShopChanged();
+        return () => {
+            socket.off("shopChanged");
+        };
+    }, [socket]);
 
     const option2 = boutiques.map((boutique) => ({
         label: (

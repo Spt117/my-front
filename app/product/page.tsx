@@ -1,4 +1,5 @@
-import { getCanauxPublication, getProduct } from "@/components/shopify/serverActions";
+import ListProducts from "@/components/header/products/ListProducts";
+import { getProduct } from "@/components/shopify/serverActions";
 import { TVariant } from "@/library/models/produits/Variant";
 import { variantController } from "@/library/models/produits/variantController";
 import { TaskShopifyController } from "@/library/models/tasksShopify/taskController";
@@ -9,7 +10,6 @@ import { sendToTelegram } from "@/library/utils/telegram";
 import { pokeUriServer, telegram } from "@/library/utils/uri";
 import ProductClient from "./ProductClient";
 import ProductContent from "./ProductContent";
-import ListProducts from "@/components/header/products/ListProducts";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
     const query = (await searchParams) as { id?: string; shopify?: TLocationHome };
@@ -19,8 +19,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
     const shopify = boutiqueFromLocation(query.shopify) as IShopify;
     const data = { productId: query.id, domain: shopify.domain };
     const product = await getProduct(data);
-
-    const canauxPublication = await getCanauxPublication(shopify.domain);
 
     if (product?.error || !product?.response) {
         return (
@@ -72,7 +70,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
 
     return (
         <>
-            <ProductClient canaux={canauxPublication} productData={product} shopify={shopify} variantData={variant} tasksData={tasks} />
+            <ProductClient productData={product} shopify={shopify} variantData={variant} tasksData={tasks} />
             <ProductContent />
         </>
     );

@@ -90,3 +90,6 @@ export const boutiqueFromDomain: (domain: TDomainsShopify) => IShopify = (domain
     return b;
 };
 export const apiVersion = "2024-01";
+
+const paramsDataShop = ["tags", "productTypes", "collections", "salesChannels"] as const;
+export type TParamsDataShop = (typeof paramsDataShop)[number];

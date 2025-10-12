@@ -18,30 +18,26 @@ export default function ProductClient({
     shopify,
     variantData,
     tasksData,
-    canaux,
 }: {
     tasksData: TTaskShopifyProducts[];
     productData: ResponseServer<ProductGET>;
     shopify: IShopify;
     variantData?: TVariant;
-    canaux: CanauxPublication[];
 }) {
-    const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, setCanauxBoutique } = useShopifyStore();
+    const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
     const router = useRouter();
     const { setTasks } = useTaskStore();
 
     useEventListener("products/update", (data) => getProductUpdated(data.productId, data));
 
     useEffect(() => {
-        const canauxActives = canaux.map((c) => ({ id: c.id, isPublished: false, name: c.name }));
-        setCanauxBoutique(canauxActives);
         const boutique = boutiqueFromDomain(shopify.domain);
         setShopifyBoutique(boutique);
         setTasks(tasksData);
         setProduct(productData.response);
         if (variantData) setVariant(variantData);
         if (productData.error) toast.error(productData.error);
-    }, [shopify.domain, productData.response, variantData, tasksData, canaux]);
+    }, [shopify.domain, productData.response, variantData, tasksData]);
 
     const getProductUpdated = async (productId: string, data: any) => {
         const currentProduct = useShopifyStore.getState().product;
