@@ -12,6 +12,7 @@ import { addTag } from "../../../components/shopify/serverActions";
 import useShopifyStore from "../../../components/shopify/shopifyStore";
 import { ITagRequest } from "../../../components/shopify/typesShopify";
 import TagShopify from "./TagShopify";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
 export default function TagsShopify() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -92,6 +93,8 @@ export default function TagsShopify() {
         }
     };
 
+    useKeyboardShortcuts("Escape", () => handleSelectSuggestion(""));
+
     return (
         <Card className={cssCard}>
             <CardContent className="space-y-6">
@@ -99,10 +102,10 @@ export default function TagsShopify() {
                     <TagsIcon size={15} />
                     Tags
                 </h3>
-                <div className="relative flex gap-2 flex-wrap justify-center">
+                <div className="relative flex gap-2 flex-wrap">
                     <Input type="text" placeholder="Ajouter un tag" onChange={handleInputChange} value={newTag} />
                     {suggestions.length > 0 && (
-                        <ul className="absolute top-12 z-10 w-full bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
+                        <ul className="absolute top-9 z-10 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
                             {suggestions.map((tag, index) => (
                                 <li
                                     key={index}
@@ -120,7 +123,7 @@ export default function TagsShopify() {
                     </Button>
                 </div>
                 {product.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2 justify-center">
+                    <div className="flex flex-wrap gap-2 mt-2">
                         {product.tags.map((tag) => (
                             <TagShopify key={tag} tag={tag} />
                         ))}
