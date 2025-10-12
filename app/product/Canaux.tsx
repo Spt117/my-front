@@ -29,7 +29,7 @@ export default function Canaux({ product }: { product: ProductGET }) {
 
     useEffect(() => {
         setInitialCanaux();
-    }, [product]);
+    }, [product, canauxBoutique]);
 
     if (!shopifyBoutique) return null;
 
@@ -73,7 +73,11 @@ export default function Canaux({ product }: { product: ProductGET }) {
                     }}
                     className={`
                                 flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer mb-3
-                                ${allPublished ? "bg-blue-50 border-blue-200 hover:bg-blue-100" : "bg-gray-50 border-gray-200 hover:bg-gray-100"}
+                                ${
+                                    allPublished
+                                        ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
+                                        : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                                }
                             `}
                 >
                     <Checkbox className="cursor-pointer" checked={allPublished} />
@@ -89,18 +93,26 @@ export default function Canaux({ product }: { product: ProductGET }) {
                                 key={canal.id}
                                 className={`
                                 flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer
-                                ${isPublished ? "bg-blue-50 border-blue-200 hover:bg-blue-100" : "bg-gray-50 border-gray-200 hover:bg-gray-100"}
+                                ${
+                                    isPublished
+                                        ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
+                                        : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                                }
                             `}
                             >
                                 <Checkbox className="cursor-pointer" checked={isPublished} />
-                                <Label className="flex-1 cursor-pointer font-medium text-sm w-full h-full bg-green">{canal.name}</Label>
+                                <Label className="flex-1 cursor-pointer font-medium text-sm w-full h-full bg-green">
+                                    {canal.name}
+                                </Label>
                             </div>
                         );
                     })}
                 </div>
 
                 <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                    <p className="text-xs text-gray-600">💡 Sélectionnez les canaux sur lesquels ce produit sera disponible à la vente</p>
+                    <p className="text-xs text-gray-600">
+                        💡 Sélectionnez les canaux sur lesquels ce produit sera disponible à la vente
+                    </p>
                 </div>
             </CardContent>
         </Card>

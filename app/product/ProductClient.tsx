@@ -24,7 +24,7 @@ export default function ProductClient({
     shopify: IShopify;
     variantData?: TVariant;
 }) {
-    const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant } = useShopifyStore();
+    const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, canauxBoutique } = useShopifyStore();
     const router = useRouter();
     const { setTasks } = useTaskStore();
 
@@ -52,7 +52,7 @@ export default function ProductClient({
         }
     };
 
-    if (!product || !shopifyBoutique) {
+    if (!product || !shopifyBoutique || canauxBoutique.length === 0) {
         return <MySpinner active={true} />;
     }
 }
