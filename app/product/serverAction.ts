@@ -5,6 +5,7 @@ import { postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 import { TFieldProduct, TFieldVariant } from "./util";
 import { TMetafieldKeys } from "@/library/types/graph";
+import { IDataUpdate } from "../bulk/storeBulk";
 
 export async function updateVariant(
     domain: TDomainsShopify,
@@ -41,6 +42,13 @@ export async function updateCanauxVente(
     const url = `${pokeUriServer}/shopify/update-canaux-vente`;
     const data = { domain, productId, items };
     const response = await postServer(url, data);
+    return response;
+}
+
+export async function bulkUpdateCanauxVente(domain: TDomainsShopify, data: IDataUpdate[]) {
+    const url = `${pokeUriServer}/shopify/update-canaux-vente-bulk`;
+    const requestData = { domain, data };
+    const response = await postServer(url, requestData);
     return response;
 }
 

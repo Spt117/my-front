@@ -7,25 +7,34 @@ import useBulkStore from "./storeBulk";
 
 export default function ProductBulk({ product }: { product: ProductGET }) {
     const { shopifyBoutique, canauxBoutique } = useShopifyStore();
-    const { selectedProducts, addProductSelected, removeProductSelected } = useBulkStore();
+    const { selectedProducts, addProductSelected, removeProductSelected, removeDataUpdate, addDataUpdate } = useBulkStore();
     const id = product.id.split("/").pop();
     const url = `/product?id=${id}&shopify=${shopifyBoutique!.locationHome}`;
 
     const isSelected = selectedProducts.some((p) => p.id === product.id);
-
-    const handleSelect = () => {
-        if (isSelected) {
-            removeProductSelected(product.id);
-        } else {
-            addProductSelected(product);
-        }
-    };
 
     const canaux = canauxBoutique.map((c) => {
         const found = product?.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
         if (found) return { id: c.id, isPublished: found.isPublished, name: c.name };
         else return { id: c.id, isPublished: false, name: c.name };
     });
+    const canauxP = canaux.filter((c) => c.isPublished);
+    const canauxToUpdate = canaux.filter((c) => c.isPublished !== canauxP.find((cp) => cp.id === c.id)?.isPublished);
+
+    const dataUpdate = {
+        id: product.id,
+        canaux: canauxToUpdate,
+    };
+
+    const handleSelect = () => {
+        if (isSelected) {
+            removeProductSelected(product.id);
+            removeDataUpdate(product.id);
+        } else {
+            addProductSelected(product);
+            addDataUpdate(dataUpdate);
+        }
+    };
 
     return (
         <div onClick={handleSelect} className="w-full cursor-pointer group">
@@ -79,16 +88,13 @@ export default function ProductBulk({ product }: { product: ProductGET }) {
                     </div>
 
                     {/* Tags */}
-                    {product.tags.length > 0 && (
+                    {product.tags && product.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-2">
-                            {product.tags.slice(0, 3).map((tag, idx) => (
+                            {product.tags.map((tag, idx) => (
                                 <span key={idx} className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
                                     {tag}
                                 </span>
                             ))}
-                            {product.tags.length > 3 && (
-                                <span className="inline-block text-gray-600 text-xs px-2 py-1">+{product.tags.length - 3}</span>
-                            )}
                         </div>
                     )}
 
@@ -121,7 +127,8 @@ export default function ProductBulk({ product }: { product: ProductGET }) {
                                     >
                                         {pub.name}
                                     </p>
-                                ))}
+                                ))}{" "}
+                                <span>{`${canauxToUpdate.length} à mettre à jour`}</span>
                             </div>
                         )}
                     </div>

@@ -1,28 +1,47 @@
 import Selecteur from "@/components/selecteur";
+import { getDataBoutique } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Input } from "@/components/ui/input";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { modes } from "@/library/params/menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { search } from "../../components/header/serverSearch";
 import ShopifySelect from "../../components/header/ShopifySelect";
+import { ProductGET } from "@/library/types/graph";
 
 export default function BulkHeader() {
     const { setProductsSearch, setSearchMode, searchMode, shopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
     const [loading, setLoading] = useState(false);
 
     const handleSearch = async () => {
+        if (!shopifyBoutique) return;
         setLoading(true);
-        try {
-            if (!shopifyBoutique || !searchTerm.trim()) return;
-            const res = await search(searchTerm.trim(), shopifyBoutique.domain);
-            setProductsSearch(res);
-        } catch (error) {
-            console.error("Erreur lors de la recherche:", error);
-        } finally {
-            setLoading(false);
+        switch (searchMode) {
+            case "standard":
+                try {
+                    if (!searchTerm.trim()) return;
+                    const res = await search(searchTerm.trim(), shopifyBoutique.domain);
+                    setProductsSearch(res);
+                } catch (error) {
+                    console.error("Erreur lors de la recherche:", error);
+                } finally {
+                    setLoading(false);
+                }
+                break;
+            case "productsMissingChannels":
+                try {
+                    const data = await getDataBoutique(shopifyBoutique!.domain, "productsMissingChannels");
+                    setProductsSearch((data.response as ProductGET[]) || []);
+                } catch {
+                } finally {
+                    setLoading(false);
+                }
         }
     };
+
+    useEffect(() => {
+        handleSearch();
+    }, [searchTerm, searchMode, shopifyBoutique]);
 
     useKeyboardShortcuts("Enter", () => handleSearch());
 

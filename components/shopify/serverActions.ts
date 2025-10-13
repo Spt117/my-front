@@ -5,11 +5,12 @@ import { ProductGET } from "@/library/types/graph";
 import { getServer, postServer } from "@/library/utils/fetchServer";
 import { IGetProduct, IMetafieldRequest, ITagRequest, ResponseServer } from "./typesShopify";
 import { ShopifyCollection } from "@/app/collections/utils";
+import { url } from "inspector";
 
 export async function getDataBoutique(
     domain: TDomainsShopify,
     param: TParamsDataShop
-): Promise<ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[]>> {
+): Promise<ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[] | ProductGET[]>> {
     const url = `http://localhost:9100/shopify/data-shop?domain=${domain}&param=${param}`;
     const response = await getServer(url);
     if (response?.error) return { error: response.error, response: [] };
