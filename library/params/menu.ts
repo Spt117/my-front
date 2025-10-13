@@ -7,6 +7,7 @@ export const menuItems: MenuProps[] = [
     { path: "/create", label: "Créer une fiche produit" },
     { path: "/product-duplicate", label: "Dupliquer une fiche produit" },
     { path: "/product", label: "Produit" },
+    { path: "/collections", label: "Collections" },
     { path: "/bulk", label: "Édition en masse" },
     { path: "/stats", label: "Statistiques" },
     { path: "/wordpress", label: "WordPress" },

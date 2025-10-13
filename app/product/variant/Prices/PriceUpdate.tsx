@@ -12,14 +12,14 @@ export default function PriceUpdate() {
     const { price, setPrice, setIsChanged } = useProductStore();
     const ref = useRef<HTMLInputElement>(null);
 
-    const mainVariant = product?.variants.nodes[0];
+    const mainVariant = product?.variants?.nodes[0];
     const isPriceChanged = price !== mainVariant?.price;
     useEffect(() => {
         if (isPriceChanged) setIsChanged(true);
         else setIsChanged(false);
     }, [isPriceChanged]);
 
-    if (!product || !shopifyBoutique) return null;
+    if (!product || !shopifyBoutique || !mainVariant) return null;
 
     return (
         <>
@@ -35,7 +35,7 @@ export default function PriceUpdate() {
                 )}
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-                <InputPrice ref={ref} price={price} action={setPrice} priceOrigin={product.variants.nodes[0].price} />
+                <InputPrice ref={ref} price={price} action={setPrice} priceOrigin={mainVariant.price} />
             </div>
         </>
     );

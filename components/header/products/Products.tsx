@@ -26,7 +26,7 @@ export default function ProductList({ product }: { product: ProductGET }) {
                     <div className="ml-4 flex-1">
                         <h3 className="text-sm font-medium text-foreground line-clamp-1">{product.title}</h3>
                         <p className="text-sm text-muted-foreground">ID: {product.id.split("/").pop()}</p>
-                        <div className="text-sm font-semibold text-primary">{`${product.variants.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>
+                        <div className="text-sm font-semibold text-primary">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>
                     </div>
                 </div>
             </Link>

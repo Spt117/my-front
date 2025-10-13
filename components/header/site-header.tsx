@@ -1,13 +1,14 @@
 "use client";
+import HeaderCollection from "@/app/collections/HeaderCollections";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import BulkHeader from "../../app/bulk/BulkHeader";
 import Orders from "./Orders";
 import SearchProduct from "./products/SearchProduct";
+import ShopifySelect from "./ShopifySelect";
 import HeaderStock from "./stock/HeaderStock";
 import SelectAffiliationSite from "./taskAffiliation/SelectAffiliationSite";
-import ShopifySelect from "./ShopifySelect";
 
 export function SiteHeader() {
     const pathname = usePathname();
@@ -24,6 +25,7 @@ export function SiteHeader() {
                 {pathname === "/stock" && <HeaderStock />}
                 {pathname === "/bulk" && <BulkHeader />}
                 {pathname === "/stats" && <ShopifySelect />}
+                {pathname === "/collections" && <HeaderCollection />}
             </div>
         </header>
     );

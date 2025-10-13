@@ -29,7 +29,7 @@ export default function InputPrice({
                 ref={ref}
                 id="comparePrice"
                 type="number"
-                min={product.variants.nodes[0].price}
+                min={product.variants?.nodes[0].price}
                 placeholder={price}
                 onChange={(e) => action(e.target.value)}
                 className="pr-8 bg-white border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"

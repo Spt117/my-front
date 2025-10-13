@@ -4,11 +4,12 @@ import { TDomainsShopify, TParamsDataShop } from "@/library/params/paramsShopify
 import { ProductGET } from "@/library/types/graph";
 import { getServer, postServer } from "@/library/utils/fetchServer";
 import { IGetProduct, IMetafieldRequest, ITagRequest, ResponseServer } from "./typesShopify";
+import { ShopifyCollection } from "@/app/collections/utils";
 
 export async function getDataBoutique(
     domain: TDomainsShopify,
     param: TParamsDataShop
-): Promise<ResponseServer<string[] | CanauxPublication[]>> {
+): Promise<ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[]>> {
     const url = `http://localhost:9100/shopify/data-shop?domain=${domain}&param=${param}`;
     const response = await getServer(url);
     if (response?.error) return { error: response.error, response: [] };

@@ -1,4 +1,3 @@
-import ListProducts from "@/components/header/products/ListProducts";
 import { getProduct } from "@/components/shopify/serverActions";
 import { TVariant } from "@/library/models/produits/Variant";
 import { variantController } from "@/library/models/produits/variantController";
@@ -10,6 +9,7 @@ import { sendToTelegram } from "@/library/utils/telegram";
 import { pokeUriServer, telegram } from "@/library/utils/uri";
 import ProductClient from "./ProductClient";
 import ProductContent from "./ProductContent";
+import ListProducts from "@/components/header/products/ListProducts";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
     const query = (await searchParams) as { id?: string; shopify?: TLocationHome };
@@ -29,11 +29,11 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
         );
     }
 
-    const sku = product.response.variants.nodes[0].sku;
+    const sku = product.response.variants?.nodes[0].sku;
     let variant = null;
 
     if (sku) variant = await variantController.getVariantBySku(sku);
-    if (!variant && sku) {
+    if (!variant && sku && product.response.variants) {
         sendToTelegram(`Variant with SKU: ${sku} not found in local database. Creating...`, telegram.rapports);
         const url = `${pokeUriServer}/shopify/create-variant`;
         const variantProduct = product.response.variants.nodes[0];
@@ -66,7 +66,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
         else variant = response.response;
     }
 
-    const tasks = await TaskShopifyController.getTaskBySkuAndStockActivation(sku);
+    const tasks = sku ? await TaskShopifyController.getTaskBySkuAndStockActivation(sku) : [];
 
     return (
         <>

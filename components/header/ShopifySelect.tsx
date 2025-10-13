@@ -80,8 +80,8 @@ export default function ShopifySelect() {
             setShopifyBoutique(null);
             setFilterOrders(orders);
         } else if (product) {
-            setPrice(product?.variants.nodes[0].price);
-            setCompareAtPrice(product?.variants.nodes[0].compareAtPrice || "0");
+            setPrice(product?.variants?.nodes[0].price ?? "0");
+            setCompareAtPrice(product?.variants?.nodes[0].compareAtPrice || "0");
         }
     };
     useKeyboardShortcuts("Escape", handleEscape);

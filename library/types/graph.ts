@@ -107,7 +107,7 @@ export interface ProductGET {
     options: ProductOption[];
     media: Connection<MediaImageNode>;
     images: Connection<ImageNode>;
-    variants: Connection<ProductVariantNodeGET>;
+    variants?: Connection<ProductVariantNodeGET>;
     metafields: Connection<TMetafield>;
     resourcePublicationsV2: ResourcePublicationsV2Connection;
     domain?: TDomainsShopify;

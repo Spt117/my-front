@@ -12,7 +12,7 @@ export default function CompareAtPriceUpdate() {
     const { compareAtPrice, price, setCompareAtPrice, setIsChanged } = useProductStore();
     const refCompare = useRef<HTMLInputElement>(null);
 
-    const mainVariant = product?.variants.nodes[0];
+    const mainVariant = product?.variants?.nodes[0];
     const isCompareAtPriceChanged = compareAtPrice !== (mainVariant?.compareAtPrice || "0");
 
     useEffect(() => {
@@ -41,7 +41,7 @@ export default function CompareAtPriceUpdate() {
                         ref={refCompare}
                         price={compareAtPrice}
                         action={setCompareAtPrice}
-                        priceOrigin={product.variants.nodes[0].compareAtPrice || "0"}
+                        priceOrigin={product.variants?.nodes[0]?.compareAtPrice || "0"}
                     />
                     {discount > 0 && (
                         <Badge variant="destructive" className="bg-red-50 text-red-700 border-red-200">

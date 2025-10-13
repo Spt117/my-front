@@ -16,18 +16,19 @@ export default function ButtonPrices() {
     const actionsPrices = usePrices();
 
     useEffect(() => {
+        if (!product?.variants) return;
         setPrice(product?.variants.nodes[0].price || "0");
         setCompareAtPrice(product?.variants.nodes[0].compareAtPrice || "0");
-    }, [product?.variants.nodes[0].price, product?.variants.nodes[0].compareAtPrice]);
+    }, [product?.variants?.nodes?.[0]?.price, product?.variants?.nodes?.[0]?.compareAtPrice]);
 
     if (!product || !shopifyBoutique) return null;
-    const mainVariant = product.variants.nodes[0];
+    const mainVariant = product.variants?.nodes[0];
 
     const handleUpdatePrice = async () => {
         setIsUpdatingPrice(true);
         if (param > 0) await actionsPrices?.addTaskStopPromotion();
-        if (Number(price) !== Number(mainVariant.price)) await actionsPrices?.handleUpdatePrices("price", Number(price));
-        if (Number(compareAtPrice) !== Number(mainVariant.compareAtPrice || "0"))
+        if (Number(price) !== Number(mainVariant?.price)) await actionsPrices?.handleUpdatePrices("price", Number(price));
+        if (Number(compareAtPrice) !== Number(mainVariant?.compareAtPrice || "0"))
             await actionsPrices?.handleUpdatePrices("compareAtPrice", Number(compareAtPrice));
         setIsUpdatingPrice(false);
     };

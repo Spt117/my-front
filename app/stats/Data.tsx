@@ -42,7 +42,14 @@ export default function ShopifyDashboard({ data }: { data: Record<TDomainsShopif
     const activeShop = data[selectedShop];
 
     // Calculs des statistiques
-    const totalRevenue = activeShop.products.reduce((sum, p) => sum + parseFloat(p.variants.nodes[0].price), 0);
+    const totalRevenue = activeShop.products.reduce(
+        (sum, p) =>
+            sum +
+            (p.variants && p.variants.nodes && p.variants.nodes[0] && p.variants.nodes[0].price
+                ? parseFloat(p.variants.nodes[0].price)
+                : 0),
+        0
+    );
     const avgPrice = activeShop.count > 0 ? totalRevenue / activeShop.count : 0;
 
     // Données par type de produit
@@ -57,7 +64,7 @@ export default function ShopifyDashboard({ data }: { data: Record<TDomainsShopif
     const priceByType = Object.entries(
         activeShop.products.reduce((acc: Record<string, { total: number; count: number }>, p) => {
             if (!acc[p.productType]) acc[p.productType] = { total: 0, count: 0 };
-            acc[p.productType].total += parseFloat(p.variants.nodes[0].price);
+            acc[p.productType].total += parseFloat(p.variants?.nodes[0]?.price || "0");
             acc[p.productType].count += 1;
             return acc;
         }, {})
@@ -69,7 +76,7 @@ export default function ShopifyDashboard({ data }: { data: Record<TDomainsShopif
 
     // Distribution des prix
     const priceDistribution = activeShop.products
-        .map((p) => ({ name: p.title.substring(0, 20) + "...", prix: parseFloat(p.variants.nodes[0].price) }))
+        .map((p) => ({ name: p.title.substring(0, 20) + "...", prix: parseFloat(p.variants?.nodes[0]?.price || "0") }))
         .sort((a, b) => b.prix - a.prix)
         .slice(0, 8);
 

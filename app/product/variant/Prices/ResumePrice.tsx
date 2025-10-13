@@ -12,10 +12,10 @@ export default function ResumePrice() {
     const { tasks } = useTaskStore();
 
     useEffect(() => {
-        if (!product) return;
+        if (!product || !product.variants?.nodes[0]) return;
         setPrice(product.variants.nodes[0].price);
         setCompareAtPrice(product.variants.nodes[0].compareAtPrice || "0");
-    }, [product?.variants.nodes[0].price, product?.variants.nodes[0].compareAtPrice]);
+    }, [product?.variants?.nodes[0].price, product?.variants?.nodes[0].compareAtPrice]);
 
     if (!product || !shopifyBoutique) return null;
 

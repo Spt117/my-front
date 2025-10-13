@@ -20,9 +20,10 @@ export default function usePrices() {
     }, [typeTask]);
 
     if (!product || !shopifyBoutique) return null;
-    const mainVariant = product.variants.nodes[0];
+    const mainVariant = product.variants?.nodes[0];
 
     const handleUpdatePrices = async (field: TFieldVariant, value: number) => {
+        if (!mainVariant) return;
         try {
             const res = await updateVariant(shopifyBoutique.domain, product.id, mainVariant.id, field, value);
             if (res.error) toast.error(res.error);
@@ -35,6 +36,7 @@ export default function usePrices() {
     };
 
     const addTaskStopPromotion = async () => {
+        if (!mainVariant) return;
         const task: TTaskShopifyProducts = {
             status: "scheduled",
             activation: typeTask,

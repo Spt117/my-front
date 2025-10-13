@@ -61,8 +61,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                         toast.success(`Commande ${data.body.name} expédiée !`);
                         break;
                     case "products/update":
-                        console.log(data);
-
                         if (shopifyBoutique?.domain !== data.domain) return;
                         emit("products/update", {
                             domain: data.domain,
