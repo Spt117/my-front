@@ -9,12 +9,12 @@ import { sendToTelegram } from "@/library/utils/telegram";
 import { pokeUriServer, telegram } from "@/library/utils/uri";
 import ProductClient from "./ProductClient";
 import ProductContent from "./ProductContent";
-import ListProducts from "@/components/header/products/ListProducts";
+import ResultSearch from "./ResultSearch";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
     const query = (await searchParams) as { id?: string; shopify?: TLocationHome };
 
-    if (!query.id || !query.shopify) return <ListProducts />;
+    if (!query.id || !query.shopify) return <ResultSearch />;
 
     const shopify = boutiqueFromLocation(query.shopify) as IShopify;
     const data = { productId: query.id, domain: shopify.domain };

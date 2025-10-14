@@ -2,9 +2,13 @@
 import { Separator } from "@/components/ui/separator";
 import useShopifyStore from "../../shopify/shopifyStore";
 import ProductList from "./Products";
+import { useSearchParams } from "next/navigation";
 
 export default function ListProducts() {
     const { productsSearch, searchTerm } = useShopifyStore();
+    const params = useSearchParams();
+
+    if (params.size < 2) return null;
 
     if (productsSearch.length === 0 && !searchTerm) return null;
 

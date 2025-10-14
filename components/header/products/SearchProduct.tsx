@@ -11,7 +11,6 @@ import ListProducts from "./ListProducts";
 export default function SearchProduct() {
     const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const ref = useClickOutside<HTMLDivElement>(() => setSearchTerm(""));
     const { openDialog } = useShopifyStore();
 
     const handleSearch = async (query: string) => {
@@ -61,7 +60,7 @@ export default function SearchProduct() {
     return (
         <div className="w-full flex gap-2">
             <ShopifySelect />
-            <div className="relative flex-1" ref={ref}>
+            <div className="relative flex-1">
                 <div className="w-full flex gap-2">
                     <div className="relative w-full">
                         <Input
