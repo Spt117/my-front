@@ -43,49 +43,43 @@ export default function Amazon() {
         if (asin) setAsinToAdd("");
     }, [asin]);
 
-    if (asin)
-        return (
-            <>
+    const handleAddAsin = async () => {
+        if (!asinToAdd.trim()) {
+            toast.error("L'ASIN ne peut pas être vide.");
+            return;
+        }
+        setLoading(true);
+        const data: IMetafieldRequest = {
+            productId: product.id,
+            domain: shopifyBoutique.domain,
+            key: "asin",
+            value: asinToAdd,
+        };
+        try {
+            const res = await setAsin(data);
+            if (res?.error) toast.error(res.error);
+            if (res?.message) toast.success(res.message);
+        } catch (error) {
+            toast.error("An error occurred while updating the metafield.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="flex gap-2 flex-col">
+            <div>
                 <p className="flex items-center justify-space-between gap-4">
-                    Affiliation Amazon:{" "}
-                    <span className="font-semibold">{activeAmazon.value === "true" ? "Activée" : "Désactivée"}</span>
+                    Affiliation Amazon: <span className="font-semibold">{activeAmazon.value === "true" ? "Activée" : "Désactivée"}</span>
                     <Switch checked={activeAmazon.value === "true"} onCheckedChange={() => handleToggle()} disabled={loading} />
                     <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />
                 </p>
-                <a
-                    href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${asin.value}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                >
-                    ASIN: {asin.value}
-                </a>
-            </>
-        );
-    else {
-        const handleAddAsin = async () => {
-            if (!asinToAdd.trim()) {
-                toast.error("L'ASIN ne peut pas être vide.");
-                return;
-            }
-            setLoading(true);
-            const data: IMetafieldRequest = {
-                productId: product.id,
-                domain: shopifyBoutique.domain,
-                key: "asin",
-                value: asinToAdd,
-            };
-            try {
-                const res = await setAsin(data);
-                if (res?.error) toast.error(res.error);
-                if (res?.message) toast.success(res.message);
-            } catch (error) {
-                toast.error("An error occurred while updating the metafield.");
-            } finally {
-                setLoading(false);
-            }
-        };
-        return (
+                {asin && (
+                    <a href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${asin.value}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        ASIN: {asin.value}
+                    </a>
+                )}
+            </div>
             <div className="flex gap-2">
                 <Input type="text" placeholder="Ajouter  ASIN" onChange={(e) => setAsinToAdd(e.target.value)} value={asinToAdd} />
                 <Button disabled={!asinToAdd.trim() || loading} onClick={handleAddAsin}>
@@ -93,6 +87,6 @@ export default function Amazon() {
                     <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />
                 </Button>
             </div>
-        );
-    }
+        </div>
+    );
 }

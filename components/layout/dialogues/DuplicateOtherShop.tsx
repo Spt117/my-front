@@ -1,21 +1,15 @@
-import { createProductFromTitle, duplicateProductSameShop, updateProduct } from "@/app/product/serverAction";
+import { ProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { Switch } from "@/components/ui/switch";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-import Action from "./product-duplicate/Action";
-import { X } from "lucide-react";
 import { TDomainsShopify, boutiques } from "@/library/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
 import { sleep } from "@/library/utils/helpers";
-import { MultiSelect, MultiSelectOption } from "./product-duplicate/Multiselect";
+import { X } from "lucide-react";
 import Image from "next/image";
-import { ProductType } from "@/components/shopify/ProductType";
+import { useState } from "react";
+import { toast } from "sonner";
+import { MultiSelect, MultiSelectOption } from "./product-duplicate/Multiselect";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 
 export default function DuplicateOtherShop() {
     const { closeDialog, openDialog } = useShopifyStore();
@@ -91,8 +85,9 @@ export default function DuplicateOtherShop() {
             <ProductType />
 
             <div className="flex gap-4 my-4 justify-between">
-                <Button disabled={loading || !selectedBrand || !selectedType} onClick={handleValidate}>
+                <Button variant="outline" disabled={loading || !selectedBrand || !selectedType || domainsDest.length === 0} onClick={handleValidate}>
                     Lancer la duplication
+                    <Spinner className={`ml-2 ${loading ? "visible" : "invisible"}`} />
                 </Button>
                 <Button disabled={loading} type="button" size="sm" variant="outline" onClick={() => openDialog(34)}>
                     Retour

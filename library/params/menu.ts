@@ -5,7 +5,6 @@ export const menuItems: MenuProps[] = [
     { path: "/stock", label: "Stock" },
     { path: "/tasks", label: "Tâches" },
     { path: "/create", label: "Créer une fiche produit" },
-    { path: "/product-duplicate", label: "Dupliquer une fiche produit" },
     { path: "/product", label: "Produit" },
     { path: "/collections", label: "Collections" },
     { path: "/bulk", label: "Édition en masse" },
