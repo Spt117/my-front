@@ -8,67 +8,96 @@ import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import Action from "./product-duplicate/Action";
+import { X } from "lucide-react";
+import { TDomainsShopify, boutiques } from "@/library/params/paramsShopify";
+import { postServer } from "@/library/utils/fetchServer";
+import { sleep } from "@/library/utils/helpers";
+import { MultiSelect, MultiSelectOption } from "./product-duplicate/Multiselect";
+import Image from "next/image";
+import { ProductType } from "@/components/shopify/ProductType";
 
 export default function DuplicateOtherShop() {
-    const { closeDialog } = useShopifyStore();
-    const [newProductName, setNewProductName] = useState<string>("");
-    const [published, setPublished] = useState<boolean>(true);
+    const { closeDialog, openDialog } = useShopifyStore();
     const [loading, setLoading] = useState<boolean>(false);
-    const { shopifyBoutique, product } = useShopifyStore();
-    const router = useRouter();
+    const { shopifyBoutique, product, selectedType, selectedBrand } = useShopifyStore();
+    const [domainsDest, setDomainsDest] = useState<TDomainsShopify[]>([]);
 
-    const duplicate = async () => {
-        if (!product || !shopifyBoutique || loading) {
-            const msg = !product ? "Le produit est introuvable" : "La boutique Shopify n'est pas configurée";
-            toast.error(msg);
-            return;
-        }
-        setLoading(true);
-        try {
-            const data = await duplicateProductSameShop(shopifyBoutique.domain, product.id, newProductName, published);
-            if (data.error) toast.error(data.error);
-            if (data.message) {
-                toast.success(data.message);
-                const url = `/product?id=${data.response.id.split("/").pop()}&shopify=${shopifyBoutique.locationHome}`;
-                router.push(url);
-            }
-        } catch (error) {
-            toast.error("Une erreur s'est produite lors de la création du produit.");
-        } finally {
-            setLoading(false);
-            closeDialog();
-        }
+    const options = boutiques
+        .filter((b) => b.domain !== shopifyBoutique?.domain)
+        .map((boutique) => ({
+            label: (
+                <>
+                    <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline mr-2" />
+                    {boutique.vendor}
+                </>
+            ),
+            value: boutique.domain,
+            disabled: boutique.domain === shopifyBoutique?.domain,
+        })) as unknown as MultiSelectOption[];
+
+    const handleSelectDest = (selectedOptions: string[]) => {
+        setDomainsDest(selectedOptions as TDomainsShopify[]);
     };
 
-    useKeyboardShortcuts("Enter", () => duplicate());
+    const handleValidate = async () => {
+        setLoading(true);
+        const uri = "http://localhost:9100/shopify/duplicate";
+        if (!shopifyBoutique || !product || !selectedType || !selectedBrand) {
+            console.log("Missing required fields");
+            return;
+        }
+        const data = {
+            domainsDest: domainsDest,
+            productId: product.id,
+            tags: product.tags,
+            domainOrigin: shopifyBoutique.domain,
+            productType: selectedType,
+            productBrand: selectedBrand,
+        };
+        interface IResponseDuplicate {
+            response: { messages?: string[]; errors?: string[] } | null;
+            error?: string;
+            message?: string;
+        }
+        const res = (await postServer(uri, data)) as IResponseDuplicate;
+        console.log(res);
+        if (res.error) toast.error(res.error);
+        if (res.message) toast.success(res.message);
+        await sleep(2000);
+        if (res.response?.messages && res.response.messages.length > 0) {
+            for (const message of res.response.messages) {
+                toast.success(message);
+                await sleep(2000);
+            }
+        }
+        if (res.response?.errors && res.response.errors.length > 0) {
+            for (const error of res.response.errors) {
+                toast.error(error);
+                await sleep(2000);
+            }
+        }
+        setLoading(false);
+    };
 
     return (
-        <div className="relative z-10 w-full max-w-md rounded-xl border bg-white p-4 shadow-xl">
+        <>
+            <X className="absolute right-4 top-4 cursor-pointer" onClick={closeDialog} />
             <div className="space-y-3">
                 <span className="mb-1 block text-s font-medium text-slate-600">Dupliquer {product?.title}</span>
             </div>
 
-            <div className="mt-4 flex flex-col justify-between gap-5">
-                <div className="flex items-center gap-2">
-                    <Input
-                        type="text"
-                        placeholder="Nom du nouveau produit"
-                        value={newProductName}
-                        onChange={(e) => setNewProductName(e.target.value)}
-                    />
-                    <Switch checked={published} onCheckedChange={setPublished} />
-                    <p>{published ? "Publié" : "Brouillon"}</p>
-                </div>
-                <div className="flex gap-2 items-center justify-between">
-                    <Button type="button" size="sm" onClick={duplicate} disabled={loading || newProductName.trim() === ""}>
-                        Confirmer
-                        {loading && <Spinner />}
-                    </Button>
-                    <Button disabled={loading} type="button" size="sm" variant="outline" onClick={closeDialog}>
-                        Annuler
-                    </Button>
-                </div>
+            <MultiSelect className="z-80" placeholder={"Choisir les boutiques"} options={options} onValueChange={handleSelectDest} />
+            <ProductType />
+
+            <div className="flex gap-4 my-4 justify-between">
+                <Button disabled={loading || !selectedBrand || !selectedType} onClick={handleValidate}>
+                    Lancer la duplication
+                </Button>
+                <Button disabled={loading} type="button" size="sm" variant="outline" onClick={() => openDialog(34)}>
+                    Retour
+                </Button>
             </div>
-        </div>
+        </>
     );
 }

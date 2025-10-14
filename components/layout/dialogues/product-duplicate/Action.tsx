@@ -11,7 +11,6 @@ import { sleep } from "@/library/utils/helpers";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
-import ProductContent from "../product/ProductContent";
 import { MultiSelect, MultiSelectOption } from "./Multiselect";
 
 export default function Action() {
@@ -20,16 +19,18 @@ export default function Action() {
     const [domainsDest, setDomainsDest] = useState<TDomainsShopify[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const options = boutiques.map((boutique) => ({
-        label: (
-            <>
-                <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline mr-2" />
-                {boutique.vendor}
-            </>
-        ),
-        value: boutique.domain,
-        disabled: boutique.domain === shopifyBoutique?.domain,
-    })) as unknown as MultiSelectOption[];
+    const options = boutiques
+        .filter((b) => b.domain !== shopifyBoutique?.domain)
+        .map((boutique) => ({
+            label: (
+                <>
+                    <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline mr-2" />
+                    {boutique.vendor}
+                </>
+            ),
+            value: boutique.domain,
+            disabled: boutique.domain === shopifyBoutique?.domain,
+        })) as unknown as MultiSelectOption[];
 
     const handleSelectDest = (selectedOptions: string[]) => {
         setDomainsDest(selectedOptions as TDomainsShopify[]);
@@ -76,24 +77,14 @@ export default function Action() {
     };
 
     return (
-        <>
-            <MultiSelect placeholder={"Choisir les boutiques"} options={options} onValueChange={handleSelectDest} />
+        <div className="flex flex-col gap-4">
+            <MultiSelect className="z-80" placeholder={"Choisir les boutiques"} options={options} onValueChange={handleSelectDest} />
+            <ProductType />
             <div className="flex gap-4 my-4">
-                <ProductType />
-                {!loading && shopifyBoutique && product && domainsDest.length > 0 && (
-                    <Button disabled={loading || !selectedBrand || !selectedType} onClick={handleValidate}>
-                        Lancer la duplication
-                    </Button>
-                )}
+                <Button disabled={loading || !selectedBrand || !selectedType} onClick={handleValidate}>
+                    Lancer la duplication
+                </Button>
             </div>
-            {loading && (
-                <div className="flex justify-center">
-                    <Spinner size={35} />
-                </div>
-            )}
-            <Card className="">
-                <ProductContent />
-            </Card>
-        </>
+        </div>
     );
 }

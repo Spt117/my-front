@@ -12,27 +12,19 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import useTaskStore from "./Tasks/storeTasks";
+import { fetchIdsFromSku } from "./serverAction";
 
-export default function ProductClient({
-    productData,
-    shopify,
-    variantData,
-    tasksData,
-}: {
-    tasksData: TTaskShopifyProducts[];
-    productData: ResponseServer<ProductGET>;
-    shopify: IShopify;
-    variantData?: TVariant;
-}) {
+export default function ProductClient({ productData, shopify, variantData, tasksData }: { tasksData: TTaskShopifyProducts[]; productData: ResponseServer<ProductGET>; shopify: IShopify; variantData?: TVariant }) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, canauxBoutique } = useShopifyStore();
     const router = useRouter();
     const { setTasks } = useTaskStore();
 
     useEventListener("products/update", (data) => getProductUpdated(data.productId, data));
+    useEffect(() => {
+        setShopifyBoutique(shopify);
+    }, [shopify]);
 
     useEffect(() => {
-        const boutique = boutiqueFromDomain(shopify.domain);
-        setShopifyBoutique(boutique);
         setTasks(tasksData);
         setProduct(productData.response);
         if (variantData) setVariant(variantData);

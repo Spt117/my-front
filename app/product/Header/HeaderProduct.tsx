@@ -4,6 +4,8 @@ import { useCopy } from "@/library/hooks/useCopy";
 import { Tag } from "lucide-react";
 import ActionsHeader from "./ActionsHeader";
 import useShopifyStore from "@/components/shopify/shopifyStore";
+import Image from "next/image";
+import OtherShop from "../OtherShop";
 
 export default function HeaderProduct() {
     const { handleCopy } = useCopy();
@@ -24,6 +26,7 @@ export default function HeaderProduct() {
                     <Tag size={20} className={`text-gray-500`} />
                     {product.title}
                 </CardTitle>
+                <OtherShop />
                 <ActionsHeader />{" "}
             </div>
         </CardHeader>

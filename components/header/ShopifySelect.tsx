@@ -24,8 +24,8 @@ export default function ShopifySelect() {
 
     useEffect(() => {
         const fetchCanaux = async () => {
-            if (!shopifyBoutique?.domain || !socket) return;
-            socket.emit("changeShop", shopifyBoutique.domain);
+            if (!shopifyBoutique?.domain) return;
+            socket?.emit("changeShop", shopifyBoutique.domain);
             try {
                 const data = await getDataBoutique(shopifyBoutique.domain, "salesChannels");
                 const canauxPublication = data.response as CanauxPublication[];
@@ -88,13 +88,7 @@ export default function ShopifySelect() {
 
     return (
         <div className="">
-            <Selecteur
-                className="xl:hidden"
-                array={option2}
-                value={shopifyBoutique?.domain || ""}
-                onChange={handleSelectOrigin}
-                placeholder="Choisir l'origine"
-            />
+            <Selecteur className="xl:hidden" array={option2} value={shopifyBoutique?.domain || ""} onChange={handleSelectOrigin} placeholder="Choisir l'origine" />
             <SelectFull />
         </div>
     );
