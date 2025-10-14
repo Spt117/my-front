@@ -3,7 +3,9 @@
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import useShopifyStore from "../../shopify/shopifyStore";
 import AddProduct from "./AddProduct";
+import ChoiceDuplicate from "./ChoiceDuplicate";
 import DeleteProduct from "./DeleteProduct";
+import DuplicateOtherShop from "./DuplicateOtherShop";
 import DuplicateProduct from "./DuplicateProduct";
 
 export default function BodyDialogue() {
@@ -17,11 +19,15 @@ export default function BodyDialogue() {
     return (
         <div className="fixed inset-0 z-500 flex items-center justify-center">
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/40" onClick={closeDialog} />
+            <div className="absolute inset-0 bg-black/60" onClick={closeDialog} />
             {/* Dialogue content */}
-            {dialogOpen === 1 && <AddProduct />}
-            {dialogOpen === 2 && <DeleteProduct />}
-            {dialogOpen === 3 && <DuplicateProduct />}
+            <div className="min-w-[600px] min-h-[200px] relative z-10 rounded-xl border bg-white p-4 shadow-xl flex flex-col justify-evenly">
+                {dialogOpen === 1 && <AddProduct />}
+                {dialogOpen === 2 && <DeleteProduct />}
+                {dialogOpen === 34 && <ChoiceDuplicate />}
+                {dialogOpen === 3 && <DuplicateProduct />}
+                {dialogOpen === 4 && <DuplicateOtherShop />}
+            </div>
         </div>
     );
 }

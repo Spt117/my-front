@@ -1,17 +1,16 @@
-import { duplicateProductSameShop } from "@/app/product/serverAction";
+import { createProductFromTitle, duplicateProductSameShop, updateProduct } from "@/app/product/serverAction";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Switch } from "@/components/ui/switch";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function DuplicateProduct() {
-    const { closeDialog, openDialog } = useShopifyStore();
+export default function DuplicateOtherShop() {
+    const { closeDialog } = useShopifyStore();
     const [newProductName, setNewProductName] = useState<string>("");
     const [published, setPublished] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
@@ -44,8 +43,7 @@ export default function DuplicateProduct() {
     useKeyboardShortcuts("Enter", () => duplicate());
 
     return (
-        <>
-            <X className="absolute right-4 top-4 cursor-pointer" onClick={closeDialog} />
+        <div className="relative z-10 w-full max-w-md rounded-xl border bg-white p-4 shadow-xl">
             <div className="space-y-3">
                 <span className="mb-1 block text-s font-medium text-slate-600">Dupliquer {product?.title}</span>
             </div>
@@ -66,11 +64,11 @@ export default function DuplicateProduct() {
                         Confirmer
                         {loading && <Spinner />}
                     </Button>
-                    <Button disabled={loading} type="button" size="sm" variant="outline" onClick={() => openDialog(34)}>
-                        Retour
+                    <Button disabled={loading} type="button" size="sm" variant="outline" onClick={closeDialog}>
+                        Annuler
                     </Button>
                 </div>
             </div>
-        </>
+        </div>
     );
 }

@@ -1,5 +1,5 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { BookCopy, Globe } from "lucide-react";
+import { BookCopy, Copy, CopyMinusIcon, CopyPlusIcon, Globe } from "lucide-react";
 import Image from "next/image";
 import AmazonLink from "./AmazonLink";
 import Save from "./Save";
@@ -34,7 +34,7 @@ export default function ActionsHeader() {
                 />
             </a>
             <span title="Dupliquer le produit dans la même boutique" className="ml-1 cursor-pointer">
-                <BookCopy size={35} onClick={() => openDialog(3)} />
+                <CopyPlusIcon size={35} onClick={() => openDialog(34)} />
             </span>
         </div>
     );
