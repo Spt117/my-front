@@ -5,7 +5,7 @@ import { Tag } from "lucide-react";
 import ActionsHeader from "./ActionsHeader";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import Image from "next/image";
-import OtherShop from "../OtherShop";
+import OtherShop from "./OtherShop";
 
 export default function HeaderProduct() {
     const { handleCopy } = useCopy();
@@ -14,7 +14,7 @@ export default function HeaderProduct() {
     if (!product || !shopifyBoutique) return null;
 
     return (
-        <CardHeader className="sticky top-12 w-full z-10     bg-gray-50 ">
+        <CardHeader className="sticky top-12 w-full z-10 bg-gray-50 ">
             <div className="flex items-center justify-between gap-3">
                 <CardTitle
                     onClick={() => {
@@ -27,7 +27,7 @@ export default function HeaderProduct() {
                     {product.title}
                 </CardTitle>
                 <OtherShop />
-                <ActionsHeader />{" "}
+                <ActionsHeader />
             </div>
         </CardHeader>
     );

@@ -9,7 +9,7 @@ export default function AmazonLink() {
 
     return (
         <a href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${asin?.value}`} target="_blank" rel="noopener noreferrer">
-            <Image title="Editer sur Shopify" src="/amazon.png" alt="Flag" width={40} height={40} className="mt-3 object-contain w-auto h-auto" />
+            <Image title="Voir sur Amazon" src="/amazon.png" alt="Flag" width={40} height={40} />
         </a>
     );
 }

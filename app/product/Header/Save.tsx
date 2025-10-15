@@ -10,8 +10,7 @@ import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
 export default function Save() {
     const { product, shopifyBoutique, canauxBoutique } = useShopifyStore();
-    const { newTitle, loadingSave, setLoadingSave, statut, canauxProduct, metaTitle, metaDescription, ancreUrl } =
-        useProductStore();
+    const { newTitle, loadingSave, setLoadingSave, statut, canauxProduct, metaTitle, metaDescription, ancreUrl } = useProductStore();
     const { hasChanges, modifiedHtml } = useEditorHtmlStore();
 
     if (!product || !shopifyBoutique) return null;
@@ -26,17 +25,8 @@ export default function Save() {
     const metaTitleProduct = product?.metafields.nodes.find((mf) => mf.key === "title_tag");
     const metaDescriptionProduct = product?.metafields.nodes.find((mf) => mf.key === "description_tag");
 
-    const hasMetaChanges =
-        metaTitle.trim() !== (metaTitleProduct?.value.trim() || "") ||
-        metaDescription.trim() !== (metaDescriptionProduct?.value.trim() || "") ||
-        ancreUrl !== product.handle;
-    const disabledSave =
-        (!hasChanges &&
-            newTitle === product.title &&
-            statut === product.status &&
-            canauxToUpdate.length === 0 &&
-            !hasMetaChanges) ||
-        loadingSave;
+    const hasMetaChanges = metaTitle.trim() !== (metaTitleProduct?.value.trim() || "") || metaDescription.trim() !== (metaDescriptionProduct?.value.trim() || "") || ancreUrl !== product.handle;
+    const disabledSave = (!hasChanges && newTitle === product.title && statut === product.status && canauxToUpdate.length === 0 && !hasMetaChanges) || loadingSave;
 
     const handleSave = async () => {
         if (disabledSave || !product) return;
@@ -94,13 +84,7 @@ export default function Save() {
         }
         if (metaDescription !== (metaDescriptionProduct?.value || "")) {
             try {
-                const res = await updateMetafieldKey(
-                    shopifyBoutique.domain,
-                    product.id,
-                    "description_tag",
-                    metaDescription,
-                    "global"
-                );
+                const res = await updateMetafieldKey(shopifyBoutique.domain, product.id, "description_tag", metaDescription, "global");
                 if (res.error) toast.error(res.error);
                 if (res.message) toast.success(res.message);
             } catch (err) {
@@ -138,13 +122,8 @@ export default function Save() {
 
     if (!loadingSave)
         return (
-            <span title="Sauvegarder les modifications" className="text-sm text-gray-500 italic">
-                <SaveIcon
-                    color={disabledSave ? "gray" : "black"}
-                    size={33}
-                    className={disabledSave ? "cursor-not-allowed" : "cursor-pointer"}
-                    onClick={!disabledSave ? handleSave : undefined}
-                />
+            <span title="Sauvegarder les modifications" className="text-sm text-gray-500">
+                <SaveIcon color={disabledSave ? "gray" : "black"} size={33} className={disabledSave ? "cursor-not-allowed" : "cursor-pointer"} onClick={!disabledSave ? handleSave : undefined} />
             </span>
         );
     else return <Spinner className="ml-2" />;
