@@ -7,12 +7,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import UpdateStock from "./UpdateStock";
 import { cssCard } from "../product/util";
-import { boutiqueFromDomain } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain, TDomainsShopify } from "@/library/params/paramsShopify";
 
 export function VariantStock({ variant, action }: { variant: TVariant; action: () => void }) {
     const path = usePathname();
 
-    const domain = variant.ids[0].shop;
+    const domain: TDomainsShopify = "bayblade-shops.myshopify.com";
 
     const handleRebuyChange = async () => {
         const data = await toggleRebuy(variant.sku, !variant.rebuy);
