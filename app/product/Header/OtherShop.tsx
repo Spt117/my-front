@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 
 export default function OtherShop() {
-    const { shopifyBoutique, product } = useShopifyStore();
+    const { shopifyBoutique, setShopifyBoutique, product } = useShopifyStore();
     const [ids, setIds] = useState<{ domain: TDomainsShopify; variantId: string; productId: string }[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -30,10 +30,19 @@ export default function OtherShop() {
                 ids.map((id) => {
                     const boutique = boutiqueFromDomain(id.domain);
                     const productId = id.productId.replace("gid://shopify/Product/", "");
-                    if (!boutique) return null;
+                    const handleClic = () => {
+                        setShopifyBoutique(boutique);
+                    };
                     const url = `/product?id=${productId}&shopify=${boutique.locationHome}`;
                     return (
-                        <Link key={id.productId} href={url} rel="noopener noreferrer" title={`Voir le produit dans la boutique ${boutique.publicDomain}`} className="text-blue-600 hover:underline flex items-center gap-1">
+                        <Link
+                            onClick={handleClic}
+                            key={id.productId}
+                            href={url}
+                            rel="noopener noreferrer"
+                            title={`Voir le produit dans la boutique ${boutique.publicDomain}`}
+                            className="text-blue-600 hover:underline flex items-center gap-1"
+                        >
                             <span className="text-xs">
                                 <img title={boutique.langue} src={boutique.flag} alt={boutique.langue} width={20} height={20} />
                             </span>
