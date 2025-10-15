@@ -8,7 +8,7 @@ import { boutiques } from "@/library/params/paramsShopify";
 import { sitesWordpress } from "@/library/params/paramsWordpress";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { MultiSelect, MultiSelectOption } from "../../components/layout/dialogues/product-duplicate/Multiselect";
+import { MultiSelect, MultiSelectOption } from "../../components/Multiselect";
 import { Save, Globe, Search, Tag, Calendar } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -78,7 +78,9 @@ export default function VeilleCollection({ collection }: { collection: TVeille }
                         </CardTitle>
                         <CardDescription className="text-sm text-muted-foreground">ID: {collection._id}</CardDescription>
                     </div>
-                    <Badge variant={collection.active ? "default" : "secondary"}>{collection.active ? "Active" : "Inactive"}</Badge>
+                    <Badge variant={collection.active ? "default" : "secondary"}>
+                        {collection.active ? "Active" : "Inactive"}
+                    </Badge>
                 </div>
             </CardHeader>
 
@@ -118,7 +120,15 @@ export default function VeilleCollection({ collection }: { collection: TVeille }
                         <Globe className="h-4 w-4" />
                         Monitored Websites
                     </label>
-                    <MultiSelect disabled={!collection.active} defaultValue={collection.website || []} options={options} onValueChange={handleSelectDest} placeholder="Select websites to check..." maxCount={3} className="w-full" />
+                    <MultiSelect
+                        disabled={!collection.active}
+                        defaultValue={collection.website || []}
+                        options={options}
+                        onValueChange={handleSelectDest}
+                        placeholder="Select websites to check..."
+                        maxCount={3}
+                        className="w-full"
+                    />
                     {collection.website && collection.website.length > 0 && (
                         <p className="text-xs text-muted-foreground">
                             Currently checking {collection.website.length} website{collection.website.length !== 1 ? "s" : ""}
