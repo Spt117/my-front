@@ -3,10 +3,21 @@ import Image from "next/image";
 import { ShopifyCollection } from "./utils";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function CollectionRow({ collection }: { collection: ShopifyCollection }) {
+    const router = useRouter();
+    const params = useSearchParams();
+
+    const handleRowClick = () => {
+        const domain = params.get("domain");
+        const url = `/collections/${collection.id.replace("gid://shopify/Collection/", "")}?domain=${domain}`;
+        console.log(url);
+        router.push(url);
+    };
+
     return (
-        <TableRow className="h-14 hover:bg-muted/50 transition-colors duration-200">
+        <TableRow className="h-14 hover:bg-muted/50 transition-colors duration-200 cursor-pointer" onClick={handleRowClick}>
             <TableCell className="p-0 cursor-pointer ">
                 <div className="flex items-center justify-center">
                     <Checkbox />

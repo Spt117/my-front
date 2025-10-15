@@ -1,20 +1,17 @@
 "use client";
 
-import { ShopifyCollection } from "./utils";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ArrowDown } from "lucide-react"; // Assurez-vous d'avoir lucide-react installé
 import useShopifyStore from "@/components/shopify/shopifyStore";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { ArrowDown, ArrowUpDown } from "lucide-react"; // Assurez-vous d'avoir lucide-react installé
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
-import useCollectionStore from "./storeCollections";
-import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 import CollectionRow from "./Collection";
+import useCollectionStore from "./storeCollections";
+import { ShopifyCollection } from "./utils";
 
 export default function ClientCollection({ shopifyCollection }: { shopifyCollection: ShopifyCollection[] }) {
     const params = useSearchParams();
@@ -26,8 +23,6 @@ export default function ClientCollection({ shopifyCollection }: { shopifyCollect
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
     useEffect(() => {
-        console.log(shopifyCollection[0]);
-
         setCollections(shopifyCollection);
         if (searchTerm) {
             const filtered = shopifyCollection.filter(

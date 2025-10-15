@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 
 export default function OtherShop() {
-    const { shopifyBoutique, setShopifyBoutique, product } = useShopifyStore();
+    const { shopifyBoutique, product } = useShopifyStore();
     const [ids, setIds] = useState<{ domain: TDomainsShopify; variantId: string; productId: string }[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -30,13 +30,9 @@ export default function OtherShop() {
                 ids.map((id) => {
                     const boutique = boutiqueFromDomain(id.domain);
                     const productId = id.productId.replace("gid://shopify/Product/", "");
-                    const handleClic = () => {
-                        setShopifyBoutique(boutique);
-                    };
                     const url = `/product?id=${productId}&shopify=${boutique.locationHome}`;
                     return (
                         <Link
-                            onClick={handleClic}
                             key={id.productId}
                             href={url}
                             rel="noopener noreferrer"

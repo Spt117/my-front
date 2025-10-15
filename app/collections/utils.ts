@@ -25,6 +25,15 @@ interface ProductsCount {
     count: number;
 }
 
+export interface CollectionProduct {
+    id: string;
+    title: string;
+    featuredImage: {
+        url: string;
+        altText?: string;
+    } | null;
+}
+
 export interface ShopifyCollection {
     id: string;
     title: string;
@@ -39,4 +48,8 @@ export interface ShopifyCollection {
     ruleSet: CollectionRuleSet;
     seo: CollectionSEO;
     events: { nodes: { createdAt: string; action: string }[] };
+}
+
+export interface ShopifyCollectionWithProducts extends ShopifyCollection {
+    products: CollectionProduct[];
 }
