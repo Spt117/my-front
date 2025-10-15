@@ -94,6 +94,11 @@ export default function TaskAffiliation() {
                             <span className="text-sm flex items-center gap-1">Prix: {task.price} €</span>
                         </div>
                     )}
+                    {task.seller && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm flex items-center gap-1">Vendeur: {task.seller}</span>
+                        </div>
+                    )}
 
                     <div className="flex items-center gap-2">
                         <Globe className="w-4 h-4 text-gray-500" />
