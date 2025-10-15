@@ -1,4 +1,4 @@
-// MenuBar.tsx — remplace l’ancien bouton lien par le composant LinkControls
+// MenuBar.tsx — remplace l'ancien bouton lien par le composant LinkControls
 "use client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -15,6 +15,7 @@ import {
     List,
     ListOrdered,
     Minus,
+    Palette,
     Quote,
     Redo,
     Underline as UnderlineIco,
@@ -23,11 +24,25 @@ import {
 import { useEffect, useState } from "react";
 import { LinkControls } from "./LinkControls";
 import useEditorHtmlStore from "./storeEditor";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export const MenuBar = ({ editor }: { editor: Editor }) => {
     const { showCodeView, setShowCodeView } = useEditorHtmlStore();
 
     const [, forceUpdate] = useState(0);
+
+    const colors = [
+        { name: "Noir", value: "#000000" },
+        { name: "Rouge", value: "#ef4444" },
+        { name: "Bleu", value: "#3b82f6" },
+        { name: "Vert", value: "#22c55e" },
+        { name: "Jaune", value: "#eab308" },
+        { name: "Orange", value: "#f97316" },
+        { name: "Violet", value: "#a855f7" },
+        { name: "Rose", value: "#ec4899" },
+        { name: "Gris", value: "#6b7280" },
+    ];
+
     useEffect(() => {
         if (!editor) return;
         const update = () => forceUpdate((x) => x + 1);
@@ -152,6 +167,33 @@ export const MenuBar = ({ editor }: { editor: Editor }) => {
             </Button>
 
             <Separator orientation="vertical" className="h-8" />
+
+            {/* Bouton couleur de texte */}
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button size="sm" variant="outline" title="Couleur du texte">
+                        <Palette className="w-4 h-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    {colors.map((color) => (
+                        <DropdownMenuItem
+                            key={color.value}
+                            onClick={() => editor.chain().focus().setColor(color.value).run()}
+                            className="flex items-center gap-2 cursor-pointer"
+                        >
+                            <div className="w-4 h-4 rounded border border-gray-300" style={{ backgroundColor: color.value }} />
+                            <span>{color.name}</span>
+                        </DropdownMenuItem>
+                    ))}
+                    <DropdownMenuItem
+                        onClick={() => editor.chain().focus().unsetColor().run()}
+                        className="cursor-pointer border-t mt-1 pt-1"
+                    >
+                        Réinitialiser
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* ⬇️ Nouveau : bouton + modale de gestion des liens */}
             <LinkControls editor={editor} />

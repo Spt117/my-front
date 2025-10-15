@@ -7,6 +7,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useState } from "react";
 import { MenuBar } from "./MenuBar";
 import useEditorHtmlStore from "./storeEditor";
+import { Color } from "@tiptap/extension-color";
 import { formatHTML, ImageInline, LinkStrict, PlainListItem } from "./utils";
 
 // Fonction pour normaliser le HTML avant comparaison
@@ -19,6 +20,7 @@ const normalizeHTML = (html: string): string => {
 
 import { ReactNode } from "react";
 import { Iframe, Video } from "./Videos";
+import { TextStyle } from "@tiptap/extension-text-style";
 
 export default function EditeurHtml({ html, children }: { html?: string; children?: ReactNode }) {
     const { modifiedHtml, setModifiedHtml, showCodeView, code, setCode, hasChanges, setHasChanges } = useEditorHtmlStore();
@@ -36,11 +38,13 @@ export default function EditeurHtml({ html, children }: { html?: string; childre
                 ImageInline,
                 Video,
                 Iframe,
+                TextStyle.extend({ priority: 1000 }),
+                Color,
             ],
             content: html || " ",
             editorProps: {
                 attributes: {
-                    class: "prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4",
+                    class: "prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4 tiptap-editor-colors",
                 },
                 handleKeyDown: (_view, event) => {
                     if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
