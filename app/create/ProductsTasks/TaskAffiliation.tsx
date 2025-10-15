@@ -89,6 +89,12 @@ export default function TaskAffiliation() {
                         setNamePokemon={setNamePokemon}
                         namePokemon={namePokemon}
                     />
+                    {task.price && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm flex items-center gap-1">Prix: {task.price} €</span>
+                        </div>
+                    )}
+
                     <div className="flex items-center gap-2">
                         <Globe className="w-4 h-4 text-gray-500" />
                         <span className="text-sm">Marketplace: {task.marketplace}</span>

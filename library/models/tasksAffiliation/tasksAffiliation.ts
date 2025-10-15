@@ -8,6 +8,7 @@ export type TAffiliationTask = {
     _id?: string;
     title: string;
     image: string;
+    price: number;
     brand?: string;
     asin: string;
     productType: TPokemonProducts;
@@ -24,6 +25,7 @@ export const createAffiliationTaskSchema = (collectionName: string) => {
             title: { type: String, required: true },
             image: { type: String, required: true },
             asin: { type: String, required: true },
+            price: { type: Number, required: false },
             productType: { type: String, required: true },
             brand: { type: String, required: false },
             marketplace: { type: String, required: true },
