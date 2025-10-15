@@ -1,15 +1,15 @@
 import { ProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { TDomainsShopify, boutiques } from "@/library/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
 import { sleep } from "@/library/utils/helpers";
 import { X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import { MultiSelect, MultiSelectOption } from "./product-duplicate/Multiselect";
-import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 
 export default function DuplicateOtherShop() {
     const { closeDialog, openDialog } = useShopifyStore();
@@ -21,13 +21,14 @@ export default function DuplicateOtherShop() {
         .filter((b) => b.domain !== shopifyBoutique?.domain)
         .map((boutique) => ({
             label: (
-                <>
+                <React.Fragment key={boutique.domain}>
                     <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline mr-2" />
                     {boutique.vendor}
-                </>
+                </React.Fragment>
             ),
             value: boutique.domain,
             disabled: boutique.domain === shopifyBoutique?.domain,
+            key: boutique.domain,
         })) as unknown as MultiSelectOption[];
 
     const handleSelectDest = (selectedOptions: string[]) => {
@@ -81,11 +82,20 @@ export default function DuplicateOtherShop() {
                 <span className="mb-1 block text-s font-medium text-slate-600">Dupliquer {product?.title}</span>
             </div>
 
-            <MultiSelect className="z-80" placeholder={"Choisir les boutiques"} options={options} onValueChange={handleSelectDest} />
+            <MultiSelect
+                className="z-80"
+                placeholder={"Choisir les boutiques"}
+                options={options}
+                onValueChange={handleSelectDest}
+            />
             <ProductType />
 
             <div className="flex gap-4 my-4 justify-between">
-                <Button variant="outline" disabled={loading || !selectedBrand || !selectedType || domainsDest.length === 0} onClick={handleValidate}>
+                <Button
+                    variant="outline"
+                    disabled={loading || !selectedBrand || !selectedType || domainsDest.length === 0}
+                    onClick={handleValidate}
+                >
                     Lancer la duplication
                     <Spinner className={`ml-2 ${loading ? "visible" : "invisible"}`} />
                 </Button>
