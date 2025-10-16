@@ -19,6 +19,7 @@ import MetaSeo from "./Metafields/MetaSeo";
 import Metafields from "./Metafields/Metafields";
 import HeaderEditeur from "./Header/HeaderEditeur";
 import Video from "./Metafields/Video";
+import Collections from "./Collections";
 
 export default function ProductContent() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
@@ -51,6 +52,7 @@ export default function ProductContent() {
                         {/* Détails du produit */}
                         <Statut />
                         <Canaux product={product} />
+                        <Collections />
                         <TagsShopify />
                         <MetaSeo />
                         <Prices />

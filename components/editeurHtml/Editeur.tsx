@@ -1,7 +1,6 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
 import TextAlign from "@tiptap/extension-text-align";
-import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useState } from "react";
@@ -30,9 +29,11 @@ export default function EditeurHtml({ html, children }: { html?: string; childre
         {
             immediatelyRender: false,
             extensions: [
-                StarterKit.configure({ listItem: false }),
+                StarterKit.configure({
+                    listItem: false,
+                    link: false,
+                }),
                 PlainListItem,
-                Underline,
                 LinkStrict,
                 TextAlign.configure({ types: ["heading", "paragraph"] }),
                 ImageInline,
@@ -134,9 +135,7 @@ export default function EditeurHtml({ html, children }: { html?: string; childre
         }, 250);
         return () => clearTimeout(id);
     }, [code, showCodeView, editor]);
-    {
-        children;
-    }
+
     if (!editor) return null;
     return (
         <Card className="w-full h-min p-5 gap-0 ">

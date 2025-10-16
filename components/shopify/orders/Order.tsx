@@ -11,14 +11,6 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
     const { handleCopy } = useCopy();
     const boutique = boutiqueFromDomain(order.shop);
 
-    const colissimoUrl = `https://${boutique.domain}/admin/apps/colissimo-officiel/home?id=${order.id.split("/").pop()}`;
-    const invoiceUrl = `https://${boutique.domain}/admin/apps/simple-invoice-1/orders/invoice/quick-edit?id=${order.id
-        .split("/")
-        .pop()}`;
-    const orderUrl = `https://${boutique.domain}/admin/orders/${order.id.split("/").pop()}`;
-
-    const classA = "cursor-pointer hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm ";
-
     return (
         <div className="container mx-auto p-3">
             <Card key={order.id} className="m-0 p-1 gap-1">
@@ -30,7 +22,7 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                 alt={order.shop}
                                 width={30}
                                 height={30}
-                                className="ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2"
+                                className="w-auto h-auto ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2"
                             />
 
                             <div className="flex items-center gap-2">

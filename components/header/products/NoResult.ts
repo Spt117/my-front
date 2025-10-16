@@ -9,6 +9,7 @@ export const productNoSearch: ProductGET = {
     vendor: "Cartes Pokémon",
     productType: "N/A",
     tags: [],
+    collections: { edges: [] },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     status: "DRAFT",

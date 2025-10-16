@@ -42,33 +42,28 @@ export default async function CollectionPage({
             </div>
 
             {/* Products Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="divide-y">
                 {products.map((product) => (
-                    <div key={product.id} className="border rounded-lg p-4 hover:shadow-lg transition-shadow">
+                    <Link
+                        key={product.id}
+                        href={`/product?id=${product.id.replace("gid://shopify/Product/", "")}&shopify=${boutique.locationHome}`}
+                        className="py-4 hover:bg-accent transition-colors flex items-center gap-4 cursor-pointer"
+                    >
                         {product.featuredImage?.url ? (
-                            <div className="relative w-full h-64 mb-4">
-                                <Image
-                                    src={product.featuredImage.url}
-                                    alt={product.featuredImage.altText || product.title}
-                                    fill
-                                    className="object-cover rounded"
-                                />
-                            </div>
+                            <Image
+                                src={product.featuredImage.url}
+                                alt={product.featuredImage.altText || product.title}
+                                className="object-cover rounded"
+                                width={60}
+                                height={60}
+                            />
                         ) : (
-                            <div className="w-full h-64 bg-gray-200 rounded flex items-center justify-center mb-4">
-                                <span className="text-gray-500">Aucune image</span>
+                            <div className="w-[60px] h-[60px] bg-muted rounded flex items-center justify-center flex-shrink-0">
+                                <span className="text-muted-foreground text-xs">Aucune image</span>
                             </div>
                         )}
-                        <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
-                        <Link
-                            href={`/product?id=${product.id.replace("gid://shopify/Product/", "")}&shopify=${
-                                boutique.locationHome
-                            }`}
-                            className="text-blue-600 hover:underline"
-                        >
-                            Voir le produit
-                        </Link>
-                    </div>
+                        <h2 className="text-lg font-semibold flex-grow">{product.title}</h2>
+                    </Link>
                 ))}
             </div>
 

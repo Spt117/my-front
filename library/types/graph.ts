@@ -99,6 +99,7 @@ export interface ProductGET {
     vendor: TVendorsShopify;
     productType: string;
     category?: CategoryProduct;
+    collections: { edges: { node: { id: GID; title: string } }[] };
     tags: string[];
     createdAt: string; // ISO
     updatedAt: string; // ISO

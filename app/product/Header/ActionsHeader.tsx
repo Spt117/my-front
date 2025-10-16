@@ -19,8 +19,19 @@ export default function ActionsHeader() {
                     <Globe size={30} />
                 </span>
             </a>
-            <a href={`https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`} target="_blank" rel="noopener noreferrer">
-                <Image title="Editer sur Shopify" src="/shopify.png" alt="Flag" width={30} height={30} />
+            <a
+                href={`https://${shopifyBoutique.domain}/admin/products/${product.id.split("/").pop()}`}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <Image
+                    title="Editer sur Shopify"
+                    src="/shopify.png"
+                    alt="Flag"
+                    width={30}
+                    height={30}
+                    className="w-auto h-auto object-cover rounded"
+                />
             </a>
             <span title="Dupliquer le produit dans la même boutique" className="ml-1 cursor-pointer">
                 <CopyPlusIcon size={35} onClick={() => openDialog(34)} />
