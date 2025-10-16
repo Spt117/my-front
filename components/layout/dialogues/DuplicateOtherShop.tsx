@@ -87,6 +87,7 @@ export default function DuplicateOtherShop() {
             <div>
                 {options.map((boutique) => (
                     <Button
+                        disabled={loading}
                         onClick={() => handleValidate(boutique.domain)}
                         key={boutique.domain}
                         variant="outline"
@@ -97,9 +98,16 @@ export default function DuplicateOtherShop() {
                         {boutique.vendor}
                     </Button>
                 ))}
-                <Button disabled={loading} type="button" size="sm" variant="outline" onClick={() => openDialog(34)}>
-                    <ArrowBigLeft className="mr-2" />
-                </Button>
+                {!loading && (
+                    <Button type="button" size="sm" variant="outline" onClick={() => openDialog(34)}>
+                        <ArrowBigLeft className="mr-2" />
+                    </Button>
+                )}
+                {loading && (
+                    <Button disabled type="button" size="sm" variant="outline">
+                        <Spinner className="mr-2" />
+                    </Button>
+                )}
             </div>
 
             <div className="flex gap-4 my-4 justify-between"></div>

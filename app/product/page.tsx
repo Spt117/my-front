@@ -67,6 +67,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
     }
 
     const tasks = sku ? await TaskShopifyController.getTaskBySkuAndStockActivation(sku) : [];
+    console.log(product);
 
     return (
         <>
