@@ -5,7 +5,7 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { TDomainsShopify, boutiques } from "@/library/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
 import { sleep } from "@/library/utils/helpers";
-import { X } from "lucide-react";
+import { ArrowBigLeft, X } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -19,25 +19,24 @@ export default function DuplicateOtherShop() {
     const [domainsDest, setDomainsDest] = useState<TDomainsShopify[]>([]);
     const router = useRouter();
 
-    const options = boutiques
-        .filter((b) => b.domain !== shopifyBoutique?.domain)
-        .map((boutique) => ({
-            label: (
-                <React.Fragment key={boutique.domain}>
-                    <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline mr-2" />
-                    {boutique.vendor}
-                </React.Fragment>
-            ),
-            value: boutique.domain,
-            disabled: boutique.domain === shopifyBoutique?.domain,
-            key: boutique.domain,
-        })) as unknown as MultiSelectOption[];
+    const options = boutiques.filter((b) => b.domain !== shopifyBoutique?.domain);
+    // .map((boutique) => ({
+    //     label: (
+    //         <React.Fragment key={boutique.domain}>
+    //             <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline mr-2" />
+    //             {boutique.vendor}
+    //         </React.Fragment>
+    //     ),
+    //     value: boutique.domain,
+    //     disabled: boutique.domain === shopifyBoutique?.domain,
+    //     key: boutique.domain,
+    // })) as unknown as MultiSelectOption[];
 
     const handleSelectDest = (selectedOptions: string[]) => {
         setDomainsDest(selectedOptions as TDomainsShopify[]);
     };
 
-    const handleValidate = async () => {
+    const handleValidate = async (domainDest: TDomainsShopify) => {
         setLoading(true);
         const uri = "http://localhost:9100/shopify/duplicate";
         if (!shopifyBoutique || !product || !selectedType || !selectedBrand) {
@@ -45,7 +44,7 @@ export default function DuplicateOtherShop() {
             return;
         }
         const data = {
-            domainsDest: domainsDest,
+            domainsDest: [domainDest],
             productId: product.id,
             tags: product.tags,
             domainOrigin: shopifyBoutique.domain,
@@ -84,27 +83,26 @@ export default function DuplicateOtherShop() {
                 <span className="mb-1 block text-s font-medium text-slate-600">Dupliquer {product?.title}</span>
             </div>
 
-            <MultiSelect
-                className="z-80"
-                placeholder={"Choisir les boutiques"}
-                options={options}
-                onValueChange={handleSelectDest}
-            />
             <ProductType />
-
-            <div className="flex gap-4 my-4 justify-between">
-                <Button
-                    variant="outline"
-                    disabled={loading || !selectedBrand || !selectedType || domainsDest.length === 0}
-                    onClick={handleValidate}
-                >
-                    Lancer la duplication
-                    <Spinner className={`ml-2 ${loading ? "visible" : "invisible"}`} />
-                </Button>
+            <div>
+                {options.map((boutique) => (
+                    <Button
+                        onClick={() => handleValidate(boutique.domain)}
+                        key={boutique.domain}
+                        variant="outline"
+                        size="sm"
+                        className="m-1"
+                    >
+                        <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline mr-2" />
+                        {boutique.vendor}
+                    </Button>
+                ))}
                 <Button disabled={loading} type="button" size="sm" variant="outline" onClick={() => openDialog(34)}>
-                    Retour
+                    <ArrowBigLeft className="mr-2" />
                 </Button>
             </div>
+
+            <div className="flex gap-4 my-4 justify-between"></div>
         </>
     );
 }
