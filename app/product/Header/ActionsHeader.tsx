@@ -1,5 +1,5 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { BookCopy, Copy, CopyMinusIcon, CopyPlusIcon, Globe } from "lucide-react";
+import { CopyPlusIcon, Globe } from "lucide-react";
 import Image from "next/image";
 import AmazonLink from "./AmazonLink";
 import Save from "./Save";

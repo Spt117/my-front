@@ -12,7 +12,6 @@ export default function CollectionRow({ collection }: { collection: ShopifyColle
     const handleRowClick = () => {
         const domain = params.get("domain");
         const url = `/collections/${collection.id.replace("gid://shopify/Collection/", "")}?domain=${domain}`;
-        console.log(url);
         router.push(url);
     };
 
