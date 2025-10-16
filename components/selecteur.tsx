@@ -14,7 +14,7 @@ export default function Selecteur({ value, onChange, array, placeholder, disable
     return (
         <div className={className}>
             <Select value={value || ""} onValueChange={(m) => onChange(m)} disabled={disabled}>
-                <SelectTrigger className="cursor-pointer md:w-[200px] rounded-lg border-gray-200 bg-white shadow-sm hover:border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all">
+                <SelectTrigger className="cursor-pointer w-full rounded-lg border-gray-200 bg-white shadow-sm hover:border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all">
                     <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
                 <SelectContent className="rounded-lg border-gray-200 bg-white shadow-lg">

@@ -47,19 +47,27 @@ export default function Statut() {
         setLoading(false);
     };
 
+    const classActions = "max-xl:w-full w-40";
+
     return (
         <Card className={cssCard}>
             <CardContent className="space-y-6 relative">
-                <h3 className="m-2 text-sm font-medium flex items-center gap-2">Statut</h3>
-                <div className="flex items-center gap-4 sm:gap-6 max-xl:flex-wrap sm:w-min">
-                    <Selecteur className="w-full" array={statuts} value={statut} onChange={setStatut} placeholder="Statut" />
+                <h3 className="text-sm font-medium flex items-center gap-2">Statut</h3>
+                <div className="w-full flex flex-wrap gap-2 items-center">
+                    <Selecteur
+                        array={statuts}
+                        value={statut}
+                        onChange={setStatut}
+                        placeholder="Statut"
+                        className={classActions}
+                    />
                     {product.status !== "ACTIVE" && (
-                        <Button disabled={loading} onClick={handleQuickPublish}>
+                        <Button className={classActions} disabled={loading} onClick={handleQuickPublish}>
                             Publication rapide
                             {loading && <Spinner />}
                         </Button>
                     )}
-                    <Button className="max-xl:w-full" disabled={loading} onClick={() => openDialog(2)} variant="destructive">
+                    <Button className={classActions} disabled={loading} onClick={() => openDialog(2)} variant="destructive">
                         Supprimer
                     </Button>
                 </div>

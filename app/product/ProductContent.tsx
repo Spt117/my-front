@@ -20,6 +20,7 @@ import Metafields from "./Metafields/Metafields";
 import HeaderEditeur from "./Header/HeaderEditeur";
 import Video from "./Metafields/Video";
 import Collections from "./Collections";
+import MetafieldToClean from "./Metafields/MetafieldToClean";
 
 export default function ProductContent() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
@@ -61,6 +62,7 @@ export default function ProductContent() {
                         {/* <LinkToShops /> */}
                         <VariantClient />
                         <Metafields metafields={product.metafields.nodes} />
+                        <MetafieldToClean />
                     </div>
                 </CardContent>
                 {/* Metafields */}
