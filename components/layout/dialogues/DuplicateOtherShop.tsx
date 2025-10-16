@@ -2,39 +2,22 @@ import { ProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { TDomainsShopify, boutiques } from "@/library/params/paramsShopify";
+import { TDomainsShopify, boutiqueFromDomain, boutiques } from "@/library/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
 import { sleep } from "@/library/utils/helpers";
 import { ArrowBigLeft, X } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
-import { toast } from "sonner";
-import { MultiSelect, MultiSelectOption } from "../../Multiselect";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function DuplicateOtherShop() {
     const { closeDialog, openDialog } = useShopifyStore();
     const [loading, setLoading] = useState<boolean>(false);
     const { shopifyBoutique, product, selectedType, selectedBrand } = useShopifyStore();
-    const [domainsDest, setDomainsDest] = useState<TDomainsShopify[]>([]);
     const router = useRouter();
 
     const options = boutiques.filter((b) => b.domain !== shopifyBoutique?.domain);
-    // .map((boutique) => ({
-    //     label: (
-    //         <React.Fragment key={boutique.domain}>
-    //             <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline mr-2" />
-    //             {boutique.vendor}
-    //         </React.Fragment>
-    //     ),
-    //     value: boutique.domain,
-    //     disabled: boutique.domain === shopifyBoutique?.domain,
-    //     key: boutique.domain,
-    // })) as unknown as MultiSelectOption[];
-
-    const handleSelectDest = (selectedOptions: string[]) => {
-        setDomainsDest(selectedOptions as TDomainsShopify[]);
-    };
 
     const handleValidate = async (domainDest: TDomainsShopify) => {
         setLoading(true);
@@ -44,35 +27,22 @@ export default function DuplicateOtherShop() {
             return;
         }
         const data = {
-            domainsDest: [domainDest],
+            domainsDest: domainDest,
             productId: product.id,
             tags: product.tags,
             domainOrigin: shopifyBoutique.domain,
             productType: selectedType,
             productBrand: selectedBrand,
         };
-        interface IResponseDuplicate {
-            response: { messages?: string[]; errors?: string[] } | null;
-            error?: string;
-            message?: string;
-        }
-        const res = (await postServer(uri, data)) as IResponseDuplicate;
+
+        const res = await postServer(uri, data);
         if (res.error) toast.error(res.error);
         if (res.message) toast.success(res.message);
-        if (res.response?.messages && res.response.messages.length > 0) {
-            for (const message of res.response.messages) {
-                toast.success(message);
-                await sleep(2000);
-            }
-        }
-        if (res.response?.errors && res.response.errors.length > 0) {
-            for (const error of res.response.errors) {
-                toast.error(error);
-                await sleep(2000);
-            }
-        }
+        console.log(res.response);
+        const newShop = boutiqueFromDomain(domainDest);
+        const url = `/product?id=${res.response.id.replace("gid://shopify/Product/", "")}&shopify=${newShop.locationHome}`;
+        router.push(url);
         closeDialog();
-        router.refresh();
         setLoading(false);
     };
 
@@ -87,7 +57,7 @@ export default function DuplicateOtherShop() {
             <div>
                 {options.map((boutique) => (
                     <Button
-                        disabled={loading}
+                        disabled={loading || !selectedType || !selectedBrand}
                         onClick={() => handleValidate(boutique.domain)}
                         key={boutique.domain}
                         variant="outline"
