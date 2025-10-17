@@ -18,7 +18,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
     const shopify = boutiqueFromLocation(query.shopify) as IShopify;
     const data = { productId: query.id, domain: shopify.domain };
     const product = await getProduct(data);
-    console.log(product);
 
     if (product?.error || !product?.response) {
         return (

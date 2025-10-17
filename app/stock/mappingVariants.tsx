@@ -27,11 +27,11 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
             setVariantsFilter(variantsBought);
         }
     };
-
+    const domain = "bayblade-shops.myshopify.com";
     const getData = async () => {
         setLoading(true);
         try {
-            const dataUpdated = await getStockVariant("bayblade-shops.myshopify.com");
+            const dataUpdated = await getStockVariant(domain);
             setVariants(dataUpdated);
             await sleep(500); // Pour voir l'animation de chargement
         } catch (error) {
@@ -66,7 +66,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     return (
         <div className="w-full relative pl-5 pr-5 flex gap-4 flex-wrap mt-2">
             {variantsFilter.map((variant, index) => (
-                <VariantStock key={index} variant={variant} action={getData} domain="bayblade-shops.myshopify.com" />
+                <VariantStock key={index} variant={variant} action={getData} domain={domain} />
             ))}
         </div>
     );

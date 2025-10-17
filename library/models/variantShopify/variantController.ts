@@ -30,7 +30,8 @@ class ControllerVariant {
     async getVariantBySku(sku: string) {
         try {
             const Variant = await this.getVariantModel();
-            return await Variant.findOne({ sku }).lean<TVariant>();
+            const res = await Variant.findOne({ sku }).lean<TVariant>();
+            return JSON.parse(JSON.stringify(res)) as TVariant | null;
         } catch (err) {
             console.error("getVariantBySku error:", err);
             return null;
@@ -94,7 +95,7 @@ class ControllerVariant {
     async rebuyBySku(sku: string, rebuy: boolean) {
         try {
             const Variant = await this.getVariantModel();
-            const res = await Variant.findOneAndUpdate({ sku }, { $set: { rebuy: rebuy } });
+            const res = await Variant.updateOne({ sku }, { $set: { rebuy: rebuy } });
             return res;
         } catch (err) {
             console.error("activeRebuyBySku error:", err);

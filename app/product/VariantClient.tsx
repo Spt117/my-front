@@ -11,6 +11,8 @@ export default function VariantClient() {
     const actionStoreVariant = async () => {
         if (!variant) return;
         const variantUpdated = await getVariantBySku(shopifyBoutique.domain, variant.sku);
+        console.log(variantUpdated);
+
         if (variantUpdated) setVariant(variantUpdated);
     };
 
