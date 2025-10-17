@@ -95,6 +95,11 @@ export const boutiqueFromDomain: (domain: TDomainsShopify) => IShopify = (domain
     if (!b) throw new Error(`Boutique non trouvée pour le domaine: ${domain}`);
     return b;
 };
+export const boutiqueFromPublicDomain: (domain: TPublicDomainsShopify) => IShopify = (domain: TPublicDomainsShopify) => {
+    const b = boutiques.find((b) => b.publicDomain === domain);
+    if (!b) throw new Error(`Boutique non trouvée pour le domaine public: ${domain}`);
+    return b;
+};
 export const apiVersion = "2024-01";
 
 const paramsDataShop = [
