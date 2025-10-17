@@ -14,5 +14,5 @@ export default function VariantClient() {
         if (variantUpdated) setVariant(variantUpdated);
     };
 
-    return <VariantStock variant={variant} action={actionStoreVariant} />;
+    return <VariantStock domain={shopifyBoutique.domain} variant={variant} action={actionStoreVariant} />;
 }
