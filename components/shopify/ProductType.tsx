@@ -10,7 +10,7 @@ export const productTypes = {
 
 export type TProductType = keyof typeof productTypes;
 
-const brandTypes = ["Hasbro", "Takara Tomy"] as const;
+export const brandTypes = ["Hasbro", "Takara Tomy"] as const;
 export type TBrand = (typeof brandTypes)[number];
 
 export function ProductType() {
@@ -19,7 +19,7 @@ export function ProductType() {
     useEffect(() => {
         const brand = brandTypes.find((b) => product?.tags.includes(b));
         if (brand) setSelectedBrand(brand);
-        const type = setSelectedType(product?.productType.toLowerCase() as TProductType);
+        setSelectedType(product?.productType.toLowerCase() as TProductType);
     }, [product?.tags, product?.productType]);
 
     return (

@@ -11,6 +11,7 @@ export interface IShopifyBase {
     flag: string;
     devise: string;
     marketplaceAmazon: string;
+    niche: string;
 }
 
 // 2. Définir le tableau des boutiques avec l'interface de base
@@ -24,6 +25,7 @@ export const boutiques = [
         flag: "/flags/fr.png",
         devise: "€",
         marketplaceAmazon: "amazon.fr",
+        niche: "pokemon",
     },
     {
         vendor: "Beyblade Shop",
@@ -34,6 +36,7 @@ export const boutiques = [
         flag: "/flags/fr.png",
         devise: "€",
         marketplaceAmazon: "amazon.fr",
+        niche: "beyblade",
     },
     {
         vendor: "Beyblade Shop",
@@ -44,6 +47,7 @@ export const boutiques = [
         flag: "/flags/de.png",
         devise: "€",
         marketplaceAmazon: "amazon.de",
+        niche: "beyblade",
     },
     {
         vendor: "Beyblade Toys",
@@ -54,6 +58,7 @@ export const boutiques = [
         flag: "/flags/us.png",
         devise: "$",
         marketplaceAmazon: "amazon.com",
+        niche: "beyblade",
     },
 ] as const satisfies readonly IShopifyBase[];
 
@@ -75,6 +80,7 @@ export interface IShopify {
     marketplaceAmazon: TMarketplaceAmazonBoutique;
     flag: string;
     devise: string;
+    niche: TBoutiques[number]["niche"];
 }
 
 export const domainsBeyblade = boutiques.filter((b) => b.vendor.includes("Beyblade")).map((b) => b.domain);

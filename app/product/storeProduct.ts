@@ -1,3 +1,4 @@
+import { TDomainsShopify } from "@/library/params/paramsShopify";
 import { ProductStatus } from "@/library/types/graph";
 import { create } from "zustand";
 import { TCanal } from "./util";
@@ -27,6 +28,8 @@ interface StoreState {
     setStatut: (statut: ProductStatus) => void;
     canauxProduct: TCanal[];
     setCanauxProduct: (canaux: TCanal[]) => void;
+    idsOtherShop: { domain: TDomainsShopify; variantId: string; productId: string }[];
+    setIdsOtherShop: (ids: { domain: TDomainsShopify; variantId: string; productId: string }[]) => void;
 }
 
 const useProductStore = create<StoreState>((set) => ({
@@ -54,6 +57,8 @@ const useProductStore = create<StoreState>((set) => ({
     setAncreUrl: (ancreUrl) => set({ ancreUrl }),
     redirectionUrl: false,
     setRedirectionUrl: (redirectionUrl) => set({ redirectionUrl }),
+    idsOtherShop: [],
+    setIdsOtherShop: (idsOtherShop) => set({ idsOtherShop }),
 }));
 
 export default useProductStore;

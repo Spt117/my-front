@@ -1,10 +1,10 @@
+import useProductStore from "@/app/product/storeProduct";
 import { ProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { TDomainsShopify, boutiqueFromDomain, boutiques } from "@/library/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
-import { sleep } from "@/library/utils/helpers";
 import { ArrowBigLeft, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,12 +12,17 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 export default function DuplicateOtherShop() {
-    const { closeDialog, openDialog } = useShopifyStore();
-    const [loading, setLoading] = useState<boolean>(false);
-    const { shopifyBoutique, product, selectedType, selectedBrand } = useShopifyStore();
+    const { closeDialog, openDialog, shopifyBoutique, product, selectedType, selectedBrand } = useShopifyStore();
+    const { idsOtherShop } = useProductStore();
     const router = useRouter();
+    const [loading, setLoading] = useState<boolean>(false);
 
-    const options = boutiques.filter((b) => b.domain !== shopifyBoutique?.domain);
+    const options = boutiques.filter(
+        (b) =>
+            b.domain !== shopifyBoutique?.domain &&
+            b.niche === shopifyBoutique?.niche &&
+            !idsOtherShop.find((id) => b.domain === id.domain)
+    );
 
     const handleValidate = async (domainDest: TDomainsShopify) => {
         setLoading(true);
