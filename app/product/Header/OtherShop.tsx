@@ -66,7 +66,7 @@ export default function OtherShop() {
                 otherShop.map((b) => {
                     const boutique = boutiqueFromDomain(b.domain);
                     return (
-                        <span className="text-sm cursor-pointer relative" onClick={() => openDialog(4)}>
+                        <span key={b.domain} className="text-sm cursor-pointer relative" onClick={() => openDialog(4)}>
                             <IconPoint className="absolute bottom-0 right-0 text-white bg-red-600 rounded-full" size={10} />
                             <img title={boutique.publicDomain} src={boutique.flag} alt={boutique.langue} width={20} height={20} />
                         </span>

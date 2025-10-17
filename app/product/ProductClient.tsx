@@ -21,7 +21,7 @@ export default function ProductClient({
     tasksData: TTaskShopifyProducts[];
     productData: ResponseServer<ProductGET>;
     shopify: IShopify;
-    variantData?: TVariant;
+    variantData?: TVariant | null;
 }) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, canauxBoutique } = useShopifyStore();
     const router = useRouter();

@@ -4,9 +4,6 @@ import { TVariant } from "@/library/models/variantShopify/Variant";
 import { variantController } from "@/library/models/variantShopify/variantController";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
-import { postServer } from "@/library/utils/fetchServer";
-import { sendToTelegram } from "@/library/utils/telegram";
-import { pokeUriServer, telegram } from "@/library/utils/uri";
 import ProductClient from "./ProductClient";
 import ProductContent from "./ProductContent";
 import ResultSearch from "./ResultSearch";
@@ -34,8 +31,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
 
     if (sku) variant = await variantController(shopify.domain).getVariantBySku(sku);
     if (!variant && sku && product.response.variants) {
-        sendToTelegram(`Variant with SKU: ${sku} not found in local database. Creating...`, telegram.rapports);
-        const url = `${pokeUriServer}/shopify/create-variant`;
         const variantProduct = product.response.variants.nodes[0];
         let activeAmazon = product?.response.metafields.nodes.find((mf) => mf.key === "amazon_activate");
         const variantData: TVariant = {
@@ -52,22 +47,26 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
             idProduct: product.response.id,
             activeAffiliate: activeAmazon?.value === "true" ? true : false,
         };
-        const response = await postServer(url, { variant: variantData, domain: shopify.domain });
-        if (response.error)
+        const response = await variantController(shopify.domain).createVariant(variantData);
+        if (!response)
             return (
                 <div className="p-4 flex flex-col items-center justify-center">
                     <h2>Erreur lors de la récupération de la variante {sku}</h2>
-                    <p>{response.error}</p>
                 </div>
             );
-        else variant = response.response;
+        else variant = response;
     }
 
     const tasks = sku ? await TaskShopifyController.getTaskBySkuAndStockActivation(sku) : [];
 
     return (
         <>
-            <ProductClient productData={product} shopify={shopify} variantData={variant} tasksData={tasks} />
+            <ProductClient
+                productData={product}
+                shopify={shopify}
+                variantData={JSON.parse(JSON.stringify(variant))}
+                tasksData={tasks}
+            />
             <ProductContent />
         </>
     );
