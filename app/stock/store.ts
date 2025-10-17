@@ -1,4 +1,4 @@
-import { TVariant } from "@/library/models/produits/Variant";
+import { TVariant } from "@/library/models/variantShopify/Variant";
 import { create } from "zustand";
 
 export const stockMode = ["later", "now", "bought"] as const;

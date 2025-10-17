@@ -1,20 +1,28 @@
 "use client";
 import MySpinner from "@/components/layout/my-spinner";
-import { CanauxPublication } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { ResponseServer } from "@/components/shopify/typesShopify";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
-import { TVariant } from "@/library/models/produits/Variant";
 import { TTaskShopifyProducts } from "@/library/models/tasksShopify/taskType";
-import { boutiqueFromDomain, IShopify } from "@/library/params/paramsShopify";
+import { TVariant } from "@/library/models/variantShopify/Variant";
+import { IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import useTaskStore from "./Tasks/storeTasks";
-import { fetchIdsFromSku } from "./serverAction";
 
-export default function ProductClient({ productData, shopify, variantData, tasksData }: { tasksData: TTaskShopifyProducts[]; productData: ResponseServer<ProductGET>; shopify: IShopify; variantData?: TVariant }) {
+export default function ProductClient({
+    productData,
+    shopify,
+    variantData,
+    tasksData,
+}: {
+    tasksData: TTaskShopifyProducts[];
+    productData: ResponseServer<ProductGET>;
+    shopify: IShopify;
+    variantData?: TVariant;
+}) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, canauxBoutique } = useShopifyStore();
     const router = useRouter();
     const { setTasks } = useTaskStore();

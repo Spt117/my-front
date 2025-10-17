@@ -1,5 +1,5 @@
 import { TCanal } from "@/app/product/util";
-import { TVariant } from "@/library/models/produits/Variant";
+import { TVariant } from "@/library/models/variantShopify/Variant";
 import { TSearchMode } from "@/library/params/menu";
 import { IShopify } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";

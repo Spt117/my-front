@@ -1,13 +1,12 @@
-import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { toggleBought, toggleRebuy, toggleRebuyLater } from "@/library/models/produits/middlewareVariants";
-import { TVariant } from "@/library/models/produits/Variant";
+import { TVariant } from "@/library/models/variantShopify/Variant";
+import { boutiqueFromDomain, TDomainsShopify } from "@/library/params/paramsShopify";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import UpdateStock from "./UpdateStock";
 import { cssCard } from "../product/util";
-import { boutiqueFromDomain, TDomainsShopify } from "@/library/params/paramsShopify";
+import UpdateStock from "./UpdateStock";
 
 export function VariantStock({ variant, action }: { variant: TVariant; action: () => void }) {
     const path = usePathname();
@@ -15,22 +14,21 @@ export function VariantStock({ variant, action }: { variant: TVariant; action: (
     const domain: TDomainsShopify = "bayblade-shops.myshopify.com";
 
     const handleRebuyChange = async () => {
-        const data = await toggleRebuy(variant.sku, !variant.rebuy);
+        const data = await toggleRebuy(domain, variant.sku, !variant.rebuy);
         if (data) action();
     };
     const handleRebuyLaterChange = async () => {
-        const data = await toggleRebuyLater(variant.sku, !variant.rebuyLater);
+        const data = await toggleRebuyLater(domain, variant.sku, !variant.rebuyLater);
         if (data) action();
     };
 
     const handleBoughtChange = async () => {
-        const data = await toggleBought(variant, !variant.bought);
+        const data = await toggleBought(domain, variant, !variant.bought);
         if (data) action();
     };
 
-    const id = variant.ids.find((p) => p.shop === domain);
     const shopifyBoutique = boutiqueFromDomain(domain);
-    const urlProduct = `/product?id=${id?.idProduct.replace("gid://shopify/Product/", "")}&shopify=${
+    const urlProduct = `/product?id=${variant.idProduct.replace("gid://shopify/Product/", "")}&shopify=${
         shopifyBoutique?.locationHome
     }`;
 

@@ -1,26 +1,25 @@
 "use client";
-import TagsShopify from "@/app/product/Tags/Tags";
 import HeaderProduct from "@/app/product/Header/HeaderProduct";
 import ImagesProduct from "@/app/product/images/Images";
-import LinkToShops from "@/components/shopify/Product/LinkToShops";
+import TagsShopify from "@/app/product/Tags/Tags";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
-import { useEffect } from "react";
-import AboutProduct from "./AboutProduct";
-import EditeurHtml from "../../components/editeurHtml/Editeur";
-import Prices from "./variant/Prices/Prices";
-import VariantClient from "./VariantClient";
 import { boutiques } from "@/library/params/paramsShopify";
-import Sku from "./variant/Sku";
 import { useSearchParams } from "next/navigation";
-import Statut from "./Statut";
+import { useEffect } from "react";
+import EditeurHtml from "../../components/editeurHtml/Editeur";
+import AboutProduct from "./AboutProduct";
 import Canaux from "./Canaux";
-import MetaSeo from "./Metafields/MetaSeo";
-import Metafields from "./Metafields/Metafields";
-import HeaderEditeur from "./Header/HeaderEditeur";
-import Video from "./Metafields/Video";
 import Collections from "./Collections";
+import HeaderEditeur from "./Header/HeaderEditeur";
+import Metafields from "./Metafields/Metafields";
 import MetafieldToClean from "./Metafields/MetafieldToClean";
+import MetaSeo from "./Metafields/MetaSeo";
+import Video from "./Metafields/Video";
+import Statut from "./Statut";
+import Prices from "./variant/Prices/Prices";
+import Sku from "./variant/Sku";
+import VariantClient from "./VariantClient";
 
 export default function ProductContent() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();

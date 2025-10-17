@@ -1,11 +1,11 @@
 "use server";
 
-import { TDomainsShopify, TParamsDataShop } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain, boutiques, TDomainsShopify, TParamsDataShop } from "@/library/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { getServer, postServer } from "@/library/utils/fetchServer";
 import { IGetProduct, IMetafieldRequest, ITagRequest, ResponseServer } from "./typesShopify";
 import { ShopifyCollection, ShopifyCollectionWithProducts } from "@/app/collections/utils";
-import { url } from "inspector";
+import { variantController } from "@/library/models/variantShopify/variantController";
 
 export async function getDataBoutique(
     domain: TDomainsShopify,
@@ -52,4 +52,17 @@ export async function setAsin(data: IMetafieldRequest): Promise<ResponseServer<a
 export interface CanauxPublication {
     id: string;
     name: string;
+}
+
+export async function getIdsVariants(domain: TDomainsShopify, sku: string) {
+    const boutique = boutiqueFromDomain(domain);
+    const boutiquesTiFetch = boutiques.filter((b) => b.niche === boutique.niche);
+    const idsVariants: { shop: TDomainsShopify; idVariant: string; idProduct: string }[] = [];
+    for (const b of boutiquesTiFetch) {
+        const variant = await variantController(b.domain).getVariantBySku(sku);
+        if (variant) {
+            idsVariants.push({ shop: b.domain, idVariant: variant.idVariant, idProduct: variant.idProduct });
+        }
+    }
+    return idsVariants;
 }

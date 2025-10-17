@@ -1,7 +1,7 @@
 import { getProduct } from "@/components/shopify/serverActions";
-import { TVariant } from "@/library/models/produits/Variant";
-import { variantController } from "@/library/models/produits/variantController";
 import { TaskShopifyController } from "@/library/models/tasksShopify/taskController";
+import { TVariant } from "@/library/models/variantShopify/Variant";
+import { variantController } from "@/library/models/variantShopify/variantController";
 import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
 import { postServer } from "@/library/utils/fetchServer";
@@ -32,11 +32,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
     const sku = product.response.variants?.nodes[0].sku;
     let variant = null;
 
-    if (sku) variant = await variantController.getVariantBySku(sku);
+    if (sku) variant = await variantController(shopify.domain).getVariantBySku(sku);
     if (!variant && sku && product.response.variants) {
         sendToTelegram(`Variant with SKU: ${sku} not found in local database. Creating...`, telegram.rapports);
         const url = `${pokeUriServer}/shopify/create-variant`;
         const variantProduct = product.response.variants.nodes[0];
+        let activeAmazon = product?.response.metafields.nodes.find((mf) => mf.key === "amazon_activate");
         const variantData: TVariant = {
             title: product.response.title,
             sku: variantProduct.sku,
@@ -47,13 +48,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
             rebuy: false,
             rebuyLater: false,
             bought: false,
-            ids: [
-                {
-                    shop: shopify.domain,
-                    idVariant: variantProduct.id,
-                    idProduct: product.response.id,
-                },
-            ],
+            idVariant: variantProduct.id,
+            idProduct: product.response.id,
+            activeAffiliate: activeAmazon?.value === "true" ? true : false,
         };
         const response = await postServer(url, { variant: variantData, domain: shopify.domain });
         if (response.error)

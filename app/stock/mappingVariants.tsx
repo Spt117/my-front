@@ -2,7 +2,7 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 import { getStockVariant } from "@/library/models/produits/middlewareVariants";
-import { TVariant } from "@/library/models/produits/Variant";
+import { TVariant } from "@/library/models/variantShopify/Variant";
 import { sleep } from "@/library/utils/helpers";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -31,7 +31,7 @@ export default function mappingVariants({ data }: { data: TVariant[] }) {
     const getData = async () => {
         setLoading(true);
         try {
-            const dataUpdated = await getStockVariant();
+            const dataUpdated = await getStockVariant("bayblade-shops.myshopify.com");
             setVariants(dataUpdated);
             await sleep(500); // Pour voir l'animation de chargement
         } catch (error) {

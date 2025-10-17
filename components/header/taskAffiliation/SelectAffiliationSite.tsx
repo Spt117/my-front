@@ -31,12 +31,13 @@ export default function SelectAffiliationSite() {
     const handleEscape = () => {
         setWebsiteFilter("");
         setTypesProducts("");
+        router.push(`/create`);
     };
     useKeyboardShortcuts("Escape", handleEscape);
 
     useEffect(() => {
         const domain = param.get("domain") as TDomainsShopify;
-        if (domain && typeof domain === "string") {
+        if (domain) {
             const boutique = boutiqueFromDomain(domain);
             setWebsiteFilter(boutique.publicDomain);
         }
