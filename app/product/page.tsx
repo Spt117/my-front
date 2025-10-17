@@ -7,6 +7,8 @@ import { SegmentParams } from "@/library/types/utils";
 import ProductClient from "./ProductClient";
 import ProductContent from "./ProductContent";
 import ResultSearch from "./ResultSearch";
+import { pokeUriServer } from "@/library/utils/uri";
+import { getServer } from "@/library/utils/fetchServer";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
     const query = (await searchParams) as { id?: string; shopify?: TLocationHome };
@@ -16,6 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
     const shopify = boutiqueFromLocation(query.shopify) as IShopify;
     const data = { productId: query.id, domain: shopify.domain };
     const product = await getProduct(data);
+    console.log(product);
 
     if (product?.error || !product?.response) {
         return (
@@ -31,6 +34,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
 
     if (sku) variant = await variantController(shopify.domain).getVariantBySku(sku);
     if (!variant && sku && product.response.variants) {
+        const urlOtherShop = `${pokeUriServer}/shopify/create-variant?domain=${shopify.domain}&sku=${encodeURIComponent(sku)}`;
+        console.log(urlOtherShop);
+
+        getServer(urlOtherShop);
         const variantProduct = product.response.variants.nodes[0];
         let activeAmazon = product?.response.metafields.nodes.find((mf) => mf.key === "amazon_activate");
         const variantData: TVariant = {
