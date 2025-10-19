@@ -5,7 +5,7 @@ export type TEpisode = {
     episodeNumber: number;
     seasonNumber: number;
     seasonTitle?: string;
-    id: string;
+    idYoutube: string;
 };
 
 export const EpisodeSchema = new Schema<TEpisode>(
@@ -14,7 +14,7 @@ export const EpisodeSchema = new Schema<TEpisode>(
         episodeNumber: { type: Number, required: true },
         seasonNumber: { type: Number, required: true },
         seasonTitle: { type: String, required: false },
-        id: { type: String, required: true, unique: true },
+        idYoutube: { type: String, required: true, unique: true },
     },
     {
         versionKey: false,
