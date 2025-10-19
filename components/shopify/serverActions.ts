@@ -1,17 +1,13 @@
 "use server";
 
-import { boutiqueFromDomain, boutiques, TDomainsShopify, TParamsDataShop } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain, boutiques, TDomainsShopify, TParamsDataShop } from "@/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { getServer, postServer } from "@/library/utils/fetchServer";
 import { IGetProduct, IMetafieldRequest, ITagRequest, ResponseServer } from "./typesShopify";
 import { ShopifyCollection, ShopifyCollectionWithProducts } from "@/app/collections/utils";
 import { variantController } from "@/library/models/variantShopify/variantController";
 
-export async function getDataBoutique(
-    domain: TDomainsShopify,
-    param: TParamsDataShop,
-    id?: string
-): Promise<ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[] | ProductGET[] | ShopifyCollectionWithProducts>> {
+export async function getDataBoutique(domain: TDomainsShopify, param: TParamsDataShop, id?: string): Promise<ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[] | ProductGET[] | ShopifyCollectionWithProducts>> {
     const url = `http://localhost:9100/shopify/data-shop?domain=${domain}&param=${param}${id ? `&id=${id}` : ""}`;
     console.log(url);
 

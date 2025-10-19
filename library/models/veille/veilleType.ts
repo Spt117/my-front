@@ -1,6 +1,6 @@
-import { IMarketplace } from "@/library/params/paramsAmazon";
-import { TPublicDomainsShopify } from "@/library/params/paramsShopify";
-import { TDomainWordpress } from "@/library/params/paramsWordpress";
+import { IMarketplace } from "@/params/paramsAmazon";
+import { TPublicDomainsShopify } from "@/params/paramsShopify";
+import { TDomainWordpress } from "@/params/paramsWordpress";
 import { Schema } from "mongoose";
 
 export type TVeille = {

@@ -1,4 +1,4 @@
-import { boutiqueFromDomain, TDomainsShopify } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain, TDomainsShopify } from "@/params/paramsShopify";
 import { LineItemNode } from "@/library/shopify/orders";
 import { AlertTriangle } from "lucide-react";
 import Image from "next/image";

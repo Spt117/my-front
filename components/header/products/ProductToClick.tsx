@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { boutiqueFromDomain } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain } from "@/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 
 export default function ProductToClick({ product }: { product: ProductGET }) {

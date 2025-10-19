@@ -1,4 +1,4 @@
-import { TDomainsShopify } from "@/library/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopify";
 import Image from "next/image";
 
 export default function UsefullLinks({ domain, orderId, px }: { domain: TDomainsShopify; orderId: string; px: string }) {
@@ -6,8 +6,7 @@ export default function UsefullLinks({ domain, orderId, px }: { domain: TDomains
     const invoiceUrl = `https://${domain}/admin/apps/simple-invoice-1/orders/invoice/quick-edit?id=${orderId.split("/").pop()}`;
     const orderUrl = `https://${domain}/admin/orders/${orderId.split("/").pop()}`;
 
-    const classParent =
-        "flex items-center px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm h-full";
+    const classParent = "flex items-center px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm h-full";
     const classDiv = `w-[${px}] h-[${px}] relative bg-green `;
     return (
         <>

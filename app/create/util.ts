@@ -1,6 +1,6 @@
-import { TNameMarketplace } from "@/library/params/paramsAmazon";
-import { TPublicDomainsShopify } from "@/library/params/paramsShopify";
-import { TDomainWordpress } from "@/library/params/paramsWordpress";
+import { TNameMarketplace } from "@/params/paramsAmazon";
+import { TPublicDomainsShopify } from "@/params/paramsShopify";
+import { TDomainWordpress } from "@/params/paramsWordpress";
 
 export interface ICreateAffiliationProduct<T> {
     idTask: string;

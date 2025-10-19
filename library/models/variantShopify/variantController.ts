@@ -1,6 +1,6 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
 import { Model } from "mongoose";
-import { TDomainsShopify } from "../../params/paramsShopify";
+import { TDomainsShopify } from "../../../params/paramsShopify";
 import { TVariant, VariantSchema } from "./Variant";
 
 class ControllerVariant {

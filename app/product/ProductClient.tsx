@@ -5,24 +5,14 @@ import { ResponseServer } from "@/components/shopify/typesShopify";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 import { TTaskShopifyProducts } from "@/library/models/tasksShopify/taskType";
 import { TVariant } from "@/library/models/variantShopify/Variant";
-import { IShopify } from "@/library/params/paramsShopify";
+import { IShopify } from "@/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import useTaskStore from "./Tasks/storeTasks";
 
-export default function ProductClient({
-    productData,
-    shopify,
-    variantData,
-    tasksData,
-}: {
-    tasksData: TTaskShopifyProducts[];
-    productData: ResponseServer<ProductGET>;
-    shopify: IShopify;
-    variantData?: TVariant | null;
-}) {
+export default function ProductClient({ productData, shopify, variantData, tasksData }: { tasksData: TTaskShopifyProducts[]; productData: ResponseServer<ProductGET>; shopify: IShopify; variantData?: TVariant | null }) {
     const { setShopifyBoutique, shopifyBoutique, product, setProduct, setVariant, canauxBoutique } = useShopifyStore();
     const router = useRouter();
     const { setTasks } = useTaskStore();

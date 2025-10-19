@@ -8,6 +8,7 @@ export const menuItems: MenuProps[] = [
     { path: "/product", label: "Produit" },
     { path: "/collections", label: "Collections" },
     { path: "/bulk", label: "Édition en masse" },
+    { path: "/pokemon", label: "Pokémon" },
     { path: "/stats", label: "Statistiques" },
     { path: "/wordpress", label: "WordPress" },
     { path: "/server", label: "Serveur" },

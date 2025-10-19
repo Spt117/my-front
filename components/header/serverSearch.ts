@@ -1,6 +1,6 @@
 "use server";
 
-import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
+import { boutiques, TDomainsShopify } from "@/params/paramsShopify";
 import { postServer } from "@/library/utils/fetchServer";
 import { ProductGET } from "@/library/types/graph";
 

@@ -3,7 +3,7 @@ import { createContext, ReactNode, useContext, useState } from "react";
 import { ICreateAffiliationProduct } from "../util";
 import { createProduct } from "../serverTasksAffiliation";
 import { toast } from "sonner";
-import { pokemonProducts } from "@/library/params/paramsCreateAffiliation";
+import { pokemonProducts } from "@/params/paramsCreateAffiliation";
 
 interface AffiliationTaskContextType {
     task: TAffiliationTask;

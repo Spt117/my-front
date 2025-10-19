@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCopy } from "@/library/hooks/useCopy";
-import { boutiqueFromDomain } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain } from "@/params/paramsShopify";
 import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import Image from "next/image";
 import ProductSection from "./ProductSection";
@@ -17,23 +17,12 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                 <CardHeader className="flex flex-wrap justify-between items-center">
                     <div className="flex items-center justify-center gap-4">
                         <CardTitle className="text-lg transition-colors duration-300 group-hover:text-blue-600 group-hover:font-semibold flex gap-0.5">
-                            <Image
-                                src={boutique.flag}
-                                alt={order.shop}
-                                width={30}
-                                height={30}
-                                className="w-auto h-auto ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2"
-                            />
+                            <Image src={boutique.flag} alt={order.shop} width={30} height={30} className="w-auto h-auto ml-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2" />
 
                             <div className="flex items-center gap-2">
                                 {order.name.map((name, index) => (
                                     <span key={index}>
-                                        <a
-                                            className="transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-sm rounded-md p-1 -m-1"
-                                            href={`https://${order.shop}/admin/orders/${order.legacyResourceId[index]}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
+                                        <a className="transition-all duration-200 ease-in-out hover:bg-gray-50 hover:shadow-sm rounded-md p-1 -m-1" href={`https://${order.shop}/admin/orders/${order.legacyResourceId[index]}`} target="_blank" rel="noopener noreferrer">
                                             {name}
                                         </a>
                                     </span>
@@ -61,10 +50,7 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                         <p className="text-sm text-gray-600">
                             {order.totalPriceSet.shopMoney.amount} {order.totalPriceSet.shopMoney.currencyCode}
                         </p>
-                        <p
-                            onClick={() => handleCopy(order.customer.email)}
-                            className="cursor-pointer transition-all duration-200 ease-in-out hover:font-bold rounded-md p-2 -m-2"
-                        >
+                        <p onClick={() => handleCopy(order.customer.email)} className="cursor-pointer transition-all duration-200 ease-in-out hover:font-bold rounded-md p-2 -m-2">
                             {order.customer.email}{" "}
                             <span className="text-sm text-gray-500">
                                 ({order.customer.numberOfOrders} commande{Number(order.customer.numberOfOrders) > 1 ? "s" : ""}

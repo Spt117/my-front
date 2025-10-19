@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { TDomainsShopify } from "../../params/paramsShopify";
+import { TDomainsShopify } from "../../../params/paramsShopify";
 
 const taskStatus = ["scheduled", "done", "error", "canceled", "processing"] as const;
 export type TStatusTask = (typeof taskStatus)[number];

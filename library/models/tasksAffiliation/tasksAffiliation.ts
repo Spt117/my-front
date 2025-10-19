@@ -1,8 +1,8 @@
 import { Schema } from "mongoose";
-import { TNameMarketplace } from "../../params/paramsAmazon";
-import { TPublicDomainsShopify } from "../../params/paramsShopify";
-import { TDomainWordpress } from "../../params/paramsWordpress";
-import { TPokemonProducts } from "@/library/params/paramsCreateAffiliation";
+import { TNameMarketplace } from "../../../params/paramsAmazon";
+import { TPublicDomainsShopify } from "../../../params/paramsShopify";
+import { TDomainWordpress } from "../../../params/paramsWordpress";
+import { TPokemonProducts } from "@/params/paramsCreateAffiliation";
 
 export type TAffiliationTask = {
     _id?: string;

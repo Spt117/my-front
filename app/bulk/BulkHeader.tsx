@@ -3,7 +3,7 @@ import { getDataBoutique } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Input } from "@/components/ui/input";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { modes } from "@/library/params/menu";
+import { modes } from "@/params/menu";
 import { useEffect, useState } from "react";
 import { search } from "../../components/header/serverSearch";
 import ShopifySelect from "../../components/header/ShopifySelect";
@@ -58,14 +58,7 @@ export default function BulkHeader() {
                 value={searchMode}
             />
             <div className="flex-1 relative flex gap-2">
-                <Input
-                    disabled={!shopifyBoutique}
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Produit Shopify"
-                    className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
-                />
+                <Input disabled={!shopifyBoutique} type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Produit Shopify" className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10" />
 
                 {loading && (
                     <div className="h-full absolute right-2 flex items-center">

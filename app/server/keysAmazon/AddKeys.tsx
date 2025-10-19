@@ -7,7 +7,7 @@ import { Select } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { TAmazonKeys } from "@/library/models/keysAmazon/keysDeploy";
 import { addKeys } from "@/library/models/keysAmazon/middleware";
-import { amazonMarketPlaces } from "@/library/params/paramsAmazon";
+import { amazonMarketPlaces } from "@/params/paramsAmazon";
 import { getServer } from "@/library/utils/fetchServer";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -44,24 +44,9 @@ export default function AddKeys() {
         <CardContent className="flex flex-col gap-4">
             <h1>Add Amazon Keys</h1>
             <CardAction className="flex gap-4 flex-wrap">
-                <Selecteur
-                    value={data?.marketplace}
-                    array={marketplaces}
-                    onChange={(value) => setData((d) => ({ ...d, marketplace: value } as TAmazonKeys))}
-                    placeholder="Select Marketplace"
-                />
-                <Input
-                    type="text"
-                    placeholder="Access Key ID"
-                    value={data?.accessKeyId}
-                    onChange={(e) => setData((d) => ({ ...d, accessKeyId: e.target.value } as TAmazonKeys))}
-                />
-                <Input
-                    type="text"
-                    placeholder="Secret Access Key"
-                    value={data?.secretAccessKey}
-                    onChange={(e) => setData((d) => ({ ...d, secretAccessKey: e.target.value } as TAmazonKeys))}
-                />
+                <Selecteur value={data?.marketplace} array={marketplaces} onChange={(value) => setData((d) => ({ ...d, marketplace: value } as TAmazonKeys))} placeholder="Select Marketplace" />
+                <Input type="text" placeholder="Access Key ID" value={data?.accessKeyId} onChange={(e) => setData((d) => ({ ...d, accessKeyId: e.target.value } as TAmazonKeys))} />
+                <Input type="text" placeholder="Secret Access Key" value={data?.secretAccessKey} onChange={(e) => setData((d) => ({ ...d, secretAccessKey: e.target.value } as TAmazonKeys))} />
                 <Button onClick={handleAddKeys} disabled={loading}>
                     {loading ? "Adding..." : "Add Keys"}
                     {loading && <Spinner className="ml-2" />}

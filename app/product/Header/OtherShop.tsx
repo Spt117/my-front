@@ -1,7 +1,7 @@
 import { brandTypes, TProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { boutiqueFromDomain, boutiques } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain, boutiques } from "@/params/paramsShopify";
 import { IconPoint } from "@tabler/icons-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -32,12 +32,7 @@ export default function OtherShop() {
         handleGetProductOtherShop();
     }, [shopifyBoutique, product]);
 
-    const otherShop = boutiques.filter(
-        (b) =>
-            b.domain !== shopifyBoutique?.domain &&
-            b.niche === shopifyBoutique?.niche &&
-            !idsOtherShop.find((id) => b.domain === id.domain)
-    );
+    const otherShop = boutiques.filter((b) => b.domain !== shopifyBoutique?.domain && b.niche === shopifyBoutique?.niche && !idsOtherShop.find((id) => b.domain === id.domain));
 
     return (
         <div className="flex items-center gap-2 flex-1">
@@ -48,13 +43,7 @@ export default function OtherShop() {
                     const productId = id.productId.replace("gid://shopify/Product/", "");
                     const url = `/product?id=${productId}&shopify=${boutique.locationHome}`;
                     return (
-                        <Link
-                            key={id.productId}
-                            href={url}
-                            rel="noopener noreferrer"
-                            title={`Voir le produit dans la boutique ${boutique.publicDomain}`}
-                            className="text-blue-600 hover:underline flex items-center gap-1"
-                        >
+                        <Link key={id.productId} href={url} rel="noopener noreferrer" title={`Voir le produit dans la boutique ${boutique.publicDomain}`} className="text-blue-600 hover:underline flex items-center gap-1">
                             <span className="text-xs">
                                 <img title={boutique.langue} src={boutique.flag} alt={boutique.langue} width={20} height={20} />
                             </span>

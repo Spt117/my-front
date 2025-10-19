@@ -1,5 +1,5 @@
 import { SidebarGroup, SidebarGroupContent, SidebarMenu } from "@/components/ui/sidebar";
-import { menuItems } from "@/library/params/menu";
+import { menuItems } from "@/params/menu";
 import Menu from "./menu";
 
 export function NavMain() {

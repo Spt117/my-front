@@ -3,18 +3,12 @@
 import useAffiliationStore from "@/app/create/storeTasksAffiliation";
 import Selecteur from "@/components/selecteur";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import {
-    boutiqueFromDomain,
-    boutiqueFromPublicDomain,
-    TDomainsShopify,
-    TPublicDomainsShopify,
-} from "@/library/params/paramsShopify";
+import { boutiqueFromDomain, boutiqueFromPublicDomain, TDomainsShopify, TPublicDomainsShopify } from "@/params/paramsShopify";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 export default function SelectAffiliationSite() {
-    const { websiteFilter, setWebsiteFilter, setTypesProducts, typesProducts, arrayTypesProducts, arraySites } =
-        useAffiliationStore();
+    const { websiteFilter, setWebsiteFilter, setTypesProducts, typesProducts, arrayTypesProducts, arraySites } = useAffiliationStore();
     const param = useSearchParams();
     const router = useRouter();
 
@@ -50,18 +44,8 @@ export default function SelectAffiliationSite() {
 
     return (
         <>
-            <Selecteur
-                array={optionWebsite}
-                value={websiteFilter}
-                onChange={handleChangeWebsite}
-                placeholder="Choisir l'origine"
-            />
-            <Selecteur
-                array={optionTypesProducts}
-                value={typesProducts}
-                onChange={setTypesProducts}
-                placeholder="Choisir le type de produit"
-            />
+            <Selecteur array={optionWebsite} value={websiteFilter} onChange={handleChangeWebsite} placeholder="Choisir l'origine" />
+            <Selecteur array={optionTypesProducts} value={typesProducts} onChange={setTypesProducts} placeholder="Choisir le type de produit" />
         </>
     );
 }

@@ -4,7 +4,7 @@ import ImagesProduct from "@/app/product/images/Images";
 import TagsShopify from "@/app/product/Tags/Tags";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
-import { boutiques } from "@/library/params/paramsShopify";
+import { boutiques } from "@/params/paramsShopify";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import EditeurHtml from "../../components/editeurHtml/Editeur";

@@ -2,7 +2,7 @@
 
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { useEvent } from "@/library/hooks/useEvent/useEvents";
-import { boutiqueFromDomain } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain } from "@/params/paramsShopify";
 import useUserStore from "@/library/stores/storeUser";
 import { uriServerSocket } from "@/library/utils/utils";
 import { useSession } from "next-auth/react";
@@ -65,13 +65,7 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                         const msg = (
                             <p className="flex items-center gap-1 whitespace-nowrap">
                                 Nouvelle commande reçue sur {boutique.vendor}
-                                <Image
-                                    src={boutique.flag}
-                                    alt={boutique.langue}
-                                    width={20}
-                                    height={20}
-                                    className="inline-block ml-1"
-                                />
+                                <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline-block ml-1" />
                             </p>
                         );
                         toast.success(msg);

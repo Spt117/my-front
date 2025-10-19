@@ -1,8 +1,8 @@
 "use server";
 
 import { tasksAffiliationController } from "@/library/models/tasksAffiliation/tasksAffiliationController";
-import { TPublicDomainsShopify } from "@/library/params/paramsShopify";
-import { TDomainWordpress } from "@/library/params/paramsWordpress";
+import { TPublicDomainsShopify } from "@/params/paramsShopify";
+import { TDomainWordpress } from "@/params/paramsWordpress";
 import { postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 import { ICreateAffiliationProduct } from "./util";

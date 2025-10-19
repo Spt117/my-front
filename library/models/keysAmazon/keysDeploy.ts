@@ -1,5 +1,5 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
-import { TDomainMarketplace } from "@/library/params/paramsAmazon";
+import { TDomainMarketplace } from "@/params/paramsAmazon";
 import { encryptedKeyAmazon } from "@/library/utils/uri";
 import crypto from "crypto";
 import { model, Model, models, Schema } from "mongoose";
@@ -75,9 +75,7 @@ class ControllerAmazonKeys {
         }
     }
 
-    public async addOrUpdateKeyWithEncryption(
-        keys: TAmazonKeys
-    ): Promise<{ message?: string; response?: TAmazonKeys | null; error?: string }> {
+    public async addOrUpdateKeyWithEncryption(keys: TAmazonKeys): Promise<{ message?: string; response?: TAmazonKeys | null; error?: string }> {
         try {
             if (!this.ENCRYPTION_KEY || this.ENCRYPTION_KEY.length !== 32) {
                 console.log(this.ENCRYPTION_KEY);

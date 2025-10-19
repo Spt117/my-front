@@ -1,6 +1,6 @@
 // Types pour l'objet commande Shopify
 
-import { TDomainsShopify } from "../params/paramsShopify";
+import { TDomainsShopify } from "../../params/paramsShopify";
 
 interface ShopMoney {
     amount: string;

@@ -1,5 +1,5 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
-import { IMarketplace } from "@/library/params/paramsAmazon";
+import { IMarketplace } from "@/params/paramsAmazon";
 import { Connection, Model } from "mongoose";
 import { createVeilleProductSchema, TVeilleProduct } from "./veilleProducts";
 

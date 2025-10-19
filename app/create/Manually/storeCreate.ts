@@ -1,4 +1,4 @@
-import { TBeybladeProducts, TNiche, TPokemonProducts } from "@/library/params/paramsCreateAffiliation";
+import { TBeybladeProducts, TNiche, TPokemonProducts } from "@/params/paramsCreateAffiliation";
 import { create } from "zustand";
 
 interface StoreState {

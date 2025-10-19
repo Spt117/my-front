@@ -1,4 +1,4 @@
-import { TDomainsShopify } from "@/library/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopify";
 import { ProductStatus } from "@/library/types/graph";
 import { create } from "zustand";
 import { TCanal } from "./util";

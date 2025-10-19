@@ -9,6 +9,7 @@ import SearchProduct from "./products/SearchProduct";
 import ShopifySelect from "./ShopifySelect";
 import HeaderStock from "./stock/HeaderStock";
 import SelectAffiliationSite from "./taskAffiliation/SelectAffiliationSite";
+import HeaderPokemon from "@/app/pokemon/Header";
 
 export function SiteHeader() {
     const pathname = usePathname();
@@ -26,6 +27,7 @@ export function SiteHeader() {
                 {pathname === "/bulk" && <BulkHeader />}
                 {pathname === "/stats" && <ShopifySelect />}
                 {pathname === "/collections" && <HeaderCollection />}
+                {pathname === "/pokemon" && <HeaderPokemon />}
             </div>
         </header>
     );

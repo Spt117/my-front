@@ -1,4 +1,4 @@
-import { TDomainsShopify, TVendorsShopify } from "../params/paramsShopify";
+import { TDomainsShopify, TVendorsShopify } from "../../params/paramsShopify";
 
 type GID = `gid://shopify/${string}`;
 
@@ -64,22 +64,7 @@ export interface CategoryProduct {
 }
 
 type MetafieldType = "single_line_text_field" | "string" | "list.product_reference" | "boolean" | (string & {});
-const metafieldKeys = [
-    "asin",
-    "url_video",
-    "id_video_youtube",
-    "amazon_activate",
-    "lien_amazon",
-    "title_tag",
-    "description_tag",
-    "related_products",
-    "complementary_products",
-    "color-pattern",
-    "rarity",
-    "recommended-age-group",
-    "toy-game-material",
-    "trading-card-packaging",
-] as const;
+const metafieldKeys = ["asin", "url_video", "id_video_youtube", "amazon_activate", "lien_amazon", "title_tag", "description_tag", "related_products", "complementary_products", "color-pattern", "rarity", "recommended-age-group", "toy-game-material", "trading-card-packaging"] as const;
 export type TMetafieldKeys = (typeof metafieldKeys)[number];
 const namespaceMetafields = ["custom", "global", "shopify"] as const;
 export type TNamespaceMetafields = (typeof namespaceMetafields)[number];

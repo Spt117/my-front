@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { toggleBought, toggleRebuy, toggleRebuyLater } from "@/library/models/produits/middlewareVariants";
 import { TVariant } from "@/library/models/variantShopify/Variant";
-import { boutiqueFromDomain, TDomainsShopify } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain, TDomainsShopify } from "@/params/paramsShopify";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cssCard } from "../product/util";
@@ -26,9 +26,7 @@ export function VariantStock({ domain, variant, action }: { domain: TDomainsShop
     };
 
     const shopifyBoutique = boutiqueFromDomain(domain);
-    const urlProduct = `/product?id=${variant.idProduct.replace("gid://shopify/Product/", "")}&shopify=${
-        shopifyBoutique?.locationHome
-    }`;
+    const urlProduct = `/product?id=${variant.idProduct.replace("gid://shopify/Product/", "")}&shopify=${shopifyBoutique?.locationHome}`;
 
     return (
         <Card className={cssCard}>

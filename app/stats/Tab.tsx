@@ -1,6 +1,6 @@
 "use client";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
+import { boutiques, TDomainsShopify } from "@/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import Image from "next/image";
 import { useState } from "react";

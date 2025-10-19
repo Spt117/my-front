@@ -1,25 +1,11 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
+import { boutiques, TDomainsShopify } from "@/params/paramsShopify";
 import { ProductGET } from "@/library/types/graph";
 import { DollarSign, Package, ShoppingCart, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
-import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Legend,
-    Line,
-    LineChart,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 interface DataShops {
     count: number;
@@ -42,14 +28,7 @@ export default function ShopifyDashboard({ data }: { data: Record<TDomainsShopif
     const activeShop = data[selectedShop];
 
     // Calculs des statistiques
-    const totalRevenue = activeShop.products.reduce(
-        (sum, p) =>
-            sum +
-            (p.variants && p.variants.nodes && p.variants.nodes[0] && p.variants.nodes[0].price
-                ? parseFloat(p.variants.nodes[0].price)
-                : 0),
-        0
-    );
+    const totalRevenue = activeShop.products.reduce((sum, p) => sum + (p.variants && p.variants.nodes && p.variants.nodes[0] && p.variants.nodes[0].price ? parseFloat(p.variants.nodes[0].price) : 0), 0);
     const avgPrice = activeShop.count > 0 ? totalRevenue / activeShop.count : 0;
 
     // Données par type de produit
@@ -153,16 +132,7 @@ export default function ShopifyDashboard({ data }: { data: Record<TDomainsShopif
                         <CardContent>
                             <ResponsiveContainer width="100%" height={300}>
                                 <PieChart>
-                                    <Pie
-                                        data={productTypeData}
-                                        cx="50%"
-                                        cy="50%"
-                                        labelLine={false}
-                                        label={({ name, percent }) => `${name} (${((percent as number) * 100).toFixed(0)}%)`}
-                                        outerRadius={80}
-                                        fill="#8884d8"
-                                        dataKey="value"
-                                    >
+                                    <Pie data={productTypeData} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name} (${((percent as number) * 100).toFixed(0)}%)`} outerRadius={80} fill="#8884d8" dataKey="value">
                                         {productTypeData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}

@@ -1,4 +1,4 @@
-import { TDomainsShopify, boutiqueFromDomain, boutiques } from "@/library/params/paramsShopify";
+import { TDomainsShopify, boutiqueFromDomain, boutiques } from "@/params/paramsShopify";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import useShopifyStore from "../shopify/shopifyStore";

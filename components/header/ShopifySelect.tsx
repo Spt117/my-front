@@ -4,7 +4,7 @@ import useProductStore from "@/app/product/storeProduct";
 import { TCanal } from "@/app/product/util";
 import Selecteur from "@/components/selecteur";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/library/params/paramsShopify";
+import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/params/paramsShopify";
 import useUserStore from "@/library/stores/storeUser";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";

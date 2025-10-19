@@ -1,6 +1,6 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
-import { TPublicDomainsShopify } from "@/library/params/paramsShopify";
-import { TDomainWordpress } from "@/library/params/paramsWordpress";
+import { TPublicDomainsShopify } from "@/params/paramsShopify";
+import { TDomainWordpress } from "@/params/paramsWordpress";
 import { Connection, Model } from "mongoose";
 import { createAffiliationTaskSchema, TAffiliationTask } from "./tasksAffiliation";
 

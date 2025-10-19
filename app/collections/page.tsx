@@ -1,5 +1,5 @@
 import { getDataBoutique } from "@/components/shopify/serverActions";
-import { TDomainsShopify } from "@/library/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
 import ClientCollection from "./ClientCollection";
 import { ResponseServer } from "@/components/shopify/typesShopify";

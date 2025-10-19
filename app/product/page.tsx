@@ -2,7 +2,7 @@ import { getProduct } from "@/components/shopify/serverActions";
 import { TaskShopifyController } from "@/library/models/tasksShopify/taskController";
 import { TVariant } from "@/library/models/variantShopify/Variant";
 import { variantController } from "@/library/models/variantShopify/variantController";
-import { boutiqueFromLocation, IShopify, TLocationHome } from "@/library/params/paramsShopify";
+import { boutiqueFromLocation, IShopify, TLocationHome } from "@/params/paramsShopify";
 import { SegmentParams } from "@/library/types/utils";
 import ProductClient from "./ProductClient";
 import ProductContent from "./ProductContent";
@@ -68,12 +68,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
 
     return (
         <>
-            <ProductClient
-                productData={product}
-                shopify={shopify}
-                variantData={JSON.parse(JSON.stringify(variant))}
-                tasksData={tasks}
-            />
+            <ProductClient productData={product} shopify={shopify} variantData={JSON.parse(JSON.stringify(variant))} tasksData={tasks} />
             <ProductContent />
         </>
     );
