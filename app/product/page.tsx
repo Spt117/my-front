@@ -20,6 +20,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
     const product = await getProduct(data);
 
     if (product?.error || !product?.response) {
+        console.log("error");
+        console.error(product?.error);
+
         return (
             <div className="p-4 flex flex-col items-center justify-center">
                 <h2>Erreur lors de la récupération du produit</h2>
@@ -34,8 +37,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<Seg
     if (sku) variant = await variantController(shopify.domain).getVariantBySku(sku);
     if (!variant && sku && product.response.variants) {
         const urlOtherShop = `${pokeUriServer}/shopify/create-variant?domain=${shopify.domain}&sku=${encodeURIComponent(sku)}`;
-        console.log(urlOtherShop);
-
         getServer(urlOtherShop);
         const variantProduct = product.response.variants.nodes[0];
         let activeAmazon = product?.response.metafields.nodes.find((mf) => mf.key === "amazon_activate");
