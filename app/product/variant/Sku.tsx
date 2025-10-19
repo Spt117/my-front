@@ -6,7 +6,7 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { KeySquare, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { updateVariant } from "../serverAction";
+import { updateSku, updateVariant } from "../serverAction";
 import useVariantStore from "../storeVariant";
 import { cssCard } from "../util";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
@@ -29,6 +29,7 @@ export default function Sku() {
         if (!activeSave) return;
         setLoading(true);
         try {
+            await updateSku(shopifyBoutique.domain, variant.id, sku);
             const res = await updateVariant(shopifyBoutique.domain, product.id, variant.id, "sku", sku);
             if (res?.error) toast.error(res.error);
             if (res?.message) toast.success(res.message);

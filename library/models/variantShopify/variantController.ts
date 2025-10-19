@@ -27,6 +27,17 @@ class ControllerVariant {
         return variantModel;
     }
 
+    async updateSkuById(id: string, sku: string) {
+        try {
+            const Variant = await this.getVariantModel();
+            const doc = await Variant.updateOne({ idVariant: id }, { $set: { sku: sku } });
+            return doc;
+        } catch (err) {
+            console.error("updateSkuById error:", err);
+            return null;
+        }
+    }
+
     async getVariantBySku(sku: string) {
         try {
             const Variant = await this.getVariantModel();
