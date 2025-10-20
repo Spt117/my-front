@@ -32,7 +32,7 @@ export default function MetaSeo() {
 
     if (!product) return null;
 
-    const url = `${shopifyBoutique?.publicDomain}/products/${product.handle}`;
+    const url = `https://${shopifyBoutique?.publicDomain}/products/${product.handle}`;
 
     return (
         <Card className={cssCard}>
