@@ -6,9 +6,10 @@ import useProductStore from "../storeProduct";
 import { cssCard } from "../util";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import CopyComponent from "@/components/Copy";
 
 export default function MetaSeo() {
-    const { product } = useShopifyStore();
+    const { product, shopifyBoutique } = useShopifyStore();
     const {
         metaTitle,
         setMetaTitle,
@@ -30,6 +31,8 @@ export default function MetaSeo() {
     }, [metaTitleProduct, metaDescriptionProduct, product]);
 
     if (!product) return null;
+
+    const url = `${shopifyBoutique?.publicDomain}/products/${product.handle}`;
 
     return (
         <Card className={cssCard}>
@@ -54,7 +57,10 @@ export default function MetaSeo() {
                     </p>
                 </div>
                 <div className="p-6 w-min">
-                    <h3 className="m-2 text-sm font-medium flex items-center gap-2">Ancre d'URL</h3>
+                    <div className="flex items-center align-center gap-2 mb-2">
+                        <h3 className="m-2 text-sm font-medium flex items-center gap-2">Ancre d'URL</h3>{" "}
+                        <CopyComponent contentToCopy={url} message="URL copiée !" size={16} />
+                    </div>
                     <div className="relative flex-1">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
                             /products/
