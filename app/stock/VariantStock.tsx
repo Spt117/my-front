@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { toggleBought, toggleRebuy, toggleRebuyLater } from "@/library/models/produits/middlewareVariants";
+import { toggleBought, toggleRebuy, toggleRebuyLater } from "@/library/models/variantShopify/middlewareVariants";
 import { TVariant } from "@/library/models/variantShopify/Variant";
 import { boutiqueFromDomain, TDomainsShopify } from "@/params/paramsShopify";
 import Link from "next/link";

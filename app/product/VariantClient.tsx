@@ -1,7 +1,7 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { VariantStock } from "../stock/VariantStock";
-import { getVariantBySku } from "@/library/models/produits/middlewareVariants";
+import { getVariantBySku } from "@/library/models/variantShopify/middlewareVariants";
 
 export default function VariantClient() {
     const { variant, setVariant, shopifyBoutique } = useShopifyStore();

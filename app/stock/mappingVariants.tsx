@@ -1,7 +1,7 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
-import { getStockVariant } from "@/library/models/produits/middlewareVariants";
+import { getStockVariant } from "@/library/models/variantShopify/middlewareVariants";
 import { TVariant } from "@/library/models/variantShopify/Variant";
 import { sleep } from "@/library/utils/helpers";
 import { useEffect } from "react";
