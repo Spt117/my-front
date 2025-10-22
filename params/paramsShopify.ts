@@ -12,7 +12,7 @@ export interface IShopifyBase {
     devise: string;
     marketplaceAmazon: string;
     niche: string;
-    idShop: number;
+    id: number;
 }
 
 // 2. Définir le tableau des boutiques avec l'interface de base
@@ -27,7 +27,7 @@ export const boutiques = [
         devise: "€",
         marketplaceAmazon: "amazon.fr",
         niche: "pokemon",
-        idShop: 24795250737,
+        id: 24795250737,
     },
     {
         vendor: "Beyblade Shop",
@@ -39,7 +39,7 @@ export const boutiques = [
         devise: "€",
         marketplaceAmazon: "amazon.fr",
         niche: "beyblade",
-        idShop: 25754107976,
+        id: 25754107976,
     },
     {
         vendor: "Beyblade Shop",
@@ -51,7 +51,7 @@ export const boutiques = [
         devise: "€",
         marketplaceAmazon: "amazon.de",
         niche: "beyblade",
-        idShop: 57623052450,
+        id: 57623052450,
     },
     {
         vendor: "Beyblade Toys",
@@ -63,7 +63,7 @@ export const boutiques = [
         devise: "$",
         marketplaceAmazon: "amazon.com",
         niche: "beyblade",
-        idShop: 79087436093,
+        id: 79087436093,
     },
 ] as const satisfies readonly IShopifyBase[];
 
@@ -86,7 +86,7 @@ export interface IShopify {
     flag: string;
     devise: string;
     niche: TBoutiques[number]["niche"];
-    idShop: TBoutiques[number]["idShop"];
+    id: TBoutiques[number]["id"];
 }
 
 export const domainsBeyblade = boutiques.filter((b) => b.vendor.includes("Beyblade")).map((b) => b.domain);
@@ -106,12 +106,19 @@ export const boutiqueFromPublicDomain: (domain: TPublicDomainsShopify) => IShopi
     if (!b) throw new Error(`Boutique non trouvée pour le domaine public: ${domain}`);
     return b;
 };
-export const boutiqueFromId: (idShop: number) => IShopify = (idShop: number) => {
-    const b = boutiques.find((b) => b.idShop === idShop);
-    if (!b) throw new Error(`Boutique non trouvée pour l'idShop: ${idShop}`);
+export const boutiqueFromId: (id: number) => IShopify = (id: number) => {
+    const b = boutiques.find((b) => b.id === id);
+    if (!b) throw new Error(`Boutique non trouvée pour l'id: ${id}`);
     return b;
 };
 export const apiVersion = "2024-01";
 
-const paramsDataShop = ["tags", "productTypes", "collections", "salesChannels", "productsMissingChannels", "collectionGid"] as const;
+const paramsDataShop = [
+    "tags",
+    "productTypes",
+    "collections",
+    "salesChannels",
+    "productsMissingChannels",
+    "collectionGid",
+] as const;
 export type TParamsDataShop = (typeof paramsDataShop)[number];

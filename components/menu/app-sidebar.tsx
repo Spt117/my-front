@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { IconInnerShadowTop } from "@tabler/icons-react";
 import Logout from "./Logout";
+import { NavShopify } from "./NavShopify";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return (
@@ -32,6 +33,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
             <SidebarContent>
                 <NavMain />
+                <NavShopify />
             </SidebarContent>
             <hr />
             <SidebarFooter>

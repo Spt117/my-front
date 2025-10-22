@@ -1,3 +1,4 @@
+"use client";
 import { ProductGET } from "@/library/types/graph";
 import { Eye } from "lucide-react";
 import Image from "next/image";

@@ -1,10 +1,11 @@
 "use server";
 import { GroupedShopifyOrder, IShopifyOrderResponse, ShopifyOrder } from "@/library/shopify/orders";
 import { getServer, postServer } from "@/library/utils/fetchServer";
-import { revalidatePath } from "next/cache";
+import { pokeUriServer } from "@/library/utils/uri";
 import { ProductInOrder } from "./store";
 
-export async function getOrders(url: string, archived: boolean) {
+export async function getOrders() {
+    const url = `${pokeUriServer}/shopify/orders`;
     const response = await getServer(url);
     if (!response || !response.response) return null;
     const data: ShopifyOrder[] = response.response;
@@ -44,11 +45,7 @@ export async function getOrders(url: string, archived: boolean) {
         return acc;
     }, []);
 
-    const groupedOrders = archived
-        ? groupOrdersByCustomerEmail(data)
-        : groupOrdersByCustomerEmail(filterOrdersProductsUnfulfilled);
-
-    return { orders: groupedOrders, products: groupedProducts };
+    return { orders: groupOrdersByCustomerEmail(filterOrdersProductsUnfulfilled), products: groupedProducts };
 }
 
 export async function searchOrders(domain: string, query: string) {
@@ -59,11 +56,6 @@ export async function searchOrders(domain: string, query: string) {
         orderName: query.trim(),
     });
     return res.response as ShopifyOrder[];
-}
-
-export async function revalidateOrders() {
-    revalidatePath("/orders");
-    return true;
 }
 
 export async function getOrderById(params: { orderId: string; domain: string }) {

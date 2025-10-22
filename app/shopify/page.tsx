@@ -1,5 +1,5 @@
 "use client";
-export default async function Page() {
+export default function Page() {
     return (
         <div>
             <h3>Shop</h3>

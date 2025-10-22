@@ -3,18 +3,17 @@ import { cn } from "@/library/utils/utils";
 import { IconCirclePlusFilled } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import useShopifyStore from "../shopify/shopifyStore";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
 export interface MenuProps {
     path: string;
     label: string;
+    disabled?: boolean;
 }
 
-export default function Menu({ path, label }: MenuProps) {
-    const { shopifyBoutique } = useShopifyStore();
+export default function Menu({ path, label, disabled }: MenuProps) {
     const currentPath = usePathname();
-    const isActive = currentPath === path;
+    const isActive = currentPath === path || (path.includes("orders") && currentPath.includes("orders"));
 
     const baseClasses = "min-w-8 duration-200 ease-linear flex items-center gap-2";
     const activeClasses =
@@ -22,10 +21,8 @@ export default function Menu({ path, label }: MenuProps) {
     const inactiveClasses =
         "bg-accent/100 hover:bg-primary/80 hover:text-primary-foreground active:bg-accent/90 active:text-accent-foreground";
 
-    const pathLink = shopifyBoutique ? `${path}?domain=${shopifyBoutique.domain}` : path;
-
     return (
-        <Link href={pathLink}>
+        <Link href={path} className={cn(disabled && "pointer-events-none opacity-50")}>
             <SidebarMenuItem className="flex items-center gap-2">
                 <SidebarMenuButton className={cn(baseClasses, isActive ? activeClasses : inactiveClasses)}>
                     <IconCirclePlusFilled className={cn(isActive && "text-primary-foreground")} />
