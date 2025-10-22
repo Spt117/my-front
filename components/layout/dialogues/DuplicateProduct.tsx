@@ -51,12 +51,13 @@ export default function DuplicateProduct() {
             </div>
 
             <div className="mt-4 flex flex-col justify-between gap-5">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full">
                     <Input
                         type="text"
                         placeholder="Nom du nouveau produit"
                         value={newProductName}
                         onChange={(e) => setNewProductName(e.target.value)}
+                        className="flex-1"
                     />
                     <Switch checked={published} onCheckedChange={setPublished} />
                     <p>{published ? "Publié" : "Brouillon"}</p>
