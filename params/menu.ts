@@ -2,6 +2,7 @@ import { MenuProps } from "@/components/menu/menu";
 
 export const menuItems: MenuProps[] = [
     { path: "/", label: "Commandes" },
+    { path: "/shopify", label: "Boutiques" },
     { path: "/stock", label: "Stock" },
     { path: "/tasks", label: "Tâches" },
     { path: "/create", label: "Créer une fiche produit" },

@@ -1,8 +1,8 @@
 import { getDataBoutique } from "@/components/shopify/serverActions";
-import { TDomainsShopify } from "@/params/paramsShopify";
-import { SegmentParams } from "@/library/types/utils";
-import ClientCollection from "./ClientCollection";
 import { ResponseServer } from "@/components/shopify/typesShopify";
+import { SegmentParams } from "@/library/types/utils";
+import { TDomainsShopify } from "@/params/paramsShopify";
+import ClientCollection from "./ClientCollection";
 import { ShopifyCollection } from "./utils";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SegmentParams> }) {
