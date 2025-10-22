@@ -2,16 +2,18 @@ import useEditorHtmlStore from "@/components/editeurHtml/storeEditor";
 import { formatHTML } from "@/components/editeurHtml/utils";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { SaveIcon } from "lucide-react";
-import { toast } from "sonner";
-import { updateProduct, updateCanauxVente, updateMetafieldGid, updateMetafieldKey } from "../serverAction";
-import useProductStore from "../storeProduct";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { SaveIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { updateCanauxVente, updateMetafieldKey, updateProduct } from "../serverAction";
+import useProductStore from "../storeProduct";
 
 export default function Save() {
     const { product, shopifyBoutique, canauxBoutique } = useShopifyStore();
     const { newTitle, loadingSave, setLoadingSave, statut, canauxProduct, metaTitle, metaDescription, ancreUrl } = useProductStore();
     const { hasChanges, modifiedHtml } = useEditorHtmlStore();
+    const router = useRouter();
 
     if (!product || !shopifyBoutique) return null;
 
@@ -105,6 +107,7 @@ export default function Save() {
         if (ancreUrl !== product.handle) {
         }
         setLoadingSave(false);
+        router.refresh();
     };
 
     const handleSaveShortcut = () => {
