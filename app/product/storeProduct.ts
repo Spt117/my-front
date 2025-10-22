@@ -30,6 +30,8 @@ interface StoreState {
     setCanauxProduct: (canaux: TCanal[]) => void;
     idsOtherShop: { domain: TDomainsShopify; variantId: string; productId: string }[];
     setIdsOtherShop: (ids: { domain: TDomainsShopify; variantId: string; productId: string }[]) => void;
+    setTypeProduct: (type: string) => void;
+    typeProduct: string;
 }
 
 const useProductStore = create<StoreState>((set) => ({
@@ -59,6 +61,8 @@ const useProductStore = create<StoreState>((set) => ({
     setRedirectionUrl: (redirectionUrl) => set({ redirectionUrl }),
     idsOtherShop: [],
     setIdsOtherShop: (idsOtherShop) => set({ idsOtherShop }),
+    typeProduct: "",
+    setTypeProduct: (typeProduct) => set({ typeProduct }),
 }));
 
 export default useProductStore;
