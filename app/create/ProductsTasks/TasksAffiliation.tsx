@@ -8,8 +8,7 @@ import { AffiliationTaskProvider } from "./ContextTaskAffiliation";
 import TaskAffiliation from "./TaskAffiliation";
 
 export default function TasksAffiliation({ tasks }: { tasks: TAffiliationTask[] }) {
-    const { setTasksAffil, tasksAffil, setArraySites, websiteFilter, setArrayTypesProducts, typesProducts, setTypesProducts } =
-        useAffiliationStore();
+    const { setTasksAffil, tasksAffil, setArraySites, websiteFilter, setArrayTypesProducts, typesProducts, setTypesProducts } = useAffiliationStore();
     const [tasksFiltered, setTasksFiltered] = useState<TAffiliationTask[]>(tasksAffil);
 
     const router = useRouter();
@@ -34,7 +33,7 @@ export default function TasksAffiliation({ tasks }: { tasks: TAffiliationTask[] 
             }
         }
         setArrayTypesProducts(typesProduits[websiteFilter] || []);
-        if (!typesProduits[websiteFilter].includes(typesProducts)) setTypesProducts("");
+        if (typesProduits[websiteFilter] && !typesProduits[websiteFilter].includes(typesProducts)) setTypesProducts("");
     }, [websiteFilter]);
 
     useEffect(() => {
