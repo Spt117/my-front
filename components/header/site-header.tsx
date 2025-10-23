@@ -1,5 +1,5 @@
 "use client";
-import HeaderCollection from "@/app/collections/HeaderCollections";
+import HeaderPokemon from "@/app/pokemon/Header";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
@@ -9,7 +9,7 @@ import SearchProduct from "./products/SearchProduct";
 import ShopifySelect from "./ShopifySelect";
 import HeaderStock from "./stock/HeaderStock";
 import SelectAffiliationSite from "./taskAffiliation/SelectAffiliationSite";
-import HeaderPokemon from "@/app/pokemon/Header";
+import HeaderCollection from "@/app/shopify/[shopId]/collections/HeaderCollections";
 
 export function SiteHeader() {
     const pathname = usePathname();

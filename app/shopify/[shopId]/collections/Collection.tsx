@@ -2,14 +2,15 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TableCell, TableRow } from "@/components/ui/table";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ShopifyCollection } from "./utils";
 
 export default function CollectionRow({ collection }: { collection: ShopifyCollection }) {
     const router = useRouter();
+    const params = useParams();
 
     const handleRowClick = () => {
-        const url = `/shopify/25754107976/collections/${collection.id.replace("gid://shopify/Collection/", "")}`;
+        const url = `/shopify/${params.shopId}/collections/${collection.id.replace("gid://shopify/Collection/", "")}`;
         router.push(url);
     };
 

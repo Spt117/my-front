@@ -65,19 +65,19 @@ export default function Collections() {
                 </div>
                 <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
                     {collections.length === 0 && <Label className="text-sm text-gray-500">Aucune collection</Label>}
-                    {collections.map((collection) => (
-                        <div key={collection.id} className="px-3 py-2 bg-gray-100 rounded-lg text-sm text-gray-700">
-                            <Link
-                                key={collection.id}
-                                href={`/collections/${collection.id.replace("gid://shopify/Collection/", "")}?domain=${
-                                    shopifyBoutique?.domain
-                                }`}
-                                className="hover:underline w-full block"
-                            >
-                                {collection.title}
-                            </Link>
-                        </div>
-                    ))}
+                    {collections.map((collection) => {
+                        const endpoint = `/shopify/${shopifyBoutique?.id}/collections/${collection.id.replace(
+                            "gid://shopify/Collection/",
+                            ""
+                        )}`;
+                        return (
+                            <div key={collection.id} className="px-3 py-2 bg-gray-100 rounded-lg text-sm text-gray-700">
+                                <Link key={collection.id} href={endpoint} className="hover:underline w-full block">
+                                    {collection.title}
+                                </Link>
+                            </div>
+                        );
+                    })}
                 </div>
             </CardContent>
         </Card>

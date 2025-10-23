@@ -1,18 +1,24 @@
 "use server";
 
-import { boutiqueFromDomain, boutiques, TDomainsShopify, TParamsDataShop } from "@/params/paramsShopify";
+import { ShopifyCollection, ShopifyCollectionWithProducts } from "@/app/shopify/[shopId]/collections/utils";
+import { variantController } from "@/library/models/variantShopify/variantController";
 import { ProductGET } from "@/library/types/graph";
 import { getServer, postServer } from "@/library/utils/fetchServer";
+import { boutiqueFromDomain, boutiques, TDomainsShopify, TParamsDataShop } from "@/params/paramsShopify";
 import { IGetProduct, IMetafieldRequest, ITagRequest, ResponseServer } from "./typesShopify";
-import { ShopifyCollection, ShopifyCollectionWithProducts } from "@/app/collections/utils";
-import { variantController } from "@/library/models/variantShopify/variantController";
 
-export async function getDataBoutique(domain: TDomainsShopify, param: TParamsDataShop, id?: string): Promise<ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[] | ProductGET[] | ShopifyCollectionWithProducts>> {
+export async function getDataBoutique(
+    domain: TDomainsShopify,
+    param: TParamsDataShop,
+    id?: string
+): Promise<
+    ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[] | ProductGET[] | ShopifyCollectionWithProducts | null>
+> {
     const url = `http://localhost:9100/shopify/data-shop?domain=${domain}&param=${param}${id ? `&id=${id}` : ""}`;
     console.log(url);
 
     const response = await getServer(url);
-    if (response?.error) return { error: response.error, response: [] };
+    if (response?.error) return { error: response.error, response: null };
     return { response: response?.response || null };
 }
 
