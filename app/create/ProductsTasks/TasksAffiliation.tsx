@@ -1,20 +1,14 @@
 "use client";
-import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 import { TAffiliationTask } from "@/library/models/tasksAffiliation/tasksAffiliation";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useAffiliationStore from "../storeTasksAffiliation";
 import { AffiliationTaskProvider } from "./ContextTaskAffiliation";
 import TaskAffiliation from "./TaskAffiliation";
 
 export default function TasksAffiliation({ tasks }: { tasks: TAffiliationTask[] }) {
-    const { setTasksAffil, tasksAffil, setArraySites, websiteFilter, setArrayTypesProducts, typesProducts, setTypesProducts } = useAffiliationStore();
+    const { setTasksAffil, tasksAffil, setArraySites, websiteFilter, setArrayTypesProducts, typesProducts, setTypesProducts } =
+        useAffiliationStore();
     const [tasksFiltered, setTasksFiltered] = useState<TAffiliationTask[]>(tasksAffil);
-
-    const router = useRouter();
-    useEventListener("products/update", () => {
-        router.refresh();
-    });
 
     useEffect(() => {
         setArraySites(Array.from(new Set(tasks.map((task) => task.website))).sort((a, b) => a.localeCompare(b)));

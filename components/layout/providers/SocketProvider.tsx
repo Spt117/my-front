@@ -7,7 +7,7 @@ import useUserStore from "@/library/stores/storeUser";
 import { uriServerSocket } from "@/library/utils/utils";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ export default function SocketProvider({ children }: { children: React.ReactNode
     const path = usePathname();
     const { emit } = useEvent();
     const { data: session } = useSession();
+    const router = useRouter();
 
     const socketRef = useRef<Socket | null>(null);
 
@@ -65,7 +66,13 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                         const msg = (
                             <p className="flex items-center gap-1 whitespace-nowrap">
                                 Nouvelle commande reçue sur {boutique.vendor}
-                                <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline-block ml-1" />
+                                <Image
+                                    src={boutique.flag}
+                                    alt={boutique.langue}
+                                    width={20}
+                                    height={20}
+                                    className="inline-block ml-1"
+                                />
                             </p>
                         );
                         toast.success(msg);
@@ -83,6 +90,8 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                             productId: data.body.id,
                             data: data.body,
                         });
+                        router.refresh();
+                        toast.success(`Produit mis à jour (ID: ${data.body.id})`);
                         break;
                     default:
                         toast.info(`Événement reçu : ${data.topic}`);
