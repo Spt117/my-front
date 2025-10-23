@@ -15,7 +15,7 @@ import useCollectionStore from "./storeCollections";
 
 export default function Page() {
     const params = useSearchParams();
-    const { shopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
+    const { shopifyBoutique, searchTerm } = useShopifyStore();
     const { filteredCollections, setFilteredCollections, collections, loadingCollection } = useCollectionStore();
 
     // État pour le tri
