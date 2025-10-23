@@ -106,8 +106,8 @@ export const boutiqueFromPublicDomain: (domain: TPublicDomainsShopify) => IShopi
     if (!b) throw new Error(`Boutique non trouvée pour le domaine public: ${domain}`);
     return b;
 };
-export const boutiqueFromId: (id: number) => IShopify = (id: number) => {
-    const b = boutiques.find((b) => b.id === id);
+export const boutiqueFromId: (id: number | string) => IShopify = (id: number | string) => {
+    const b = boutiques.find((b) => b.id === Number(id));
     if (!b) throw new Error(`Boutique non trouvée pour l'id: ${id}`);
     return b;
 };

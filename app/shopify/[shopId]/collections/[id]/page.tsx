@@ -1,6 +1,6 @@
 import { getDataBoutique } from "@/components/shopify/serverActions";
 import { ResponseServer } from "@/components/shopify/typesShopify";
-import { boutiqueFromDomain } from "@/params/paramsShopify";
+import { boutiqueFromDomain, boutiqueFromId } from "@/params/paramsShopify";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,22 +9,19 @@ import { ShopifyCollectionWithProducts } from "../utils";
 export default async function CollectionPage() {
     const headersList = await headers();
     const pathname = headersList.get("x-pathname") || "/unknown";
-    console.log(pathname.split("/"));
 
-    // const collectionData = (await getDataBoutique(
-    //     " query.domain",
-    //     "collectionGid",
-    //     `gid://shopify/Collection/${p.id}`
-    // )) as ResponseServer<ShopifyCollectionWithProducts>;
+    const boutique = boutiqueFromId(pathname.split("/")[2]);
+    const collectionData = (await getDataBoutique(
+        boutique.domain,
+        "collectionGid",
+        `gid://shopify/Collection/${pathname.split("/")[4]}`
+    )) as ResponseServer<ShopifyCollectionWithProducts>;
 
-    // const { title, description, image, products, seo, updatedAt } = collectionData.response;
-
-    // const boutique = boutiqueFromDomain("query.domain");
+    const { title, description, image, products, seo, updatedAt } = collectionData.response;
 
     return (
         <div className="container mx-auto px-4 py-8">
             Collection Header
-            {/*
             <div className="mb-12">
                 {image?.src && (
                     <div className="relative w-full h-96 mb-6">
@@ -65,7 +62,6 @@ export default async function CollectionPage() {
                     <p className="text-gray-600">Aucun produit disponible dans cette collection pour le moment.</p>
                 </div>
             )}
-                    */}
         </div>
     );
 }
