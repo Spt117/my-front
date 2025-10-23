@@ -23,7 +23,13 @@ export default function ShopLayout({ children }: ShopLayoutProps) {
     const { setFilterOrders, orders } = useOrdersStore();
     const shopId = params.shopId as string;
     const boutique = boutiqueFromId(Number(params.shopId));
-    const { setFilteredCollections, setCollections } = useCollectionStore();
+    const { setFilteredCollections, setCollections, setLoadingCollection, cleanCollections } = useCollectionStore();
+
+    // ✅ PREMIER : Nettoyer dès que shopId change (avant tout le reste)
+    useEffect(() => {
+        cleanCollections();
+        if (boutique) setShopifyBoutique(boutique);
+    }, [shopId]);
 
     useEffect(() => {
         if (shopifyBoutique) {
@@ -33,10 +39,6 @@ export default function ShopLayout({ children }: ShopLayoutProps) {
             setFilterOrders(orders);
         }
     }, [shopifyBoutique, orders, setFilterOrders]);
-
-    useEffect(() => {
-        if (boutique) setShopifyBoutique(boutique);
-    }, [shopId]);
 
     useEffect(() => {
         if (!socket) return;
@@ -73,17 +75,25 @@ export default function ShopLayout({ children }: ShopLayoutProps) {
         fetchCanaux();
     }, [shopifyBoutique, socket]);
 
+    // ✅ DEUXIEME : Charger les nouvelles collections
     useEffect(() => {
         const fetchCollections = async () => {
             if (!shopifyBoutique) return;
-            const collectionsData = (await getDataBoutique(shopifyBoutique.domain, "collections")) as ResponseServer<
-                ShopifyCollection[]
-            >;
-            setCollections(collectionsData.response || []);
-            setFilteredCollections(collectionsData.response || []);
+            try {
+                setLoadingCollection(true);
+                const collectionsData = (await getDataBoutique(shopifyBoutique.domain, "collections")) as ResponseServer<
+                    ShopifyCollection[]
+                >;
+                setCollections(collectionsData.response || []);
+                setFilteredCollections(collectionsData.response || []);
+            } catch (error) {
+                console.error("Error fetching collections:", error);
+            } finally {
+                setLoadingCollection(false);
+            }
         };
         fetchCollections();
-    }, [shopifyBoutique, shopId]);
+    }, [shopifyBoutique]);
 
     return <>{children}</>;
 }

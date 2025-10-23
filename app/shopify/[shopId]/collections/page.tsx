@@ -11,11 +11,12 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import CollectionRow from "./Collection";
 import useCollectionStore from "./storeCollections";
+import MySpinner from "@/components/layout/my-spinner";
 
 export default function Page() {
     const params = useSearchParams();
     const { shopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
-    const { filteredCollections, setFilteredCollections, collections } = useCollectionStore();
+    const { filteredCollections, setFilteredCollections, collections, loadingCollection } = useCollectionStore();
 
     // État pour le tri
     const [sortBy, setSortBy] = useState<"title" | "created_at" | "updated_at">("title");
@@ -60,11 +61,15 @@ export default function Page() {
             }
             return sortDirection === "asc" ? aValue.getTime() - bValue.getTime() : bValue.getTime() - aValue.getTime();
         });
-    }, [collections, sortBy, sortDirection]);
+    }, [filteredCollections, sortBy, sortDirection]);
 
     const toggleSortDirection = () => {
         setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
     };
+
+    if (loadingCollection) {
+        return <MySpinner active={true} />;
+    }
 
     if (sortedCollections.length === 0) {
         return (

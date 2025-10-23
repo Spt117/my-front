@@ -9,10 +9,12 @@ import { usePathname, useRouter } from "next/navigation";
 import useOrdersStore from "../shopify/orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
 import SelectFull from "./SelectFull";
+import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
+import { Button } from "../ui/button";
 
 export default function ShopifySelect() {
     const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm } = useShopifyStore();
-    const { setFilterOrders, orders } = useOrdersStore();
+    const { cleanCollections } = useCollectionStore();
     const { setPrice, setCompareAtPrice } = useProductStore();
     const path = usePathname();
     const router = useRouter();
@@ -27,20 +29,35 @@ export default function ShopifySelect() {
         value: boutique.domain,
     }));
 
+    function replaceShopifyId(url: string, newId: string | number) {
+        // et tout ce qui suit
+        const match = url.match(/\/shopify\/\d+\/([^\/]+)/);
+
+        if (match) {
+            const firstSlug = match[1];
+            return `/shopify/${newId}/${firstSlug}/`;
+        }
+
+        // Si pas de slug après l'ID, retourne juste /shopify/[newId]/
+        return url.replace(/\/shopify\/\d+\/?/, `/shopify/${newId}/`);
+    }
+
     const handleSelectOrigin = (domain: TDomainsShopify) => {
         const boutique = boutiqueFromDomain(domain);
-        if (product) {
-            setProduct(null);
-        }
+        cleanCollections();
+        if (product) setProduct(null);
+
         if (path.includes("orders")) {
             router.push(`/shopify/${boutique.id}/orders`);
             return;
         }
-        router.push(`/shopify/${boutique.id}`);
+        const newUrl = replaceShopifyId(path, boutique.id);
+        router.push(newUrl);
     };
 
     const handleEscape = () => {
         setSearchTerm("");
+        cleanCollections();
         if (path.includes("orders")) {
             setShopifyBoutique(null);
             router.push(`/shopify/orders`);
@@ -63,6 +80,9 @@ export default function ShopifySelect() {
                 placeholder="Choisir l'origine"
             />
             <SelectFull handleSelectOrigin={handleSelectOrigin} />
+            <Button variant="ghost" className="px-2 py-1 ml-2 hidden xl:inline-flex" onClick={cleanCollections}>
+                Réinitialiser
+            </Button>
         </div>
     );
 }

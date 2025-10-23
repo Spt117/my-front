@@ -6,8 +6,11 @@ interface StoreState {
     setCollections: (collections: ShopifyCollection[]) => void;
     filteredCollections: ShopifyCollection[];
     setFilteredCollections: (collections: ShopifyCollection[]) => void;
+    cleanCollections: () => void;
     dataCollection: ShopifyCollectionWithProducts | null;
     setDataCollection: (collection: ShopifyCollectionWithProducts | null) => void;
+    loadingCollection: boolean;
+    setLoadingCollection: (loading: boolean) => void;
 }
 
 const useCollectionStore = create<StoreState>((set) => ({
@@ -17,6 +20,9 @@ const useCollectionStore = create<StoreState>((set) => ({
     setFilteredCollections: (collections) => set({ filteredCollections: collections }),
     dataCollection: null,
     setDataCollection: (collection) => set({ dataCollection: collection }),
+    loadingCollection: false,
+    setLoadingCollection: (loading) => set({ loadingCollection: loading }),
+    cleanCollections: () => set({ collections: [], filteredCollections: [], dataCollection: null }),
 }));
 
 export default useCollectionStore;
