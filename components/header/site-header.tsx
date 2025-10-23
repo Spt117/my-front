@@ -1,15 +1,15 @@
 "use client";
 import HeaderPokemon from "@/app/pokemon/Header";
+import HeaderCollection from "@/app/shopify/[shopId]/collections/HeaderCollections";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import BulkHeader from "../../app/bulk/BulkHeader";
 import Orders from "./Orders";
-import SearchProduct from "./products/SearchProduct";
 import ShopifySelect from "./ShopifySelect";
+import SearchProduct from "./products/SearchProduct";
 import HeaderStock from "./stock/HeaderStock";
 import SelectAffiliationSite from "./taskAffiliation/SelectAffiliationSite";
-import HeaderCollection from "@/app/shopify/[shopId]/collections/HeaderCollections";
 
 export function SiteHeader() {
     const pathname = usePathname();
@@ -20,14 +20,14 @@ export function SiteHeader() {
             <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6 ">
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
-                {searchProductsPaths.includes(pathname) && <SearchProduct />}
                 {pathname === "/" && <Orders />}
                 {pathname === "/create" && <SelectAffiliationSite />}
                 {pathname === "/stock" && <HeaderStock />}
                 {pathname === "/bulk" && <BulkHeader />}
-                {pathname.includes("shopify") && <ShopifySelect />}
                 {pathname === "/collections" && <HeaderCollection />}
                 {pathname === "/pokemon" && <HeaderPokemon />}
+                {pathname.includes("shopify") && <ShopifySelect />}
+                {pathname.includes("shopify") && pathname.includes("products") && <SearchProduct />}
             </div>
         </header>
     );

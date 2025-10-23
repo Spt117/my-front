@@ -1,8 +1,8 @@
 "use client";
 import { Separator } from "@/components/ui/separator";
+import { useSearchParams } from "next/navigation";
 import useShopifyStore from "../../shopify/shopifyStore";
 import ProductList from "./Products";
-import { useSearchParams } from "next/navigation";
 
 export default function ListProducts() {
     const { productsSearch, searchTerm } = useShopifyStore();
