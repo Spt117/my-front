@@ -17,6 +17,14 @@ export default async function CollectionPage() {
         `gid://shopify/Collection/${pathname.split("/")[4]}`
     )) as ResponseServer<ShopifyCollectionWithProducts>;
 
+    if (!collectionData.response) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <p className="text-center text-gray-600">Collection introuvable.</p>
+            </div>
+        );
+    }
+
     const { title, description, image, products, seo, updatedAt } = collectionData.response;
 
     return (
