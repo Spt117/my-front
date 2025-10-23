@@ -1,14 +1,14 @@
 "use client";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import ProductBulk from "./ProductBulk";
-import useShopifyStore from "@/components/shopify/shopifyStore";
-import useBulkStore from "./storeBulk";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { bulkUpdateCanauxVente } from "../product/serverAction";
 import { ProductGET } from "@/library/types/graph";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { bulkUpdateCanauxVente } from "../shopify/[shopId]/products/[productId]/serverAction";
+import ProductBulk from "./ProductBulk";
+import useBulkStore from "./storeBulk";
 
 type TCanal = { id: string; name: string };
 type TCanalWithState = TCanal & { isPublished: boolean };

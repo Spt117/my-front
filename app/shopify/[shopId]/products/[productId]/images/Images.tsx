@@ -1,10 +1,10 @@
 "use client";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import useShopifyStore from "../../../components/shopify/shopifyStore";
 import AddImage from "./AddImage";
 
 export default function ImagesProduct() {

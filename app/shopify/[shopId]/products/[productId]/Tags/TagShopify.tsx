@@ -1,12 +1,12 @@
+import { deleteTag } from "@/components/shopify/serverActions";
+import useShopifyStore from "@/components/shopify/shopifyStore";
+import { ITagRequest } from "@/components/shopify/typesShopify";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { useCopy } from "@/library/hooks/useCopy";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteTag } from "../../../components/shopify/serverActions";
-import useShopifyStore from "../../../components/shopify/shopifyStore";
-import { ITagRequest } from "../../../components/shopify/typesShopify";
 
 export default function TagShopify({ tag }: { tag: string }) {
     const { product, shopifyBoutique } = useShopifyStore();

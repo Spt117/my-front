@@ -13,7 +13,7 @@ export default function ProductList({ product }: { product: ProductGET }) {
     const router = useRouter();
     if (!shopifyBoutique) return;
     const id = product.id.split("/").pop();
-    const url = `/product?id=${id}&shopify=${shopifyBoutique.locationHome}`;
+    const url = `/shopify/25754107976/products/${id}`;
     const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
 
     const handleClick = () => {

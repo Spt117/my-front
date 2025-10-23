@@ -1,4 +1,4 @@
-import { duplicateProductSameShop } from "@/app/product/serverAction";
+import { duplicateProductSameShop } from "@/app/shopify/[shopId]/products/[productId]/serverAction";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

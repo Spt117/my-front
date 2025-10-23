@@ -1,18 +1,17 @@
-"use client";
-import { cssCard } from "@/app/product/util";
-import { Button } from "@/components/ui/button";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import TagShopify from "./TagShopify";
+import { addTag } from "@/components/shopify/serverActions";
+import useShopifyStore from "@/components/shopify/shopifyStore";
+import { ITagRequest } from "@/components/shopify/typesShopify";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import useUserStore from "@/library/stores/storeUser";
 import { TagsIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { Button } from "react-day-picker";
 import { toast } from "sonner";
-import { addTag } from "../../../components/shopify/serverActions";
-import useShopifyStore from "../../../components/shopify/shopifyStore";
-import { ITagRequest } from "../../../components/shopify/typesShopify";
-import TagShopify from "./TagShopify";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { cssCard } from "../util";
 
 export default function TagsShopify() {
     const { product, shopifyBoutique } = useShopifyStore();

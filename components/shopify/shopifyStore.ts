@@ -1,8 +1,8 @@
-import { TCanal } from "@/app/product/util";
+import { TCanal } from "@/app/shopify/[shopId]/products/[productId]/util";
 import { TVariant } from "@/library/models/variantShopify/Variant";
+import { ProductGET } from "@/library/types/graph";
 import { TSearchMode } from "@/params/menu";
 import { IShopify } from "@/params/paramsShopify";
-import { ProductGET } from "@/library/types/graph";
 import { create } from "zustand";
 import { TBrand, TProductType } from "./ProductType";
 

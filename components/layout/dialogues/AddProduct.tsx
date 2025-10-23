@@ -1,10 +1,10 @@
+import { createProductFromTitle } from "@/app/shopify/[shopId]/products/[productId]/serverAction";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { createProductFromTitle } from "../../../app/product/serverAction";
 
 export default function AddProduct() {
     const { closeDialog } = useShopifyStore();

@@ -1,6 +1,6 @@
 "use client";
+import { VariantStock } from "@/app/stock/VariantStock";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { VariantStock } from "../stock/VariantStock";
 import { getVariantBySku } from "@/library/models/variantShopify/middlewareVariants";
 
 export default function VariantClient() {

@@ -1,4 +1,3 @@
-import { updateProduct } from "@/app/product/serverAction";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Label } from "recharts";
 import { toast } from "sonner";
+import { updateProduct } from "./serverAction";
 import { cssCard } from "./util";
 
 export default function Collections() {
@@ -67,7 +67,13 @@ export default function Collections() {
                     {collections.length === 0 && <Label className="text-sm text-gray-500">Aucune collection</Label>}
                     {collections.map((collection) => (
                         <div key={collection.id} className="px-3 py-2 bg-gray-100 rounded-lg text-sm text-gray-700">
-                            <Link key={collection.id} href={`/collections/${collection.id.replace("gid://shopify/Collection/", "")}?domain=${shopifyBoutique?.domain}`} className="hover:underline w-full block">
+                            <Link
+                                key={collection.id}
+                                href={`/collections/${collection.id.replace("gid://shopify/Collection/", "")}?domain=${
+                                    shopifyBoutique?.domain
+                                }`}
+                                className="hover:underline w-full block"
+                            >
                                 {collection.title}
                             </Link>
                         </div>

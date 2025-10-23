@@ -7,10 +7,7 @@ import useUserStore from "@/library/stores/storeUser";
 import { boutiqueFromId } from "@/params/paramsShopify";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
-import { TCanal } from "./products/[productId]/util";
-import { ResponseServer } from "@/components/shopify/typesShopify";
-import { ShopifyCollection } from "./collections/utils";
-import useCollectionStore from "./collections/storeCollections";
+import { TCanal } from "../products/[productId]/util";
 
 interface ShopLayoutProps {
     children: React.ReactNode;
@@ -23,7 +20,6 @@ export default function ShopLayout({ children }: ShopLayoutProps) {
     const { setFilterOrders, orders } = useOrdersStore();
     const shopId = params.shopId as string;
     const boutique = boutiqueFromId(Number(params.shopId));
-    const { setFilteredCollections, setCollections } = useCollectionStore();
 
     useEffect(() => {
         if (shopifyBoutique) {
@@ -72,18 +68,6 @@ export default function ShopLayout({ children }: ShopLayoutProps) {
 
         fetchCanaux();
     }, [shopifyBoutique, socket]);
-
-    useEffect(() => {
-        const fetchCollections = async () => {
-            if (!shopifyBoutique) return;
-            const collectionsData = (await getDataBoutique(shopifyBoutique.domain, "collections")) as ResponseServer<
-                ShopifyCollection[]
-            >;
-            setCollections(collectionsData.response || []);
-            setFilteredCollections(collectionsData.response || []);
-        };
-        fetchCollections();
-    }, [shopifyBoutique, shopId]);
 
     return <>{children}</>;
 }

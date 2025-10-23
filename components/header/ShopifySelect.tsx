@@ -1,6 +1,6 @@
 "use client";
 
-import useProductStore from "@/app/product/storeProduct";
+import useProductStore from "@/app/shopify/[shopId]/products/[productId]/storeProduct";
 import Selecteur from "@/components/selecteur";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/params/paramsShopify";
