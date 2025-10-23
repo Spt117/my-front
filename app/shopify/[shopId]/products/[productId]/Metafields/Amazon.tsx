@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Switch } from "@/components/ui/switch";
+import { useDataProduct } from "@/library/hooks/useDataProduct";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -13,6 +14,7 @@ export default function Amazon() {
     const { product, shopifyBoutique } = useShopifyStore();
     const [asinToAdd, setAsinToAdd] = useState("");
     const [loading, setLoading] = useState(false);
+    const { getProductData } = useDataProduct();
 
     let activeAmazon = product?.metafields.nodes.find((mf) => mf.key === "amazon_activate");
     if (!activeAmazon) activeAmazon = { key: "amazon_activate", value: "false", namespace: "custom", type: "boolean" };
@@ -31,7 +33,10 @@ export default function Amazon() {
         try {
             const res = await setAmazonActivateMetafield(data);
             if (res?.error) toast.error(res.error);
-            if (res?.message) toast.success(res.message);
+            if (res?.message) {
+                await getProductData();
+                toast.success(res.message);
+            }
         } catch (error) {
             toast.error("An error occurred while updating the metafield.");
         } finally {
@@ -58,7 +63,10 @@ export default function Amazon() {
         try {
             const res = await setAsin(data);
             if (res?.error) toast.error(res.error);
-            if (res?.message) toast.success(res.message);
+            if (res?.message) {
+                await getProductData();
+                toast.success(res.message);
+            }
         } catch (error) {
             toast.error("An error occurred while updating the metafield.");
         } finally {
@@ -70,12 +78,18 @@ export default function Amazon() {
         <div className="flex gap-2 flex-col">
             <div>
                 <p className="flex items-center justify-space-between gap-4">
-                    Affiliation Amazon: <span className="font-semibold">{activeAmazon.value === "true" ? "Activée" : "Désactivée"}</span>
+                    Affiliation Amazon:{" "}
+                    <span className="font-semibold">{activeAmazon.value === "true" ? "Activée" : "Désactivée"}</span>
                     <Switch checked={activeAmazon.value === "true"} onCheckedChange={() => handleToggle()} disabled={loading} />
                     <Spinner className={`w-4 h-4 ml-2 ${loading ? "inline-block" : "hidden"}`} />
                 </p>
                 {asin && (
-                    <a href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${asin.value}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    <a
+                        href={`https://${shopifyBoutique?.marketplaceAmazon}/dp/${asin.value}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                    >
                         ASIN: {asin.value}
                     </a>
                 )}

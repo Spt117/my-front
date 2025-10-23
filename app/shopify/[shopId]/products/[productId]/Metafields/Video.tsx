@@ -1,16 +1,17 @@
+import CopyComponent from "@/components/Copy";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Switch } from "@/components/ui/switch";
+import { useDataProduct } from "@/library/hooks/useDataProduct";
 import { TMetafieldKeys } from "@/library/types/graph";
 import { Trash2 } from "lucide-react";
 import { JSX, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { deleteMetafield, updateMetafieldKey } from "../serverAction";
 import { cssCard } from "../util";
-import CopyComponent from "@/components/Copy";
 
 export default function Video() {
     const [loading, setLoading] = useState(false);
@@ -20,6 +21,7 @@ export default function Video() {
     const { product, shopifyBoutique } = useShopifyStore();
     const metafieldVideo = product?.metafields.nodes.find((mf) => mf.key === "id_video_youtube");
     const metafieldUrl = product?.metafields.nodes.find((mf) => mf.key === "url_video");
+    const { getProductData } = useDataProduct();
 
     if (!product || !shopifyBoutique) return null;
     useEffect(() => {
@@ -63,7 +65,10 @@ export default function Video() {
         try {
             const res = await updateMetafieldKey(domain, productGID, key, srcVideo);
             if (res?.error) toast.error(res.error);
-            if (res?.message) toast.success(res.message);
+            if (res?.message) {
+                toast.success(res.message);
+                await getProductData();
+            }
         } catch (error) {
             toast.error("An error occurred while updating the metafield.");
         } finally {
@@ -75,13 +80,14 @@ export default function Video() {
         setLoading(true);
         const key: TMetafieldKeys = metafieldUrl ? "url_video" : "id_video_youtube";
         const domain = shopifyBoutique.domain;
-        console.log(key);
-
         if (!key) return;
         try {
             const res = await deleteMetafield(domain, product.id, key);
             if (res?.error) toast.error(res.error);
-            if (res?.message) toast.success(res.message);
+            if (res?.message) {
+                toast.success(res.message);
+                await getProductData();
+            }
         } catch (error) {
             toast.error("An error occurred while updating the metafield.");
         } finally {

@@ -2,19 +2,21 @@ import Selecteur from "@/components/selecteur";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import { useDataProduct } from "@/library/hooks/useDataProduct";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { updateCanauxVente, updateProduct } from "./serverAction";
 import useProductStore from "./storeProduct";
 import { cssCard } from "./util";
-import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { useRouter } from "next/navigation";
 
 export default function Statut() {
     const [loading, setLoading] = useState(false);
     const { product, shopifyBoutique, openDialog, canauxBoutique } = useShopifyStore();
     const { statut, setStatut } = useProductStore();
     const router = useRouter();
+    const { getProductData } = useDataProduct();
 
     useEffect(() => {
         if (product?.status) setStatut(product.status);
@@ -47,6 +49,7 @@ export default function Statut() {
             console.log(err);
             toast.error("Erreur lors de la sauvegarde des canaux de vente");
         }
+        await getProductData();
         setLoading(false);
     };
 

@@ -1,17 +1,18 @@
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import TagShopify from "./TagShopify";
 import { addTag } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { ITagRequest } from "@/components/shopify/typesShopify";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import { useDataProduct } from "@/library/hooks/useDataProduct";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import useUserStore from "@/library/stores/storeUser";
 import { TagsIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "react-day-picker";
 import { toast } from "sonner";
 import { cssCard } from "../util";
+import TagShopify from "./TagShopify";
 
 export default function TagsShopify() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -19,6 +20,7 @@ export default function TagsShopify() {
     const [loading, setLoading] = useState(false);
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isSearching, setIsSearching] = useState(false);
+    const { getProductData } = useDataProduct();
 
     const { socket } = useUserStore();
 
@@ -84,6 +86,7 @@ export default function TagsShopify() {
             if (res?.message) {
                 setNewTag("");
                 toast.success(res.message);
+                await getProductData();
             }
         } catch (error) {
             toast.error("An error occurred while deleting the tag.");

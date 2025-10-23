@@ -1,22 +1,17 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { Switch } from "@/components/ui/switch";
-import { TMetafieldKeys } from "@/library/types/graph";
+import { useDataProduct } from "@/library/hooks/useDataProduct";
 import { Trash2 } from "lucide-react";
-import { JSX, useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { deleteMetafield, updateMetafieldKey } from "../serverAction";
+import { deleteMetafield } from "../serverAction";
 import { cssCard } from "../util";
-import CopyComponent from "@/components/Copy";
-import { useRouter } from "next/navigation";
 
 export default function MetafieldToClean() {
     const [loading, setLoading] = useState(false);
     const { product, shopifyBoutique } = useShopifyStore();
-    const router = useRouter();
+    const { getProductData } = useDataProduct();
     const metafields = product?.metafields.nodes.filter((mf) => mf.namespace === "custom");
 
     if (!product || !shopifyBoutique) return null;
@@ -29,7 +24,7 @@ export default function MetafieldToClean() {
             const res = await deleteMetafield(domain, product.id, key);
             if (res?.error) toast.error(res.error);
             if (res?.message) toast.success(res.message);
-            router.refresh();
+            await getProductData();
         } catch (error) {
             toast.error("An error occurred while updating the metafield.");
         } finally {

@@ -4,6 +4,7 @@ import { ITagRequest } from "@/components/shopify/typesShopify";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { useCopy } from "@/library/hooks/useCopy";
+import { useDataProduct } from "@/library/hooks/useDataProduct";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -12,6 +13,7 @@ export default function TagShopify({ tag }: { tag: string }) {
     const { product, shopifyBoutique } = useShopifyStore();
     const [loading, setLoading] = useState(false);
     const { handleCopy } = useCopy();
+    const { getProductData } = useDataProduct();
     if (!product || !shopifyBoutique) return null;
 
     const onRemove = async (e: React.MouseEvent) => {
@@ -21,7 +23,10 @@ export default function TagShopify({ tag }: { tag: string }) {
             const params: ITagRequest = { tag, productId: product.id, domain: shopifyBoutique.domain };
             const res = await deleteTag(params);
             if (res?.error) toast.error(res.error);
-            if (res?.message) toast.success(res.message);
+            if (res?.message) {
+                toast.success(res.message);
+                await getProductData();
+            }
         } catch (error) {
             toast.error("An error occurred while deleting the tag.");
         } finally {

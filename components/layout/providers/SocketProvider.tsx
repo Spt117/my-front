@@ -90,7 +90,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                             productId: data.body.id,
                             data: data.body,
                         });
-                        router.refresh();
                         toast.success(`Produit mis à jour (ID: ${data.body.id})`);
                         break;
                     default:
