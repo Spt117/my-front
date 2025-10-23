@@ -45,7 +45,8 @@ export default function DuplicateOtherShop() {
         if (res.message) toast.success(res.message);
         console.log(res.response);
         const newShop = boutiqueFromDomain(domainDest);
-        const url = `/product?id=${res.response.id.replace("gid://shopify/Product/", "")}&shopify=${newShop.locationHome}`;
+        const id = res.response.id.replace("gid://shopify/Product/", "");
+        const url = `/shopify/${newShop.id}/products/${id}`;
         router.push(url);
         closeDialog();
         setLoading(false);

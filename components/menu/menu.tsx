@@ -13,7 +13,11 @@ export interface MenuProps {
 
 export default function Menu({ path, label, disabled }: MenuProps) {
     const currentPath = usePathname();
-    const isActive = currentPath === path || (path.includes("orders") && currentPath.includes("orders"));
+    const isActive =
+        currentPath === path ||
+        (path.includes("orders") && currentPath.includes("orders")) ||
+        (path.includes("products") && currentPath.includes("products")) ||
+        (path.includes("collections") && currentPath.includes("collections"));
 
     const baseClasses = "min-w-8 duration-200 ease-linear flex items-center gap-2";
     const activeClasses =
