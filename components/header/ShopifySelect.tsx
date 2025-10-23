@@ -58,8 +58,6 @@ export default function ShopifySelect() {
         if (path.includes("orders")) {
             setShopifyBoutique(null);
             router.push(`/shopify/orders`);
-        } else if (path !== "/product") {
-            setShopifyBoutique(null);
         } else if (product) {
             setPrice(product?.variants?.nodes[0].price ?? "0");
             setCompareAtPrice(product?.variants?.nodes[0].compareAtPrice || "0");
