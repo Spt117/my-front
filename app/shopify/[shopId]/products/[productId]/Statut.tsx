@@ -8,11 +8,13 @@ import { updateCanauxVente, updateProduct } from "./serverAction";
 import useProductStore from "./storeProduct";
 import { cssCard } from "./util";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import { useRouter } from "next/navigation";
 
 export default function Statut() {
     const [loading, setLoading] = useState(false);
     const { product, shopifyBoutique, openDialog, canauxBoutique } = useShopifyStore();
     const { statut, setStatut } = useProductStore();
+    const router = useRouter();
 
     useEffect(() => {
         if (product?.status) setStatut(product.status);
@@ -40,6 +42,7 @@ export default function Statut() {
             const res = await updateCanauxVente(shopifyBoutique.domain, product.id, canauxBoutique);
             if (res.error) toast.error(res.error);
             if (res.message) toast.success(res.message);
+            router.refresh();
         } catch (err) {
             console.log(err);
             toast.error("Erreur lors de la sauvegarde des canaux de vente");
