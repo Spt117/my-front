@@ -1,14 +1,14 @@
 "use server";
 
 import { IDataUpdate } from "@/app/bulk/storeBulk";
+import { TaskShopifyController } from "@/library/models/tasksShopify/taskController";
+import { TVariant } from "@/library/models/variantShopify/Variant";
 import { variantController } from "@/library/models/variantShopify/variantController";
-import { ProductGET, ProductVariantNodeGET, TMetafieldKeys } from "@/library/types/graph";
+import { ProductGET, TMetafieldKeys } from "@/library/types/graph";
 import { getServer, postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 import { TDomainsShopify } from "@/params/paramsShopify";
 import { TFieldProduct, TFieldVariant } from "./util";
-import { TVariant } from "@/library/models/variantShopify/Variant";
-import { TaskShopifyController } from "@/library/models/tasksShopify/taskController";
 
 export async function updateVariant(
     domain: TDomainsShopify,
@@ -91,8 +91,6 @@ export async function duplicateProductSameShop(
     published: boolean
 ) {
     const url = `${pokeUriServer}/shopify/duplicate-product-same-shop`;
-    console.log(url);
-
     const data = { domain, productGid, newTitle, published };
     const response = await postServer(url, data);
     return response;

@@ -1,16 +1,15 @@
 "use client";
 
+import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
 import useProductStore from "@/app/shopify/[shopId]/products/[productId]/storeProduct";
 import Selecteur from "@/components/selecteur";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/params/paramsShopify";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import useOrdersStore from "../shopify/orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
-import SelectFull from "./SelectFull";
-import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
 import { Button } from "../ui/button";
+import SelectFull from "./SelectFull";
 
 export default function ShopifySelect() {
     const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm } = useShopifyStore();
@@ -80,9 +79,6 @@ export default function ShopifySelect() {
                 placeholder="Choisir l'origine"
             />
             <SelectFull handleSelectOrigin={handleSelectOrigin} />
-            <Button variant="ghost" className="px-2 py-1 ml-2 hidden xl:inline-flex" onClick={cleanCollections}>
-                Réinitialiser
-            </Button>
         </div>
     );
 }
