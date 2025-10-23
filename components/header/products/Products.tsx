@@ -2,10 +2,9 @@
 import { ProductGET } from "@/library/types/graph";
 import { Eye } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useShopifyStore from "../../shopify/shopifyStore";
-import { useRouter } from "next/navigation";
 
 export default function ProductList({ product }: { product: ProductGET }) {
     const { shopifyBoutique, setSearchTerm } = useShopifyStore();
@@ -13,7 +12,7 @@ export default function ProductList({ product }: { product: ProductGET }) {
     const router = useRouter();
     if (!shopifyBoutique) return;
     const id = product.id.split("/").pop();
-    const url = `/shopify/25754107976/products/${id}`;
+    const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
     const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
 
     const handleClick = () => {
