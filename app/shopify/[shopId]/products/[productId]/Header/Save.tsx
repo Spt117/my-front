@@ -120,8 +120,6 @@ export default function Save() {
                 toast.error("Erreur lors de la sauvegarde");
             }
         }
-        if (ancreUrl !== product.handle) {
-        }
         await getProductData();
         setLoadingSave(false);
     };

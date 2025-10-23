@@ -23,6 +23,7 @@ import VariantClient from "./VariantClient";
 
 export default function ProductContent() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
+
     const query = useSearchParams();
 
     useEffect(() => {

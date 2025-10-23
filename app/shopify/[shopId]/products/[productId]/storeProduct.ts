@@ -6,6 +6,8 @@ import { TCanal } from "./util";
 interface StoreState {
     loadingSave: boolean;
     setLoadingSave: (loading: boolean) => void;
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
     price: string;
     setPrice: (price: string) => void;
     compareAtPrice: string;
@@ -37,6 +39,8 @@ interface StoreState {
 const useProductStore = create<StoreState>((set) => ({
     loadingSave: false,
     setLoadingSave: (loading) => set({ loadingSave: loading }),
+    loading: false,
+    setLoading: (loading) => set({ loading: loading }),
     price: "0",
     setPrice: (price) => set({ price }),
     compareAtPrice: "0",

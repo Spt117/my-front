@@ -9,10 +9,10 @@ import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import useUserStore from "@/library/stores/storeUser";
 import { TagsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "react-day-picker";
 import { toast } from "sonner";
 import { cssCard } from "../util";
 import TagShopify from "./TagShopify";
+import { Button } from "@/components/ui/button";
 
 export default function TagsShopify() {
     const { product, shopifyBoutique } = useShopifyStore();
