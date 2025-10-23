@@ -58,7 +58,7 @@ export default function SearchProduct() {
     };
 
     return (
-        <div className="w-full flex gap-2">
+        <div className="flex-1 flex gap-2">
             {/* <ShopifySelect /> */}
             <div className="relative flex-1">
                 <div className="w-full flex gap-2">
