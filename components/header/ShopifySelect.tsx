@@ -8,7 +8,6 @@ import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/params/paramsS
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import useShopifyStore from "../shopify/shopifyStore";
-import { Button } from "../ui/button";
 import SelectFull from "./SelectFull";
 
 export default function ShopifySelect() {
@@ -56,7 +55,6 @@ export default function ShopifySelect() {
 
     const handleEscape = () => {
         setSearchTerm("");
-        cleanCollections();
         if (path.includes("orders")) {
             setShopifyBoutique(null);
             router.push(`/shopify/orders`);
@@ -71,13 +69,7 @@ export default function ShopifySelect() {
 
     return (
         <div className="">
-            <Selecteur
-                className="xl:hidden"
-                array={option2}
-                value={shopifyBoutique?.domain || ""}
-                onChange={handleSelectOrigin}
-                placeholder="Choisir l'origine"
-            />
+            <Selecteur className="xl:hidden" array={option2} value={shopifyBoutique?.domain || ""} onChange={handleSelectOrigin} placeholder="Choisir l'origine" />
             <SelectFull handleSelectOrigin={handleSelectOrigin} />
         </div>
     );

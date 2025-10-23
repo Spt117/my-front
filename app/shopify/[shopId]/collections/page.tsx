@@ -1,5 +1,6 @@
 "use client";
 
+import MySpinner from "@/components/layout/my-spinner";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import CollectionRow from "./Collection";
 import useCollectionStore from "./storeCollections";
-import MySpinner from "@/components/layout/my-spinner";
 
 export default function Page() {
     const params = useSearchParams();
@@ -24,18 +24,12 @@ export default function Page() {
 
     useEffect(() => {
         if (searchTerm) {
-            const filtered = filteredCollections.filter(
-                (collection) =>
-                    collection.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    collection.handle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    collection.id.toString().includes(searchTerm)
-            );
+            const filtered = filteredCollections.filter((collection) => collection.title.toLowerCase().includes(searchTerm.toLowerCase()) || collection.handle.toLowerCase().includes(searchTerm.toLowerCase()) || collection.id.toString().includes(searchTerm));
             setFilteredCollections(filtered);
         }
     }, [searchTerm, shopifyBoutique, params]);
 
     useKeyboardShortcuts("Escape", () => {
-        setSearchTerm("");
         setFilteredCollections(collections);
     });
 

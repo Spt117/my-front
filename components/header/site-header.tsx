@@ -13,7 +13,6 @@ import SelectAffiliationSite from "./taskAffiliation/SelectAffiliationSite";
 
 export function SiteHeader() {
     const pathname = usePathname();
-    const searchProductsPaths = ["/product-duplicate", "/product"];
 
     return (
         <header className="sticky p-1 top-0 z-49 bg-white flex shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -24,10 +23,10 @@ export function SiteHeader() {
                 {pathname === "/create" && <SelectAffiliationSite />}
                 {pathname === "/stock" && <HeaderStock />}
                 {pathname === "/bulk" && <BulkHeader />}
-                {pathname === "/collections" && <HeaderCollection />}
                 {pathname === "/pokemon" && <HeaderPokemon />}
                 {pathname.includes("shopify") && <ShopifySelect />}
-                {pathname.includes("shopify") && pathname.includes("products") && <SearchProduct />}
+                {pathname.includes("products") && <SearchProduct />}
+                {pathname.includes("/collections") && <HeaderCollection />}
             </div>
         </header>
     );
