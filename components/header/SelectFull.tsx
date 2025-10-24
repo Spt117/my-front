@@ -5,15 +5,6 @@ import useShopifyStore from "../shopify/shopifyStore";
 export default function SelectFull({ handleSelectOrigin }: { handleSelectOrigin: (domain: TDomainsShopify) => void }) {
     const { shopifyBoutique } = useShopifyStore();
 
-    // const handleSelectOrigin = (domain: TDomainsShopify) => {
-    //     const boutique = boutiqueFromDomain(domain);
-    //     setShopifyBoutique(boutique);
-    //     if (product) {
-    //         setProduct(null);
-    //         router.push("/product");
-    //     }
-    // };
-
     const classBtn =
         "cursor-pointer w-max p-1 rounded-lg border-2 transition-all duration-50 flex items-center gap-2 hover:shadow-md ";
 
