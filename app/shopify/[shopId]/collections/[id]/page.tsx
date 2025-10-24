@@ -1,6 +1,6 @@
 import { getDataBoutique } from "@/components/shopify/serverActions";
 import { ResponseServer } from "@/components/shopify/typesShopify";
-import { boutiqueFromDomain, boutiqueFromId } from "@/params/paramsShopify";
+import { boutiqueFromId } from "@/params/paramsShopify";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";

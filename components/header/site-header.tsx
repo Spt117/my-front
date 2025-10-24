@@ -19,7 +19,6 @@ export function SiteHeader() {
             <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6 ">
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
-                {pathname === "/" && <Orders />}
                 {pathname === "/create" && <SelectAffiliationSite />}
                 {pathname === "/stock" && <HeaderStock />}
                 {pathname === "/bulk" && <BulkHeader />}
@@ -27,6 +26,7 @@ export function SiteHeader() {
                 {pathname.includes("shopify") && <ShopifySelect />}
                 {pathname.includes("products") && <SearchProduct />}
                 {pathname.includes("collections") && <HeaderCollection />}
+                {pathname.includes("orders") && <Orders />}
             </div>
         </header>
     );

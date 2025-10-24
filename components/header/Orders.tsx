@@ -58,8 +58,7 @@ export default function Orders() {
     };
 
     return (
-        <div className="w-full flex gap-2">
-            <ShopifySelect />
+        <>
             <div className="relative flex-1">
                 <Input
                     disabled={!shopifyBoutique}
@@ -87,9 +86,7 @@ export default function Orders() {
                     </div>
                 )}
             </div>
-
-            {/* Liste des produits positionnée sous l'input */}
             <ListOrdersSearch />
-        </div>
+        </>
     );
 }

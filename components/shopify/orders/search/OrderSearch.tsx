@@ -1,17 +1,25 @@
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { ShopifyOrder } from "@/library/shopify/orders";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import UsefullLinks from "../UsefullLinks";
+import Link from "next/link";
 
 export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     const { shopifyBoutique, setSearchTerm } = useShopifyStore();
+    const router = useRouter();
 
     if (!shopifyBoutique) return null;
-    const appUrl = `/${order.id.split("/").pop()}?domain=${shopifyBoutique?.domain}`;
+    const url = `/shopify/${shopifyBoutique.id}/orders/${order.id.split("/").pop()}`;
+
+    const handleClick = () => {
+        setSearchTerm("");
+        router.push(url);
+    };
 
     return (
-        <div className="flex border-b last:border-0">
-            <a href={appUrl}>
+        <Link href={url}>
+            <div className="flex border-b last:border-0" onClick={handleClick}>
                 <div className="w-min-0 cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
                     <div className="relative w-12 h-12 flex-shrink-0">
                         <Image
@@ -33,8 +41,8 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
                         <p className="text-sm text-muted-foreground">ID: {order.id.split("/").pop()}</p>
                     </div>
                 </div>
-            </a>
-            <UsefullLinks domain={shopifyBoutique.domain} orderId={order.id} />
-        </div>
+                <UsefullLinks domain={shopifyBoutique.domain} orderId={order.id} />
+            </div>
+        </Link>
     );
 }
