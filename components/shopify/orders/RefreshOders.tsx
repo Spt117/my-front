@@ -11,7 +11,7 @@ import useOrdersStore, { ProductInOrder } from "./store";
 import ToggleMode from "./ToggleMode";
 import useShopifyStore from "../shopifyStore";
 
-export default function RefreshOders() {
+export default function RefreshOders({ boolArchived }: { boolArchived?: boolean }) {
     const [productsInOrders, setProductsInOrders] = useState<ProductInOrder[]>([]);
     const { loading, setLoading, shopifyBoutique } = useShopifyStore();
     const { setFilterOrders, setOrders, orders } = useOrdersStore();
