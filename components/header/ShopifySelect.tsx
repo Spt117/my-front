@@ -44,6 +44,7 @@ export default function ShopifySelect() {
 
     const handleSelectOrigin = (domain: TDomainsShopify) => {
         const boutique = boutiqueFromDomain(domain);
+        setShopifyBoutique(boutique);
         cleanCollections();
         if (product) setProduct(null);
 

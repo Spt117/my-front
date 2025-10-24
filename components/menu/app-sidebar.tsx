@@ -31,9 +31,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
+            <hr className="mb-4" />
             <SidebarContent>
-                <NavMain />
                 <NavShopify />
+                <hr className="mb-3 mt-3" />
+                <NavMain />
             </SidebarContent>
             <hr />
             <SidebarFooter>

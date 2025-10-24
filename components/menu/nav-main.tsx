@@ -6,7 +6,7 @@ export function NavMain() {
     return (
         <SidebarGroup>
             <SidebarGroupContent>
-                <SidebarMenu className="flex flex-col gap-4">
+                <SidebarMenu className="flex flex-col gap-3">
                     {menuItems.map((item) => (
                         <Menu key={item.path} path={item.path} label={item.label} />
                     ))}

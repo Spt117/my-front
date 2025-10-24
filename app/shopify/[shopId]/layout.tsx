@@ -19,18 +19,14 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
     let collections: ShopifyCollection[] = [];
 
     if (boutique) {
-        try {
-            // Chargement parallèle des données
-            const [canauxData, collectionsData] = await Promise.all([
-                getDataBoutique(boutique.domain, "salesChannels"),
-                getDataBoutique(boutique.domain, "collections") as Promise<ResponseServer<ShopifyCollection[]>>,
-            ]);
+        // Chargement parallèle des données
+        const [canauxData, collectionsData] = await Promise.all([
+            getDataBoutique(boutique.domain, "salesChannels"),
+            getDataBoutique(boutique.domain, "collections") as Promise<ResponseServer<ShopifyCollection[]>>,
+        ]);
 
-            canauxPublication = canauxData.response as CanauxPublication[];
-            collections = collectionsData.response || [];
-        } catch (error) {
-            console.error("Error fetching shop data:", error);
-        }
+        if (canauxData.response) canauxPublication = canauxData.response as CanauxPublication[];
+        if (collectionsData.response) collections = collectionsData.response as ShopifyCollection[];
     }
 
     return (

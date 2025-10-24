@@ -6,7 +6,6 @@ export const menuItems: MenuProps[] = [
     { path: "/create", label: "Créer une fiche produit" },
     { path: "/bulk", label: "Édition en masse" },
     { path: "/pokemon", label: "Pokémon" },
-    { path: "/stats", label: "Statistiques" },
     { path: "/wordpress", label: "WordPress" },
     { path: "/server", label: "Serveur" },
 ];

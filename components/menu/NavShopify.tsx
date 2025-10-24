@@ -16,7 +16,7 @@ export function NavShopify() {
     return (
         <SidebarGroup>
             <SidebarGroupContent>
-                <SidebarMenu>
+                <SidebarMenu className="flex flex-col gap-3">
                     <div className="flex items-center justify-between ">
                         <SidebarGroupLabel className="px-3 text-sm font-medium text-muted-foreground">Shopify</SidebarGroupLabel>
                         {shopifyBoutique && (

@@ -16,8 +16,7 @@ export async function getDataBoutique(
 > {
     const url = `http://localhost:9100/shopify/data-shop?domain=${domain}&param=${param}${id ? `&id=${id}` : ""}`;
     const response = await getServer(url);
-    if (response?.error) return { error: response.error, response: null };
-    return { response: response?.response || null };
+    return response;
 }
 
 export async function getProduct(data: IGetProduct): Promise<ResponseServer<ProductGET> | null> {
