@@ -26,7 +26,7 @@ export function SiteHeader() {
                 {pathname === "/pokemon" && <HeaderPokemon />}
                 {pathname.includes("shopify") && <ShopifySelect />}
                 {pathname.includes("products") && <SearchProduct />}
-                {pathname.includes("/collections") && <HeaderCollection />}
+                {pathname.includes("collections") && <HeaderCollection />}
             </div>
         </header>
     );

@@ -1,7 +1,7 @@
 "use client";
 import { CardHeader } from "@/components/ui/card";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
-import { Archive, ArrowBigLeft, RefreshCcw } from "lucide-react";
+import { Archive, RefreshCcw } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import MappingOrders from "./MappingOrders";
@@ -11,7 +11,7 @@ import useOrdersStore, { ProductInOrder } from "./store";
 import ToggleMode from "./ToggleMode";
 import useShopifyStore from "../shopifyStore";
 
-export default function RefreshOders({ boolArchived }: { boolArchived?: boolean }) {
+export default function RefreshOders() {
     const [productsInOrders, setProductsInOrders] = useState<ProductInOrder[]>([]);
     const { loading, setLoading, shopifyBoutique } = useShopifyStore();
     const { setFilterOrders, setOrders, orders } = useOrdersStore();
@@ -25,7 +25,6 @@ export default function RefreshOders({ boolArchived }: { boolArchived?: boolean 
             setLoading(true);
 
             const data = await getOrders();
-            console.log(data);
 
             if (data) {
                 const orders = data.orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());

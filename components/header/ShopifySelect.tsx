@@ -7,11 +7,13 @@ import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/params/paramsShopify";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import useOrdersStore from "../shopify/orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
 import SelectFull from "./SelectFull";
 
 export default function ShopifySelect() {
     const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm } = useShopifyStore();
+    const { setFilterOrders, orders } = useOrdersStore();
     const { cleanCollections } = useCollectionStore();
     const { setPrice, setCompareAtPrice } = useProductStore();
     const path = usePathname();
@@ -57,6 +59,7 @@ export default function ShopifySelect() {
         setSearchTerm("");
         if (path.includes("orders")) {
             setShopifyBoutique(null);
+            setFilterOrders(orders);
             router.push(`/shopify/orders`);
         } else if (product) {
             setPrice(product?.variants?.nodes[0].price ?? "0");
@@ -67,7 +70,13 @@ export default function ShopifySelect() {
 
     return (
         <div className="">
-            <Selecteur className="xl:hidden" array={option2} value={shopifyBoutique?.domain || ""} onChange={handleSelectOrigin} placeholder="Choisir l'origine" />
+            <Selecteur
+                className="xl:hidden"
+                array={option2}
+                value={shopifyBoutique?.domain || ""}
+                onChange={handleSelectOrigin}
+                placeholder="Choisir l'origine"
+            />
             <SelectFull handleSelectOrigin={handleSelectOrigin} />
         </div>
     );
