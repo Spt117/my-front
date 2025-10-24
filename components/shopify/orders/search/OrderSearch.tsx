@@ -34,7 +34,7 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
                     </div>
                 </div>
             </a>
-            <UsefullLinks domain={shopifyBoutique.domain} orderId={order.id} px="50px" />
+            <UsefullLinks domain={shopifyBoutique.domain} orderId={order.id} />
         </div>
     );
 }

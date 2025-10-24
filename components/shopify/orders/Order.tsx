@@ -39,7 +39,7 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                     </span>
                                 ))}
                             </div>
-                            <UsefullLinks domain={boutique.domain} orderId={order.id} px="20px" />
+                            <UsefullLinks domain={boutique.domain} orderId={order.id} />
                         </CardTitle>
 
                         <p className="text-sm text-gray-600">
