@@ -3,7 +3,6 @@
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu } from "@/components/ui/sidebar";
 import { menuShopify } from "@/params/menu";
 import { Eye } from "lucide-react";
-import { useState } from "react";
 import useShopifyStore from "../shopify/shopifyStore";
 import Menu from "./menu";
 
