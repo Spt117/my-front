@@ -8,7 +8,7 @@ import { clearKeys } from "./server";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 
-export default function StatusKeys({ data }: { data: IResponseFetch }) {
+export default function StatusKeys({ data }: { data: IResponseFetch<any> }) {
     const [status, setStatus] = useState("");
     const [loading, setLoading] = useState(false);
 

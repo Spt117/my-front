@@ -1,9 +1,9 @@
 "use server";
 
-import { getServer, IResponseFetch } from "@/library/utils/fetchServer";
+import { IResponseFetch, getServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 
-export async function statusKeys(): Promise<IResponseFetch> {
+export async function statusKeys(): Promise<IResponseFetch<any>> {
     try {
         const url = pokeUriServer + "/amazon/status-keys";
         const res = await getServer(url);
@@ -14,7 +14,7 @@ export async function statusKeys(): Promise<IResponseFetch> {
     }
 }
 
-export async function clearKeys(): Promise<IResponseFetch> {
+export async function clearKeys(): Promise<IResponseFetch<any>> {
     try {
         const url = pokeUriServer + "/amazon/clear-keys";
         const res = await getServer(url);
