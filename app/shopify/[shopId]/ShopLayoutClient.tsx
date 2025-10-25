@@ -38,7 +38,7 @@ export default function ShopLayoutClient({ children, boutique, canauxPublication
             setCollections(collections);
             setFilteredCollections(collections);
         }
-    }, [shopId]);
+    }, [shopId, collections, canauxPublication]);
 
     // Filtrage des orders
     useEffect(() => {

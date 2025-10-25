@@ -2,7 +2,8 @@
 
 import { getServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
-import { TDomainsShopify } from "@/params/paramsShopify";
+import { IShopify, TDomainsShopify } from "@/params/paramsShopify";
+import { revalidatePath } from "next/cache";
 
 export async function createCollection(title: string, domain: TDomainsShopify) {
     const url = `${pokeUriServer}/shopify/create-collection?domain=${domain}&title=${title}`;
@@ -10,9 +11,10 @@ export async function createCollection(title: string, domain: TDomainsShopify) {
     return response;
 }
 
-export async function deleteCollection(domain: TDomainsShopify, collectionGid: string) {
-    const url = `${pokeUriServer}/shopify/delete-collection?domain=${domain}&collectionGid=${collectionGid}`;
+export async function deleteCollection(shop: IShopify, collectionGid: string) {
+    const url = `${pokeUriServer}/shopify/delete-collection?domain=${shop.domain}&collectionGid=${collectionGid}`;
     const response = await getServer(url);
+    revalidatePath(`/shopify/${shop.id}`, "layout");
     return response;
 }
 

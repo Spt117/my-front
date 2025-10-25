@@ -1,31 +1,17 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
+import { Trash2 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import useCollectionStore from "../storeCollections";
-import { useRouter } from "next/navigation";
-import { deleteCollection } from "../server";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import ProductCollection from "./Product";
 
 export default function Page() {
     const { dataCollection } = useCollectionStore();
-    const { shopifyBoutique } = useShopifyStore();
-    const router = useRouter();
+    const { shopifyBoutique, openDialog } = useShopifyStore();
 
-    // ✅ Changez return; en return null;
     if (!dataCollection || !shopifyBoutique) return null;
 
     const { title, description, image, products, seo, updatedAt } = dataCollection;
-
-    const handleDeleteCollection = async () => {
-        const response = await deleteCollection(shopifyBoutique.domain, dataCollection.id);
-        if (response.message) {
-            toast.success(response.message);
-            router.push(`/shopify/${shopifyBoutique.id}/collections`);
-        }
-    };
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -48,9 +34,7 @@ export default function Page() {
                     <div className="text-sm text-gray-500">Dernière mise à jour : {new Date(updatedAt).toLocaleDateString()}</div>
                     {seo?.description && <p className="text-sm text-gray-500 mt-2">{seo.description}</p>}
                 </div>
-                <Button variant="destructive" className="mt-4" onClick={handleDeleteCollection}>
-                    Supprimer la collection
-                </Button>
+                <Trash2 className="mt-4 cursor-pointer" onClick={() => openDialog(6)} />
             </div>
             <div className="divide-y">
                 {products.map((product) => (
