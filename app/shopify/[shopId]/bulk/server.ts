@@ -1,12 +1,21 @@
 "use server";
 import { ProductGET } from "@/library/types/graph";
-import { getServer, IResponseFetch } from "@/library/utils/fetchServer";
+import { getServer, IResponseFetch, postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 
 export async function SearchByTag(tag: string, domain: string): Promise<IResponseFetch<ProductGET[]>> {
     const url = `${pokeUriServer}/shopify/search-by-tag?tag=${encodeURIComponent(tag)}&domain=${encodeURIComponent(domain)}`;
-    console.log(url);
-
     const response = await getServer(url);
+    return response;
+}
+
+export async function addProductsToCollection(
+    domain: string,
+    collectionGid: string,
+    productGids: string[]
+): Promise<IResponseFetch<null>> {
+    const url = `${pokeUriServer}/shopify/add-products-to-collection`;
+    const data = { domain, collectionGid, productGids };
+    const response = await postServer(url, data);
     return response;
 }

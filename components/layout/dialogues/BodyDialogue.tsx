@@ -4,6 +4,7 @@ import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import useShopifyStore from "../../shopify/shopifyStore";
 import AddCollection from "./AddCollection";
 import AddProduct from "./AddProduct";
+import BulkActions from "./BulkActions";
 import ChoiceDuplicate from "./ChoiceDuplicate";
 import DeleteCollection from "./DeleteCollection";
 import DeleteProduct from "./DeleteProduct";
@@ -31,6 +32,7 @@ export default function BodyDialogue() {
                 {dialogOpen === 4 && <DuplicateOtherShop />}
                 {dialogOpen === 5 && <AddCollection />}
                 {dialogOpen === 6 && <DeleteCollection />}
+                {dialogOpen === 7 && <BulkActions />}
             </div>
         </div>
     );

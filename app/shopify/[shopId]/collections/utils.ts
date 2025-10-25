@@ -18,7 +18,7 @@ interface CollectionRuleSet {
 
 interface CollectionSEO {
     title: string;
-    description: string;
+    description: string | null;
 }
 
 interface ProductsCount {
@@ -28,11 +28,18 @@ interface ProductsCount {
 export interface CollectionProduct {
     id: string;
     title: string;
-    handle: string;
     featuredImage: {
         url: string;
         altText?: string;
     } | null;
+    handle: string;
+    variants: {
+        nodes: {
+            sku: string;
+            price: string;
+            inventoryQuantity: number;
+        }[];
+    };
 }
 
 export interface ShopifyCollection {
@@ -49,6 +56,19 @@ export interface ShopifyCollection {
     ruleSet: CollectionRuleSet;
     seo: CollectionSEO;
     events: { nodes: { createdAt: string; action: string }[] };
+    resourcePublicationsV2: {
+        nodes: {
+            isPublished: boolean;
+            publishDate: string;
+            publication: {
+                id: string;
+                supportsFuturePublishing: boolean;
+                catalog: null | {
+                    title: string;
+                };
+            };
+        }[];
+    };
 }
 
 export interface ShopifyCollectionWithProducts extends ShopifyCollection {

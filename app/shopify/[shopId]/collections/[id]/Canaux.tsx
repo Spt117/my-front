@@ -3,52 +3,53 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { ProductGET } from "@/library/types/graph";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Trash2 } from "lucide-react";
 import { useEffect } from "react";
-import useProductStore from "./storeProduct";
-import { cssCard } from "./util";
+import { cssCard } from "../../products/[productId]/util";
+import useCollectionStore from "../storeCollections";
+import { ShopifyCollectionWithProducts } from "../utils";
 
-export default function Canaux({ product }: { product: ProductGET }) {
-    const { shopifyBoutique, canauxBoutique } = useShopifyStore();
-    const { canauxProduct, setCanauxProduct } = useProductStore();
+export default function Canaux({ collection }: { collection: ShopifyCollectionWithProducts }) {
+    const { shopifyBoutique, canauxBoutique, openDialog } = useShopifyStore();
+    const { setCanauxCollection, canauxCollection } = useCollectionStore();
     const canauxP =
-        product?.resourcePublicationsV2.nodes.map((c) => ({
+        collection?.resourcePublicationsV2.nodes.map((c) => ({
             id: c.publication.id,
             isPublished: c.isPublished,
         })) || [];
 
     const setInitialCanaux = () => {
         const canauxActives = canauxBoutique.map((c) => {
-            const found = product?.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
+            const found = collection?.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
             if (found) return { id: c.id, isPublished: found.isPublished, name: c.name };
             else return { id: c.id, isPublished: false, name: c.name };
         });
-        setCanauxProduct(canauxActives);
+        setCanauxCollection(canauxActives);
     };
 
     useEffect(() => {
         setInitialCanaux();
-    }, [product, canauxBoutique]);
+    }, [collection, canauxBoutique]);
 
     if (!shopifyBoutique) return null;
 
     const selectedCount = canauxP.filter((c) => c.isPublished).length;
 
     const handleClickCanal = (canalId: string) => {
-        const thisCanal = canauxProduct.find((c) => c.id === canalId);
+        const thisCanal = canauxCollection.find((c) => c.id === canalId);
         if (!thisCanal) return;
-        setCanauxProduct(canauxProduct.map((c) => (c.id === canalId ? { ...c, isPublished: !c.isPublished } : c)));
+        setCanauxCollection(canauxCollection.map((c) => (c.id === canalId ? { ...c, isPublished: !c.isPublished } : c)));
     };
 
     useKeyboardShortcuts("Escape", () => {
         setInitialCanaux();
     });
-    const allPublished = canauxProduct.every((c) => c.isPublished);
+    const allPublished = canauxCollection.every((c) => c.isPublished);
 
     return (
         <Card className={cssCard}>
-            <CardContent className="p-6">
+            <Trash2 className="mt-4 cursor-pointer absolute right-4 top-0" onClick={() => openDialog(6)} />
+            <CardContent className="p-3">
                 <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-100 rounded-lg">
@@ -64,8 +65,8 @@ export default function Canaux({ product }: { product: ProductGET }) {
                 </div>
                 <div
                     onClick={() => {
-                        setCanauxProduct(
-                            canauxProduct.map((c) => ({
+                        setCanauxCollection(
+                            canauxCollection.map((c) => ({
                                 ...c,
                                 isPublished: !allPublished,
                             }))
@@ -85,7 +86,7 @@ export default function Canaux({ product }: { product: ProductGET }) {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {canauxProduct.map((canal) => {
+                    {canauxCollection.map((canal) => {
                         const isPublished = canal.isPublished;
                         return (
                             <div

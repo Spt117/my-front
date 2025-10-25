@@ -2,30 +2,23 @@
 
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { useEvent } from "@/library/hooks/useEvent/useEvents";
-import { boutiqueFromDomain } from "@/params/paramsShopify";
 import useUserStore from "@/library/stores/storeUser";
 import { uriServerSocket } from "@/library/utils/utils";
+import { boutiqueFromDomain } from "@/params/paramsShopify";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "sonner";
 import { TTopics } from "./utilSocket";
 
 export default function SocketProvider({ children }: { children: React.ReactNode }) {
-    const { setSearchTerm, shopifyBoutique } = useShopifyStore();
+    const { shopifyBoutique } = useShopifyStore();
     const { setSocket } = useUserStore();
-    const path = usePathname();
     const { emit } = useEvent();
     const { data: session } = useSession();
-    const router = useRouter();
 
     const socketRef = useRef<Socket | null>(null);
-
-    useEffect(() => {
-        setSearchTerm("");
-    }, [path]);
 
     useEffect(() => {
         if (!session?.user?.email) return;

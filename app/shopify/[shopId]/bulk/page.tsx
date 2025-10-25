@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import useUpdateEffect from "@/library/hooks/useUpdateEffect";
 import { ProductGET } from "@/library/types/graph";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { bulkUpdateCanauxVente } from "../products/[productId]/serverAction";
 import ProductBulk from "./ProductBulk";
 import useBulkStore from "./storeBulk";
 
@@ -44,10 +44,8 @@ type BulkHeaderProps = {
     total: number;
     selectedCount: number;
     filterByTag: string;
-    loading: boolean;
     onFilterChange: (value: string) => void;
     onToggleSelectAll: () => void;
-    onUpdate: () => void;
     isUpdateDisabled: boolean;
 };
 
@@ -55,14 +53,13 @@ const BulkHeader = memo(function BulkHeader({
     total,
     selectedCount,
     filterByTag,
-    loading,
     onFilterChange,
     onToggleSelectAll,
-    onUpdate,
     isUpdateDisabled,
 }: BulkHeaderProps) {
     const allSelected = selectedCount === total && total > 0;
 
+    const { openDialog } = useShopifyStore();
     return (
         <CardHeader className="p-3 m-0 flex sticky top-10 z-10 border-b bg-white gap-3">
             <h2 className="text-lg font-semibold">Résultats de la recherche ({total})</h2>
@@ -74,9 +71,8 @@ const BulkHeader = memo(function BulkHeader({
                 onChange={(e) => onFilterChange(e.target.value)}
             />
 
-            <Button variant="outline" size="sm" className="ml-4" onClick={onUpdate} disabled={isUpdateDisabled || loading}>
-                Mettre à jour
-                {loading && <Spinner className="ml-2" />}
+            <Button variant="outline" size="sm" className="ml-4" onClick={() => openDialog(7)} disabled={isUpdateDisabled}>
+                Actions
             </Button>
 
             <Button variant="outline" size="sm" className="ml-auto" onClick={onToggleSelectAll}>
@@ -106,7 +102,7 @@ const ProductList = memo(function ProductList({ products }: ProductListProps) {
    ========================= */
 
 export default function Page() {
-    const { productsSearch, setSearchTerm, setProductsSearch, shopifyBoutique, canauxBoutique } = useShopifyStore();
+    const { productsSearch, setProductsSearch, shopifyBoutique, canauxBoutique } = useShopifyStore();
 
     const {
         setSelectedProducts,
@@ -122,9 +118,8 @@ export default function Page() {
     const [loading, setLoading] = useState(false);
 
     // Reset recherche quand la boutique change
-    useEffect(() => {
+    useUpdateEffect(() => {
         setProductsSearch([]);
-        setSearchTerm("");
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [shopifyBoutique?.domain]);
 
@@ -169,33 +164,14 @@ export default function Page() {
         setDataUpdate(payload);
     }, [selectedProducts, canauxBoutique, setDataUpdate]);
 
-    // Action d'update
-    const handleUpdate = useCallback(async () => {
-        if (!shopifyBoutique?.domain) return;
-        if (!dataUpdate.length) return;
-        setLoading(true);
-        try {
-            const res = await bulkUpdateCanauxVente(shopifyBoutique.domain, dataUpdate);
-            // eslint-disable-next-line no-console
-            console.log(res);
-        } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error("Error updating channels:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, [shopifyBoutique?.domain, dataUpdate]);
-
     return (
         <div className="relative">
             <BulkHeader
                 total={filteredProducts.length}
                 selectedCount={selectedProducts.length}
                 filterByTag={filterByTag}
-                loading={loading}
                 onFilterChange={setFilterByTag}
                 onToggleSelectAll={onSelectAll}
-                onUpdate={handleUpdate}
                 isUpdateDisabled={!dataUpdate.length}
             />
             <ProductList products={filteredProducts} />

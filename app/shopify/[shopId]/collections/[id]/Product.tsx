@@ -26,6 +26,7 @@ export default function ProductCollection({ product }: { product: CollectionProd
             toast.success(res.message);
             router.refresh();
         }
+        if (res.error) toast.error(res.error);
     };
 
     return (
@@ -49,7 +50,14 @@ export default function ProductCollection({ product }: { product: CollectionProd
                 </div>
             )}
             <div className="flex items-center justify-between w-full gap-4">
-                <h2 className="text-lg font-semibold flex-grow">{product.title}</h2>
+                <div className="flex flex-col ">
+                    <h2 className="text-lg font-semibold ">{product.title}</h2>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        {product.variants.nodes[0].price}
+                        {shopifyBoutique.devise}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">Quantité: {product.variants.nodes[0].inventoryQuantity}</p>
+                </div>
                 <div className="flex items-center justify-center h-14 gap-5 mr-4">
                     <a
                         onClick={(e) => e.stopPropagation()}

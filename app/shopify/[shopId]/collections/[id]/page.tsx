@@ -1,8 +1,12 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
+import { Card, CardContent } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import useCollectionStore from "../storeCollections";
+import Canaux from "./Canaux";
+import HeaderCollection from "./header/HeaderCollection";
+import MetaSeo from "./MetaSeo";
 import ProductCollection from "./Product";
 
 export default function Page() {
@@ -14,10 +18,11 @@ export default function Page() {
     const { title, description, image, products, seo, updatedAt } = dataCollection;
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="@container/main flex flex-1 flex-col relative">
             {/* Collection Header */}
-            <div className="mb-12 flex justify-between ">
-                <div>
+            <Card className="m-0 p-0 border-0 shadow-none">
+                <HeaderCollection />
+                <CardContent className="flex flex-wrap gap-5 p-2 justify-center max-[1600px]:justify-center ">
                     {image?.src && (
                         <div className="relative w-full h-96 mb-6">
                             <Image
@@ -29,23 +34,26 @@ export default function Page() {
                             />
                         </div>
                     )}
-                    <h1 className="text-4xl font-bold mb-4">{title}</h1>
                     <p className="text-gray-600 mb-4">{description}</p>
-                    <div className="text-sm text-gray-500">Dernière mise à jour : {new Date(updatedAt).toLocaleDateString()}</div>
-                    {seo?.description && <p className="text-sm text-gray-500 mt-2">{seo.description}</p>}
-                </div>
-                <Trash2 className="mt-4 cursor-pointer" onClick={() => openDialog(6)} />
-            </div>
-            <div className="divide-y">
-                {products.map((product) => (
-                    <ProductCollection key={product.id} product={product} />
-                ))}
-            </div>
-            {products.length === 0 && (
-                <div className="text-center py-12">
-                    <p className="text-gray-600">Aucun produit disponible dans cette collection pour le moment.</p>
-                </div>
-            )}
+                    <div className="flex flex-col gap-4 w-full">
+                        <div className="flex flex-wrap gap-3 justify-center  h-min">
+                            <Canaux collection={dataCollection} />
+                            <MetaSeo />
+                        </div>
+                        <hr />
+                        <div className="divide-y">
+                            {products.map((product) => (
+                                <ProductCollection key={product.id} product={product} />
+                            ))}
+                        </div>
+                    </div>
+                    {products.length === 0 && (
+                        <div className="text-center py-12">
+                            <p className="text-gray-600">Aucun produit disponible dans cette collection pour le moment.</p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }
