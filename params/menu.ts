@@ -4,7 +4,6 @@ export const menuItems: MenuProps[] = [
     { path: "/stock", label: "Stock" },
     { path: "/tasks", label: "Tâches" },
     { path: "/create", label: "Créer une fiche produit" },
-    { path: "/bulk", label: "Édition en masse" },
     { path: "/pokemon", label: "Pokémon" },
     { path: "/wordpress", label: "WordPress" },
     { path: "/server", label: "Serveur" },
@@ -14,6 +13,7 @@ export const menuShopify = (id?: number): MenuProps[] => {
     return [
         { path: "/shopify/orders", label: "Commandes" },
         { path: `/shopify/${id}/products`, label: "Produits", disabled: !id },
+        { path: `/shopify/${id}/bulk`, label: "Édition en masse" },
         { path: `/shopify/${id}/collections`, label: "Collections", disabled: !id },
         { path: `/shopify/${id}/customers`, label: "Clients", disabled: !id },
         { path: `/shopify/${id}/discounts`, label: "Réductions", disabled: !id },

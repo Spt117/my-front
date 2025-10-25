@@ -28,6 +28,7 @@ interface ProductsCount {
 export interface CollectionProduct {
     id: string;
     title: string;
+    handle: string;
     featuredImage: {
         url: string;
         altText?: string;

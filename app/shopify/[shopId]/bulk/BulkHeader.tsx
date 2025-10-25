@@ -3,11 +3,12 @@ import { getDataBoutique } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Input } from "@/components/ui/input";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { ProductGET } from "@/library/types/graph";
 import { modes } from "@/params/menu";
 import { useEffect, useState } from "react";
-import { search } from "../../components/header/serverSearch";
-import ShopifySelect from "../../components/header/ShopifySelect";
-import { ProductGET } from "@/library/types/graph";
+import { search } from "../../../../components/header/serverSearch";
+import { SearchByTag } from "./server";
+import { toast } from "sonner";
 
 export default function BulkHeader() {
     const { setProductsSearch, setSearchMode, searchMode, shopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
@@ -22,6 +23,7 @@ export default function BulkHeader() {
                     if (!searchTerm.trim()) return;
                     const res = await search(searchTerm.trim(), shopifyBoutique.domain);
                     setProductsSearch(res);
+                    console.log(res);
                 } catch (error) {
                     console.error("Erreur lors de la recherche:", error);
                 } finally {
@@ -36,18 +38,37 @@ export default function BulkHeader() {
                 } finally {
                     setLoading(false);
                 }
+            case "tags":
+                try {
+                    if (!searchTerm.trim()) return;
+                    console.log(shopifyBoutique);
+
+                    const res = await SearchByTag(searchTerm.trim(), shopifyBoutique.domain);
+                    if (res.error) {
+                        console.log(res.error);
+                        toast.error("Erreur lors de la recherche par tag: " + res.error);
+                        setProductsSearch([]);
+                        return;
+                    }
+                    if (res.message) toast.success(res.message);
+                    setProductsSearch(res.response || []);
+                    console.log(res);
+                } catch (error) {
+                    console.error("Erreur lors de la recherche:", error);
+                } finally {
+                    setLoading(false);
+                }
         }
     };
 
     useEffect(() => {
         handleSearch();
-    }, [searchTerm, searchMode, shopifyBoutique]);
+    }, [searchTerm, shopifyBoutique]);
 
     useKeyboardShortcuts("Enter", () => handleSearch());
 
     return (
         <div className="w-full flex gap-2">
-            <ShopifySelect />
             <Selecteur
                 disabled={!shopifyBoutique}
                 onChange={(value) => {
@@ -58,7 +79,14 @@ export default function BulkHeader() {
                 value={searchMode}
             />
             <div className="flex-1 relative flex gap-2">
-                <Input disabled={!shopifyBoutique} type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Produit Shopify" className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10" />
+                <Input
+                    disabled={!shopifyBoutique}
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Produit Shopify"
+                    className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
+                />
 
                 {loading && (
                     <div className="h-full absolute right-2 flex items-center">

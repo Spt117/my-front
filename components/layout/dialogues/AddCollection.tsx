@@ -1,4 +1,4 @@
-import { createProductFromTitle } from "@/app/shopify/[shopId]/products/[productId]/serverAction";
+import { createCollection } from "@/app/shopify/[shopId]/collections/server";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function AddProduct() {
+export default function AddCollection() {
     const { closeDialog } = useShopifyStore();
 
     const [title, setTitle] = useState<string>("");
@@ -22,14 +22,14 @@ export default function AddProduct() {
         }
         setLoading(true);
         try {
-            const data = await createProductFromTitle(shopifyBoutique.domain, title);
+            const data = await createCollection(title, shopifyBoutique.domain);
             if (data.error) toast.error(data.error);
             if (data.message) toast.success(data.message);
-            const id = data.response.id.replace("gid://shopify/Product/", "");
-            const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
+            const id = data.response.replace("gid://shopify/Collection/", "");
+            const url = `/shopify/${shopifyBoutique.id}/collections/${id}`;
             router.push(url);
         } catch (error) {
-            toast.error("Une erreur s'est produite lors de la création du produit.");
+            toast.error("Une erreur s'est produite lors de la création de la collection.");
         } finally {
             setLoading(false);
             closeDialog();
@@ -37,7 +37,7 @@ export default function AddProduct() {
     };
 
     return (
-        <div className="relative z-10 w-full max-w-md rounded-xl border bg-white p-4 shadow-xl">
+        <>
             <div className="space-y-3">
                 <label className="block">
                     <span className="mb-1 block text-s font-medium text-slate-600">Titre</span>
@@ -45,7 +45,7 @@ export default function AddProduct() {
                         autoFocus
                         type="text"
                         inputMode="text"
-                        placeholder="Nom du produit"
+                        placeholder="Nom de la collection"
                         className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
@@ -66,6 +66,6 @@ export default function AddProduct() {
                     <Spinner className={`ml-2 ${loading ? "visible" : "invisible"}`} />
                 </div>
             </div>
-        </div>
+        </>
     );
 }

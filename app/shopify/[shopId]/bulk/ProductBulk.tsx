@@ -9,7 +9,7 @@ export default function ProductBulk({ product }: { product: ProductGET }) {
     const { shopifyBoutique, canauxBoutique } = useShopifyStore();
     const { selectedProducts, addProductSelected, removeProductSelected, removeDataUpdate, addDataUpdate } = useBulkStore();
     const id = product.id.split("/").pop();
-    const url = `/product?id=${id}&shopify=${shopifyBoutique!.locationHome}`;
+    const url = `/shopify/${shopifyBoutique?.id}/products/${id}`;
 
     const isSelected = selectedProducts.some((p) => p.id === product.id);
 
@@ -55,7 +55,7 @@ export default function ProductBulk({ product }: { product: ProductGET }) {
                     <Link href={url} className="block">
                         <div className="relative w-20 h-20 rounded-md overflow-hidden border border-gray-200 hover:border-gray-400 transition-colors">
                             <Image
-                                src={product.images.nodes[0].url || "/no_image.png"}
+                                src={product.media.nodes[0].image?.url || "/no_image.png"}
                                 alt={product.title}
                                 fill
                                 className="object-cover"

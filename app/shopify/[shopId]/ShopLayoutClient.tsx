@@ -21,14 +21,12 @@ export default function ShopLayoutClient({ children, boutique, canauxPublication
     const { setShopifyBoutique, setCanauxBoutique } = useShopifyStore();
     const { socket } = useUserStore();
     const { setFilterOrders, orders } = useOrdersStore();
-    const { setFilteredCollections, setCollections, cleanCollections } = useCollectionStore();
+    const { setFilteredCollections, setCollections } = useCollectionStore();
 
     // Initialisation avec les données serveur
     useEffect(() => {
-        cleanCollections();
         if (boutique) {
             setShopifyBoutique(boutique);
-
             // Transformer les canaux
             const canauxProduits: TCanal[] = canauxPublication.map((c) => ({
                 ...c,

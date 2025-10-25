@@ -7,6 +7,7 @@ import ChoiceDuplicate from "./ChoiceDuplicate";
 import DeleteProduct from "./DeleteProduct";
 import DuplicateOtherShop from "./DuplicateOtherShop";
 import DuplicateProduct from "./DuplicateProduct";
+import AddCollection from "./AddCollection";
 
 export default function BodyDialogue() {
     const { dialogOpen, closeDialog } = useShopifyStore();
@@ -27,6 +28,7 @@ export default function BodyDialogue() {
                 {dialogOpen === 34 && <ChoiceDuplicate />}
                 {dialogOpen === 3 && <DuplicateProduct />}
                 {dialogOpen === 4 && <DuplicateOtherShop />}
+                {dialogOpen === 5 && <AddCollection />}
             </div>
         </div>
     );

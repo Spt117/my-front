@@ -1,6 +1,6 @@
 "use server";
 
-import { IDataUpdate } from "@/app/bulk/storeBulk";
+import { IDataUpdate } from "@/app/shopify/[shopId]/bulk/storeBulk";
 import { TaskShopifyController } from "@/library/models/tasksShopify/taskController";
 import { TVariant } from "@/library/models/variantShopify/Variant";
 import { variantController } from "@/library/models/variantShopify/variantController";

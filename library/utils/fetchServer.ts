@@ -1,13 +1,13 @@
 "use server";
 import { uriServerAcces } from "./uri";
 
-export type IResponseFetch = {
+export type IResponseFetch<T> = {
     error?: string;
     message?: string;
-    response: any;
+    response: T;
 };
 
-export async function postServer(url: string, data: any): Promise<IResponseFetch> {
+export async function postServer(url: string, data: any): Promise<IResponseFetch<any>> {
     let body = typeof data === "string" ? data : JSON.stringify(data);
     try {
         const response = await fetch(url, {
@@ -45,7 +45,7 @@ export async function postServerOld(url: string, data: any) {
     }
 }
 
-export async function getServer(url: string): Promise<IResponseFetch> {
+export async function getServer(url: string): Promise<IResponseFetch<any>> {
     try {
         const response = await fetch(url, {
             method: "GET",

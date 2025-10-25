@@ -19,7 +19,7 @@ const useCollectionStore = create<StoreState>((set) => ({
     filteredCollections: [],
     setFilteredCollections: (collections) => set({ filteredCollections: collections }),
     dataCollection: null,
-    setDataCollection: (collection) => set({ dataCollection: collection }),
+    setDataCollection: (dataCollection) => set({ dataCollection }),
     loadingCollection: false,
     setLoadingCollection: (loading) => set({ loadingCollection: loading }),
     cleanCollections: () => set({ collections: [], filteredCollections: [], dataCollection: null }),

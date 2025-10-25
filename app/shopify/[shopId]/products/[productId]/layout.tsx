@@ -1,16 +1,11 @@
 import { getProduct } from "@/components/shopify/serverActions";
+import { LayoutPropsShopify } from "@/components/shopify/utils";
 import { TTaskShopifyProducts } from "@/library/models/tasksShopify/taskType";
-import { SegmentParams } from "@/library/types/utils";
 import { boutiqueFromId } from "@/params/paramsShopify";
 import ProductLayoutClient from "./ProductLayoutClient";
 import { getTasks } from "./serverAction";
 
-interface ProductLayoutProps {
-    children: React.ReactNode;
-    params: Promise<SegmentParams>;
-}
-
-export default async function ProductLayout({ children, params }: ProductLayoutProps) {
+export default async function ProductLayout({ children, params }: LayoutPropsShopify) {
     const { productId, shopId } = await params;
     const boutique = boutiqueFromId(Number(shopId));
 

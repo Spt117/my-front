@@ -1,11 +1,9 @@
 import { Button } from "@/components/ui/button";
-import useClickOutside from "@/library/hooks/useClickOutside";
 import { Plus, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import useShopifyStore from "../../shopify/shopifyStore";
 import { Input } from "../../ui/input";
 import { search } from "../serverSearch";
-import ShopifySelect from "../ShopifySelect";
 import ListProducts from "./ListProducts";
 
 export default function SearchProduct() {

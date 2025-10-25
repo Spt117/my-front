@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { ProductGET } from "@/library/types/graph";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { bulkUpdateCanauxVente } from "../shopify/[shopId]/products/[productId]/serverAction";
+import { bulkUpdateCanauxVente } from "../products/[productId]/serverAction";
 import ProductBulk from "./ProductBulk";
 import useBulkStore from "./storeBulk";
 

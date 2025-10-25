@@ -1,10 +1,10 @@
 "use client";
 import HeaderPokemon from "@/app/pokemon/Header";
+import BulkHeader from "@/app/shopify/[shopId]/bulk/BulkHeader";
 import HeaderCollection from "@/app/shopify/[shopId]/collections/HeaderCollections";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import BulkHeader from "../../app/bulk/BulkHeader";
 import Orders from "./Orders";
 import ShopifySelect from "./ShopifySelect";
 import SearchProduct from "./products/SearchProduct";
@@ -22,8 +22,8 @@ export function SiteHeader() {
                 {(pathname.includes("shopify") || pathname === "/") && <ShopifySelect />}
                 {pathname === "/create" && <SelectAffiliationSite />}
                 {pathname === "/stock" && <HeaderStock />}
-                {pathname === "/bulk" && <BulkHeader />}
                 {pathname === "/pokemon" && <HeaderPokemon />}
+                {pathname.includes("bulk") && <BulkHeader />}
                 {pathname.includes("products") && <SearchProduct />}
                 {pathname.includes("collections") && <HeaderCollection />}
                 {pathname.includes("orders") && <Orders />}
