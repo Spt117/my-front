@@ -5,7 +5,7 @@ import { createProduct } from "../serverTasksAffiliation";
 import { toast } from "sonner";
 import { pokemonProducts } from "@/params/paramsCreateAffiliation";
 import { useRouter } from "next/navigation";
-import { boutiqueFromDomain, boutiqueFromPublicDomain, TDomainsShopify } from "@/params/paramsShopify";
+import { boutiqueFromDomain, boutiqueFromPublicDomain, TDomainsShopify, TPublicDomainsShopify } from "@/params/paramsShopify";
 
 interface AffiliationTaskContextType {
     task: TAffiliationTask;
@@ -55,7 +55,7 @@ export function AffiliationTaskProvider({ children, task }: { children: ReactNod
             if (res.error) toast.error(res.error);
             if (res.message) toast.success(res.message);
             if (res.response) {
-                const boutique = boutiqueFromDomain(task.website as TDomainsShopify);
+                const boutique = boutiqueFromPublicDomain(task.website as TPublicDomainsShopify);
                 const url = `/shopify/${boutique.id}/products/${res.response}`;
                 router.push(url);
             }
