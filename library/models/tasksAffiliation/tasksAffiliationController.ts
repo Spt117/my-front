@@ -24,7 +24,8 @@ class CTasksAffiliationController {
         try {
             const model = await this.getModel();
             const data = await model.find({ status: "pending" }).sort({ createdAt: -1 }).exec();
-            return JSON.parse(JSON.stringify(data));
+            const dataError = await model.find({ status: "error" }).sort({ createdAt: -1 }).exec();
+            return JSON.parse(JSON.stringify(data.concat(dataError)));
         } catch (err) {
             console.error("Error in getAllPending:", err);
             return [];

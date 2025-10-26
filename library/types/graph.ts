@@ -98,6 +98,10 @@ export interface ProductGET {
     status: ProductStatus;
     vendor: TVendorsShopify;
     productType: string;
+    seo: {
+        title: string;
+        description: string;
+    };
     category?: CategoryProduct;
     collections: { edges: { node: { id: GID; title: string } }[] };
     tags: string[];

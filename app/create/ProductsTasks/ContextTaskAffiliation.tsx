@@ -4,6 +4,8 @@ import { ICreateAffiliationProduct } from "../util";
 import { createProduct } from "../serverTasksAffiliation";
 import { toast } from "sonner";
 import { pokemonProducts } from "@/params/paramsCreateAffiliation";
+import { useRouter } from "next/navigation";
+import { boutiqueFromDomain, boutiqueFromPublicDomain, TDomainsShopify } from "@/params/paramsShopify";
 
 interface AffiliationTaskContextType {
     task: TAffiliationTask;
@@ -23,6 +25,7 @@ const AffiliationTaskContext = createContext<AffiliationTaskContextType | undefi
 
 export function AffiliationTaskProvider({ children, task }: { children: ReactNode; task: TAffiliationTask }) {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
     const [productType, setProductType] = useState<string>(task.productType || "");
     const [size, setSize] = useState<number | null>(null);
     const [namePokemon, setNamePokemon] = useState<string>("");
@@ -51,6 +54,11 @@ export function AffiliationTaskProvider({ children, task }: { children: ReactNod
             const res = await createProduct([data]);
             if (res.error) toast.error(res.error);
             if (res.message) toast.success(res.message);
+            if (res.response) {
+                const boutique = boutiqueFromDomain(task.website as TDomainsShopify);
+                const url = `/shopify/${boutique.id}/products/${res.response}`;
+                router.push(url);
+            }
         } catch (error) {
             console.error("Error creating product:", error);
             toast.error("Erreur lors de la création du produit");
