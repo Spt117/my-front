@@ -12,7 +12,6 @@ export type TTaskShopifyProducts = {
     activation: TActivationType;
     timestampActivation: number;
     stockActivation: number;
-    sku: string;
     productId: string;
     variantId: string;
     boutique: TDomainsShopify;
@@ -26,7 +25,6 @@ export const TaskSchema = new Schema<TTaskShopifyProducts>(
         activation: { type: String, required: true },
         timestampActivation: { type: Number, required: false },
         stockActivation: { type: Number, required: false },
-        sku: { type: String, required: true },
         productId: { type: String, required: true },
         variantId: { type: String, required: true },
         boutique: { type: String, required: true },
