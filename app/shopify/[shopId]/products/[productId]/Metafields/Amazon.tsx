@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Switch } from "@/components/ui/switch";
 import { useDataProduct } from "@/library/hooks/useDataProduct";
+import { toggleAffiliate } from "@/library/models/variantShopify/middlewareVariants";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -21,16 +22,20 @@ export default function Amazon() {
 
     const asin = product?.metafields.nodes.find((mf) => mf.key === "asin");
 
-    if (!product || !shopifyBoutique) return;
+    if (!product || !shopifyBoutique || !product.variants) return;
+    const sku = product.variants.nodes[0].sku;
+    const activeValue = activeAmazon?.value === "true" ? false : true;
+
     const handleToggle = async () => {
         setLoading(true);
         const data: IMetafieldRequest = {
             productId: product.id,
             domain: shopifyBoutique.domain,
             key: activeAmazon?.key,
-            value: activeAmazon?.value === "true" ? false : true,
+            value: activeValue,
         };
         try {
+            toggleAffiliate(shopifyBoutique.domain, sku, activeValue);
             const res = await setAmazonActivateMetafield(data);
             if (res?.error) toast.error(res.error);
             if (res?.message) {

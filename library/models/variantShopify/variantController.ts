@@ -155,6 +155,18 @@ class ControllerVariant {
             return false;
         }
     }
+
+    async activeAffiliate(sku: string, active: boolean): Promise<Boolean> {
+        try {
+            console.log("updating activeAffiliate status... " + sku + " to " + active);
+            const Variant = await this.getVariantModel();
+            const res = await Variant.findOneAndUpdate({ sku }, { $set: { activeAffiliate: active } });
+            return res ? true : false;
+        } catch (err) {
+            console.error("activeAffiliate error:", err);
+            return false;
+        }
+    }
 }
 
 export const variantController = (domain: TDomainsShopify) => new ControllerVariant(domain);

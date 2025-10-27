@@ -33,3 +33,8 @@ export async function toggleBought(domain: TDomainsShopify, variant: TVariant, b
     }
     return data;
 }
+
+export async function toggleAffiliate(domain: TDomainsShopify, sku: string, active: boolean) {
+    const data = await variantController(domain).activeAffiliate(sku, active);
+    return data;
+}
