@@ -50,10 +50,10 @@ class ControllerTaskShopify {
         }
     }
 
-    async getTaskBySkuAndStockActivation(sku: string): Promise<TTaskShopifyProducts[]> {
+    async getTaskByVariantIdAndStockActivation(variantId: string): Promise<TTaskShopifyProducts[]> {
         try {
             const Task = await this.getTaskModel();
-            const docs = await Task.find({ sku, status: "scheduled" }).lean<TTaskShopifyProducts[]>();
+            const docs = await Task.find({ variantId, status: "scheduled" }).lean<TTaskShopifyProducts[]>();
             return JSON.parse(JSON.stringify(docs));
         } catch (err) {
             console.error("getTaskBySkuAndStockActivation error:", err);

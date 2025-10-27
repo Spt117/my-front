@@ -5,7 +5,7 @@ import { TTaskShopifyProducts } from "./taskType";
 import { TaskShopifyController } from "./taskController";
 
 export async function createTaskShopify(payload: TTaskShopifyProducts): Promise<IResponseFetch<any>> {
-    const tasks = await TaskShopifyController.getTaskBySkuAndStockActivation(payload.sku);
+    const tasks = await TaskShopifyController.getTaskByVariantIdAndStockActivation(payload.variantId);
     const exists = tasks.find((task) => task.activation === payload.activation);
     if (exists) return { error: "Une tâche avec cette activation existe déjà", response: null };
 

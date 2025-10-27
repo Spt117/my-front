@@ -42,7 +42,6 @@ export default function usePrices() {
             activation: typeTask,
             timestampActivation: typeTask === "timestamp" ? param : 0,
             stockActivation: typeTask === "quantity" ? param : 0,
-            sku: mainVariant.sku,
             productId: product.id,
             variantId: mainVariant.id,
             boutique: shopifyBoutique.domain,
