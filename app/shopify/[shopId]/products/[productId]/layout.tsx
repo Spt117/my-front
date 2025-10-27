@@ -18,7 +18,7 @@ export default async function ProductLayout({ children, params }: LayoutPropsSho
         try {
             const [productData, tasksData] = await Promise.all([
                 getProduct({ productId, domain: boutique.domain }),
-                getTasks(productId),
+                getTasks(`gid://shopify/Product/${productId}`),
             ]);
 
             product = productData?.response || null;
@@ -29,7 +29,6 @@ export default async function ProductLayout({ children, params }: LayoutPropsSho
             error = "Failed to load product data";
         }
     }
-
     return (
         <ProductLayoutClient product={product} tasks={tasks} boutique={boutique} productId={productId} error={error}>
             {children}
