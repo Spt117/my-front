@@ -54,11 +54,12 @@ export function AffiliationTaskProvider({ children, task }: { children: ReactNod
             const res = await createProduct([data]);
             if (res.error) toast.error(res.error);
             if (res.message) toast.success(res.message);
-            if (res.response) {
+            const id = res.response;
+            if (id) {
                 const boutique = boutiqueFromPublicDomain(task.website as TPublicDomainsShopify);
-                const url = `/shopify/${boutique.id}/products/${res.response}`;
+                const url = `/shopify/${boutique.id}/products/${id.replace("gid://shopify/Product/", "")}`;
                 router.push(url);
-            }
+            } else toast.error("Erreur lors de la création du produit: ID manquant");
         } catch (error) {
             console.error("Error creating product:", error);
             toast.error("Erreur lors de la création du produit");

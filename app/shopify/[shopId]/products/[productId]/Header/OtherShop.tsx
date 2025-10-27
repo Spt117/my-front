@@ -23,7 +23,8 @@ export default function OtherShop() {
     useEffect(() => {
         const handleGetProductOtherShop = async () => {
             setLoading(true);
-            if (!product?.variants || !shopifyBoutique) return;
+            const otherShop = boutiques.filter((b) => b.niche === shopifyBoutique?.niche && b.domain !== shopifyBoutique?.domain);
+            if (!product?.variants || !shopifyBoutique || otherShop.length === 0) return;
             const data = await fetchIdsFromSku(shopifyBoutique?.domain, product.variants.nodes[0].sku);
             setIdsOtherShop(data.response || []);
             if (data.error) toast.error(data.error);
