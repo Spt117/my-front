@@ -24,6 +24,9 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
     const router = useRouter();
 
     useEventListener("products/update", (data) => {
+        console.log(data);
+        console.log(productId);
+
         if (data.productId === productId) {
             toast.success("Le produit a été mis à jour. Rechargement...");
             router.refresh();
