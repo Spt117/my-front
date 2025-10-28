@@ -30,11 +30,6 @@ export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
         try {
             const res = await postServer(url, data);
             if (res.error) toast.error("Erreur lors de la mise à jour du stock");
-            if (res.message) {
-                toast.success(res.message);
-                await sleep(500);
-                router.refresh();
-            }
         } catch (error) {
             toast.error("Erreur serveur lors de la mise à jour du stock");
         } finally {
