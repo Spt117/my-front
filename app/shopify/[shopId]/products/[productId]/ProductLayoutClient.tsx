@@ -1,13 +1,13 @@
 "use client";
 
 import useShopifyStore from "@/components/shopify/shopifyStore";
+import { useEventListener } from "@/library/hooks/useEvent/useEvents";
 import { TTaskShopifyProducts } from "@/library/models/tasksShopify/taskType";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { fetchVariant } from "./serverAction";
 import useTaskStore from "./Tasks/storeTasks";
-import { useEventListener } from "@/library/hooks/useEvent/useEvents";
-import { useRouter } from "next/navigation";
+import { fetchVariant } from "./serverAction";
 
 interface ProductLayoutClientProps {
     children: React.ReactNode;
@@ -24,10 +24,7 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
     const router = useRouter();
 
     useEventListener("products/update", (data) => {
-        if (Number(data.productId) === Number(productId)) {
-            toast.success("Le produit a été mis à jour. Rechargement...");
-            router.refresh();
-        }
+        if (Number(data.productId) === Number(productId)) router.refresh();
     });
 
     // ✅ Initialisation avec les données serveur
