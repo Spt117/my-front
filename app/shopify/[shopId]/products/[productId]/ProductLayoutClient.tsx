@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { fetchVariant } from "./serverAction";
 import useTaskStore from "./Tasks/storeTasks";
+import { useEventListener } from "@/library/hooks/useEvent/useEvents";
+import { useRouter } from "next/navigation";
 
 interface ProductLayoutClientProps {
     children: React.ReactNode;
@@ -19,6 +21,14 @@ interface ProductLayoutClientProps {
 export default function ProductLayoutClient({ children, product, tasks, boutique, productId, error }: ProductLayoutClientProps) {
     const { setProduct, setVariant, shopifyBoutique, setShopifyBoutique } = useShopifyStore();
     const { setTasks } = useTaskStore();
+    const router = useRouter();
+
+    useEventListener("products/update", (data) => {
+        if (data.productId === productId) {
+            toast.success("Le produit a été mis à jour. Rechargement...");
+            router.refresh();
+        }
+    });
 
     // ✅ Initialisation avec les données serveur
     useEffect(() => {

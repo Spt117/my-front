@@ -83,7 +83,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                             productId: data.body.id,
                             data: data.body,
                         });
-                        toast.success(`Produit mis à jour (ID: ${data.body.id})`);
                         break;
                     default:
                         toast.info(`Événement reçu : ${data.topic}`);
