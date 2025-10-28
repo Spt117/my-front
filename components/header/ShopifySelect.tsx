@@ -1,21 +1,16 @@
 "use client";
 
 import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
-import useProductStore from "@/app/shopify/[shopId]/products/[productId]/storeProduct";
 import Selecteur from "@/components/selecteur";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { boutiqueFromDomain, boutiques, TDomainsShopify } from "@/params/paramsShopify";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import useOrdersStore from "../shopify/orders/store";
 import useShopifyStore from "../shopify/shopifyStore";
 import SelectFull from "./SelectFull";
 
 export default function ShopifySelect() {
-    const { shopifyBoutique, setShopifyBoutique, setProduct, product, setSearchTerm } = useShopifyStore();
-    const { setFilterOrders, orders } = useOrdersStore();
+    const { shopifyBoutique, setShopifyBoutique, setProduct, product } = useShopifyStore();
     const { cleanCollections } = useCollectionStore();
-    const { setPrice, setCompareAtPrice } = useProductStore();
     const path = usePathname();
     const router = useRouter();
 
@@ -55,19 +50,6 @@ export default function ShopifySelect() {
         const newUrl = replaceShopifyId(path, boutique.id);
         router.push(newUrl);
     };
-
-    const handleEscape = () => {
-        setSearchTerm("");
-        if (path.includes("orders")) {
-            setShopifyBoutique(null);
-            setFilterOrders(orders);
-            router.push(`/shopify/orders`);
-        } else if (product) {
-            setPrice(product?.variants?.nodes[0].price ?? "0");
-            setCompareAtPrice(product?.variants?.nodes[0].compareAtPrice || "0");
-        }
-    };
-    useKeyboardShortcuts("Escape", handleEscape);
 
     return (
         <div className="">

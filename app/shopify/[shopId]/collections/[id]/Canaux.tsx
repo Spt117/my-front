@@ -2,7 +2,6 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { ShoppingCart, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { cssCard } from "../../products/[productId]/util";
@@ -41,9 +40,6 @@ export default function Canaux({ collection }: { collection: ShopifyCollectionWi
         setCanauxCollection(canauxCollection.map((c) => (c.id === canalId ? { ...c, isPublished: !c.isPublished } : c)));
     };
 
-    useKeyboardShortcuts("Escape", () => {
-        setInitialCanaux();
-    });
     const allPublished = canauxCollection.every((c) => c.isPublished);
 
     return (

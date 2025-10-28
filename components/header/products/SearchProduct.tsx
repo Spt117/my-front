@@ -5,11 +5,13 @@ import useShopifyStore from "../../shopify/shopifyStore";
 import { Input } from "../../ui/input";
 import { search } from "../serverSearch";
 import ListProducts from "./ListProducts";
+import { usePathname } from "next/navigation";
 
 export default function SearchProduct() {
     const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const { openDialog } = useShopifyStore();
+    const pathName = usePathname();
 
     const handleSearch = async (query: string) => {
         if (!query.trim() || !shopifyBoutique) return;
@@ -97,7 +99,7 @@ export default function SearchProduct() {
                     </Button>
                 </div>
                 {/* Liste des produits positionnée sous l'input */}
-                <ListProducts />
+                {pathName.split("/").pop() !== "products" && <ListProducts />}
             </div>
         </div>
     );

@@ -1,7 +1,6 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
-import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import useCollectionStore from "../storeCollections";
 import Canaux from "./Canaux";

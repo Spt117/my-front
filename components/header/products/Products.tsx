@@ -2,23 +2,17 @@
 import { ProductGET } from "@/library/types/graph";
 import { Eye } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
 import useShopifyStore from "../../shopify/shopifyStore";
 
 export default function ProductList({ product }: { product: ProductGET }) {
-    const { shopifyBoutique, setSearchTerm } = useShopifyStore();
+    const { shopifyBoutique } = useShopifyStore();
     const [isHovered, setIsHovered] = useState(false);
-    const router = useRouter();
     if (!shopifyBoutique) return;
     const id = product.id.split("/").pop();
     const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
     const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
-
-    const handleClick = () => {
-        setSearchTerm("");
-        router.push(url);
-    };
 
     return (
         <div
@@ -26,7 +20,7 @@ export default function ProductList({ product }: { product: ProductGET }) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <div onClick={handleClick} className="w-full">
+            <Link href={url} className="w-full">
                 <div className="cursor-pointer flex items-center py-3 px-4 jsustify-start gap-3">
                     <div className="relative w-12 h-12 flex-shrink-0">
                         <Image
@@ -56,7 +50,7 @@ export default function ProductList({ product }: { product: ProductGET }) {
                         </span>
                     </a>
                 </div>
-            </div>
+            </Link>
         </div>
     );
 }

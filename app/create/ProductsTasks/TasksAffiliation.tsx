@@ -4,40 +4,51 @@ import { useEffect, useState } from "react";
 import useAffiliationStore from "../storeTasksAffiliation";
 import { AffiliationTaskProvider } from "./ContextTaskAffiliation";
 import TaskAffiliation from "./TaskAffiliation";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 
-export default function TasksAffiliation({ tasks }: { tasks: TAffiliationTask[] }) {
-    const { setTasksAffil, tasksAffil, setArraySites, websiteFilter, setArrayTypesProducts, typesProducts, setTypesProducts } =
-        useAffiliationStore();
+export default function TasksAffiliation() {
+    const { searchTerm } = useShopifyStore();
+    const { tasksAffil, websiteFilter, setArrayTypesProducts, typesProducts, setTypesProducts } = useAffiliationStore();
     const [tasksFiltered, setTasksFiltered] = useState<TAffiliationTask[]>(tasksAffil);
 
     useEffect(() => {
-        setArraySites(Array.from(new Set(tasks.map((task) => task.website))).sort((a, b) => a.localeCompare(b)));
-        setTasksAffil(tasks);
-        setArrayTypesProducts(Array.from(new Set(tasks.map((task) => task.productType))).sort((a, b) => a.localeCompare(b)));
-    }, [tasks, setTasksAffil, setArraySites, setArrayTypesProducts]);
+        const searchLower = searchTerm.toLowerCase();
 
-    useEffect(() => {
-        if (!websiteFilter) return;
-        const typesProduits: { [website: string]: string[] } = {};
-        for (const task of tasks) {
-            if (!typesProduits[task.website]) {
-                typesProduits[task.website] = [task.productType];
-            } else if (!typesProduits[task.website].includes(task.productType)) {
-                typesProduits[task.website].push(task.productType);
-            }
-        }
-        setArrayTypesProducts(typesProduits[websiteFilter] || []);
-        if (typesProduits[websiteFilter] && !typesProduits[websiteFilter].includes(typesProducts)) setTypesProducts("");
-    }, [websiteFilter]);
+        const filtered = tasksAffil.filter((task) => {
+            // Filtre par searchTerm
+            const matchesSearch =
+                !searchTerm || task.title.toLowerCase().includes(searchLower) || task.asin.toLowerCase().includes(searchLower);
 
-    useEffect(() => {
-        if (!websiteFilter && !typesProducts) return setTasksFiltered(tasksAffil);
-        const tasksFilter = tasksAffil.filter((task) => {
-            if (websiteFilter && typesProducts) return task.website === websiteFilter && task.productType === typesProducts;
-            else if (websiteFilter) return task.website === websiteFilter;
+            // Filtre par website
+            const matchesWebsite = !websiteFilter || task.website === websiteFilter;
+
+            // Filtre par productType
+            const matchesType = !typesProducts || task.productType === typesProducts;
+
+            return matchesSearch && matchesWebsite && matchesType;
         });
-        setTasksFiltered(tasksFilter);
-    }, [websiteFilter, typesProducts, tasksAffil]);
+
+        setTasksFiltered(filtered);
+    }, [websiteFilter, typesProducts, tasksAffil, searchTerm]);
+
+    // Met à jour les types de produits disponibles
+    useEffect(() => {
+        if (!websiteFilter) {
+            setArrayTypesProducts([]);
+            return;
+        }
+
+        const uniqueTypes = Array.from(
+            new Set(tasksFiltered.filter((task) => task.website === websiteFilter).map((task) => task.productType as string))
+        );
+
+        setArrayTypesProducts(uniqueTypes);
+
+        // Reset le type sélectionné s'il n'existe plus dans les options
+        if (typesProducts && !uniqueTypes.includes(typesProducts)) {
+            setTypesProducts("");
+        }
+    }, [websiteFilter, tasksFiltered, typesProducts, setArrayTypesProducts, setTypesProducts]);
 
     return (
         <div className="flex flex-wrap gap-4 p-4 items-center justify-center">

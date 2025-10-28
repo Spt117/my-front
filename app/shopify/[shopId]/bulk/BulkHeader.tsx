@@ -6,50 +6,16 @@ import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { ProductGET } from "@/library/types/graph";
 import { modes } from "@/params/menu";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import { search } from "../../../../components/header/serverSearch";
 import { SearchByTag } from "./server";
-import { toast } from "sonner";
 
 export default function BulkHeader() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
     const { setProductsSearch, setSearchMode, searchMode, shopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
     const [loading, setLoading] = useState(false);
 
-    // Initialiser searchTerm depuis l'URL au chargement
     useEffect(() => {
-        const urlSearchTerm = searchParams.get("search");
-        if (urlSearchTerm && urlSearchTerm !== searchTerm) {
-            setSearchTerm(urlSearchTerm);
-        }
-    }, [searchParams, setSearchTerm]);
-
-    // Mettre à jour l'URL quand searchTerm change
-    useEffect(() => {
-        const params = new URLSearchParams(searchParams.toString());
-        const currentSearch = params.get("search");
-
-        // Ne rien faire si searchTerm correspond déjà à l'URL
-        if (searchTerm === currentSearch) return;
-
-        if (searchTerm) {
-            params.set("search", searchTerm);
-        } else {
-            params.delete("search");
-        }
-
-        const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
-        router.replace(newUrl, { scroll: false });
-    }, [searchTerm, router, searchParams]);
-
-    // Debounce pour la recherche
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            handleSearch();
-        }, 500);
-
-        return () => clearTimeout(timer);
+        handleSearch();
     }, [searchTerm, shopifyBoutique, searchMode]);
 
     const handleSearch = async () => {

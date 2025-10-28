@@ -12,7 +12,7 @@ import { TFieldVariant } from "../../util";
 export default function usePrices() {
     const { product, shopifyBoutique } = useShopifyStore();
     const { typeTask, param, setParam } = useTaskStore();
-    const { setPrice, setCompareAtPrice, price, compareAtPrice } = useProductStore();
+    const { setPrice, compareAtPrice } = useProductStore();
     const router = useRouter();
 
     useEffect(() => {

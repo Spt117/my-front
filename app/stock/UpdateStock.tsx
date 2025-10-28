@@ -2,8 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { postServer } from "@/library/utils/fetchServer";
-import { sleep } from "@/library/utils/helpers";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,7 +14,6 @@ interface IUpdateStockProps {
 export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
     const [numberInput, setNumberInput] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const router = useRouter();
 
     const handleUpdateVariantStock = async () => {
         setIsLoading(true);

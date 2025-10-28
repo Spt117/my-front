@@ -1,13 +1,11 @@
-import { tasksAffiliationController } from "@/library/models/tasksAffiliation/tasksAffiliationController";
-import TasksAffiliation from "./ProductsTasks/TasksAffiliation";
 import AddManually from "./Manually/AddManually";
+import TasksAffiliation from "./ProductsTasks/TasksAffiliation";
 
 export default async function Page() {
-    const tasksAffiliation = await tasksAffiliationController.getAllPending();
     return (
         <div>
             <AddManually />
-            <TasksAffiliation tasks={tasksAffiliation} />
+            <TasksAffiliation />
         </div>
     );
 }

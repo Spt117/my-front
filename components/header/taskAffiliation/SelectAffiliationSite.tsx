@@ -3,15 +3,15 @@
 import useAffiliationStore from "@/app/create/storeTasksAffiliation";
 import Selecteur from "@/components/selecteur";
 import useShopifyStore from "@/components/shopify/shopifyStore";
+import { Input } from "@/components/ui/input";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { boutiqueFromPublicDomain, TPublicDomainsShopify } from "@/params/paramsShopify";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function SelectAffiliationSite() {
-    const { websiteFilter, setWebsiteFilter, setTypesProducts, typesProducts, arrayTypesProducts, arraySites } = useAffiliationStore();
-    const { shopifyBoutique, setShopifyBoutique } = useShopifyStore();
-    const router = useRouter();
+    const { websiteFilter, setWebsiteFilter, setTypesProducts, typesProducts, arrayTypesProducts, arraySites } =
+        useAffiliationStore();
+    const { shopifyBoutique, setShopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
 
     const optionWebsite = arraySites.map((website) => ({
         label: website,
@@ -41,8 +41,24 @@ export default function SelectAffiliationSite() {
 
     return (
         <>
-            <Selecteur array={optionWebsite} value={websiteFilter} onChange={handleChangeWebsite} placeholder="Choisir l'origine" />
-            <Selecteur array={optionTypesProducts} value={typesProducts} onChange={setTypesProducts} placeholder="Choisir le type de produit" />
+            <Selecteur
+                array={optionWebsite}
+                value={websiteFilter}
+                onChange={handleChangeWebsite}
+                placeholder="Choisir l'origine"
+            />
+            <Selecteur
+                array={optionTypesProducts}
+                value={typesProducts}
+                onChange={setTypesProducts}
+                placeholder="Choisir le type de produit"
+            />
+            <Input
+                className="flex-1"
+                placeholder="Rechercher un produit"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
         </>
     );
 }

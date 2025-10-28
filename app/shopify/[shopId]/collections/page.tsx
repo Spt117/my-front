@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { ArrowDown, ArrowUpDown } from "lucide-react"; // Assurez-vous d'avoir lucide-react installé
+import { ArrowDown, ArrowUpDown } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import CollectionRow from "./Collection";
@@ -16,7 +15,7 @@ import useCollectionStore from "./storeCollections";
 export default function Page() {
     const params = useSearchParams();
     const { shopifyBoutique, searchTerm } = useShopifyStore();
-    const { filteredCollections, setFilteredCollections, collections, loadingCollection } = useCollectionStore();
+    const { filteredCollections, setFilteredCollections, loadingCollection } = useCollectionStore();
 
     // État pour le tri
     const [sortBy, setSortBy] = useState<"title" | "created_at" | "updated_at">("title");
@@ -24,14 +23,15 @@ export default function Page() {
 
     useEffect(() => {
         if (searchTerm) {
-            const filtered = filteredCollections.filter((collection) => collection.title.toLowerCase().includes(searchTerm.toLowerCase()) || collection.handle.toLowerCase().includes(searchTerm.toLowerCase()) || collection.id.toString().includes(searchTerm));
+            const filtered = filteredCollections.filter(
+                (collection) =>
+                    collection.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    collection.handle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    collection.id.toString().includes(searchTerm)
+            );
             setFilteredCollections(filtered);
         }
     }, [searchTerm, shopifyBoutique, params]);
-
-    useKeyboardShortcuts("Escape", () => {
-        setFilteredCollections(collections);
-    });
 
     // Tri des collections
     const sortedCollections = useMemo(() => {
