@@ -10,7 +10,7 @@ import { useEffect } from "react";
 
 export default function SelectAffiliationSite() {
     const { websiteFilter, setWebsiteFilter, setTypesProducts, typesProducts, arrayTypesProducts, arraySites } = useAffiliationStore();
-    const { shopifyBoutique } = useShopifyStore();
+    const { shopifyBoutique, setShopifyBoutique } = useShopifyStore();
     const router = useRouter();
 
     const optionWebsite = arraySites.map((website) => ({
@@ -26,7 +26,7 @@ export default function SelectAffiliationSite() {
     const handleEscape = () => {
         setWebsiteFilter("");
         setTypesProducts("");
-        router.push(`/create`);
+        setShopifyBoutique(null);
     };
     useKeyboardShortcuts("Escape", handleEscape);
 
@@ -36,7 +36,7 @@ export default function SelectAffiliationSite() {
 
     const handleChangeWebsite = (value: string) => {
         const boutique = boutiqueFromPublicDomain(value as TPublicDomainsShopify);
-        router.push(`/create?domain=${boutique.domain}`);
+        setShopifyBoutique(boutique);
     };
 
     return (
