@@ -27,7 +27,7 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
         console.log(data);
         console.log(productId);
 
-        if (data.productId === productId) {
+        if (Number(data.productId) === Number(productId)) {
             toast.success("Le produit a été mis à jour. Rechargement...");
             router.refresh();
         }
