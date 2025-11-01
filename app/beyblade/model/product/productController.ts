@@ -15,7 +15,7 @@ class BeybladeController {
         const connection = await manager.getConnection("Beyblade");
 
         const modelName = "beybladeModel";
-        const collectionName = `beyblade_${this.generation}`;
+        const collectionName = `beyblade_product_${this.generation}`;
 
         const existingModel = connection.models[modelName];
         if (existingModel) return existingModel as Model<IBeybladeProduct>;
@@ -23,14 +23,13 @@ class BeybladeController {
         return Beyblade;
     }
 
-    async createBeyblade(payload: IBeybladeProduct) {
+    async createBeyblade(payload: IBeybladeProduct): Promise<{ response: any; message?: string; error?: string }> {
         try {
             const Beyblade = await this.getVariantModel();
             const doc = await Beyblade.create(payload);
-            return doc;
+            return { response: JSON.parse(JSON.stringify(doc)), message: "Beyblade created successfully." };
         } catch (err) {
-            console.error("createBeyblade error:", err);
-            return null;
+            return { response: err, error: "Beyblade creation failed." };
         }
     }
 
@@ -56,6 +55,59 @@ class BeybladeController {
         } catch (err) {
             console.error("getBeybladeByProductCode error:", err);
             return null;
+        }
+    }
+
+    async getBeybladeWithoutProductType(): Promise<IBeybladeProduct[]> {
+        try {
+            const Beyblade = await this.getVariantModel();
+            const docs = await Beyblade.find({
+                product: null,
+            }).lean<IBeybladeProduct[]>();
+            return JSON.parse(JSON.stringify(docs));
+        } catch (err) {
+            console.error("getBeybladeWithoutProductType error:", err);
+            return [];
+        }
+    }
+
+    async getBeybladeWithEmptyContent(): Promise<IBeybladeProduct[]> {
+        try {
+            const Beyblade = await this.getVariantModel();
+            const docs = await Beyblade.find({
+                $or: [{ content: { $exists: false } }, { content: { $size: 0 } }],
+            }).lean<IBeybladeProduct[]>();
+            return JSON.parse(JSON.stringify(docs));
+        } catch (err) {
+            console.error("getBeybladeWithEmptyContent error:", err);
+            return [];
+        }
+    }
+
+    async getBeybladeWithContentToReview(): Promise<IBeybladeProduct[]> {
+        try {
+            const Beyblade = await this.getVariantModel();
+            const docs = await Beyblade.find({
+                "content.toReview": true,
+            }).lean<IBeybladeProduct[]>();
+            return JSON.parse(JSON.stringify(docs));
+        } catch (err) {
+            console.error("getBeybladeWithContentToReview error:", err);
+            return [];
+        }
+    }
+
+    async deleteById(id: string): Promise<{ success: boolean; message?: string; error?: string }> {
+        try {
+            const Beyblade = await this.getVariantModel();
+            const result = await Beyblade.findByIdAndDelete(id);
+            if (result) {
+                return { success: true, message: "Beyblade deleted successfully." };
+            } else {
+                return { success: false, error: "Beyblade not found." };
+            }
+        } catch (err) {
+            return { success: false, error: "Beyblade deletion failed." };
         }
     }
 }

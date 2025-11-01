@@ -5,16 +5,16 @@ import { Separator } from "@/components/ui/separator";
 import { TabsContent } from "@/components/ui/tabs";
 import useBeybladeStore from "../beybladeStore";
 import ImageManager from "../ImageManager";
+import AddContentItem from "./AddContentItem";
 import Asins from "./Asins";
 import ProductType from "./ProductType";
-import Content from "../Content/Content";
 
 export default function ProductData() {
     const { beybladeProduct, updateProduct, addImage, removeImage } = useBeybladeStore();
 
     if (beybladeProduct)
         return (
-            <TabsContent value="basic" className="space-y-6">
+            <>
                 <Card>
                     <CardHeader>
                         <CardTitle>Product Information</CardTitle>
@@ -22,16 +22,6 @@ export default function ProductData() {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <ProductType />
-
-                        <div className="space-y-2">
-                            <Label htmlFor="title">Title *</Label>
-                            <Input
-                                id="title"
-                                value={beybladeProduct.title || ""}
-                                onChange={(e) => updateProduct("title", e.target.value)}
-                                placeholder="e.g., Dran Buster 3-60F"
-                            />
-                        </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
@@ -63,17 +53,8 @@ export default function ProductData() {
 
                         <Asins />
                         <Separator />
-                        <Content />
                     </CardContent>
                 </Card>
-                <ImageManager
-                    images={beybladeProduct?.images || []}
-                    onAddImage={addImage}
-                    onRemoveImage={removeImage}
-                    title="Product Images"
-                    description="Add images of the product"
-                    emptyMessage="No product images added yet"
-                />
-            </TabsContent>
+            </>
         );
 }

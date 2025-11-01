@@ -1,7 +1,10 @@
-import { IBeybladeProduct, IProductContentItem } from "@/app/beyblade/model/typesBeyblade";
+import { IBeybladeProduct, IProductContentItem, TBeybladeGeneration } from "@/app/beyblade/model/typesBeyblade";
 import { create } from "zustand";
 
 interface StoreState {
+    generation: TBeybladeGeneration;
+    setGeneration: (generation: TBeybladeGeneration) => void;
+
     beybladeProduct: Partial<IBeybladeProduct> | null;
 
     // Setters génériques
@@ -20,6 +23,8 @@ interface StoreState {
 }
 
 const useBeybladeStore = create<StoreState>((set) => ({
+    generation: "X",
+    setGeneration: (generation) => set({ generation }),
     beybladeProduct: null,
 
     setBeybladeProduct: (product) => set({ beybladeProduct: product }),

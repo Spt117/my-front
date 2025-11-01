@@ -7,6 +7,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { ILauncher, launcherTypes, rotationDirections } from "@/app/beyblade/model/typesBeyblade";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import useBeybladeStore from "../beybladeStore";
 import ImageManager from "../ImageManager";
 
 export default function Launcher() {

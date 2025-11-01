@@ -27,7 +27,7 @@ export function SiteHeader() {
                 {pathname.includes("products") && <SearchProduct />}
                 {pathname.includes("collections") && <HeaderCollection />}
                 {pathname.includes("orders") && <Orders />}
-                {pathname === "/beyblade" && <HeaderBeyblade />}
+                {pathname.includes("/beyblade") && <HeaderBeyblade />}
             </div>
         </header>
     );

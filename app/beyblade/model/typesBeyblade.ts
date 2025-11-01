@@ -15,11 +15,14 @@ export const beybladePacks = [
     "Random Booster",
     "Launcher",
     "Battle Set",
+    "Entry Set",
     "Stadium",
     "Accessory",
 ] as const;
 type TBeybladeProductType = (typeof beybladePacks)[number];
 export const launcherTypes = ["string", "ripcord"] as const;
+export const nameLaunchers = ["Entry Launcher", "Winder Launcher", "String Launcher"] as const;
+export type TLauncherName = (typeof nameLaunchers)[number];
 type TLauncherType = (typeof launcherTypes)[number];
 
 // Beyblade - Launcher - Arena //
@@ -84,24 +87,27 @@ interface IAccessory {
 // Accessory //
 // Accessory //
 
+export const typeBeybladeProductContent = ["beyblade", "launcher", "arena", "accessory"] as const;
+export type TBeybladeProductTypeContent = (typeof typeBeybladeProductContent)[number];
 interface IProductContentItem {
-    type: "beyblade" | "launcher" | "arena" | "accessory";
+    type: TBeybladeProductTypeContent;
     name: string;
-    itemId: string; // MongoDB ObjectId
     notes?: string; // "Special color", "Tournament edition", etc.
+    toReview?: boolean; // Flag to indicate if the item needs review
 }
 interface IBeybladeProduct {
     _id?: string;
-    product: TBeybladeProductType;
+    product: TBeybladeProductType | null;
     title: string;
     productCode: string;
     brand: TBeybladeBrand;
     images: string[];
-    releaseDate: Date;
+    releaseDate?: Date;
     asinEurope?: string;
     asinAmerica?: string;
     asinJapan?: string;
     content: IProductContentItem[];
+    generation?: TBeybladeGeneration;
 }
 export type {
     TBeybladeGeneration,

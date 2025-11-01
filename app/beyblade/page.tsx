@@ -1,17 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import useBeybladeStore from "./beybladeStore";
-import Content from "./Content/Content";
 import ImageManager from "./ImageManager";
-import Preview from "./Preview";
+import { createProductBeyblade } from "./model/product/middlewareProduct";
+import { IBeybladeProduct } from "./model/typesBeyblade";
+import AddContentItem from "./productInformation/AddContentItem";
 import ProductData from "./productInformation/ProductData";
 
 export default function BeybladeProductForm() {
-    const { beybladeProduct, resetBeybladeProduct, initializeNewProduct, addImage, removeImage } = useBeybladeStore();
+    const { beybladeProduct, resetBeybladeProduct, initializeNewProduct, generation, addContentItem, addImage, removeImage } =
+        useBeybladeStore();
 
     const [currentTab, setCurrentTab] = useState("basic");
 
@@ -22,15 +24,26 @@ export default function BeybladeProductForm() {
         }
     });
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log("Product to save:", beybladeProduct);
-        // Ici tu peux appeler ton API pour sauvegarder
-    };
 
+        if (beybladeProduct?.productCode && beybladeProduct?.releaseDate && beybladeProduct.brand && beybladeProduct.product) {
+            // Assure TypeScript que product est bien défini
+            const res = await createProductBeyblade(beybladeProduct as IBeybladeProduct, generation);
+            console.log("Product created:", res);
+            if (res.message) toast.success(res.message);
+            if (res.error) toast.error(res.error);
+        } else {
+            const msg = `Product creation failed: ${beybladeProduct?.productCode ? "" : "Product code is missing."} ${
+                beybladeProduct?.releaseDate ? "" : "Release date is missing."
+            } ${beybladeProduct?.brand ? "" : "Brand is missing."} ${beybladeProduct?.product ? "" : "Product name is missing."}`;
+            toast.error(msg);
+        }
+    };
     if (!beybladeProduct) return null;
 
     return (
-        <div className="container mx-auto py-8 max-w-6xl">
+        <div className="container mx-auto p-3 max-w-6xl">
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-4xl font-bold tracking-tight">Create Beyblade Product</h1>
@@ -47,18 +60,18 @@ export default function BeybladeProductForm() {
                 </div>
             </div>
 
-            <Tabs value={currentTab} onValueChange={setCurrentTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="basic">Product</TabsTrigger>
-                    <TabsTrigger value="content">Content</TabsTrigger>
-                    <TabsTrigger value="preview">Preview</TabsTrigger>
-                </TabsList>
+            <div className="space-y-3">
                 <ProductData />
-
-                <Content />
-
-                <Preview />
-            </Tabs>
+                <AddContentItem />
+                <ImageManager
+                    images={beybladeProduct?.images || []}
+                    onAddImage={addImage}
+                    onRemoveImage={removeImage}
+                    title="Product Images"
+                    description="Add images of the product"
+                    emptyMessage="No product images added yet"
+                />
+            </div>
         </div>
     );
 }

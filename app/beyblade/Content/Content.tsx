@@ -1,13 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { IArena, IBeyblade, ILauncher } from "@/app/beyblade/model/typesBeyblade";
-import { X } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useBeybladeStore from "../beybladeStore";
 import Arena from "./Arena";
 import Beyblade from "./Beyblade";
 import Launcher from "./Launcher";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 export default function Content() {
     const { beybladeProduct } = useBeybladeStore();
