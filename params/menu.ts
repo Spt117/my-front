@@ -1,6 +1,7 @@
 import { MenuProps } from "@/components/menu/menu";
 
 export const menuItems: MenuProps[] = [
+    { path: "/beyblade", label: "Beyblade" },
     { path: "/stock", label: "Stock" },
     { path: "/tasks", label: "Tâches" },
     { path: "/create", label: "Créer une fiche produit" },

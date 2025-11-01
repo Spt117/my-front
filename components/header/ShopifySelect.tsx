@@ -37,8 +37,8 @@ export default function ShopifySelect() {
         return url.replace(/\/shopify\/\d+\/?/, `/shopify/${newId}/`);
     }
 
-    const handleSelectOrigin = (domain: TDomainsShopify) => {
-        const boutique = boutiqueFromDomain(domain);
+    const handleSelectOrigin = (domain: string) => {
+        const boutique = boutiqueFromDomain(domain as TDomainsShopify);
         setShopifyBoutique(boutique);
         cleanCollections();
         if (product) setProduct(null);
@@ -60,7 +60,7 @@ export default function ShopifySelect() {
                 onChange={handleSelectOrigin}
                 placeholder="Choisir l'origine"
             />
-            <SelectFull handleSelectOrigin={handleSelectOrigin} />
+            <SelectFull action={handleSelectOrigin} options={option2} currentValue={shopifyBoutique?.domain || ""} />
         </div>
     );
 }

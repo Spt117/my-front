@@ -1,12 +1,12 @@
-const rotationDirections = ["right", "left", "both"] as const;
+export const rotationDirections = ["right", "left", "both"] as const;
 type TRotationDirection = (typeof rotationDirections)[number];
-const beybladeTypes = ["stamina", "attack", "defense", "balance"] as const;
+export const beybladeTypes = ["stamina", "attack", "defense", "balance"] as const;
 type TBeybladeType = (typeof beybladeTypes)[number];
-const beybladeGenerations = ["Burst", "Metal", "X"] as const;
+export const beybladeGenerations = ["X", "Burst", "Metal"] as const;
 type TBeybladeGeneration = (typeof beybladeGenerations)[number];
-const beybladeBrands = ["Hasbro", "Takara Tomy"] as const;
+export const beybladeBrands = ["Hasbro", "Takara Tomy"] as const;
 type TBeybladeBrand = (typeof beybladeBrands)[number];
-const beybladePacks = [
+export const beybladePacks = [
     "Starter",
     "Booster",
     "Triple Booster",
@@ -19,7 +19,7 @@ const beybladePacks = [
     "Accessory",
 ] as const;
 type TBeybladeProductType = (typeof beybladePacks)[number];
-const launcherTypes = ["string", "ripcord"] as const;
+export const launcherTypes = ["string", "ripcord"] as const;
 type TLauncherType = (typeof launcherTypes)[number];
 
 // Beyblade - Launcher - Arena //
@@ -48,6 +48,7 @@ interface IArena {
     color: string;
     system: string;
     diameter?: number;
+    xlineColor?: string;
     gimmick?: string;
     images: string[];
 }
@@ -73,14 +74,12 @@ interface IBeybladeProduct {
     product: TBeybladeProductType;
     title: string;
     productCode: string;
-    generation: TBeybladeGeneration;
     brand: TBeybladeBrand;
     images: string[];
     releaseDate: Date;
     asinEurope?: string;
     asinAmerica?: string;
     asinJapan?: string;
-    content: (IBeyblade | ILauncher | IArena)[];
 }
 export type {
     TBeybladeGeneration,

@@ -42,6 +42,12 @@ interface InventoryItemRef {
     id?: GID;
     tracked: boolean;
     requiresShipping: boolean;
+    measurement: {
+        weight: {
+            unit: "GRAMS" | "KILOGRAMS" | "OUNCES" | "POUNDS";
+            value: number;
+        };
+    };
 }
 
 export interface ProductVariantNodeGET {

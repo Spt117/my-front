@@ -1,15 +1,15 @@
 "use server";
 
-import { boolean } from "zod";
 import { asinController } from "./asinController";
 import { TAsin, TMarketPlace } from "./asinType";
-import { authOptions } from "@/library/auth/authOption";
-import { getServerSession } from "next-auth";
 
 /**
  * Action serveur pour créer un nouvel ASIN
  */
-export async function createAsinAction(asin: string, marketPlace: TMarketPlace): Promise<{ success: boolean; data?: TAsin; error?: string }> {
+export async function createAsinAction(
+    asin: string,
+    marketPlace: TMarketPlace
+): Promise<{ success: boolean; data?: TAsin; error?: string }> {
     try {
         const result = await asinController.createASin(asin, marketPlace);
 
@@ -28,8 +28,6 @@ export async function createAsinAction(asin: string, marketPlace: TMarketPlace):
  * Action serveur pour récupérer tous les ASINs
  */
 export async function getAsinsAction(): Promise<{ success: boolean; data?: TAsin[]; error?: string }> {
-    const session = await getServerSession(authOptions);
-    if (!session) return { success: false, error: "Unauthorized" };
     try {
         const result = await asinController.getASins();
         return { success: true, data: result };

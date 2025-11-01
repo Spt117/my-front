@@ -1,4 +1,5 @@
 "use client";
+import HeaderBeyblade from "@/app/beyblade/HeaderBeyblade";
 import HeaderPokemon from "@/app/pokemon/Header";
 import BulkHeader from "@/app/shopify/[shopId]/bulk/BulkHeader";
 import HeaderCollection from "@/app/shopify/[shopId]/collections/HeaderCollections";
@@ -13,7 +14,6 @@ import SelectAffiliationSite from "./taskAffiliation/SelectAffiliationSite";
 
 export function SiteHeader() {
     const pathname = usePathname();
-
     return (
         <header className="sticky p-1 top-0 z-49 bg-white flex shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
             <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6 ">
@@ -27,6 +27,7 @@ export function SiteHeader() {
                 {pathname.includes("products") && <SearchProduct />}
                 {pathname.includes("collections") && <HeaderCollection />}
                 {pathname.includes("orders") && <Orders />}
+                {pathname === "/beyblade" && <HeaderBeyblade />}
             </div>
         </header>
     );

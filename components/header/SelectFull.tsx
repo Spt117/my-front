@@ -1,30 +1,30 @@
-import { TDomainsShopify, boutiques } from "@/params/paramsShopify";
 import Image from "next/image";
-import useShopifyStore from "../shopify/shopifyStore";
+import React from "react";
 
-export default function SelectFull({ handleSelectOrigin }: { handleSelectOrigin: (domain: TDomainsShopify) => void }) {
-    const { shopifyBoutique } = useShopifyStore();
+interface SelectFullProps {
+    action: (selected: string) => void;
+    options: { label: string | React.ReactNode; value: string }[];
+    currentValue: string;
+}
 
+export default function SelectFull({ action, options, currentValue }: SelectFullProps) {
     const classBtn =
-        "cursor-pointer w-max p-1 rounded-lg border-2 transition-all duration-50 flex items-center gap-2 hover:shadow-md ";
+        "cursor-pointer min-w-[100px] w-max p-1 rounded-lg border-2 transition-all duration-50 flex items-center justify-center gap-2 hover:shadow-md ";
 
     return (
         <div className="flex gap-2 flex-wrap max-xl:hidden">
-            {boutiques.map((boutique) => (
+            {options.map((option) => (
                 <button
-                    key={boutique.domain}
-                    onClick={() => handleSelectOrigin(boutique.domain)}
+                    key={option.value}
+                    onClick={() => action(option.value)}
                     className={
                         classBtn +
                         `${
-                            shopifyBoutique?.domain === boutique.domain
-                                ? "border-blue-500 bg-blue-50"
-                                : "border-gray-200 hover:border-gray-300"
+                            currentValue === option.value ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
                         }`
                     }
                 >
-                    <Image src={boutique.flag} alt={boutique.langue} width={24} height={24} />
-                    <span className="text-sm font-medium text-center">{boutique.vendor}</span>
+                    {option.label}
                 </button>
             ))}
         </div>

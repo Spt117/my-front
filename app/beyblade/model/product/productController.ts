@@ -1,15 +1,21 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
 import { Model } from "mongoose";
-import { IBeybladeProduct, TBeybladeGeneration } from "./beyblade";
-import { BeybladeSchema } from "./model-beyblade";
+import { IBeybladeProduct, TBeybladeGeneration } from "../typesBeyblade";
+import { BeybladeSchema } from "./model-product";
 
 class BeybladeController {
-    async getVariantModel(generation: TBeybladeGeneration): Promise<Model<IBeybladeProduct>> {
+    generation: TBeybladeGeneration;
+
+    constructor(generation: TBeybladeGeneration) {
+        this.generation = generation;
+    }
+
+    async getVariantModel(): Promise<Model<IBeybladeProduct>> {
         const manager = await getMongoConnectionManager();
         const connection = await manager.getConnection("Beyblade");
 
         const modelName = "beybladeModel";
-        const collectionName = `beyblade_${generation}`;
+        const collectionName = `beyblade_${this.generation}`;
 
         const existingModel = connection.models[modelName];
         if (existingModel) return existingModel as Model<IBeybladeProduct>;
@@ -19,7 +25,7 @@ class BeybladeController {
 
     async createBeyblade(payload: IBeybladeProduct) {
         try {
-            const Beyblade = await this.getVariantModel(payload.generation);
+            const Beyblade = await this.getVariantModel();
             const doc = await Beyblade.create(payload);
             return doc;
         } catch (err) {
@@ -28,9 +34,9 @@ class BeybladeController {
         }
     }
 
-    async searchBeybladeByProductCodeOrTitle(generation: TBeybladeGeneration, search: string) {
+    async searchBeybladeByProductCodeOrTitle(search: string) {
         try {
-            const Beyblade = await this.getVariantModel(generation);
+            const Beyblade = await this.getVariantModel();
             const regex = new RegExp(search, "i");
             const docs = await Beyblade.find({
                 $or: [{ productCode: regex }, { title: regex }],
@@ -42,9 +48,9 @@ class BeybladeController {
         }
     }
 
-    async getBeybladeByProductCode(generation: TBeybladeGeneration, productCode: string): Promise<IBeybladeProduct | null> {
+    async getBeybladeByProductCode(productCode: string): Promise<IBeybladeProduct | null> {
         try {
-            const Beyblade = await this.getVariantModel(generation);
+            const Beyblade = await this.getVariantModel();
             const doc = await Beyblade.findOne({ productCode }).lean<IBeybladeProduct>();
             return doc;
         } catch (err) {
@@ -54,4 +60,4 @@ class BeybladeController {
     }
 }
 
-export const beybladeController = new BeybladeController();
+export const beybladeController = (generation: TBeybladeGeneration) => new BeybladeController(generation);
