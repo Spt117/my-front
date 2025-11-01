@@ -11,7 +11,6 @@ import useBeybladeStore from "../beybladeStore";
 import ImageManager from "../ImageManager";
 
 export default function Launcher() {
-    const { addContent } = useBeybladeStore();
     const [launcherForm, setLauncherForm] = useState<Partial<ILauncher>>({
         productCode: "",
         type: undefined,
@@ -37,7 +36,6 @@ export default function Launcher() {
                 rotationDirection: launcherForm.rotationDirection,
                 images: [],
             };
-            addContent(launcher);
             setLauncherForm({
                 productCode: "",
                 type: undefined,

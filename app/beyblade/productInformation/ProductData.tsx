@@ -4,11 +4,13 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { TabsContent } from "@/components/ui/tabs";
 import useBeybladeStore from "../beybladeStore";
+import ImageManager from "../ImageManager";
 import Asins from "./Asins";
 import ProductType from "./ProductType";
+import Content from "../Content/Content";
 
 export default function ProductData() {
-    const { beybladeProduct, updateProduct } = useBeybladeStore();
+    const { beybladeProduct, updateProduct, addImage, removeImage } = useBeybladeStore();
 
     if (beybladeProduct)
         return (
@@ -60,8 +62,18 @@ export default function ProductData() {
                         <Separator />
 
                         <Asins />
+                        <Separator />
+                        <Content />
                     </CardContent>
                 </Card>
+                <ImageManager
+                    images={beybladeProduct?.images || []}
+                    onAddImage={addImage}
+                    onRemoveImage={removeImage}
+                    title="Product Images"
+                    description="Add images of the product"
+                    emptyMessage="No product images added yet"
+                />
             </TabsContent>
         );
 }

@@ -6,11 +6,9 @@ import { TabsContent } from "@/components/ui/tabs";
 import { IArena } from "@/app/beyblade/model/typesBeyblade";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import useBeybladeStore from "../beybladeStore";
 import ImageManager from "../ImageManager";
 
 export default function Arena() {
-    const { addContent } = useBeybladeStore();
     const [arenaForm, setArenaForm] = useState<Partial<IArena>>({
         productCode: "",
         color: "",
@@ -30,7 +28,6 @@ export default function Arena() {
                 gimmick: arenaForm.gimmick,
                 images: [],
             };
-            addContent(arena);
             setArenaForm({
                 productCode: "",
                 color: "",

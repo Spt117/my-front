@@ -1,5 +1,4 @@
-import { IArena, IBeyblade, IBeybladeProduct, ILauncher, TBeybladeProductType } from "@/app/beyblade/model/typesBeyblade";
-import { TBrandBeyblade } from "@/params/paramsCreateAffiliation";
+import { IBeybladeProduct, IProductContentItem } from "@/app/beyblade/model/typesBeyblade";
 import { create } from "zustand";
 
 interface StoreState {
@@ -12,9 +11,8 @@ interface StoreState {
     // Gestion des tableaux
     addImage: (imageUrl: string) => void;
     removeImage: (index: number) => void;
-    addContent: (item: IBeyblade | ILauncher | IArena) => void;
-    removeContent: (index: number) => void;
-    updateContent: (index: number, item: IBeyblade | ILauncher | IArena) => void;
+    addContentItem: (item: IProductContentItem) => void;
+    removeContentItem: (index: number) => void;
 
     // Actions globales
     resetBeybladeProduct: () => void;
@@ -40,7 +38,6 @@ const useBeybladeStore = create<StoreState>((set) => ({
                 images: [...(state.beybladeProduct?.images || []), imageUrl],
             },
         })),
-
     removeImage: (index) =>
         set((state) => ({
             beybladeProduct: {
@@ -49,28 +46,19 @@ const useBeybladeStore = create<StoreState>((set) => ({
             },
         })),
 
-    // Gestion du contenu (Beyblade, Launcher, Arena)
-    addContent: (item) =>
+    // Gestion des items de contenu
+    addContentItem: (item) =>
         set((state) => ({
             beybladeProduct: {
                 ...state.beybladeProduct,
                 content: [...(state.beybladeProduct?.content || []), item],
             },
         })),
-
-    removeContent: (index) =>
+    removeContentItem: (index) =>
         set((state) => ({
             beybladeProduct: {
                 ...state.beybladeProduct,
                 content: state.beybladeProduct?.content?.filter((_, i) => i !== index) || [],
-            },
-        })),
-
-    updateContent: (index, item) =>
-        set((state) => ({
-            beybladeProduct: {
-                ...state.beybladeProduct,
-                content: state.beybladeProduct?.content?.map((c, i) => (i === index ? item : c)) || [],
             },
         })),
 
@@ -81,7 +69,6 @@ const useBeybladeStore = create<StoreState>((set) => ({
         set({
             beybladeProduct: {
                 images: [],
-                content: [],
             },
         }),
 }));

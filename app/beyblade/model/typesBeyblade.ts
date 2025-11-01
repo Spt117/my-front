@@ -70,7 +70,28 @@ interface IBlade {
 // Beyblade X //
 // Beyblade X //
 
+// Accessory //
+// Accessory //
+interface IAccessory {
+    _id?: string;
+    productCode: string;
+    generation: TBeybladeGeneration;
+    name: string;
+    type: "tool" | "sticker" | "case" | "launcher grip" | "other";
+    system: string;
+    images: string[];
+}
+// Accessory //
+// Accessory //
+
+interface IProductContentItem {
+    type: "beyblade" | "launcher" | "arena" | "accessory";
+    name: string;
+    itemId: string; // MongoDB ObjectId
+    notes?: string; // "Special color", "Tournament edition", etc.
+}
 interface IBeybladeProduct {
+    _id?: string;
     product: TBeybladeProductType;
     title: string;
     productCode: string;
@@ -80,6 +101,7 @@ interface IBeybladeProduct {
     asinEurope?: string;
     asinAmerica?: string;
     asinJapan?: string;
+    content: IProductContentItem[];
 }
 export type {
     TBeybladeGeneration,
@@ -91,4 +113,6 @@ export type {
     IBlade,
     ILauncher,
     IArena,
+    IAccessory,
+    IProductContentItem,
 };

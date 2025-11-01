@@ -11,8 +11,6 @@ import useBeybladeStore from "../beybladeStore";
 import ImageManager from "../ImageManager";
 
 export default function Beyblade() {
-    const { addContent } = useBeybladeStore();
-
     const [beybladeForm, setBeybladeForm] = useState<Partial<IBeyblade>>({
         productCode: "",
         name: "",
@@ -46,7 +44,6 @@ export default function Beyblade() {
                 parts: beybladeForm.parts,
                 images: [],
             };
-            addContent(beyblade);
             setBeybladeForm({
                 productCode: "",
                 name: "",

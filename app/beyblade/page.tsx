@@ -48,24 +48,12 @@ export default function BeybladeProductForm() {
             </div>
 
             <Tabs value={currentTab} onValueChange={setCurrentTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="basic">Basic Info</TabsTrigger>
-                    <TabsTrigger value="images">Images</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="basic">Product</TabsTrigger>
                     <TabsTrigger value="content">Content</TabsTrigger>
                     <TabsTrigger value="preview">Preview</TabsTrigger>
                 </TabsList>
                 <ProductData />
-
-                <TabsContent value="images" className="space-y-6">
-                    <ImageManager
-                        images={beybladeProduct?.images || []}
-                        onAddImage={addImage}
-                        onRemoveImage={removeImage}
-                        title="Product Images"
-                        description="Add images of the product box"
-                        emptyMessage="No product images added yet"
-                    />
-                </TabsContent>
 
                 <Content />
 

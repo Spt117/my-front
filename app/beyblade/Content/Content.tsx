@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export default function Content() {
-    const { beybladeProduct, removeContent } = useBeybladeStore();
+    const { beybladeProduct } = useBeybladeStore();
 
     const getContentType = (item: IBeyblade | ILauncher | IArena): string => {
         if ("parts" in item) return "beyblade";
@@ -35,29 +35,6 @@ export default function Content() {
                 <Launcher />
                 <Arena />
             </Tabs>
-
-            {beybladeProduct?.content && beybladeProduct?.content.length > 0 && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Added Content ({beybladeProduct?.content.length})</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-2">
-                            {beybladeProduct?.content.map((item, index) => (
-                                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <Badge variant="secondary">{getContentType(item)}</Badge>
-                                        <span className="font-medium">{getContentName(item)}</span>
-                                    </div>
-                                    <Button variant="ghost" size="icon" onClick={() => removeContent(index)}>
-                                        <X className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
         </TabsContent>
     );
 }

@@ -38,7 +38,6 @@ export default function Preview() {
                     </div>
                     <div className="space-y-2">
                         <Label className="text-muted-foreground">Content Items</Label>
-                        <p className="font-medium">{beybladeProduct?.content?.length || 0} item(s)</p>
                     </div>
                 </CardContent>
             </Card>
