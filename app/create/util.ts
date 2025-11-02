@@ -1,12 +1,13 @@
 import { TNameMarketplace } from "@/params/paramsAmazon";
+import { TBeybladeProducts, TPokemonProducts } from "@/params/paramsCreateAffiliation";
 import { TPublicDomainsShopify } from "@/params/paramsShopify";
 import { TDomainWordpress } from "@/params/paramsWordpress";
 
 export interface ICreateAffiliationProduct<T> {
-    idTask: string;
+    idTask?: string;
     website: TDomainWordpress | TPublicDomainsShopify;
     marketplace: TNameMarketplace;
-    product: string;
+    product: TPokemonProducts | TBeybladeProducts;
     asin: string;
     data: T;
 }

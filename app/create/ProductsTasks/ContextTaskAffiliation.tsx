@@ -1,16 +1,16 @@
 import { TAffiliationTask } from "@/library/models/tasksAffiliation/tasksAffiliation";
-import { createContext, ReactNode, useContext, useState } from "react";
-import { ICreateAffiliationProduct } from "../util";
-import { createProduct } from "../serverTasksAffiliation";
-import { toast } from "sonner";
-import { pokemonProducts } from "@/params/paramsCreateAffiliation";
+import { pokemonProducts, TPokemonProducts } from "@/params/paramsCreateAffiliation";
+import { boutiqueFromPublicDomain, TPublicDomainsShopify } from "@/params/paramsShopify";
 import { useRouter } from "next/navigation";
-import { boutiqueFromDomain, boutiqueFromPublicDomain, TDomainsShopify, TPublicDomainsShopify } from "@/params/paramsShopify";
+import { createContext, ReactNode, useContext, useState } from "react";
+import { toast } from "sonner";
+import { createProductTask } from "../serverTasksAffiliation";
+import { ICreateAffiliationProduct } from "../util";
 
 interface AffiliationTaskContextType {
     task: TAffiliationTask;
-    productType: string;
-    setProductType: (type: string) => void;
+    productType: TPokemonProducts;
+    setProductType: (type: TPokemonProducts) => void;
     size: number | null;
     setSize: (size: number | null) => void;
     loading: boolean;
@@ -26,7 +26,7 @@ const AffiliationTaskContext = createContext<AffiliationTaskContextType | undefi
 export function AffiliationTaskProvider({ children, task }: { children: ReactNode; task: TAffiliationTask }) {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    const [productType, setProductType] = useState<string>(task.productType || "");
+    const [productType, setProductType] = useState<TPokemonProducts>(task.productType);
     const [size, setSize] = useState<number | null>(null);
     const [namePokemon, setNamePokemon] = useState<string>("");
 
@@ -51,7 +51,7 @@ export function AffiliationTaskProvider({ children, task }: { children: ReactNod
             data: productType === "peluche pokémon" ? { size, namePokemon } : {},
         };
         try {
-            const res = await createProduct([data]);
+            const res = await createProductTask(data);
             if (res.error) toast.error(res.error);
             if (res.message) toast.success(res.message);
             const id = res.response;

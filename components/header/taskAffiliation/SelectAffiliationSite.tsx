@@ -5,7 +5,7 @@ import Selecteur from "@/components/selecteur";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Input } from "@/components/ui/input";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { boutiqueFromPublicDomain, TPublicDomainsShopify } from "@/params/paramsShopify";
+import { boutiqueFromPublicDomain, boutiques, TPublicDomainsShopify } from "@/params/paramsShopify";
 import { useEffect } from "react";
 
 export default function SelectAffiliationSite() {
@@ -13,9 +13,9 @@ export default function SelectAffiliationSite() {
         useAffiliationStore();
     const { shopifyBoutique, setShopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
 
-    const optionWebsite = arraySites.map((website) => ({
-        label: website,
-        value: website,
+    const optionWebsite = boutiques.map((website) => ({
+        label: website.publicDomain,
+        value: website.publicDomain,
     }));
 
     const optionTypesProducts = arrayTypesProducts.map((type) => ({

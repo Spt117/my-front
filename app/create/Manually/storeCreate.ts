@@ -1,17 +1,22 @@
 import { TBeybladeProducts, TNiche, TPokemonProducts } from "@/params/paramsCreateAffiliation";
 import { create } from "zustand";
 
+interface PayloadPeluche {
+    namePokemon: string;
+    size: number;
+}
+
 interface StoreState {
     selectedNiche: TNiche | null;
     setSelectedNiche: (niche: TNiche | null) => void;
     selectedProduct: TPokemonProducts | TBeybladeProducts | null;
     setSelectedProduct: (product: TPokemonProducts | TBeybladeProducts | null) => void;
 
+    asin: string;
+    setAsin: (asin: string) => void;
     // For data products
-    size: number | null;
-    setSize: (size: number | null) => void;
-    namePokemon: string;
-    setNamePokemon: (name: string) => void;
+    payloadPeluche: Partial<PayloadPeluche>;
+    updatePayloadPeluche: (key: keyof PayloadPeluche, value: string | number) => void;
 }
 
 const useCreateStore = create<StoreState>((set) => ({
@@ -20,11 +25,18 @@ const useCreateStore = create<StoreState>((set) => ({
     selectedProduct: null,
     setSelectedProduct: (product) => set({ selectedProduct: product }),
 
+    asin: "",
+    setAsin: (asin) => set({ asin }),
+
     // For data products
-    size: null,
-    setSize: (size) => set({ size }),
-    namePokemon: "",
-    setNamePokemon: (name) => set({ namePokemon: name }),
+    payloadPeluche: {},
+    updatePayloadPeluche: (key, value) =>
+        set((state) => ({
+            payloadPeluche: {
+                ...state.payloadPeluche,
+                [key]: value,
+            },
+        })),
 }));
 
 export default useCreateStore;

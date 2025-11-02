@@ -11,7 +11,7 @@ export async function archiveTaskStatus(asin: string, website: TDomainWordpress 
     return tasksAffiliationController.archiveTask(asin, website);
 }
 
-export async function createProduct(data: ICreateAffiliationProduct<any>[]) {
+export async function createProductTask(data: ICreateAffiliationProduct<any>) {
     const url = `${pokeUriServer}/createContent`;
     const res = await postServer(url, data);
     return res;

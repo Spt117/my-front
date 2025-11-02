@@ -7,10 +7,12 @@ import useAffiliationStore from "../storeTasksAffiliation";
 import AddProduct from "./AddProduct";
 import useCreateStore from "./storeCreate";
 import TypeProduct from "./TypeProduct";
+import { Input } from "@/components/ui/input";
 
 export default function AddManually() {
     const { websiteFilter } = useAffiliationStore();
-    const { selectedNiche, setSelectedNiche, selectedProduct, setSelectedProduct, size, setSize, namePokemon, setNamePokemon } = useCreateStore();
+    const { selectedNiche, setSelectedNiche, selectedProduct, setSelectedProduct, updatePayloadPeluche, payloadPeluche } =
+        useCreateStore();
 
     const options = niches.map((niche) => ({ label: niche, value: niche }));
     const optionsProducts = pokemonProducts.map((product) => ({ label: product, value: product }));
@@ -20,9 +22,18 @@ export default function AddManually() {
         <Card className="m-2 p-4">
             <CardHeader>Ajouter manuellement à {websiteFilter}</CardHeader>
             <CardContent className="flex flex-wrap gap-4 bg-gray-50 p-4 rounded">
+                <Input placeholder="Asin" className="max-w-xs" />
                 <Selecteur placeholder="Select a niche" array={options} value={selectedNiche} onChange={setSelectedNiche} />
                 <TypeProduct />
-                {selectedNiche && selectedProduct && <Inputs size={size} setSize={setSize} productType={selectedProduct} setNamePokemon={setNamePokemon} namePokemon={namePokemon} />}
+                {selectedNiche && selectedProduct && (
+                    <Inputs
+                        size={Number(payloadPeluche.size)}
+                        setSize={(value) => updatePayloadPeluche("size", Number(value))}
+                        productType={selectedProduct}
+                        setNamePokemon={(value) => updatePayloadPeluche("namePokemon", value)}
+                        namePokemon={payloadPeluche.namePokemon || ""}
+                    />
+                )}
                 <AddProduct />
             </CardContent>
         </Card>
