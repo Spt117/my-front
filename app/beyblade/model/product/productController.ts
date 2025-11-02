@@ -1,6 +1,6 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
 import { Model } from "mongoose";
-import { IBeybladeProduct, TBeybladeGeneration } from "../typesBeyblade";
+import { IBeybladeProduct, IProductContentItem, TBeybladeGeneration } from "../typesBeyblade";
 import { BeybladeSchema } from "./model-product";
 
 class BeybladeController {
@@ -30,6 +30,95 @@ class BeybladeController {
             return { response: JSON.parse(JSON.stringify(doc)), message: "Beyblade created successfully." };
         } catch (err) {
             return { response: err, error: "Beyblade creation failed." };
+        }
+    }
+
+    async updateBeybladeById(id: string, payload: Partial<IBeybladeProduct>): Promise<{ response: any; message?: string; error?: string }> {
+        try {
+            const Beyblade = await this.getVariantModel();
+            const doc = await Beyblade.findByIdAndUpdate(id, { $set: payload }, { new: true, runValidators: true }).lean<IBeybladeProduct>();
+
+            if (!doc) {
+                return { response: null, error: "Beyblade not found." };
+            }
+
+            return { response: JSON.parse(JSON.stringify(doc)), message: "Beyblade updated successfully." };
+        } catch (err) {
+            return { response: err, error: "Beyblade update failed." };
+        }
+    }
+
+    async updateBeybladeField(id: string, field: keyof IBeybladeProduct, value: any): Promise<{ response: any; message?: string; error?: string }> {
+        try {
+            const Beyblade = await this.getVariantModel();
+            const doc = await Beyblade.findByIdAndUpdate(id, { $set: { [field]: value } }, { new: true, runValidators: true }).lean<IBeybladeProduct>();
+
+            if (!doc) {
+                return { response: null, error: "Beyblade not found." };
+            }
+
+            return { response: JSON.parse(JSON.stringify(doc)), message: `Field ${String(field)} updated successfully.` };
+        } catch (err) {
+            return { response: err, error: `Field ${String(field)} update failed.` };
+        }
+    }
+
+    async updateContentItem(id: string, contentIndex: number, updates: Partial<IProductContentItem>): Promise<{ response: any; message?: string; error?: string }> {
+        try {
+            const Beyblade = await this.getVariantModel();
+
+            // Construction dynamique de l'objet de mise à jour
+            const updateObject: Record<string, any> = {};
+            Object.entries(updates).forEach(([key, value]) => {
+                updateObject[`content.${contentIndex}.${key}`] = value;
+            });
+
+            const doc = await Beyblade.findByIdAndUpdate(id, { $set: updateObject }, { new: true, runValidators: true }).lean<IBeybladeProduct>();
+
+            if (!doc) {
+                return { response: null, error: "Beyblade not found." };
+            }
+
+            return { response: JSON.parse(JSON.stringify(doc)), message: "Content item updated successfully." };
+        } catch (err) {
+            return { response: err, error: "Content item update failed." };
+        }
+    }
+
+    async addContentItem(id: string, newItem: IProductContentItem): Promise<{ response: any; message?: string; error?: string }> {
+        try {
+            const Beyblade = await this.getVariantModel();
+            const doc = await Beyblade.findByIdAndUpdate(id, { $push: { content: newItem } }, { new: true, runValidators: true }).lean<IBeybladeProduct>();
+
+            if (!doc) {
+                return { response: null, error: "Beyblade not found." };
+            }
+
+            return { response: JSON.parse(JSON.stringify(doc)), message: "Content item added successfully." };
+        } catch (err) {
+            return { response: err, error: "Content item addition failed." };
+        }
+    }
+
+    async deleteContentItem(id: string, contentIndex: number): Promise<{ response: any; message?: string; error?: string }> {
+        try {
+            const Beyblade = await this.getVariantModel();
+
+            // Récupérer le document actuel
+            const currentDoc = await Beyblade.findById(id);
+            if (!currentDoc) {
+                return { response: null, error: "Beyblade not found." };
+            }
+
+            // Filtrer le contenu pour retirer l'élément à l'index spécifié
+            const updatedContent = (currentDoc.content ?? []).filter((_, i) => i !== contentIndex);
+
+            // Mettre à jour le document
+            const doc = await Beyblade.findByIdAndUpdate(id, { $set: { content: updatedContent } }, { new: true, runValidators: true }).lean<IBeybladeProduct>();
+
+            return { response: JSON.parse(JSON.stringify(doc)), message: "Content item deleted successfully." };
+        } catch (err) {
+            return { response: err, error: "Content item deletion failed." };
         }
     }
 
@@ -108,6 +197,30 @@ class BeybladeController {
             }
         } catch (err) {
             return { success: false, error: "Beyblade deletion failed." };
+        }
+    }
+
+    async getItemById(id: string): Promise<IBeybladeProduct | null> {
+        try {
+            const Beyblade = await this.getVariantModel();
+            const doc = await Beyblade.findById(id).lean<IBeybladeProduct>();
+            return JSON.parse(JSON.stringify(doc));
+        } catch (err) {
+            console.error("getItemById error:", err);
+            return null;
+        }
+    }
+
+    async getAllBeyblades(limit?: number): Promise<IBeybladeProduct[]> {
+        try {
+            const Beyblade = await this.getVariantModel();
+            const query = Beyblade.find().sort({ createdAt: -1 });
+            if (limit) query.limit(limit);
+            const docs = await query.lean<IBeybladeProduct[]>();
+            return JSON.parse(JSON.stringify(docs));
+        } catch (err) {
+            console.error("getAllBeyblades error:", err);
+            return [];
         }
     }
 }

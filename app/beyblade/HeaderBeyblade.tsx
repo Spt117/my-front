@@ -1,8 +1,8 @@
 import { beybladeGenerations, TBeybladeGeneration } from "@/app/beyblade/model/typesBeyblade";
 import SelectFull from "@/components/header/SelectFull";
-import useBeybladeStore from "./beybladeStore";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import useBeybladeStore from "./beybladeStore";
 
 export default function HeaderBeyblade() {
     const { generation, setGeneration } = useBeybladeStore();
@@ -15,10 +15,10 @@ export default function HeaderBeyblade() {
         setGeneration(value as TBeybladeGeneration);
     };
     return (
-        <div>
+        <div className="flex">
             <SelectFull action={handleSelectGeneration} options={array} currentValue={generation} />
-            <Button className="ml-4" variant="link">
-                <Link href="/beyblade/review">Review Beyblade Products</Link>
+            <Button className="ml-4">
+                <Link href="/beyblade/review">Reviews</Link>
             </Button>
         </div>
     );

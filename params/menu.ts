@@ -16,9 +16,6 @@ export const menuShopify = (id?: number): MenuProps[] => {
         { path: `/shopify/${id}/products`, label: "Produits", disabled: !id },
         { path: `/shopify/${id}/bulk`, label: "Édition en masse", disabled: !id },
         { path: `/shopify/${id}/collections`, label: "Collections", disabled: !id },
-        { path: `/shopify/${id}/customers`, label: "Clients", disabled: !id },
-        { path: `/shopify/${id}/discounts`, label: "Réductions", disabled: !id },
-        { path: `/shopify/${id}/settings`, label: "Réglages", disabled: !id },
     ];
 };
 
