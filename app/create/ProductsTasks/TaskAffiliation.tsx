@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { TBeybladeProducts, TPokemonProducts } from "@/params/paramsCreateAffiliation";
 import { IconCategoryFilled } from "@tabler/icons-react";
 import { Globe, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,7 +14,6 @@ import { toast } from "sonner";
 import { archiveTaskStatus } from "../serverTasksAffiliation";
 import { useAffiliationTask } from "./ContextTaskAffiliation";
 import Inputs from "./Inputs";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 
 export default function TaskAffiliation() {
     const { task, productType, setProductType, loading, setLoading, handleCreateProduct, disabledPush } = useAffiliationTask();
@@ -80,7 +81,11 @@ export default function TaskAffiliation() {
                     <div className="flex items-center gap-2">
                         <IconCategoryFilled className="w-4 h-4 text-gray-500" />
                         <span className="text-sm flex items-center">Type:</span>
-                        <Input className="w-max h-7" value={productType} onChange={(e) => setProductType(e.target.value)} />
+                        <Input
+                            className="w-max h-7"
+                            value={productType}
+                            onChange={(e) => setProductType(e.target.value as TPokemonProducts)}
+                        />
                     </div>
                     <Inputs
                         size={size}
