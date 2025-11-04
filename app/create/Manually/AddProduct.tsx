@@ -1,19 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { CardAction } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { pokemonProducts } from "@/params/paramsCreateAffiliation";
 import { boutiqueFromPublicDomain, TPublicDomainsShopify } from "@/params/paramsShopify";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { createProductTask } from "../serverTasksAffiliation";
 import useAffiliationStore from "../storeTasksAffiliation";
 import { ICreateAffiliationProduct } from "../util";
 import useCreateStore from "./storeCreate";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 
 export default function AddProduct() {
     const { selectedNiche, selectedProduct, payloadPeluche, asin } = useCreateStore();
     const { websiteFilter } = useAffiliationStore();
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
     const disableAdd = selectedProduct === "peluche pokémon" && (!payloadPeluche.namePokemon || !payloadPeluche.size || !asin);
 
     if (!selectedNiche || !selectedProduct) return null;
@@ -48,6 +50,7 @@ export default function AddProduct() {
                 const boutique = boutiqueFromPublicDomain(data.website as TPublicDomainsShopify);
                 const url = `/shopify/${boutique.id}/products/${id.replace("gid://shopify/Product/", "")}`;
                 window.open(url, "_blank");
+                router.refresh();
             } else toast.error("Erreur lors de la création du produit: ID manquant");
         } catch (error) {
             console.error("Error creating product:", error);
