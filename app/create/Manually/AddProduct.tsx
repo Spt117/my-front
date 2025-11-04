@@ -9,6 +9,7 @@ import { createProductTask } from "../serverTasksAffiliation";
 import useAffiliationStore from "../storeTasksAffiliation";
 import { ICreateAffiliationProduct } from "../util";
 import useCreateStore from "./storeCreate";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 
 export default function AddProduct() {
     const { selectedNiche, selectedProduct, payloadPeluche, asin } = useCreateStore();
@@ -16,12 +17,6 @@ export default function AddProduct() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const disableAdd = selectedProduct === "peluche pokémon" && (!payloadPeluche.namePokemon || !payloadPeluche.size || !asin);
-
-    useEffect(() => {
-        console.log("Disable Add Product:", disableAdd);
-        console.log("Selected Product:", selectedProduct);
-        console.log("Payload Peluche:", payloadPeluche);
-    });
 
     if (!selectedNiche || !selectedProduct) return null;
     const handleCreateProduct = async () => {
@@ -66,9 +61,12 @@ export default function AddProduct() {
 
     return (
         <CardAction className="flex justify-end">
-            <Button onClick={handleCreateProduct} disabled={disableAdd}>
-                Ajouter
-            </Button>
+            {!loading && (
+                <Button onClick={handleCreateProduct} disabled={disableAdd}>
+                    Ajouter
+                </Button>
+            )}
+            {loading && <Spinner size={24} className="mx-auto" />}
         </CardAction>
     );
 }
