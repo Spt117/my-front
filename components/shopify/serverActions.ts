@@ -4,16 +4,10 @@ import { ShopifyCollection, ShopifyCollectionWithProducts } from "@/app/shopify/
 import { variantController } from "@/library/models/variantShopify/variantController";
 import { ProductGET } from "@/library/types/graph";
 import { getServer, postServer } from "@/library/utils/fetchServer";
-import { boutiqueFromDomain, boutiques, TDomainsShopify, TParamsDataShop } from "@/params/paramsShopify";
+import { TDomainsShopify, TParamsDataShop, boutiqueFromDomain, boutiques } from "@/params/paramsShopify";
 import { IGetProduct, IMetafieldRequest, ITagRequest, ResponseServer } from "./typesShopify";
 
-export async function getDataBoutique(
-    domain: TDomainsShopify,
-    param: TParamsDataShop,
-    id?: string
-): Promise<
-    ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[] | ProductGET[] | ShopifyCollectionWithProducts | null>
-> {
+export async function getDataBoutique(domain: TDomainsShopify, param: TParamsDataShop, id?: string): Promise<ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[] | ProductGET[] | ShopifyCollectionWithProducts | null>> {
     const url = `http://localhost:9100/shopify/data-shop?domain=${domain}&param=${param}${id ? `&id=${id}` : ""}`;
     const response = await getServer(url);
     return response;

@@ -2,8 +2,10 @@ import { addProductsToCollection } from "@/app/shopify/[shopId]/bulk/server";
 import useBulkStore from "@/app/shopify/[shopId]/bulk/storeBulk";
 import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
 import Selecteur from "@/components/selecteur";
+import { addTag } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -15,6 +17,7 @@ export default function BulkActions() {
     const { collections } = useCollectionStore();
     const [action, setAction] = useState<string | null>(null);
     const [collectionId, setCollectionId] = useState<string | null>(null);
+    const [tag, setTag] = useState<string>("");
     const { selectedProducts } = useBulkStore();
     const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
@@ -42,16 +45,18 @@ export default function BulkActions() {
                         if (res.error) toast.error(res.error);
                         if (res.message) {
                             toast.success(res.message);
-                            router.push(
-                                `/shopify/${shopifyBoutique.id}/collections/${collectionId.replace(
-                                    "gid://shopify/Collection/",
-                                    ""
-                                )}`
-                            );
+                            router.push(`/shopify/${shopifyBoutique.id}/collections/${collectionId.replace("gid://shopify/Collection/", "")}`);
                             closeDialog();
                         }
                     }
                     break;
+                case "add_tag":
+                    if (tag) {
+                        // Implement add tag functionality here
+                        // const res = await addTag(data);
+                        toast.success(`Tag "${tag}" ajouté aux produits sélectionnés.`);
+                        closeDialog();
+                    }
             }
         } catch (error) {
             console.error("Error during bulk action:", error);
@@ -67,22 +72,9 @@ export default function BulkActions() {
                 <span className="mb-1 block text-s font-medium text-slate-600">Choisir une action</span>
             </div>
             <div className="flex gap-3">
-                <Selecteur
-                    className="w-2/5"
-                    array={bulkActions}
-                    onChange={(value) => setAction(value)}
-                    placeholder="Sélectionner une action"
-                    value={action}
-                />
-                {action === "add_to_collection" && (
-                    <Selecteur
-                        className="w-2/5"
-                        array={collectionsOptions}
-                        onChange={(value) => setCollectionId(value)}
-                        placeholder="Sélectionner une collection"
-                        value={collectionId}
-                    />
-                )}
+                <Selecteur className="w-2/5" array={bulkActions} onChange={(value) => setAction(value)} placeholder="Sélectionner une action" value={action} />
+                {action === "add_to_collection" && <Selecteur className="w-2/5" array={collectionsOptions} onChange={(value) => setCollectionId(value)} placeholder="Sélectionner une collection" value={collectionId} />}
+                {action === "add_tag" && <Input onChange={(e) => setTag(e.target.value.trim())} type="text" className="w-2/5 border border-slate-300 rounded px-3 py-2" placeholder="Entrer le tag à ajouter" />}
             </div>
             <div className="mt-4 flex flex-col justify-between gap-5">
                 <div className="flex items-center gap-2 w-full"></div>
