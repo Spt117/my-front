@@ -1,9 +1,9 @@
-import { addProductsToCollection } from "@/app/shopify/[shopId]/bulk/server";
+import { actionBulk, addProductsToCollection } from "@/app/shopify/[shopId]/bulk/server";
 import useBulkStore from "@/app/shopify/[shopId]/bulk/storeBulk";
 import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
 import Selecteur from "@/components/selecteur";
-import { addTag } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
+import { BulkAction } from "@/components/shopify/typesShopify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
@@ -52,9 +52,17 @@ export default function BulkActions() {
                     break;
                 case "add_tag":
                     if (tag) {
+                        const payload: BulkAction = {
+                            productsId: productIds,
+                            domain: shopifyBoutique.domain,
+                            actionType: "tag",
+                            tag: tag,
+                            type: "add",
+                        };
                         // Implement add tag functionality here
-                        // const res = await addTag(data);
-                        toast.success(`Tag "${tag}" ajouté aux produits sélectionnés.`);
+                        const res = await actionBulk(payload);
+                        if (res.error) toast.error(res.error);
+                        if (res.message) toast.success(res.message);
                         closeDialog();
                     }
             }
