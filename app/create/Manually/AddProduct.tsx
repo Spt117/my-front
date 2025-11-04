@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { CardAction } from "@/components/ui/card";
 import { pokemonProducts } from "@/params/paramsCreateAffiliation";
 import { boutiqueFromPublicDomain, TPublicDomainsShopify } from "@/params/paramsShopify";
-import router from "next/router";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { createProductTask } from "../serverTasksAffiliation";
 import useAffiliationStore from "../storeTasksAffiliation";
@@ -14,10 +14,16 @@ export default function AddProduct() {
     const { selectedNiche, selectedProduct, payloadPeluche, asin } = useCreateStore();
     const { websiteFilter } = useAffiliationStore();
     const [loading, setLoading] = useState(false);
-    if (!selectedNiche || !selectedProduct) return null;
-
+    const router = useRouter();
     const disableAdd = selectedProduct === "peluche pokémon" && (!payloadPeluche.namePokemon || !payloadPeluche.size || !asin);
 
+    useEffect(() => {
+        console.log("Disable Add Product:", disableAdd);
+        console.log("Selected Product:", selectedProduct);
+        console.log("Payload Peluche:", payloadPeluche);
+    });
+
+    if (!selectedNiche || !selectedProduct) return null;
     const handleCreateProduct = async () => {
         if (!selectedProduct) {
             alert("Veuillez sélectionner un type de produit.");
@@ -60,7 +66,9 @@ export default function AddProduct() {
 
     return (
         <CardAction className="flex justify-end">
-            <Button disabled={disableAdd}>Ajouter</Button>
+            <Button onClick={handleCreateProduct} disabled={disableAdd}>
+                Ajouter
+            </Button>
         </CardAction>
     );
 }
