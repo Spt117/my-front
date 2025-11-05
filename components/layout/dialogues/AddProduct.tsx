@@ -24,7 +24,7 @@ export default function AddProduct() {
         }
         setLoading(true);
         try {
-            const data = await createProductFromTitle(shopifyBoutique.domain, title);
+            const data = await createProductFromTitle(shopifyBoutique.domain, title, asin.trim());
             if (data.error) toast.error(data.error);
             if (data.message) toast.success(data.message);
             const id = data.response.id.replace("gid://shopify/Product/", "");
