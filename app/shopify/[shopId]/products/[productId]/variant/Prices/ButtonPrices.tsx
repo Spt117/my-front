@@ -3,7 +3,6 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { Check, X } from "lucide-react";
-import { useEffect } from "react";
 import useProductStore from "../../storeProduct";
 import useTaskStore from "../../Tasks/storeTasks";
 import usePrices from "./hooksPrices";
@@ -11,18 +10,8 @@ import usePrices from "./hooksPrices";
 export default function ButtonPrices() {
     const { product, shopifyBoutique } = useShopifyStore();
     const { param } = useTaskStore();
-    const { setPrice, setCompareAtPrice, setIsUpdatingPrice, price, compareAtPrice, isUpdatingPrice, isChanged } =
-        useProductStore();
+    const { setIsUpdatingPrice, price, compareAtPrice, isUpdatingPrice, isChanged } = useProductStore();
     const actionsPrices = usePrices();
-
-    useEffect(() => {
-        if (!product?.variants) return;
-        setPrice(product?.variants.nodes[0].price || "0");
-        setCompareAtPrice(product?.variants.nodes[0].compareAtPrice || "0");
-    }, [product?.variants?.nodes?.[0]?.price, product?.variants?.nodes?.[0]?.compareAtPrice]);
-
-    if (!product || !shopifyBoutique) return null;
-    const mainVariant = product.variants?.nodes[0];
 
     const handleUpdatePrice = async () => {
         setIsUpdatingPrice(true);
@@ -32,10 +21,12 @@ export default function ButtonPrices() {
             await actionsPrices?.handleUpdatePrices("compareAtPrice", Number(compareAtPrice));
         setIsUpdatingPrice(false);
     };
-
     useKeyboardShortcuts("Enter", () => {
         if ((isChanged || param) && !isUpdatingPrice) handleUpdatePrice();
     });
+
+    if (!product || !shopifyBoutique) return null;
+    const mainVariant = product.variants?.nodes[0];
 
     return (
         <Button

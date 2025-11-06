@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import useTaskStore from "./Tasks/storeTasks";
 import { fetchVariant } from "./serverAction";
+import useProductStore from "./storeProduct";
 
 interface ProductLayoutClientProps {
     children: React.ReactNode;
@@ -21,6 +22,7 @@ interface ProductLayoutClientProps {
 export default function ProductLayoutClient({ children, product, tasks, boutique, productId, error }: ProductLayoutClientProps) {
     const { setProduct, setVariant, setShopifyBoutique } = useShopifyStore();
     const { setTasks } = useTaskStore();
+    const { setPrice, setCompareAtPrice } = useProductStore();
     const router = useRouter();
 
     useEventListener("products/update", (data) => {
@@ -28,7 +30,6 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
         console.log(Number(productId));
         if (Number(data.productId) === Number(productId)) {
             console.log("router refresh");
-
             router.refresh();
         }
     });
@@ -56,6 +57,13 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
 
         loadVariants();
     }, [product, boutique]);
+
+    useEffect(() => {
+        if (!product?.variants) return;
+        setPrice(product?.variants.nodes[0].price || "0");
+        setCompareAtPrice(product?.variants.nodes[0].compareAtPrice || "0");
+        console.log("Prices set from product variants");
+    }, [product]);
 
     return <>{children}</>;
 }
