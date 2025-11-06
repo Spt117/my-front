@@ -58,5 +58,6 @@ export interface AppEvents {
     "orders/fulfilled": { name: string };
     "inventory_levels/update": { domain: TDomainsShopify };
     "products/update": { domain: TDomainsShopify; sku: string; productId: string; data?: any };
+    "products/create": { domain: TDomainsShopify; sku: string; productId: string; data?: any };
 }
 export const myEvents = new CEvent<AppEvents>();

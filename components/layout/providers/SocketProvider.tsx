@@ -87,6 +87,15 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                             data: data.body,
                         });
                         break;
+                    case "products/create":
+                        if (shopifyBoutique?.domain !== data.domain) return;
+                        emit("products/create", {
+                            domain: data.domain,
+                            sku: data.body.variants?.[0]?.sku,
+                            productId: data.body.id,
+                            data: data.body,
+                        });
+                        break;
                     default:
                         toast.info(`Événement reçu : ${data.topic}`);
                         console.log(data);
