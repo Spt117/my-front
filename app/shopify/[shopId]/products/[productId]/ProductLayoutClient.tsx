@@ -100,7 +100,7 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
         return () => {
             isMounted = false;
         };
-    }, [product?.id, boutique?.domain, setVariant]);
+    }, [product, boutique?.domain, setVariant]);
 
     return <>{children}</>;
 }
