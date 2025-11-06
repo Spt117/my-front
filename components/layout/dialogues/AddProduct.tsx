@@ -31,6 +31,8 @@ export default function AddProduct() {
             const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
             router.push(url);
         } catch (error) {
+            console.log(error);
+
             toast.error("Une erreur s'est produite lors de la création du produit.");
         } finally {
             setLoading(false);
