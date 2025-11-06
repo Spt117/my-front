@@ -56,16 +56,16 @@ export default function MetaSeo() {
                         {metaDescription.length} sur 160 caractères utilisés
                     </p>
                 </div>
-                <div className="p-6 w-min">
+                <div className="p-6">
                     <div className="flex items-center align-center gap-2 mb-2">
                         <h3 className="m-2 text-sm font-medium flex items-center gap-2">Ancre d'URL</h3>{" "}
                         <CopyComponent contentToCopy={url} message="URL copiée !" size={16} />
                     </div>
-                    <div className="relative flex-1">
+                    <div className="relative flex-1 w-full">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
                             /products/
                         </span>
-                        <Input value={ancreUrl} onChange={(e) => setAncreUrl(e.target.value)} className="pl-[85px]" />
+                        <Input value={ancreUrl} onChange={(e) => setAncreUrl(e.target.value)} className="pl-[85px] w-full" />
                     </div>
                     {ancreUrl.trim() !== product.handle && (
                         <div

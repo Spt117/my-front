@@ -25,7 +25,11 @@ export default function AddProduct() {
         setLoading(true);
         try {
             const data = await createProductFromTitle(shopifyBoutique.domain, title, asin.trim());
-            if (data.error) toast.error(data.error);
+            if (data.error) {
+                console.log(data);
+                toast.error(data.error);
+                return;
+            }
             if (data.message) toast.success(data.message);
             const id = data.response.id.replace("gid://shopify/Product/", "");
             const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
