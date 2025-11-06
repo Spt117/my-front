@@ -41,8 +41,23 @@ export default function AddProduct() {
     return (
         <div className="relative z-10 w-full flex gap-3 flex-col">
             <h4>Ajouter un produit</h4>
-            <Input autoFocus type="text" inputMode="text" placeholder="Nom du produit" className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500" value={title} onChange={(e) => setTitle(e.target.value)} />
-            <Input type="text" inputMode="text" placeholder="ASIN (optionnel)" className="w-full" value={asin} onChange={(e) => setAsin(e.target.value)} />
+            <Input
+                autoFocus
+                type="text"
+                inputMode="text"
+                placeholder="Nom du produit"
+                className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+            />
+            <Input
+                type="text"
+                inputMode="text"
+                placeholder="ASIN (optionnel)"
+                className="w-full"
+                value={asin}
+                onChange={(e) => setAsin(e.target.value)}
+            />
             <div className="mt-4 flex items-center justify-between gap-2">
                 <div className="flex gap-2 items-center">
                     <Button disabled={loading} type="button" size="sm" variant="outline" onClick={closeDialog}>
@@ -55,7 +70,6 @@ export default function AddProduct() {
                     )}
                     <Spinner className={`ml-2 ${loading ? "visible" : "invisible"}`} />
                 </div>
-                I
             </div>
         </div>
     );

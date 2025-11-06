@@ -19,11 +19,13 @@ interface ProductLayoutClientProps {
 }
 
 export default function ProductLayoutClient({ children, product, tasks, boutique, productId, error }: ProductLayoutClientProps) {
-    const { setProduct, setVariant, shopifyBoutique, setShopifyBoutique } = useShopifyStore();
+    const { setProduct, setVariant, setShopifyBoutique } = useShopifyStore();
     const { setTasks } = useTaskStore();
     const router = useRouter();
 
     useEventListener("products/update", (data) => {
+        console.log(Number(data.productId));
+        console.log(Number(productId));
         if (Number(data.productId) === Number(productId)) router.refresh();
     });
 

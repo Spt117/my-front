@@ -24,8 +24,8 @@ export default function DeleteProduct() {
             const data = await updateProduct(shopifyBoutique.domain, product.id, "Delete", " ");
             if (data.error) toast.error(data.error);
             if (data.message) toast.success(data.message);
-            router.push("/product");
-            router.refresh();
+            const url = `/shopify/${shopifyBoutique.id}/products`;
+            router.push(url);
         } catch (error) {
             toast.error("Une erreur s'est produite lors de la création du produit.");
         } finally {
@@ -35,23 +35,21 @@ export default function DeleteProduct() {
     };
 
     return (
-        <div className="relative z-10 w-full max-w-md rounded-xl border bg-white p-4 shadow-xl">
-            <div className="space-y-3">
+        <div className="relative z-10 w-full bg-white flex flex-col p-6 items-center justify-center gap-6">
+            <div className="">
                 <span className="mb-1 block text-s font-medium text-slate-600">Supprimer {product?.title}</span>
             </div>
 
-            <div className="mt-4 flex items-center justify-between gap-2">
-                <div className="flex gap-2 items-center">
-                    <Button disabled={loading} type="button" size="sm" variant="outline" onClick={closeDialog}>
-                        Annuler
+            <div className="flex items-center justify-evenly gap-6">
+                <Button disabled={loading} type="button" size="sm" variant="outline" onClick={closeDialog}>
+                    Annuler
+                </Button>
+                {!loading && (
+                    <Button type="button" size="sm" onClick={onSave}>
+                        Confirmer
                     </Button>
-                    {!loading && (
-                        <Button type="button" size="sm" onClick={onSave}>
-                            Confirmer
-                        </Button>
-                    )}
-                    <Spinner className={`ml-2 ${loading ? "visible" : "invisible"}`} />
-                </div>
+                )}
+                {loading && <Spinner className="ml-2" />}
             </div>
         </div>
     );

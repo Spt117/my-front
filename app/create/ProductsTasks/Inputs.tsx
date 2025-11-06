@@ -25,7 +25,7 @@ export default function Inputs({
                         placeholder="Nom du Pokémon"
                         className="w-max h-7"
                         value={namePokemon}
-                        onChange={(e) => setNamePokemon(e.target.value)}
+                        onChange={(e) => setNamePokemon(e.target.value.trim())}
                     />
                 </div>
                 <div className="flex items-center gap-2">

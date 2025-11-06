@@ -53,6 +53,9 @@ export default function SocketProvider({ children }: { children: React.ReactNode
             });
 
             socket.on("webhook", (data) => {
+                console.log("Webhook received: ");
+                console.log(data);
+
                 switch (data.topic as TTopics) {
                     case "orders/paid": {
                         const boutique = boutiqueFromDomain(data.domain);
