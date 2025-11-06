@@ -47,8 +47,8 @@ export function AffiliationTaskProvider({ children, task }: { children: ReactNod
             website: task.website,
             marketplace: task.marketplace,
             product: productType,
-            asin: task.asin,
-            data: productType === "peluche pokémon" ? { size, namePokemon } : {},
+            asin: task.asin.trim(),
+            data: productType === "peluche pokémon" ? { size, namePokemon: namePokemon.trim() } : {},
         };
         try {
             const res = await createProductTask(data);

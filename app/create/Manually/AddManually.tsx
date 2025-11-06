@@ -21,7 +21,7 @@ export default function AddManually() {
         <Card className="m-2 p-4">
             <CardHeader>Ajouter manuellement à {websiteFilter}</CardHeader>
             <CardContent className="flex flex-wrap gap-4 bg-gray-50 p-4 rounded">
-                <Input placeholder="Asin" className="max-w-xs" onChange={(e) => setAsin(e.target.value.trim())} />
+                <Input placeholder="Asin" className="max-w-xs" onChange={(e) => setAsin(e.target.value)} />
                 <Selecteur placeholder="Select a niche" array={options} value={selectedNiche} onChange={setSelectedNiche} />
                 <TypeProduct />
                 {selectedNiche && selectedProduct && (
