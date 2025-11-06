@@ -10,7 +10,7 @@ import Orders from "./Orders";
 import ShopifySelect from "./ShopifySelect";
 import SearchProduct from "./products/SearchProduct";
 import HeaderStock from "./stock/HeaderStock";
-import SelectAffiliationSite from "./taskAffiliation/SelectAffiliationSite";
+import SelectAffiliationSite from "../../app/create/HeaderTaskAffiliations";
 
 export function SiteHeader() {
     const pathname = usePathname();

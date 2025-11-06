@@ -34,7 +34,9 @@ export default function TasksAffiliation() {
     // Met à jour les types de produits disponibles
     useEffect(() => {
         if (!websiteFilter) {
-            setArrayTypesProducts([]);
+            setArrayTypesProducts(
+                Array.from(new Set(tasksAffil.map((task) => task.productType))).sort((a, b) => a.localeCompare(b))
+            );
             return;
         }
 
