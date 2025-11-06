@@ -26,7 +26,11 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
     useEventListener("products/update", (data) => {
         console.log(Number(data.productId));
         console.log(Number(productId));
-        if (Number(data.productId) === Number(productId)) router.refresh();
+        if (Number(data.productId) === Number(productId)) {
+            console.log("router refresh");
+
+            router.refresh();
+        }
     });
 
     // ✅ Initialisation avec les données serveur
