@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function Layout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
-    useEventListener("products/create", (data: any) => {
+    useEventListener("orders/paid", (data: any) => {
         router.refresh();
     });
 
