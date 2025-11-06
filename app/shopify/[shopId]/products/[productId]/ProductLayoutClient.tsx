@@ -58,7 +58,7 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
         };
 
         initializeStores();
-    }, [product]); // Dépend uniquement de productId pour éviter les recharges inutiles
+    }, [productId]); // Dépend uniquement de productId pour éviter les recharges inutiles
 
     // ✅ Gestion des prix - optimisée
     useEffect(() => {
