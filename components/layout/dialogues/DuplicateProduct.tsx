@@ -30,7 +30,8 @@ export default function DuplicateProduct() {
             if (data.error) toast.error(data.error);
             if (data.message) {
                 toast.success(data.message);
-                const url = `/product?id=${data.response.id.split("/").pop()}&shopify=${shopifyBoutique.locationHome}`;
+                const id = data.response.id.split("/").pop();
+                const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
                 router.push(url);
             }
         } catch (error) {
