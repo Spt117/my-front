@@ -33,15 +33,13 @@ export default function Save() {
         else return { id: c.id, isPublished: false, name: c.name };
     });
 
-    const canauxToUpdate = canauxActives.filter(
-        (c) => c.isPublished !== canauxCollection.find((cp) => cp.id === c.id)?.isPublished
-    );
+    const canauxToUpdate = canauxActives.filter((c) => c.isPublished !== canauxCollection.find((cp) => cp.id === c.id)?.isPublished);
     const metaTitleCollection = dataCollection.seo.title;
     const metaDescriptionCollection = dataCollection.seo.description;
 
     const hasMetaChanges =
-        metaTitle.trim() !== (metaTitleCollection.trim() || "") ||
-        metaDescription.trim() !== (metaDescriptionCollection?.trim() || "") ||
+        metaTitle?.trim() !== (metaTitleCollection?.trim() || "") ||
+        metaDescription?.trim() !== (metaDescriptionCollection?.trim() || "") ||
         ancreUrl !== dataCollection.handle;
     const disabledSave = !hasChanges && !hasMetaChanges;
     // !hasChanges && collectionTitle === dataCollection.title && canauxToUpdate.length === 0 && !hasMetaChanges;
