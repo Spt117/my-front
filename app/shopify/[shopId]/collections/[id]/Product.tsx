@@ -29,6 +29,9 @@ export default function ProductCollection({ product }: { product: CollectionProd
         if (res.error) toast.error(res.error);
     };
 
+    const quantity = product.variants.nodes[0].inventoryQuantity;
+    const txtClass = "text-sm text-muted-foreground mt-1";
+
     return (
         <div
             onMouseEnter={() => setIsHovered(true)}
@@ -52,11 +55,12 @@ export default function ProductCollection({ product }: { product: CollectionProd
             <div className="flex items-center justify-between w-full gap-4">
                 <div className="flex flex-col ">
                     <h2 className="text-lg font-semibold ">{product.title}</h2>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className={txtClass}>
                         {product.variants.nodes[0].price}
                         {shopifyBoutique.devise}
                     </p>
-                    <p className="text-sm text-muted-foreground mt-1">Quantité: {product.variants.nodes[0].inventoryQuantity}</p>
+                    <p className={`${quantity < 6 ? "text-red-500 font-bold" : txtClass}`}>Quantité: {quantity}</p>
+                    <div className={txtClass}>Sku : {product.variants.nodes[0].sku || "N/A"}</div>
                 </div>
                 <div className="flex items-center justify-center h-14 gap-5 mr-4">
                     <a
@@ -66,10 +70,7 @@ export default function ProductCollection({ product }: { product: CollectionProd
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        <span
-                            title="Afficher sur votre boutique"
-                            className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-                        >
+                        <span title="Afficher sur votre boutique" className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
                             <Eye size={20} color={isHovered ? "currentColor" : "transparent"} />
                         </span>
                     </a>
