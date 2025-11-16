@@ -100,28 +100,6 @@ class BeybladeController {
         }
     }
 
-    async deleteContentItem(id: string, contentIndex: number): Promise<{ response: any; message?: string; error?: string }> {
-        try {
-            const Beyblade = await this.getVariantModel();
-
-            // Récupérer le document actuel
-            const currentDoc = await Beyblade.findById(id);
-            if (!currentDoc) {
-                return { response: null, error: "Beyblade not found." };
-            }
-
-            // Filtrer le contenu pour retirer l'élément à l'index spécifié
-            const updatedContent = (currentDoc.content ?? []).filter((_, i) => i !== contentIndex);
-
-            // Mettre à jour le document
-            const doc = await Beyblade.findByIdAndUpdate(id, { $set: { content: updatedContent } }, { new: true, runValidators: true }).lean<IBeybladeProduct>();
-
-            return { response: JSON.parse(JSON.stringify(doc)), message: "Content item deleted successfully." };
-        } catch (err) {
-            return { response: err, error: "Content item deletion failed." };
-        }
-    }
-
     async searchBeybladeByProductCodeOrTitle(search: string) {
         try {
             const Beyblade = await this.getVariantModel();

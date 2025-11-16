@@ -1,14 +1,13 @@
 "use client";
 
 import { updateBeybladeAction } from "@/app/beyblade/model/product/middlewareProduct";
-import { IBeybladeProduct, IProductContentItem } from "@/app/beyblade/model/typesBeyblade";
-import { ProductContentItem } from "@/app/beyblade/review/[id]/ContentItem";
+import { IBeybladeProduct } from "@/app/beyblade/model/typesBeyblade";
 import useReviewStore from "@/app/beyblade/review/storeReview";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Plus, Save } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -38,60 +37,6 @@ export default function Page() {
         });
         setHasUnsavedChanges(true);
         console.log(`Update ${String(field)}:`, value);
-    };
-
-    const handleContentItemUpdate = (index: number, field: keyof IProductContentItem, value: any) => {
-        setProduct((prev) => {
-            if (!prev) return prev;
-            const newContent = [...(prev.content ?? [])];
-            newContent[index] = { ...newContent[index], [field]: value };
-            const updated: IBeybladeProduct = {
-                ...prev,
-                product: prev.product ?? null,
-                generation: prev.generation,
-                content: newContent,
-            };
-            return updated;
-        });
-        setHasUnsavedChanges(true);
-        console.log(`Update content item ${index}, field ${String(field)}:`, value);
-    };
-
-    const handleAddContentItem = () => {
-        const newItem: IProductContentItem = {
-            type: "beyblade",
-            name: "",
-            notes: "",
-            toReview: false,
-        };
-        setProduct((prev) => {
-            if (!prev) return prev;
-            const updated: IBeybladeProduct = {
-                ...prev,
-                product: prev.product ?? null,
-                generation: prev.generation,
-                content: [...(prev.content ?? []), newItem],
-            };
-            return updated;
-        });
-        setHasUnsavedChanges(true);
-        console.log("Add new content item");
-    };
-
-    const handleDeleteContentItem = (index: number) => {
-        setProduct((prev) => {
-            if (!prev) return prev;
-            const filtered = (prev.content ?? []).filter((_, i) => i !== index);
-            const updated: IBeybladeProduct = {
-                ...prev,
-                product: prev.product ?? null,
-                generation: prev.generation,
-                content: filtered,
-            };
-            return updated;
-        });
-        setHasUnsavedChanges(true);
-        console.log("Delete content item at index:", index);
     };
 
     const handleSave = async () => {
@@ -184,22 +129,6 @@ export default function Page() {
                     </div>
                 </CardContent>
             </Card>
-
-            <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Product Content</h2>
-                <Button onClick={handleAddContentItem} className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add Item
-                </Button>
-            </div>
-
-            {(product.content?.length ?? 0) === 0 ? (
-                <Card>
-                    <CardContent className="py-8 text-center text-muted-foreground">No content items yet. Click "Add Item" to get started.</CardContent>
-                </Card>
-            ) : (
-                product.content!.map((item, index) => <ProductContentItem key={index} item={item} index={index} onUpdate={handleContentItemUpdate} onDelete={handleDeleteContentItem} />)
-            )}
         </div>
     );
 }

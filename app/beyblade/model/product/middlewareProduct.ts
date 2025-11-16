@@ -104,15 +104,6 @@ export async function addContentItemAction(generation: TBeybladeGeneration, id: 
     }
 }
 
-export async function deleteContentItemAction(generation: TBeybladeGeneration, id: string, contentIndex: number): Promise<{ response: any; message?: string; error?: string }> {
-    try {
-        const controller = beybladeController(generation);
-        return await controller.deleteContentItem(id, contentIndex);
-    } catch (err) {
-        return { response: null, error: "Server action failed: deleteContentItemAction" };
-    }
-}
-
 // ===== Recherche et filtrage ===== //
 
 export async function searchBeybladeAction(generation: TBeybladeGeneration, search: string): Promise<IBeybladeProduct[]> {

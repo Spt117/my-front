@@ -8,11 +8,10 @@ import ImageManager from "./ImageManager";
 import useBeybladeStore from "./beybladeStore";
 import { createProductBeyblade } from "./model/product/middlewareProduct";
 import { IBeybladeProduct } from "./model/typesBeyblade";
-import AddContentItem from "./productInformation/AddContentItem";
 import ProductData from "./productInformation/ProductData";
 
 export default function BeybladeProductForm() {
-    const { beybladeProduct, resetBeybladeProduct, initializeNewProduct, generation, addContentItem, addImage, removeImage } = useBeybladeStore();
+    const { beybladeProduct, resetBeybladeProduct, initializeNewProduct, generation, addImage, removeImage } = useBeybladeStore();
 
     const [currentTab, setCurrentTab] = useState("basic");
 
@@ -59,7 +58,6 @@ export default function BeybladeProductForm() {
 
             <div className="space-y-3">
                 <ProductData />
-                <AddContentItem />
                 <ImageManager images={beybladeProduct?.images || []} onAddImage={addImage} onRemoveImage={removeImage} title="Product Images" description="Add images of the product" emptyMessage="No product images added yet" />
             </div>
         </div>

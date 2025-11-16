@@ -14,8 +14,6 @@ interface StoreState {
     // Gestion des tableaux
     addImage: (imageUrl: string) => void;
     removeImage: (index: number) => void;
-    addContentItem: (item: IProductContentItem) => void;
-    removeContentItem: (index: number) => void;
 
     // Actions globales
     resetBeybladeProduct: () => void;
@@ -48,22 +46,6 @@ const useBeybladeStore = create<StoreState>((set) => ({
             beybladeProduct: {
                 ...state.beybladeProduct,
                 images: state.beybladeProduct?.images?.filter((_, i) => i !== index) || [],
-            },
-        })),
-
-    // Gestion des items de contenu
-    addContentItem: (item) =>
-        set((state) => ({
-            beybladeProduct: {
-                ...state.beybladeProduct,
-                content: [...(state.beybladeProduct?.content || []), item],
-            },
-        })),
-    removeContentItem: (index) =>
-        set((state) => ({
-            beybladeProduct: {
-                ...state.beybladeProduct,
-                content: state.beybladeProduct?.content?.filter((_, i) => i !== index) || [],
             },
         })),
 

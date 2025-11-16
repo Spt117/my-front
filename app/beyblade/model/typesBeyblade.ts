@@ -4,6 +4,12 @@ export const beybladeTypes = ["stamina", "attack", "defense", "balance"] as cons
 type TBeybladeType = (typeof beybladeTypes)[number];
 export const beybladeGenerations = ["X", "Burst", "Metal"] as const;
 type TBeybladeGeneration = (typeof beybladeGenerations)[number];
+export const beybladeSystem = {
+    X: ["Basic Line", "Unique Line", "Custom Line"] as const,
+    Burst: ["Standard", "SwitchStrike", "Hypersphere", "Speedstorm"] as const,
+    Metal: ["Fusion", "Fury", "Masters"] as const,
+};
+export type SystemForGeneration<G extends TBeybladeGeneration> = (typeof beybladeSystem)[G][number];
 export const beybladeBrands = ["Hasbro", "Takara Tomy"] as const;
 type TBeybladeBrand = (typeof beybladeBrands)[number];
 export const beybladePacks = ["Starter", "Booster", "Triple Booster", "Customize Set", "Deck Set", "Random Booster", "Launcher", "Battle Set", "Entry Set", "Stadium", "Accessory"] as const;
@@ -49,15 +55,14 @@ interface IArena {
 // Beyblade X //
 // Beyblade X //
 interface IBeybladeX {
-    blade: string | IBlade;
+    "lock chip"?: string;
+    "main blade"?: string;
+    "assist blade"?: string;
+    blade?: string;
     ratchet: string;
     bit: string;
 }
-interface IBlade {
-    "lock chip": string;
-    "main blade": string;
-    "assist blade": string;
-}
+
 // Beyblade X //
 // Beyblade X //
 
@@ -81,20 +86,21 @@ interface IProductContentItem {
     type: TBeybladeProductTypeContent;
     name: string;
     notes?: string; // "Special color", "Tournament edition", etc.
-    toReview?: boolean; // Flag to indicate if the item needs review
+    toReview: boolean; // Flag to indicate if the item needs review
 }
 interface IBeybladeProduct {
     _id?: string;
+    generation?: TBeybladeGeneration;
     product: TBeybladeProductType | null;
-    title: string;
-    productCode: string;
     brand: TBeybladeBrand;
+    productCode: string;
+    title: string;
+    system: SystemForGeneration<TBeybladeGeneration>;
     images: string[];
     releaseDate?: Date;
     asinEurope?: string;
     asinAmerica?: string;
     asinJapan?: string;
-    content: IProductContentItem[];
-    generation?: TBeybladeGeneration;
+    content: number;
 }
-export type { IAccessory, IArena, IBeyblade, IBeybladeProduct, IBeybladeX, IBlade, ILauncher, IProductContentItem, TBeybladeGeneration, TBeybladeProductType, TBeybladeType };
+export type { IAccessory, IArena, IBeyblade, IBeybladeProduct, IBeybladeX, ILauncher, IProductContentItem, TBeybladeGeneration, TBeybladeProductType, TBeybladeType };
