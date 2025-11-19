@@ -20,6 +20,7 @@ import TagsShopify from "./Tags/Tags";
 import Prices from "./variant/Prices/Prices";
 import Sku from "./variant/Sku";
 import VariantClient from "./VariantClient";
+import AddFromAsin from "./images/AddFromAsin";
 
 export default function Page() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
@@ -47,6 +48,7 @@ export default function Page() {
                             <HeaderEditeur />
                         </EditeurHtml>
                         <ImagesProduct />
+                        <AddFromAsin />
                         <Video />
                     </div>
                     <div className="flex flex-wrap gap-3 justify-center lg:max-w-[30vw] h-min">

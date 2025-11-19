@@ -115,3 +115,10 @@ export async function getTasks(productId: string) {
     const tasks = await TaskShopifyController.getTaskByIdProductAndStockActivation(productId);
     return tasks;
 }
+
+export async function addImagesFromAsin(domain: TDomainsShopify, productId: string, asin: string) {
+    const url = `${pokeUriServer}/shopify/add-images-from-asin`;
+    const data = { domain, productId, asin };
+    const response = await postServer(url, data);
+    return response;
+}
