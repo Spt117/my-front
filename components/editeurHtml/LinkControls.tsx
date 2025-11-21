@@ -1,15 +1,26 @@
 // LinkControls.tsx — nouveau composant (bouton + modale lien)
 "use client";
-import { useEffect, useState } from "react";
-import type { Editor } from "@tiptap/react";
+import { updateProduct } from "@/app/shopify/[shopId]/products/[productId]/serverAction";
 import { Button } from "@/components/ui/button";
+import type { Editor } from "@tiptap/react";
 import { Link2, Unlink } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import useShopifyStore from "../shopify/shopifyStore";
+import { Spinner } from "../ui/shadcn-io/spinner/index";
 import useEditorHtmlStore from "./storeEditor";
+import { formatHTML } from "./utils";
 
 export function LinkControls({ editor }: { editor: Editor }) {
     const { linkDialogOpen, openLinkDialog, closeLinkDialog } = useEditorHtmlStore();
+    const { product, shopifyBoutique } = useShopifyStore();
+    const router = useRouter();
+
+    const [loadingSave, setLoadingSave] = useState<boolean>(false);
     const [href, setHref] = useState<string>("");
     const [title, setTitle] = useState<string>("");
+    const [newTab, setNewTab] = useState<boolean>(false);
 
     // Ouvre la modale en pré-remplissant si le focus est sur un lien
     const onOpen = () => {
@@ -17,17 +28,51 @@ export function LinkControls({ editor }: { editor: Editor }) {
         const attrs = editor.getAttributes("link") ?? {};
         setHref(isOnLink ? attrs.href ?? "" : "");
         setTitle(isOnLink ? attrs.title ?? "" : "");
+        setNewTab(isOnLink ? attrs.target === "_blank" : false);
         openLinkDialog();
     };
 
-    const onSave = () => {
+    const onSave = async () => {
         // Si href vide → retirer le lien
         if (!href.trim()) {
             editor.chain().focus().extendMarkRange("link").unsetLink().run();
             closeLinkDialog();
             return;
         }
-        editor.chain().focus().extendMarkRange("link").setLink({ href: href.trim() }).run();
+
+        const attrs: { href: string; title?: string; target?: string } = {
+            href: href.trim(),
+        };
+
+        if (title.trim()) {
+            attrs.title = title.trim();
+        }
+
+        if (newTab) {
+            attrs.target = "_blank";
+        }
+
+        editor.chain().focus().extendMarkRange("link").unsetLink().setLink(attrs).run();
+
+        try {
+            if (!product || !shopifyBoutique) {
+                toast.error("Impossible de sauvegarder le lien : produit ou boutique introuvable.");
+                closeLinkDialog();
+                return;
+            }
+            setLoadingSave(true);
+            // Récupérer le HTML directement depuis l'éditeur après avoir appliqué le lien
+            const descriptionHtml = formatHTML(editor.getHTML());
+            const res = await updateProduct(shopifyBoutique.domain, product.id, "descriptionHtml", descriptionHtml);
+            if (res.error) toast.error(res.error);
+            if (res.message) toast.success(res.message);
+        } catch (err) {
+            console.log(err);
+            toast.error("Erreur lors de la sauvegarde");
+        } finally {
+            setLoadingSave(false);
+        }
+        router.refresh();
         closeLinkDialog();
     };
 
@@ -65,12 +110,8 @@ export function LinkControls({ editor }: { editor: Editor }) {
                     {/* Dialog */}
                     <div className="relative z-10 w-full max-w-md rounded-xl border bg-white p-4 shadow-xl">
                         <div className="mb-3">
-                            <h3 className="text-base font-semibold">
-                                {editor.isActive("link") ? "Modifier le lien" : "Ajouter un lien"}
-                            </h3>
-                            <p className="text-xs text-slate-500">
-                                Lien appliqué à la sélection actuelle. Laissez vide pour retirer.
-                            </p>
+                            <h3 className="text-base font-semibold">{editor.isActive("link") ? "Modifier le lien" : "Ajouter un lien"}</h3>
+                            <p className="text-xs text-slate-500">Lien appliqué à la sélection actuelle. Laissez vide pour retirer.</p>
                         </div>
 
                         <div className="space-y-3">
@@ -97,17 +138,20 @@ export function LinkControls({ editor }: { editor: Editor }) {
                                     onChange={(e) => setTitle(e.target.value)}
                                 />
                             </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={newTab}
+                                    onChange={(e) => setNewTab(e.target.checked)}
+                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                />
+                                <span className="text-sm text-slate-700">Ouvrir dans un nouvel onglet</span>
+                            </label>
                         </div>
 
                         <div className="mt-4 flex items-center justify-between gap-2">
-                            <Button
-                                disabled={!href}
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                onClick={onRemove}
-                                title="Retirer le lien"
-                            >
+                            <Button disabled={!href} type="button" size="sm" variant="outline" onClick={onRemove} title="Retirer le lien">
                                 <Unlink className="mr-2 h-4 w-4" />
                                 Retirer
                             </Button>
@@ -115,8 +159,9 @@ export function LinkControls({ editor }: { editor: Editor }) {
                                 <Button type="button" size="sm" variant="outline" onClick={closeLinkDialog}>
                                     Annuler
                                 </Button>
-                                <Button type="button" size="sm" onClick={onSave}>
+                                <Button type="button" size="sm" onClick={onSave} disabled={!href || loadingSave}>
                                     Enregistrer
+                                    <Spinner className={loadingSave ? "ml-2" : "hidden"} />
                                 </Button>
                             </div>
                         </div>

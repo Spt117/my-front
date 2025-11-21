@@ -9,6 +9,7 @@ const LinkStrict = Link.extend({
             openOnClick: false,
             autolink: false,
             linkOnPaste: false,
+            HTMLAttributes: {},
         };
     },
     addAttributes() {
