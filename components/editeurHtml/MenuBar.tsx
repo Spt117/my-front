@@ -1,6 +1,6 @@
-// MenuBar.tsx — remplace l'ancien bouton lien par le composant LinkControls
 "use client";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import type { Editor } from "@tiptap/react";
 import {
@@ -24,7 +24,6 @@ import {
 import { useEffect, useState } from "react";
 import { LinkControls } from "./LinkControls";
 import useEditorHtmlStore from "./storeEditor";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export const MenuBar = ({ editor }: { editor: Editor }) => {
     const { showCodeView, setShowCodeView } = useEditorHtmlStore();
@@ -186,10 +185,7 @@ export const MenuBar = ({ editor }: { editor: Editor }) => {
                             <span>{color.name}</span>
                         </DropdownMenuItem>
                     ))}
-                    <DropdownMenuItem
-                        onClick={() => editor.chain().focus().unsetColor().run()}
-                        className="cursor-pointer border-t mt-1 pt-1"
-                    >
+                    <DropdownMenuItem onClick={() => editor.chain().focus().unsetColor().run()} className="cursor-pointer border-t mt-1 pt-1">
                         Réinitialiser
                     </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -220,12 +216,7 @@ export const MenuBar = ({ editor }: { editor: Editor }) => {
 
             <Separator orientation="vertical" className="h-8" />
 
-            <Button
-                size="sm"
-                variant="outline"
-                onClick={() => editor.chain().focus().setHorizontalRule().run()}
-                title="Ligne horizontale"
-            >
+            <Button size="sm" variant="outline" onClick={() => editor.chain().focus().setHorizontalRule().run()} title="Ligne horizontale">
                 <Minus className="w-4 h-4" />
             </Button>
 

@@ -1,25 +1,17 @@
+import CopyComponent from "@/components/Copy";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import { Label } from "@/components/ui/label";
+import { useEffect } from "react";
 import useProductStore from "../storeProduct";
 import { cssCard } from "../util";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import CopyComponent from "@/components/Copy";
 
 export default function MetaSeo() {
     const { product, shopifyBoutique } = useShopifyStore();
-    const {
-        metaTitle,
-        setMetaTitle,
-        metaDescription,
-        setMetaDescription,
-        ancreUrl,
-        setAncreUrl,
-        redirectionUrl,
-        setRedirectionUrl,
-    } = useProductStore();
+    const { metaTitle, setMetaTitle, metaDescription, setMetaDescription, ancreUrl, setAncreUrl, redirectionUrl, setRedirectionUrl } =
+        useProductStore();
 
     const metaTitleProduct = product?.metafields.nodes.find((mf) => mf.key === "title_tag")?.value;
     const metaDescriptionProduct = product?.metafields.nodes.find((mf) => mf.key === "description_tag")?.value;
@@ -62,9 +54,7 @@ export default function MetaSeo() {
                         <CopyComponent contentToCopy={url} message="URL copiée !" size={16} />
                     </div>
                     <div className="relative flex-1 w-full">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
-                            /products/
-                        </span>
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">/products/</span>
                         <Input value={ancreUrl} onChange={(e) => setAncreUrl(e.target.value)} className="pl-[85px] w-full" />
                     </div>
                     {ancreUrl.trim() !== product.handle && (
