@@ -1,19 +1,20 @@
-import CopyComponent from "@/components/Copy";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { TBeybladeProducts, TPokemonProducts } from "@/params/paramsCreateAffiliation";
-import { IconCategoryFilled } from "@tabler/icons-react";
-import { Globe, Package } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-import { archiveTaskStatus } from "../serverTasksAffiliation";
-import { useAffiliationTask } from "./ContextTaskAffiliation";
-import Inputs from "./Inputs";
+import CopyComponent from '@/components/Copy';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/shadcn-io/spinner/index';
+import useKeyboardShortcuts from '@/library/hooks/useKyboardShortcuts';
+import { TPokemonProducts } from '@/params/paramsCreateAffiliation';
+import { IconCategoryFilled } from '@tabler/icons-react';
+import { Globe, Package } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { archiveTaskStatus } from '../serverTasksAffiliation';
+import { useAffiliationTask } from './ContextTaskAffiliation';
+import Inputs from './Inputs';
 
 export default function TaskAffiliation() {
     const { task, productType, setProductType, loading, setLoading, handleCreateProduct, disabledPush } = useAffiliationTask();
@@ -25,12 +26,12 @@ export default function TaskAffiliation() {
         setLoading(true);
         try {
             const res = await archiveTaskStatus(task.asin, task.website);
-            toast.success("Tâche archivée avec succès " + res);
+            toast.success('Tâche archivée avec succès ' + res);
             // Optionally, you can add a success message or update the UI accordingly
             router.refresh();
         } catch (error) {
             toast.error("Échec de l'archivage de la tâche");
-            console.error("Failed to archive task:", error);
+            console.error('Failed to archive task:', error);
         } finally {
             setLoading(false);
         }
@@ -38,33 +39,23 @@ export default function TaskAffiliation() {
 
     // Couleurs des badges selon le statut
     const statusStyles: Record<string, string> = {
-        pending: "bg-yellow-100 text-yellow-800",
-        done: "bg-green-100 text-green-800",
-        error: "bg-red-100 text-red-800",
+        pending: 'bg-yellow-100 text-yellow-800',
+        done: 'bg-green-100 text-green-800',
+        error: 'bg-red-100 text-red-800',
     };
     const [showImageModal, setShowImageModal] = useState(false);
-    useKeyboardShortcuts("Escape", () => setShowImageModal(false));
+    useKeyboardShortcuts('Escape', () => setShowImageModal(false));
 
     return (
         <>
             <Card className="relative flex-1 min-w-[350px] max-w-[400px] shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <Badge className={`${statusStyles[task.status]} capitalize absolute top-1 right-2`}>{task.status}</Badge>
                 <CardHeader className="flex flex-row items-center gap-4">
-                    <img
-                        src={task.image}
-                        alt={task.title}
-                        className="w-16 h-16 object-cover rounded-md cursor-pointer"
-                        onClick={() => setShowImageModal(true)}
-                    />
+                    <img src={task.image} alt={task.title} className="w-16 h-16 object-cover rounded-md cursor-pointer" onClick={() => setShowImageModal(true)} />
                     <div>
-                        <a
-                            href={`https://${task.marketplace}/dp/${task.asin}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-800 hover:underline"
-                        >
+                        <Link href={`/create/${task.asin}`} rel="noopener noreferrer" className="text-blue-800 hover:underline">
                             <CardTitle className="text-lg font-semibold line-clamp-2">{task.title}</CardTitle>
-                        </a>
+                        </Link>
                         {task.brand && <p className="text-sm text-gray-500">{task.brand}</p>}
                     </div>
                 </CardHeader>
@@ -81,19 +72,9 @@ export default function TaskAffiliation() {
                     <div className="flex items-center gap-2">
                         <IconCategoryFilled className="w-4 h-4 text-gray-500" />
                         <span className="text-sm flex items-center">Type:</span>
-                        <Input
-                            className="w-max h-7"
-                            value={productType}
-                            onChange={(e) => setProductType(e.target.value as TPokemonProducts)}
-                        />
+                        <Input className="w-max h-7" value={productType} onChange={(e) => setProductType(e.target.value as TPokemonProducts)} />
                     </div>
-                    <Inputs
-                        size={size}
-                        setSize={setSize}
-                        productType={productType}
-                        setNamePokemon={setNamePokemon}
-                        namePokemon={namePokemon}
-                    />
+                    <Inputs size={size} setSize={setSize} productType={productType} setNamePokemon={setNamePokemon} namePokemon={namePokemon} />
                     {task.price && (
                         <div className="flex items-center gap-2">
                             <span className="text-sm flex items-center gap-1">Prix: {task.price} €</span>
@@ -107,7 +88,12 @@ export default function TaskAffiliation() {
 
                     <div className="flex items-center gap-2">
                         <Globe className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm">Marketplace: {task.marketplace}</span>
+                        <span className="text-sm">
+                            Marketplace:{' '}
+                            <Link href={`https://${task.marketplace}/dp/${task.asin}`} target="_blank" rel="noopener noreferrer" className="text-blue-800 hover:underline">
+                                {task.marketplace}
+                            </Link>
+                        </span>
                     </div>
                     <div className="flex items-center gap-2">
                         <Globe className="w-4 h-4 text-gray-500" />
@@ -127,10 +113,7 @@ export default function TaskAffiliation() {
             </Card>
 
             {showImageModal && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-                    onClick={() => setShowImageModal(false)}
-                >
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowImageModal(false)}>
                     <Card className="max-w-2xl w-full shadow-2xl">
                         <div className="relative">
                             <img src={task.image} alt={task.title} className="w-full h-auto object-cover rounded-lg" />
