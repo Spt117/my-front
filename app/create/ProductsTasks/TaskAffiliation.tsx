@@ -53,7 +53,7 @@ export default function TaskAffiliation() {
                 <CardHeader className="flex flex-row items-center gap-4">
                     <img src={task.image} alt={task.title} className="w-16 h-16 object-cover rounded-md cursor-pointer" onClick={() => setShowImageModal(true)} />
                     <div>
-                        <Link href={`/create/${task.asin}`} rel="noopener noreferrer" className="text-blue-800 hover:underline">
+                        <Link href={`/create/${task._id}`} rel="noopener noreferrer" className="text-blue-800 hover:underline">
                             <CardTitle className="text-lg font-semibold line-clamp-2">{task.title}</CardTitle>
                         </Link>
                         {task.brand && <p className="text-sm text-gray-500">{task.brand}</p>}

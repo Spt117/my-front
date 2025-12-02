@@ -1,4 +1,4 @@
-import RefreshOders from "@/components/shopify/orders/RefreshOders";
+import RefreshOders from '@/components/shopify/orders/RefreshOders';
 
 export default async function Page() {
     return (
