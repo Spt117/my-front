@@ -1,20 +1,20 @@
-import CopyComponent from '@/components/Copy';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Spinner } from '@/components/ui/shadcn-io/spinner/index';
-import useKeyboardShortcuts from '@/library/hooks/useKyboardShortcuts';
-import { TPokemonProducts } from '@/params/paramsCreateAffiliation';
-import { IconCategoryFilled } from '@tabler/icons-react';
-import { Globe, Package } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { archiveTaskStatus } from '../serverTasksAffiliation';
-import { useAffiliationTask } from './ContextTaskAffiliation';
-import Inputs from './Inputs';
+import CopyComponent from "@/components/Copy";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { TPokemonProducts } from "@/params/paramsCreateAffiliation";
+import { IconCategoryFilled } from "@tabler/icons-react";
+import { Globe, Package } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import { archiveTaskStatus, createCarte } from "../serverTasksAffiliation";
+import { useAffiliationTask } from "./ContextTaskAffiliation";
+import Inputs from "./Inputs";
 
 export default function TaskAffiliation() {
     const { task, productType, setProductType, loading, setLoading, handleCreateProduct, disabledPush } = useAffiliationTask();
@@ -26,12 +26,31 @@ export default function TaskAffiliation() {
         setLoading(true);
         try {
             const res = await archiveTaskStatus(task.asin, task.website);
-            toast.success('Tâche archivée avec succès ' + res);
+            toast.success("Tâche archivée avec succès " + res);
             // Optionally, you can add a success message or update the UI accordingly
             router.refresh();
         } catch (error) {
             toast.error("Échec de l'archivage de la tâche");
-            console.error('Failed to archive task:', error);
+            console.error("Failed to archive task:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCreateCarte = async () => {
+        setLoading(true);
+        try {
+            const res = await createCarte(task.asin);
+            console.log(res);
+
+            if (res.error) toast.error(res.error);
+
+            if (res.message) toast.success(res.message);
+            // Optionally, you can add a success message or update the UI accordingly
+            router.refresh();
+        } catch (error) {
+            toast.error("Échec de la création de la carte");
+            console.error("Failed to create carte:", error);
         } finally {
             setLoading(false);
         }
@@ -39,12 +58,12 @@ export default function TaskAffiliation() {
 
     // Couleurs des badges selon le statut
     const statusStyles: Record<string, string> = {
-        pending: 'bg-yellow-100 text-yellow-800',
-        done: 'bg-green-100 text-green-800',
-        error: 'bg-red-100 text-red-800',
+        pending: "bg-yellow-100 text-yellow-800",
+        done: "bg-green-100 text-green-800",
+        error: "bg-red-100 text-red-800",
     };
     const [showImageModal, setShowImageModal] = useState(false);
-    useKeyboardShortcuts('Escape', () => setShowImageModal(false));
+    useKeyboardShortcuts("Escape", () => setShowImageModal(false));
 
     return (
         <>
@@ -89,7 +108,7 @@ export default function TaskAffiliation() {
                     <div className="flex items-center gap-2">
                         <Globe className="w-4 h-4 text-gray-500" />
                         <span className="text-sm">
-                            Marketplace:{' '}
+                            Marketplace:{" "}
                             <Link href={`https://${task.marketplace}/dp/${task.asin}`} target="_blank" rel="noopener noreferrer" className="text-blue-800 hover:underline">
                                 {task.marketplace}
                             </Link>
@@ -104,6 +123,9 @@ export default function TaskAffiliation() {
                         <Button disabled={loading || disabledPush} size="sm" onClick={handleCreateProduct}>
                             Créer le produit
                         </Button>
+                        <Button disabled={loading || disabledPush} size="sm" onClick={handleCreateCarte}>
+                            Créer la carte
+                        </Button>
                         <Button disabled={loading} variant="outline" onClick={handleArchive}>
                             Archiver
                         </Button>
@@ -117,10 +139,7 @@ export default function TaskAffiliation() {
                     <Card className="max-w-2xl w-full shadow-2xl">
                         <div className="relative">
                             <img src={task.image} alt={task.title} className="w-full h-auto object-cover rounded-lg" />
-                            <button
-                                onClick={() => setShowImageModal(false)}
-                                className="absolute top-2 right-2 bg-white rounded-full p-1 hover:bg-gray-200 transition-colors"
-                            ></button>
+                            <button onClick={() => setShowImageModal(false)} className="absolute top-2 right-2 bg-white rounded-full p-1 hover:bg-gray-200 transition-colors"></button>
                             <div className="p-4 bg-white rounded-b-lg">
                                 <h2 className="font-semibold text-lg">{task.title}</h2>
                                 {task.brand && <p className="text-sm text-gray-500">{task.brand}</p>}

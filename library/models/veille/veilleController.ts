@@ -23,7 +23,7 @@ class ControllerVeilleProduct {
     async getVeillesByUser(): Promise<TVeille[]> {
         try {
             const VeilleProductModel = await this.getModelVeilleProduct();
-            const products = await VeilleProductModel.find({ user: "68b1ddae9f2560d5e49fb30c" });
+            const products = await VeilleProductModel.find();
             return JSON.parse(JSON.stringify(products));
         } catch (error) {
             console.error("Erreur getVeillesByUser:", error);
