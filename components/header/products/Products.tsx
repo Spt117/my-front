@@ -24,6 +24,8 @@ export default function ProductList({ product }: { product: ProductGET }) {
         window.open(productUrl, '_blank', 'noopener,noreferrer');
     };
 
+    const canaux = product.resourcePublicationsV2.nodes.length;
+
     return (
         <div
             className="flex items-center hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm pr-2 relative" // Ajout de 'relative' pour positionner l'icône
@@ -56,8 +58,13 @@ export default function ProductList({ product }: { product: ProductGET }) {
                         />
                     </div>
                     <h3 className="w-1/4 text-sm font-medium text-foreground line-clamp-1">{product.title}</h3>
-                    <div className="w-1/4 text-sm text-primary">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>
-                    <div className="w-1/4 text-sm text-primary">{`${product.productType} `}</div>
+                    <div className="w-1/6 text-sm text-primary">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>
+                    <div className="w-1/6 text-sm text-primary">Stock: {product.variants?.nodes[0]?.inventoryQuantity}</div>
+                    <div className="w-1/6 text-sm text-primary">{`${product.productType} `}</div>
+                    <div className="w-1/6 text-sm text-primary">{`${product.status} `}</div>
+                    <div className="w-1/6 text-sm text-primary">
+                        Publié sur {canaux} {canaux > 1 ? 'canaux' : 'canal'}
+                    </div>
                     {/* L'ancien tag <a> a été retiré de ce Link */}
                 </div>
             </Link>

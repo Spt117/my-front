@@ -1,12 +1,12 @@
-import useShopifyStore from "@/components/shopify/shopifyStore";
-import { Eye, X } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-import { removeProductFromCollection } from "../server";
-import useCollectionStore from "../storeCollections";
-import { CollectionProduct } from "../utils";
+import useShopifyStore from '@/components/shopify/shopifyStore';
+import { Eye, X } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { removeProductFromCollection } from '../server';
+import useCollectionStore from '../storeCollections';
+import { CollectionProduct } from '../utils';
 
 export default function ProductCollection({ product }: { product: CollectionProduct }) {
     const { shopifyBoutique } = useShopifyStore();
@@ -16,7 +16,7 @@ export default function ProductCollection({ product }: { product: CollectionProd
     if (!shopifyBoutique || !dataCollection) return null;
 
     const handleClick = () => {
-        const url = `/shopify/${shopifyBoutique?.id}/products/${product.id.replace("gid://shopify/Product/", "")}`;
+        const url = `/shopify/${shopifyBoutique?.id}/products/${product.id.replace('gid://shopify/Product/', '')}`;
         router.push(url);
     };
 
@@ -30,7 +30,7 @@ export default function ProductCollection({ product }: { product: CollectionProd
     };
 
     const quantity = product.variants.nodes[0].inventoryQuantity;
-    const txtClass = "text-sm text-muted-foreground mt-1";
+    const txtClass = 'text-sm text-muted-foreground mt-1';
 
     return (
         <div
@@ -40,13 +40,7 @@ export default function ProductCollection({ product }: { product: CollectionProd
             onClick={handleClick}
         >
             {product.featuredImage?.url ? (
-                <Image
-                    src={product.featuredImage.url}
-                    alt={product.featuredImage.altText || product.title}
-                    className="object-cover rounded"
-                    width={60}
-                    height={60}
-                />
+                <Image src={product.featuredImage.url} alt={product.featuredImage.altText || product.title} className="object-cover rounded" width={60} height={60} />
             ) : (
                 <div className="w-[60px] h-[60px] bg-muted rounded flex items-center justify-center flex-shrink-0">
                     <span className="text-muted-foreground text-xs">Aucune image</span>
@@ -59,8 +53,8 @@ export default function ProductCollection({ product }: { product: CollectionProd
                         {product.variants.nodes[0].price}
                         {shopifyBoutique.devise}
                     </p>
-                    <p className={`${quantity < 6 ? "text-red-500 font-bold" : txtClass}`}>Quantité: {quantity}</p>
-                    <div className={txtClass}>Sku : {product.variants.nodes[0].sku || "N/A"}</div>
+                    <p className={`${quantity < 6 ? 'text-red-500 font-bold' : txtClass}`}>Quantité: {quantity}</p>
+                    <div className={txtClass}>Sku : {product.variants.nodes[0].sku || 'N/A'}</div>
                 </div>
                 <div className="flex items-center justify-center h-14 gap-5 mr-4">
                     <a
@@ -71,7 +65,7 @@ export default function ProductCollection({ product }: { product: CollectionProd
                         rel="noopener noreferrer"
                     >
                         <span title="Afficher sur votre boutique" className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
-                            <Eye size={20} color={isHovered ? "currentColor" : "transparent"} />
+                            <Eye size={20} color={isHovered ? 'currentColor' : 'transparent'} />
                         </span>
                     </a>
                     {!dataCollection?.ruleSet && (
@@ -80,9 +74,12 @@ export default function ProductCollection({ product }: { product: CollectionProd
                             className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <X color={isHovered ? "currentColor" : "transparent"} onClick={handleRemove} />
+                            <X color={isHovered ? 'currentColor' : 'transparent'} onClick={handleRemove} />
                         </span>
                     )}
+                </div>
+                <div className="flex items-center justify-center h-14 gap-5 mr-4">
+                    <span className="text-muted-foreground text-xs">{product.status}</span>
                 </div>
             </div>
         </div>

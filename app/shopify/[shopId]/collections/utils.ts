@@ -1,3 +1,5 @@
+import { ProductStatus } from '@/library/types/graph';
+
 interface CollectionImage {
     src: string;
     altText?: string;
@@ -28,6 +30,7 @@ interface ProductsCount {
 export interface CollectionProduct {
     id: string;
     title: string;
+    status: ProductStatus;
     featuredImage: {
         url: string;
         altText?: string;
