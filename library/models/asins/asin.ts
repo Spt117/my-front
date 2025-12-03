@@ -1,12 +1,11 @@
 import { model, Model, models, Schema } from "mongoose";
-import { marketPlaceEnum, TAsin } from "./asinType";
+import { marketPlaceEnum, TAsin, typeOfProductEnum } from "./asinType";
 
 const AsinSchema = new Schema<TAsin>(
     {
         asin: { type: String, required: true },
         marketPlace: { type: String, enum: marketPlaceEnum, required: true },
-        active: { type: Boolean, required: true, default: true },
-        title: { type: String, required: false },
+        typeOfProduct: { type: String, enum: typeOfProductEnum, required: true },
     },
     {
         versionKey: false,

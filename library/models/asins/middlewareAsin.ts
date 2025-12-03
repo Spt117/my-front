@@ -1,20 +1,17 @@
 "use server";
 
 import { asinController } from "./asinController";
-import { TAsin, TMarketPlace } from "./asinType";
+import { TAsin, TMarketPlace, TTypeOfProduct } from "./asinType";
 
 /**
  * Action serveur pour créer un nouvel ASIN
  */
-export async function createAsinAction(
-    asin: string,
-    marketPlace: TMarketPlace
-): Promise<{ success: boolean; data?: TAsin; error?: string }> {
+export async function createAsinAction(asin: string, marketPlace: TMarketPlace, typeOfProduct: TTypeOfProduct): Promise<{ success: boolean; data?: TAsin; error?: string }> {
     try {
-        const result = await asinController.createASin(asin, marketPlace);
+        const result = await asinController.createASin(asin, marketPlace, typeOfProduct);
 
         if (result) {
-            return { success: true, data: JSON.parse(JSON.stringify(result)) }; // Utiliser JSON.parse pour éviter les références circulaires
+            return { success: true, data: JSON.parse(JSON.stringify(result)) };
         } else {
             return { success: false, error: "Failed to create ASIN" };
         }
@@ -38,34 +35,83 @@ export async function getAsinsAction(): Promise<{ success: boolean; data?: TAsin
 }
 
 /**
- * Action serveur pour désactiver une marketplace d'un ASIN
- * @param asin - L'ASIN à modifier
- * @param marketPlace - La marketplace pour laquelle activer l'ASIN
+ * Action serveur pour récupérer un ASIN par marketplace
  */
-export async function activeAsinByMarketPlaceAction(asin: TAsin): Promise<{ success: boolean; error?: string }> {
+export async function getAsinByMarketPlaceAction(asin: string, marketPlace: TMarketPlace): Promise<{ success: boolean; data?: TAsin | null; error?: string }> {
+    try {
+        const result = await asinController.getAsinByMarketPlace(asin, marketPlace);
+        return { success: true, data: result };
+    } catch (error) {
+        console.error("Server action error:", error);
+        return { success: false, error: "Internal server error" };
+    }
+}
+
+/**
+ * Action serveur pour mettre à jour un ASIN
+ */
+export async function updateAsinAction(asinID: string, marketPlace: TMarketPlace, updateData: Partial<TAsin>): Promise<{ success: boolean; data?: TAsin | null; error?: string }> {
     // Validation côté serveur
-    if (!asin) {
-        return { success: false, error: "asin is required" };
+    if (!asinID || !marketPlace) {
+        return { success: false, error: "asin and marketPlace are required" };
     }
 
     try {
-        const asinMarketPlace = await asinController.getAsinByMarketPlace(asin.asin, asin.marketPlace);
-        if (!asinMarketPlace) {
-            const result = await createAsinAction(asin.asin, asin.marketPlace);
-            return result;
-        }
-        let result: boolean;
-        // Si l'ASIN est déjà actif, on le désactive, sinon on l'active
-        if (asinMarketPlace.active) result = await asinController.disableASinByMarketPlace(asin.asin, asin.marketPlace);
-        else result = await asinController.enableASinByMarketPlace(asin.asin, asin.marketPlace);
+        const result = await asinController.updateAsin(asinID, marketPlace, updateData);
 
         if (result) {
-            return { success: true };
+            return { success: true, data: result };
         } else {
-            return { success: false, error: "ASIN not found or already disabled" };
+            return { success: false, error: "ASIN not found" };
         }
     } catch (error) {
         console.error("Server action error:", error);
         return { success: false, error: "Internal server error" };
+    }
+}
+
+/**
+ * Action serveur pour supprimer un ASIN
+ */
+export async function deleteAsinAction(asin: string, marketPlace: TMarketPlace): Promise<{ success: boolean; error?: string }> {
+    // Validation côté serveur
+    if (!asin || !marketPlace) {
+        return { success: false, error: "asin and marketPlace are required" };
+    }
+
+    try {
+        const result = await asinController.deleteAsin(asin, marketPlace);
+
+        if (result) {
+            return { success: true };
+        } else {
+            return { success: false, error: "ASIN not found" };
+        }
+    } catch (error) {
+        console.error("Server action error:", error);
+        return { success: false, error: "Internal server error" };
+    }
+}
+
+/**
+ * Action serveur pour vérifier si un ASIN existe
+ */
+export async function checkAsinExistsAction(asin: string, marketPlace: TMarketPlace): Promise<{ success: boolean; exists: boolean; data?: TAsin | null; error?: string }> {
+    // Validation côté serveur
+    if (!asin || !marketPlace) {
+        return { success: false, exists: false, error: "asin and marketPlace are required" };
+    }
+
+    try {
+        const result = await asinController.checkASinExists(asin, marketPlace);
+
+        return {
+            success: true,
+            exists: result !== null,
+            data: result,
+        };
+    } catch (error) {
+        console.error("Server action error:", error);
+        return { success: false, exists: false, error: "Internal server error" };
     }
 }
