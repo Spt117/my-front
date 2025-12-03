@@ -42,8 +42,6 @@ export default function TaskAffiliation() {
         setLoading(true);
         try {
             const res = await createCarte(task.asin);
-            console.log(res);
-
             if (res.error) toast.error(res.error);
 
             if (res.message) toast.success(res.message);
@@ -126,17 +124,21 @@ export default function TaskAffiliation() {
                         <span className="text-sm">Site: {task.website}</span>
                     </div>
 
-                    <div className="mt-4 flex items-center gap-2">
-                        <Button disabled={loading || disabledPush} size="sm" onClick={handleCreateProduct}>
-                            Créer le produit
-                        </Button>
-                        <Button disabled={loading || disabledPush} size="sm" onClick={handleCreateCarte}>
-                            Créer la carte
-                        </Button>
-                        <Button disabled={loading} variant="outline" onClick={handleArchive}>
-                            Archiver
-                        </Button>
-                        {loading && <Spinner size={20} />}
+                    <div className="mt-4 flex items-center gap-2 justify-center">
+                        {!loading && (
+                            <>
+                                <Button disabled={loading || disabledPush} size="sm" onClick={handleCreateProduct}>
+                                    Créer le produit
+                                </Button>
+                                <Button disabled={loading || disabledPush} size="sm" onClick={handleCreateCarte}>
+                                    Créer la carte
+                                </Button>
+                                <Button disabled={loading} variant="outline" onClick={handleArchive}>
+                                    Archiver
+                                </Button>
+                            </>
+                        )}
+                        {loading && <Spinner />}
                     </div>
                 </CardContent>
             </Card>
