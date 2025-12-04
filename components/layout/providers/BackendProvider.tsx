@@ -1,32 +1,33 @@
-import { SiteHeader } from "@/components/header/site-header";
-import { AppSidebar } from "@/components/menu/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { auth } from "@/library/auth/authOption";
-import { userEmail } from "@/library/utils/uri";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { SiteHeader } from '@/components/header/site-header';
+import { AppSidebar } from '@/components/menu/app-sidebar';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { authOptions } from '@/library/auth/authOption';
+import { userEmail } from '@/library/utils/uri';
+import { getServerSession } from 'next-auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export default async function BackendProvider({ children }: Readonly<{ children: React.ReactNode }>) {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     const headersList = await headers();
-    const pathname = headersList.get("x-pathname") || "/unknown";
+    const pathname = headersList.get('x-pathname') || '/unknown';
     // Redirection côté serveur si pas de session et pas sur la page boarding
-    if (!session && pathname !== "/boarding") redirect("/boarding");
+    if (!session && pathname !== '/boarding') redirect('/boarding');
 
     if (!session) {
-        if (pathname !== "/boarding") return null;
+        if (pathname !== '/boarding') return null;
         return <>{children}</>;
     }
 
-    if (session && pathname === "/boarding") redirect("/");
+    if (session && pathname === '/boarding') redirect('/');
 
     if (session.user?.email !== userEmail) return null;
     return (
         <SidebarProvider
             style={
                 {
-                    "--sidebar-width": "calc(var(--spacing) * 72)",
-                    "--header-height": "calc(var(--spacing) * 12)",
+                    '--sidebar-width': 'calc(var(--spacing) * 72)',
+                    '--header-height': 'calc(var(--spacing) * 12)',
                 } as React.CSSProperties
             }
         >
