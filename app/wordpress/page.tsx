@@ -1,11 +1,11 @@
-import { getServer } from "@/library/utils/fetchServer";
-import { pokeUriServer } from "@/library/utils/uri";
-import Article from "./Article";
+import { getServer } from '@/library/utils/fetchServer';
+import { pokeUriServer } from '@/library/utils/uri';
+import Article from './Article';
 
 export default async function Page() {
     const url = `${pokeUriServer}/wordpress?site=beyblade-x.fr`;
     const res = await getServer(url);
-    console.log("Response from server:");
+    console.log('Response from server:');
     const data = res.response.data[0];
     console.log(data);
 
