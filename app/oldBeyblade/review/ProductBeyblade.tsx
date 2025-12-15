@@ -1,4 +1,3 @@
-import useReviewStore from '@/app/beyblade/review/storeReview';
 import { Card } from '@/components/ui/card';
 import { Trash2 } from 'lucide-react';
 import Image from 'next/image';
@@ -7,6 +6,7 @@ import { toast } from 'sonner';
 import { deleteBeybladeById } from '../../oldBeyblade/model/product/middlewareProduct';
 import { IBeybladeProduct } from '../../oldBeyblade/model/typesBeyblade';
 import useBeybladeStore from '../beybladeStore';
+import useReviewStore from './storeReview';
 
 export default function ProductBeyblade({ product }: { product: IBeybladeProduct }) {
     const { generation } = useBeybladeStore();

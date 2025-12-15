@@ -1,12 +1,12 @@
 'use client';
 
-import useBeybladeStore from '@/app/beyblade/beybladeStore';
-import useReviewStore from '@/app/beyblade/review/storeReview';
 import { getBeybladeProductById } from '@/app/oldBeyblade/model/product/middlewareProduct';
 import { IBeybladeProduct } from '@/app/oldBeyblade/model/typesBeyblade';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+import useBeybladeStore from '../../beybladeStore';
+import useReviewStore from '../storeReview';
 
 interface LayoutProps {
     children: React.ReactNode;

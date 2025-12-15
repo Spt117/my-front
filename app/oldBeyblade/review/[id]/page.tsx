@@ -1,6 +1,5 @@
 'use client';
 
-import useReviewStore from '@/app/beyblade/review/storeReview';
 import { updateBeybladeAction } from '@/app/oldBeyblade/model/product/middlewareProduct';
 import { IBeybladeProduct } from '@/app/oldBeyblade/model/typesBeyblade';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import useReviewStore from '../storeReview';
 
 export default function Page() {
     const { item } = useReviewStore();
