@@ -1,16 +1,15 @@
-"use client";
-import HeaderBeyblade from "@/app/beyblade/HeaderBeyblade";
-import HeaderPokemon from "@/app/pokemon/Header";
-import BulkHeader from "@/app/shopify/[shopId]/bulk/BulkHeader";
-import HeaderCollection from "@/app/shopify/[shopId]/collections/HeaderCollections";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
-import Orders from "./Orders";
-import ShopifySelect from "./ShopifySelect";
-import SearchProduct from "./products/SearchProduct";
-import HeaderStock from "./stock/HeaderStock";
-import SelectAffiliationSite from "../../app/create/HeaderTaskAffiliations";
+'use client';
+import HeaderPokemon from '@/app/pokemon/Header';
+import BulkHeader from '@/app/shopify/[shopId]/bulk/BulkHeader';
+import HeaderCollection from '@/app/shopify/[shopId]/collections/HeaderCollections';
+import { Separator } from '@/components/ui/separator';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { usePathname } from 'next/navigation';
+import SelectAffiliationSite from '../../app/create/HeaderTaskAffiliations';
+import Orders from './Orders';
+import ShopifySelect from './ShopifySelect';
+import SearchProduct from './products/SearchProduct';
+import HeaderStock from './stock/HeaderStock';
 
 export function SiteHeader() {
     const pathname = usePathname();
@@ -19,15 +18,14 @@ export function SiteHeader() {
             <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6 ">
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
-                {(pathname.includes("shopify") || pathname === "/") && <ShopifySelect />}
-                {pathname === "/create" && <SelectAffiliationSite />}
-                {pathname === "/stock" && <HeaderStock />}
-                {pathname === "/pokemon" && <HeaderPokemon />}
-                {pathname.includes("bulk") && <BulkHeader />}
-                {pathname.includes("products") && <SearchProduct />}
-                {pathname.includes("collections") && <HeaderCollection />}
-                {pathname.includes("orders") && <Orders />}
-                {pathname.includes("/beyblade") && <HeaderBeyblade />}
+                {(pathname.includes('shopify') || pathname === '/') && <ShopifySelect />}
+                {pathname === '/create' && <SelectAffiliationSite />}
+                {pathname === '/stock' && <HeaderStock />}
+                {pathname === '/pokemon' && <HeaderPokemon />}
+                {pathname.includes('bulk') && <BulkHeader />}
+                {pathname.includes('products') && <SearchProduct />}
+                {pathname.includes('collections') && <HeaderCollection />}
+                {pathname.includes('orders') && <Orders />}
             </div>
         </header>
     );

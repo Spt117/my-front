@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
@@ -125,4 +125,15 @@
 /* Empêche Typography d’écraser les couleurs sur le gras dans l’éditeur */
 .tiptap-editor-colors :where(strong, b) {
     color: inherit !important;
+}
+
+/* Hide spin buttons for number inputs */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type='number'] {
+    -moz-appearance: textfield;
 }

@@ -1,64 +1,22 @@
-"use client";
+import { PB_URL } from '@/library/utils/uri';
+import BeybladeList from './components/BeybladeList';
+import { beybladeService } from './pocketbase/beyblade-service';
 
-import { Button } from "@/components/ui/button";
-import { Package } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-import ImageManager from "./ImageManager";
-import useBeybladeStore from "./beybladeStore";
-import { createProductBeyblade } from "./model/product/middlewareProduct";
-import { IBeybladeProduct } from "./model/typesBeyblade";
-import ProductData from "./productInformation/ProductData";
-
-export default function BeybladeProductForm() {
-    const { beybladeProduct, resetBeybladeProduct, initializeNewProduct, generation, addImage, removeImage } = useBeybladeStore();
-
-    const [currentTab, setCurrentTab] = useState("basic");
-
-    // Initialiser le produit si null
-    useState(() => {
-        if (!beybladeProduct) {
-            initializeNewProduct();
-        }
-    });
-
-    const handleSubmit = async () => {
-        console.log("Product to save:", beybladeProduct);
-
-        if (beybladeProduct?.productCode && beybladeProduct?.releaseDate && beybladeProduct.brand && beybladeProduct.product) {
-            // Assure TypeScript que product est bien défini
-            const res = await createProductBeyblade(generation, beybladeProduct as IBeybladeProduct);
-            console.log("Product created:", res);
-            if (res.message) toast.success(res.message);
-            if (res.error) toast.error(res.error);
-        } else {
-            const msg = `Product creation failed: ${beybladeProduct?.productCode ? "" : "Product code is missing."} ${beybladeProduct?.releaseDate ? "" : "Release date is missing."} ${beybladeProduct?.brand ? "" : "Brand is missing."} ${beybladeProduct?.product ? "" : "Product name is missing."}`;
-            toast.error(msg);
-        }
-    };
-    if (!beybladeProduct) return null;
+export default async function PageBeyblade() {
+    // Fetch products ordered by creation date, or other relevant sort
+    const products = await beybladeService.getFullList();
 
     return (
-        <div className="container mx-auto p-3 max-w-6xl">
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-4xl font-bold tracking-tight">Create Beyblade Product</h1>
-                    <p className="text-muted-foreground mt-2">Add a new product to your collection</p>
-                </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" onClick={resetBeybladeProduct}>
-                        Reset
-                    </Button>
-                    <Button onClick={handleSubmit} className="gap-2">
-                        <Package className="w-4 h-4" />
-                        Save Product
-                    </Button>
-                </div>
-            </div>
+        <div className="min-h-screen bg-gray-950 text-gray-100 p-8">
+            <div className="max-w-[1920px] mx-auto">
+                <header className="mb-12 text-center">
+                    <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 mb-4 animate-gradient-x">
+                        Beyblade X Database
+                    </h1>
+                    <p className="text-gray-400 text-lg max-w-2xl mx-auto">Manage your collection and Amazon listings efficiently.</p>
+                </header>
 
-            <div className="space-y-3">
-                <ProductData />
-                <ImageManager images={beybladeProduct?.images || []} onAddImage={addImage} onRemoveImage={removeImage} title="Product Images" description="Add images of the product" emptyMessage="No product images added yet" />
+                <BeybladeList products={products} pbUrl={PB_URL} />
             </div>
         </div>
     );
