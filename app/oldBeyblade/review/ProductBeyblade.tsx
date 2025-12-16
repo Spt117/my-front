@@ -15,7 +15,6 @@ export default function ProductBeyblade({ product }: { product: IBeybladeProduct
 
     const handleDelete = async (e: any) => {
         e.stopPropagation();
-        console.log(product._id);
         const res = await deleteBeybladeById(product._id!, generation);
         if (res.success) toast.success(res.message || 'Beyblade deleted');
         if (res.error) toast.error(res.error);
