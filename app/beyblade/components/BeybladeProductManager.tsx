@@ -122,6 +122,17 @@ export default function BeybladeProductManager({ product }: Props) {
         setIsSaving(false);
     };
 
+    const handleSelectAll = () => {
+        const allCodes = Object.values(COUNTRY_REGIONS).flat();
+        const allSelected = allCodes.every((c) => selectedNewCountries.includes(c));
+
+        if (allSelected) {
+            setSelectedNewCountries([]);
+        } else {
+            setSelectedNewCountries(allCodes);
+        }
+    };
+
     return (
         <div className="space-y-8">
             {/* Quick Add Section */}
@@ -144,13 +155,26 @@ export default function BeybladeProductManager({ product }: Props) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-3 flex items-center justify-between">
-                            <span>2. Select Marketplaces</span>
+                        <div className="flex items-center justify-between mb-3">
+                            <label className="text-sm font-medium text-gray-400 flex items-center gap-4">
+                                <span>2. Select Marketplaces</span>
+                                <button
+                                    onClick={handleSelectAll}
+                                    className="text-xs font-bold text-blue-400 hover:text-blue-300 bg-blue-900/20 hover:bg-blue-900/30 px-2 py-1 rounded transition-colors cursor-pointer"
+                                >
+                                    {Object.values(COUNTRY_REGIONS)
+                                        .flat()
+                                        .every((c) => selectedNewCountries.includes(c))
+                                        ? 'Deselect All'
+                                        : 'Select All'}
+                                </button>
+                            </label>
+
                             <span className="text-xs text-green-500 flex items-center gap-1.5 bg-green-900/20 px-2 py-0.5 rounded border border-green-500/20">
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
                                 Already configured
                             </span>
-                        </label>
+                        </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                             {Object.entries(COUNTRY_REGIONS).map(([region, codes]) => {
                                 const isRegionSelected = codes.every((c) => selectedNewCountries.includes(c));
@@ -158,7 +182,7 @@ export default function BeybladeProductManager({ product }: Props) {
                                     <div key={region} className="bg-black/20 rounded-xl p-4 border border-white/5">
                                         <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
                                             <span className="font-bold text-gray-300">{region}</span>
-                                            <button onClick={() => handleSelectRegion(region)} className="text-xs text-blue-400 hover:text-blue-300 font-medium">
+                                            <button onClick={() => handleSelectRegion(region)} className="text-xs text-blue-400 hover:text-blue-300 font-medium cursor-pointer">
                                                 {isRegionSelected ? 'None' : 'All'}
                                             </button>
                                         </div>
@@ -217,7 +241,7 @@ export default function BeybladeProductManager({ product }: Props) {
                     <button
                         onClick={handleAddAsinToSelected}
                         disabled={!newAsin || selectedNewCountries.length === 0}
-                        className="self-start py-3 px-8 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
+                        className="self-start py-3 px-8 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white rounded-xl font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
                     >
                         Add ASIN to {selectedNewCountries.length} Marketplaces
                     </button>
@@ -235,7 +259,7 @@ export default function BeybladeProductManager({ product }: Props) {
                         <button
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="py-2 px-6 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-lg font-bold shadow-lg shadow-green-900/20 transition-all flex items-center gap-2"
+                            className="py-2 px-6 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white rounded-lg font-bold shadow-lg shadow-green-900/20 transition-all flex items-center gap-2"
                         >
                             {isSaving ? (
                                 <>
@@ -281,7 +305,7 @@ export default function BeybladeProductManager({ product }: Props) {
 
                                     <button
                                         onClick={() => handleRemoveMarketplace(code)}
-                                        className="absolute top-2 right-2 p-1 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors z-10"
+                                        className="absolute top-2 right-2 p-1 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors z-10 cursor-pointer"
                                         title="Remove Marketplace"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
