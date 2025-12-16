@@ -4,6 +4,7 @@ import { PB_URL } from '@/library/utils/uri';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import BeybladeProductManager from '../components/BeybladeProductManager';
+import { ProductTitle } from '../components/ProductTitle';
 import { beybladeService } from '../pocketbase/beyblade-service';
 
 export default async function BeybladeProductPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -62,7 +63,7 @@ export default async function BeybladeProductPage({ params }: { params: Promise<
                                 <span className="text-gray-600">•</span>
                                 <span className="text-emerald-400 font-mono text-sm">{product.productCode}</span>
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-black text-white leading-tight mb-4">{product.title}</h1>
+                            <ProductTitle title={product.title} />
                             <div className="flex gap-4 text-sm text-gray-400">
                                 <span>
                                     Released: <span className="text-gray-200">{product.releaseDate ? new Date(product.releaseDate).toLocaleDateString() : 'N/A'}</span>

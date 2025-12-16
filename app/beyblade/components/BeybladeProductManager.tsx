@@ -1,6 +1,7 @@
 'use client';
 
 import { CountryFlag } from '@/app/components/CountryFlag';
+import useKeyboardShortcuts from '@/library/hooks/useKyboardShortcuts';
 import { AMAZON_MARKETPLACES, COUNTRY_REGIONS, CountryCode, MarketplaceData } from '@/library/utils/amazon';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -19,6 +20,19 @@ export default function BeybladeProductManager({ product }: Props) {
     // New Entry State
     const [newAsin, setNewAsin] = useState('');
     const [selectedNewCountries, setSelectedNewCountries] = useState<CountryCode[]>([]);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        const result = await updateBeybladeProduct(product.id!, { marketplaces });
+        if (result.success) {
+            router.refresh();
+        } else {
+            alert('Failed to save changes');
+        }
+        setIsSaving(false);
+    };
+
+    useKeyboardShortcuts('Enter', handleSave);
 
     // Sort based on ORIGINAL DB state to avoid jumping during edit
     const activeCountries = (Object.keys(marketplaces) as CountryCode[]).sort((a, b) => {
@@ -104,17 +118,6 @@ export default function BeybladeProductManager({ product }: Props) {
             // Revert on failure
             setMarketplaces(previousMarketplaces);
             alert('Failed to remove marketplace');
-        }
-        setIsSaving(false);
-    };
-
-    const handleSave = async () => {
-        setIsSaving(true);
-        const result = await updateBeybladeProduct(product.id!, { marketplaces });
-        if (result.success) {
-            router.refresh();
-        } else {
-            alert('Failed to save changes');
         }
         setIsSaving(false);
     };
