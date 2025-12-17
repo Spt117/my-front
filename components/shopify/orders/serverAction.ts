@@ -1,8 +1,8 @@
-"use server";
-import { GroupedShopifyOrder, IShopifyOrderResponse, ShopifyOrder } from "@/library/shopify/orders";
-import { getServer, postServer } from "@/library/utils/fetchServer";
-import { pokeUriServer } from "@/library/utils/uri";
-import { ProductInOrder } from "./store";
+'use server';
+import { GroupedShopifyOrder, IShopifyOrderResponse, ShopifyOrder } from '@/library/shopify/orders';
+import { getServer, postServer } from '@/library/utils/fetchServer';
+import { pokeUriServer } from '@/library/utils/uri';
+import { ProductInOrder } from './store';
 
 export async function getOrders() {
     const url = `${pokeUriServer}/shopify/orders`;
@@ -12,7 +12,7 @@ export async function getOrders() {
     const filterOrdersProductsUnfulfilled = data.map((order) => ({
         ...order,
         lineItems: {
-            edges: order.lineItems.edges.filter(({ node }) => node.fulfillmentStatus === "unfulfilled"),
+            edges: order.lineItems.edges.filter(({ node }) => node.fulfillmentStatus === 'unfulfilled'),
         },
     }));
 
@@ -20,8 +20,8 @@ export async function getOrders() {
         order.lineItems.edges.flatMap(({ node }) => {
             return {
                 title: node.title,
-                image: node?.variant?.product?.featuredImage?.url || " ",
-                productUrl: `https://${order.shop}/admin/products/${node.variant?.product.id.split("/").pop()}`,
+                image: node?.variant?.product?.featuredImage?.url || ' ',
+                productUrl: `https://${order.shop}/admin/products/${node.variant?.product.id.split('/').pop()}`,
                 quantity: node.quantity,
                 fulfillmentStatus: node.fulfillmentStatus,
                 shop: order.shop,
@@ -49,7 +49,7 @@ export async function getOrders() {
 }
 
 export async function searchOrders(domain: string, query: string) {
-    const req = query.includes("@") ? "orders-customer" : "get-order";
+    const req = query.includes('@') ? 'orders-customer' : 'get-order';
     const uri = `http://localhost:9100/shopify/${req}`;
     const res = await postServer(uri, {
         domain,

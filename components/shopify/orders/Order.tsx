@@ -4,10 +4,17 @@ import { Card } from '@/components/ui/card';
 import { useCopy } from '@/library/hooks/useCopy';
 import { GroupedShopifyOrder } from '@/library/shopify/orders';
 import { boutiqueFromDomain } from '@/params/paramsShopify';
+import * as Flags from 'country-flag-icons/react/3x2';
+import countries from 'i18n-iso-countries';
+import enLocale from 'i18n-iso-countries/langs/en.json';
+import frLocale from 'i18n-iso-countries/langs/fr.json';
 import { Calendar, Copy, ExternalLink, Mail, MapPin, Package, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import ProductSection from './ProductSection';
 import UsefullLinks from './UsefullLinks';
+
+countries.registerLocale(frLocale);
+countries.registerLocale(enLocale);
 
 export default function Order({ order }: { order: GroupedShopifyOrder }) {
     const { handleCopy } = useCopy();
@@ -106,9 +113,20 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                 </div>
                                 <div className="pl-6 border-l-2 border-gray-200 ml-2 py-1">
                                     <p className="text-sm text-gray-700 font-medium">{order.shippingAddress.address1}</p>
-                                    <p className="text-sm text-gray-500">
+                                    <div className="text-sm text-gray-500 flex items-center gap-2">
                                         {order.shippingAddress.city}, {order.shippingAddress.country}
-                                    </p>
+                                        {(() => {
+                                            const code =
+                                                countries.getAlpha2Code(order.shippingAddress.country, 'fr') || countries.getAlpha2Code(order.shippingAddress.country, 'en');
+                                            const FlagComponent = code ? Flags[code as keyof typeof Flags] : null;
+
+                                            return FlagComponent ? (
+                                                <div className="w-5 h-4 shadow-sm rounded-[2px] overflow-hidden inline-flex">
+                                                    <FlagComponent title={order.shippingAddress.country} />
+                                                </div>
+                                            ) : null;
+                                        })()}
+                                    </div>
                                 </div>
                             </div>
 
@@ -121,6 +139,11 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                     className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                                     onClick={() => handleCopy(order.customer.email)}
                                 >
+                                    {(order.customer.firstName || order.customer.lastName) && (
+                                        <p className="text-sm font-semibold text-gray-900 mb-1">
+                                            {order.customer.firstName} {order.customer.lastName}
+                                        </p>
+                                    )}
                                     <div className="flex items-center justify-between">
                                         <p className="text-sm font-medium text-gray-900 truncate pr-2">{order.customer.email}</p>
                                         <Copy className="w-3.5 h-3.5 text-gray-400" />

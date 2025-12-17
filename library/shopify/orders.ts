@@ -1,6 +1,6 @@
 // Types pour l'objet commande Shopify
 
-import { TDomainsShopify } from "../../params/paramsShopify";
+import { TDomainsShopify } from '../../params/paramsShopify';
 
 interface ShopMoney {
     amount: string;
@@ -15,12 +15,17 @@ interface Customer {
     email: string;
     numberOfOrders: string;
     amountSpent: ShopMoney;
+    firstName?: string;
+    lastName?: string;
 }
 
 interface ShippingAddress {
     address1: string;
     city: string;
     country: string;
+    firstName?: string;
+    lastName?: string;
+    countryCode?: string;
 }
 
 interface FeaturedImage {
@@ -43,7 +48,7 @@ interface ProductVariant {
 export interface LineItemNode {
     id: string;
     title: string;
-    fulfillmentStatus: "unfulfilled" | "fulfilled";
+    fulfillmentStatus: 'unfulfilled' | 'fulfilled';
     sku: string;
     quantity: number;
     variant: ProductVariant;
@@ -63,7 +68,7 @@ export interface ShopifyOrder {
     legacyResourceId: string;
     name: string;
     createdAt: string; // Format ISO 8601
-    displayFulfillmentStatus: "FULFILLED" | "UNFULFILLED" | "PARTIALLY_FULFILLED";
+    displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED';
     totalPriceSet: TotalPriceSet;
     customer: Customer;
     shippingAddress: ShippingAddress;
@@ -82,7 +87,7 @@ export interface GroupedShopifyOrder {
     legacyResourceId: string[];
     name: string[];
     createdAt: string;
-    displayFulfillmentStatus: "FULFILLED" | "UNFULFILLED" | "PARTIALLY_FULFILLED";
+    displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED';
     totalPriceSet: TotalPriceSet;
     customer: Customer;
     shippingAddress: ShippingAddress;
