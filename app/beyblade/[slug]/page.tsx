@@ -71,6 +71,9 @@ export default async function BeybladeProductPage({ params }: { params: Promise<
                                 <span>
                                     Type: <span className="text-gray-200">{product.releaseType}</span>
                                 </span>
+                                <span>
+                                    ASIN: <span className="text-gray-200">{product.marketplaces?.JP?.asin}</span>
+                                </span>
                             </div>
                         </div>
 
