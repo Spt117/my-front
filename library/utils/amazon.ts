@@ -13,7 +13,7 @@ export type CountryCode =
     | 'IT'
     | 'ES'
     | 'NL'
-    | 'TR'
+    // | 'TR'
     | 'BE'
     | 'PL'
     // Sweden
@@ -68,7 +68,7 @@ export const AMAZON_MARKETPLACES = {
 
 export const COUNTRY_REGIONS: Record<string, CountryCode[]> = {
     Americas: ['US', 'CA', 'MX', 'BR'],
-    Europe: ['UK', 'DE', 'FR', 'IT', 'ES', 'NL', 'TR', 'BE', 'PL', 'SE', 'IR'],
+    Europe: ['UK', 'DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'PL', 'SE', 'IR'],
     'Asia Pacific': ['JP', 'IN', 'AU', 'SG'],
     'Middle East': ['AE', 'SA'],
 } as const;
