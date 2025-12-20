@@ -1,34 +1,34 @@
 // 1. Définition des clés autorisées (Codes pays)
 export type CountryCode =
     // Amériques
-    | 'US'
-    | 'CA'
-    | 'MX'
-    | 'BR'
+    | "US"
+    | "CA"
+    | "MX"
+    | "BR"
     // Amériques
     // Europe
-    | 'UK'
-    | 'DE'
-    | 'FR'
-    | 'IT'
-    | 'ES'
-    | 'NL'
+    | "UK"
+    | "DE"
+    | "FR"
+    | "IT"
+    | "ES"
+    | "NL"
     // | 'TR'
-    | 'BE'
-    | 'PL'
+    | "BE"
+    | "PL"
     // Sweden
-    | 'SE'
-    | 'IR'
+    | "SE"
+    | "IR"
     // Europe
     // Asie / Pacifique
-    | 'JP'
-    | 'IN'
-    | 'AU'
-    | 'SG'
+    | "JP"
+    | "IN"
+    // | 'AU'
+    | "SG"
     // Asie / Pacifique
     // Moyen-Orient
-    | 'AE'
-    | 'SA';
+    | "AE"
+    | "SA";
 // Moyen-Orient
 
 // 2. Interface pour les détails du marché
@@ -40,42 +40,42 @@ export interface MarketplaceInfo {
 
 // 3. L'objet de configuration constant
 export const AMAZON_MARKETPLACES = {
-    US: { url: 'https://www.amazon.com', currency: 'USD', domainId: 1 },
-    CA: { url: 'https://www.amazon.ca', currency: 'CAD', domainId: 6 },
-    MX: { url: 'https://www.amazon.com.mx', currency: 'MXN', domainId: 11 },
-    BR: { url: 'https://www.amazon.com.br', currency: 'BRL' },
+    US: { url: "https://www.amazon.com", currency: "USD", domainId: 1 },
+    CA: { url: "https://www.amazon.ca", currency: "CAD", domainId: 6 },
+    MX: { url: "https://www.amazon.com.mx", currency: "MXN", domainId: 11 },
+    BR: { url: "https://www.amazon.com.br", currency: "BRL" },
 
-    UK: { url: 'https://www.amazon.co.uk', currency: 'GBP', domainId: 2 },
-    DE: { url: 'https://www.amazon.de', currency: 'EUR', domainId: 3 },
-    FR: { url: 'https://www.amazon.fr', currency: 'EUR', domainId: 4 },
-    IT: { url: 'https://www.amazon.it', currency: 'EUR', domainId: 8 },
-    ES: { url: 'https://www.amazon.es', currency: 'EUR', domainId: 9 },
-    NL: { url: 'https://www.amazon.nl', currency: 'EUR' },
-    BE: { url: 'https://www.amazon.com.be', currency: 'EUR' },
-    PL: { url: 'https://www.amazon.pl', currency: 'PLN' },
-    SE: { url: 'https://www.amazon.se', currency: 'SEK' },
-    IR: { url: 'https://www.amazon.ie', currency: 'IRR' },
+    UK: { url: "https://www.amazon.co.uk", currency: "GBP", domainId: 2 },
+    DE: { url: "https://www.amazon.de", currency: "EUR", domainId: 3 },
+    FR: { url: "https://www.amazon.fr", currency: "EUR", domainId: 4 },
+    IT: { url: "https://www.amazon.it", currency: "EUR", domainId: 8 },
+    ES: { url: "https://www.amazon.es", currency: "EUR", domainId: 9 },
+    NL: { url: "https://www.amazon.nl", currency: "EUR" },
+    BE: { url: "https://www.amazon.com.be", currency: "EUR" },
+    PL: { url: "https://www.amazon.pl", currency: "PLN" },
+    SE: { url: "https://www.amazon.se", currency: "SEK" },
+    IR: { url: "https://www.amazon.ie", currency: "IRR" },
     // TR: { url: 'https://www.amazon.com.tr', currency: 'TRY' },
 
-    JP: { url: 'https://www.amazon.co.jp', currency: 'JPY', domainId: 5 },
-    IN: { url: 'https://www.amazon.in', currency: 'INR', domainId: 10 },
-    AU: { url: 'https://www.amazon.com.au', currency: 'AUD' },
-    SG: { url: 'https://www.amazon.sg', currency: 'SGD' },
+    JP: { url: "https://www.amazon.co.jp", currency: "JPY", domainId: 5 },
+    IN: { url: "https://www.amazon.in", currency: "INR", domainId: 10 },
+    AU: { url: "https://www.amazon.com.au", currency: "AUD" },
+    SG: { url: "https://www.amazon.sg", currency: "SGD" },
 
-    AE: { url: 'https://www.amazon.ae', currency: 'AED' },
-    SA: { url: 'https://www.amazon.sa', currency: 'SAR' },
+    AE: { url: "https://www.amazon.ae", currency: "AED" },
+    SA: { url: "https://www.amazon.sa", currency: "SAR" },
 } as const;
 
 export const COUNTRY_REGIONS: Record<string, CountryCode[]> = {
-    Americas: ['US', 'CA', 'MX', 'BR'],
-    Europe: ['UK', 'DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'PL', 'SE', 'IR'],
-    'Asia Pacific': ['JP', 'IN', 'AU', 'SG'],
-    'Middle East': ['AE', 'SA'],
+    Americas: ["US", "CA", "MX", "BR"],
+    Europe: ["UK", "DE", "FR", "IT", "ES", "NL", "BE", "PL", "SE", "IR"],
+    "Asia Pacific": ["JP", "IN", "SG"],
+    "Middle East": ["AE", "SA"],
 } as const;
 
 export const KeepaDomain = Object.entries(AMAZON_MARKETPLACES).reduce(
     (acc, [code, marketplace]) => {
-        if ('domainId' in marketplace) {
+        if ("domainId" in marketplace) {
             // @ts-ignore
             acc[code] = marketplace.domainId;
         }
@@ -85,7 +85,7 @@ export const KeepaDomain = Object.entries(AMAZON_MARKETPLACES).reduce(
         [K in keyof typeof AMAZON_MARKETPLACES as (typeof AMAZON_MARKETPLACES)[K] extends { domainId: number } ? K : never]: (typeof AMAZON_MARKETPLACES)[K] extends {
             domainId: number;
         }
-            ? (typeof AMAZON_MARKETPLACES)[K]['domainId']
+            ? (typeof AMAZON_MARKETPLACES)[K]["domainId"]
             : never;
     }
 );
