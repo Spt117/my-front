@@ -7,6 +7,8 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 let supabaseInstance: SupabaseClient | null = null;
 
 function getSupabaseClient(): SupabaseClient {
+    console.log("Supabase client initialisé " + supabaseUrl);
+
     if (!supabaseUrl || !supabaseKey) {
         throw new Error("Supabase non configuré. Veuillez définir NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY dans vos variables d'environnement.");
     }
