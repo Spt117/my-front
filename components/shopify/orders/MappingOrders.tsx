@@ -6,7 +6,7 @@ import useOrdersStore from './store';
 
 export default function MappingOrders() {
     const { filterOrders, mode } = useOrdersStore();
-    const [isCompact, setIsCompact] = useState(false);
+    const [isCompact, setIsCompact] = useState(true);
 
     if (mode !== 'orders') return null;
     return (

@@ -32,7 +32,7 @@ export default function ProductSection({ node, domain }: { node: LineItemNode; d
                 <div className="flex flex-col justify-between flex-grow min-w-0 py-0.5 z-10">
                     <div>
                         <div className="flex items-start justify-between gap-2">
-                            <h4 className="text-sm md:text-base font-semibold text-gray-800 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+                            <h4 className="text-sm md:text-base font-semibold text-gray-800 line-clamp-3 leading-tight group-hover:text-blue-600 transition-colors">
                                 {node.title}
                             </h4>
                             <ArrowUpRight className="w-4 h-4 text-gray-300 opacity-0 -translate-x-2 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0" />
