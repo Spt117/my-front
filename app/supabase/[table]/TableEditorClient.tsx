@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { IconArrowLeft, IconCheck, IconLoader2, IconRefresh, IconSearch, IconX } from "@tabler/icons-react";
+import { IconArrowLeft, IconBrackets, IconCheck, IconChevronDown, IconChevronRight, IconCode, IconCopy, IconLoader2, IconRefresh, IconSearch, IconX } from "@tabler/icons-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -20,6 +20,252 @@ type TableEditorClientProps = {
 // Colonnes à masquer dans l'éditeur
 const HIDDEN_COLUMNS = ["created_at", "updated_at"];
 
+// Composant pour afficher un JSON de manière formatée
+function JsonViewer({ data, depth = 0, isExpanded = false }: { data: unknown; depth?: number; isExpanded?: boolean }) {
+    const [expanded, setExpanded] = useState(isExpanded || depth < 1);
+
+    if (data === null) {
+        return <span className="text-gray-500 italic">null</span>;
+    }
+
+    if (data === undefined) {
+        return <span className="text-gray-500 italic">undefined</span>;
+    }
+
+    if (typeof data === "boolean") {
+        return <span className={data ? "text-green-400" : "text-red-400"}>{data ? "true" : "false"}</span>;
+    }
+
+    if (typeof data === "number") {
+        return <span className="text-blue-400">{data}</span>;
+    }
+
+    if (typeof data === "string") {
+        return <span className="text-amber-400">&quot;{data}&quot;</span>;
+    }
+
+    if (Array.isArray(data)) {
+        if (data.length === 0) {
+            return <span className="text-gray-500">[]</span>;
+        }
+
+        return (
+            <div className="font-mono text-sm">
+                <button onClick={() => setExpanded(!expanded)} className="inline-flex items-center gap-1 hover:text-emerald-400 transition-colors">
+                    {expanded ? <IconChevronDown className="w-3 h-3" /> : <IconChevronRight className="w-3 h-3" />}
+                    <span className="text-purple-400">[</span>
+                    {!expanded && <span className="text-gray-500">{data.length} éléments</span>}
+                    {!expanded && <span className="text-purple-400">]</span>}
+                </button>
+                {expanded && (
+                    <div className={`${depth > 0 ? "ml-4 border-l-2 border-gray-700 pl-2" : "ml-2"}`}>
+                        {data.map((item, index) => (
+                            <div key={index} className="py-0.5">
+                                <span className="text-gray-600 mr-2">{index}:</span>
+                                <JsonViewer data={item} depth={depth + 1} />
+                                {index < data.length - 1 && <span className="text-gray-600">,</span>}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {expanded && <span className="text-purple-400">]</span>}
+            </div>
+        );
+    }
+
+    if (typeof data === "object") {
+        const entries = Object.entries(data);
+        if (entries.length === 0) {
+            return <span className="text-gray-500">{"{}"}</span>;
+        }
+
+        return (
+            <div className="font-mono text-sm">
+                <button onClick={() => setExpanded(!expanded)} className="inline-flex items-center gap-1 hover:text-emerald-400 transition-colors">
+                    {expanded ? <IconChevronDown className="w-3 h-3" /> : <IconChevronRight className="w-3 h-3" />}
+                    <span className="text-cyan-400">{"{"}</span>
+                    {!expanded && <span className="text-gray-500">{entries.length} clés</span>}
+                    {!expanded && <span className="text-cyan-400">{"}"}</span>}
+                </button>
+                {expanded && (
+                    <div className={`${depth > 0 ? "ml-4 border-l-2 border-gray-700 pl-2" : "ml-2"}`}>
+                        {entries.map(([key, value], index) => (
+                            <div key={key} className="py-0.5">
+                                <span className="text-teal-400">&quot;{key}&quot;</span>
+                                <span className="text-gray-500 mx-1">:</span>
+                                <JsonViewer data={value} depth={depth + 1} />
+                                {index < entries.length - 1 && <span className="text-gray-600">,</span>}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {expanded && <span className="text-cyan-400">{"}"}</span>}
+            </div>
+        );
+    }
+
+    return <span className="text-gray-400">{String(data)}</span>;
+}
+
+// Modal pour visualiser/éditer les JSON complexes
+function JsonModal({ isOpen, onClose, value, onSave, columnName }: { isOpen: boolean; onClose: () => void; value: unknown; onSave: (newValue: unknown) => void; columnName: string }) {
+    const [editMode, setEditMode] = useState(false);
+    const [editValue, setEditValue] = useState("");
+    const [parseError, setParseError] = useState<string | null>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (isOpen) {
+            setEditValue(JSON.stringify(value, null, 2));
+            setParseError(null);
+            setEditMode(false);
+        }
+    }, [isOpen, value]);
+
+    useEffect(() => {
+        if (editMode && textareaRef.current) {
+            textareaRef.current.focus();
+        }
+    }, [editMode]);
+
+    if (!isOpen) return null;
+
+    const handleSave = () => {
+        try {
+            const parsed = JSON.parse(editValue);
+            setParseError(null);
+            onSave(parsed);
+            onClose();
+        } catch {
+            setParseError("JSON invalide");
+        }
+    };
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(JSON.stringify(value, null, 2));
+        toast.success("JSON copié dans le presse-papiers");
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+
+            {/* Modal */}
+            <div className="relative w-full max-w-3xl max-h-[80vh] bg-gray-900 border border-gray-700 rounded-xl shadow-2xl flex flex-col overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 bg-gray-800/50">
+                    <div className="flex items-center gap-2">
+                        <IconCode className="w-5 h-5 text-emerald-400" />
+                        <span className="font-semibold text-gray-100">{columnName}</span>
+                        <span className="text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">JSON</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button onClick={handleCopy} className="p-2 text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors" title="Copier">
+                            <IconCopy className="w-4 h-4" />
+                        </button>
+                        <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                            <IconX className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 overflow-auto p-4">
+                    {editMode ? (
+                        <div className="space-y-2">
+                            <textarea
+                                ref={textareaRef}
+                                value={editValue}
+                                onChange={(e) => {
+                                    setEditValue(e.target.value);
+                                    setParseError(null);
+                                }}
+                                className="w-full h-[400px] font-mono text-sm p-4 bg-gray-950 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                                spellCheck={false}
+                            />
+                            {parseError && <p className="text-red-400 text-sm">{parseError}</p>}
+                        </div>
+                    ) : (
+                        <div className="bg-gray-950 rounded-lg p-4 overflow-auto max-h-[400px]">
+                            <JsonViewer data={value} isExpanded={true} />
+                        </div>
+                    )}
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between px-4 py-3 border-t border-gray-700 bg-gray-800/50">
+                    <div className="text-sm text-gray-500">{typeof value === "object" && value !== null ? (Array.isArray(value) ? `${value.length} éléments` : `${Object.keys(value).length} clés`) : "Valeur primitive"}</div>
+                    <div className="flex items-center gap-2">
+                        {editMode ? (
+                            <>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        setEditMode(false);
+                                        setEditValue(JSON.stringify(value, null, 2));
+                                        setParseError(null);
+                                    }}
+                                    className="border-gray-600 hover:bg-gray-700"
+                                >
+                                    Annuler
+                                </Button>
+                                <Button onClick={handleSave} className="bg-emerald-600 hover:bg-emerald-500 text-white">
+                                    <IconCheck className="w-4 h-4 mr-2" />
+                                    Sauvegarder
+                                </Button>
+                            </>
+                        ) : (
+                            <Button onClick={() => setEditMode(true)} variant="outline" className="border-emerald-500/50 hover:bg-emerald-500/20 text-emerald-400">
+                                <IconCode className="w-4 h-4 mr-2" />
+                                Modifier
+                            </Button>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Composant pour l'aperçu compact d'un JSON dans une cellule
+function JsonCellPreview({ value, onClick }: { value: unknown; onClick: () => void }) {
+    if (value === null) {
+        return (
+            <span className="text-gray-600 italic cursor-pointer hover:text-gray-400 transition-colors" onClick={onClick}>
+                null
+            </span>
+        );
+    }
+
+    if (Array.isArray(value)) {
+        return (
+            <button onClick={onClick} className="inline-flex items-center gap-1.5 px-2 py-1 bg-purple-500/10 border border-purple-500/30 rounded-md text-purple-400 hover:bg-purple-500/20 hover:border-purple-500/50 transition-all group">
+                <IconBrackets className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">{value.length} éléments</span>
+                <IconChevronRight className="w-3 h-3 text-purple-500/50 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+        );
+    }
+
+    if (typeof value === "object") {
+        const keys = Object.keys(value as object);
+        return (
+            <button onClick={onClick} className="inline-flex items-center gap-1.5 px-2 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-md text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all group">
+                <IconCode className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">{keys.length} clés</span>
+                <IconChevronRight className="w-3 h-3 text-cyan-500/50 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+        );
+    }
+
+    return (
+        <span className="cursor-pointer hover:bg-gray-700/50 rounded px-2 py-1 -mx-2 -my-1 transition-colors" onClick={onClick}>
+            {String(value)}
+        </span>
+    );
+}
+
 export default function TableEditorClient({ tableName, initialRows, initialColumns, initialError }: TableEditorClientProps) {
     const [rows, setRows] = useState<TableRow[]>(initialRows);
     const [columns, setColumns] = useState<ColumnInfo[]>(initialColumns);
@@ -31,6 +277,9 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
     const [isPending, startTransition] = useTransition();
     const [isSaving, startSavingTransition] = useTransition();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    // État pour le modal JSON
+    const [jsonModal, setJsonModal] = useState<{ isOpen: boolean; value: unknown; rowId: string; column: string } | null>(null);
 
     // Filtrer les colonnes pour exclure les colonnes masquées
     const visibleColumns = columns.filter((col) => !HIDDEN_COLUMNS.includes(col.name));
@@ -63,6 +312,12 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
     };
 
     const startEditing = (rowId: string, column: string, currentValue: unknown) => {
+        // Pour les objets/arrays, ouvrir le modal JSON
+        if (typeof currentValue === "object" && currentValue !== null) {
+            setJsonModal({ isOpen: true, value: currentValue, rowId, column });
+            return;
+        }
+
         setEditingCell({ rowId, column });
         setEditValue(currentValue === null ? "" : String(currentValue));
     };
@@ -72,25 +327,11 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
         setEditValue("");
     };
 
-    const confirmEdit = (rowId: string, column: string) => {
-        // Essayer de parser comme JSON/nombre si applicable
-        let parsedValue: unknown = editValue;
-        if (editValue === "") {
-            parsedValue = null;
-        } else if (editValue === "true") {
-            parsedValue = true;
-        } else if (editValue === "false") {
-            parsedValue = false;
-        } else if (!isNaN(Number(editValue)) && editValue.trim() !== "") {
-            parsedValue = Number(editValue);
-        }
-
+    const saveValue = (rowId: string, column: string, parsedValue: unknown) => {
         // Trouver l'index réel dans le tableau rows en utilisant le rowId
         const realRowIndex = rows.findIndex((r) => getRowId(r) === rowId);
         if (realRowIndex === -1) {
             toast.error("Ligne introuvable");
-            setEditingCell(null);
-            setEditValue("");
             return;
         }
 
@@ -98,9 +339,6 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
         const newRows = [...rows];
         newRows[realRowIndex] = { ...newRows[realRowIndex], [column]: parsedValue };
         setRows(newRows);
-
-        setEditingCell(null);
-        setEditValue("");
 
         // Sauvegarder immédiatement et rafraîchir
         startSavingTransition(async () => {
@@ -118,6 +356,31 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
                 toast.error(result.error || "Erreur de sauvegarde");
             }
         });
+    };
+
+    const confirmEdit = (rowId: string, column: string) => {
+        // Essayer de parser comme JSON/nombre si applicable
+        let parsedValue: unknown = editValue;
+        if (editValue === "") {
+            parsedValue = null;
+        } else if (editValue === "true") {
+            parsedValue = true;
+        } else if (editValue === "false") {
+            parsedValue = false;
+        } else if (!isNaN(Number(editValue)) && editValue.trim() !== "") {
+            parsedValue = Number(editValue);
+        }
+
+        setEditingCell(null);
+        setEditValue("");
+
+        saveValue(rowId, column, parsedValue);
+    };
+
+    const handleJsonModalSave = (newValue: unknown) => {
+        if (jsonModal) {
+            saveValue(jsonModal.rowId, jsonModal.column, newValue);
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent, rowId: string, column: string, filteredRowIndex: number) => {
@@ -165,6 +428,34 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
         if (typeof value === "boolean") return value ? "text-green-400" : "text-red-400";
         if (typeof value === "number") return "text-blue-400 font-mono";
         return "text-gray-300";
+    };
+
+    const isJsonValue = (value: unknown): boolean => {
+        return typeof value === "object" && value !== null;
+    };
+
+    // Déterminer le type de colonne pour l'icône/badge
+    const getColumnTypeInfo = (type: string) => {
+        const lowerType = type.toLowerCase();
+        if (lowerType.includes("json") || lowerType.includes("jsonb")) {
+            return { icon: "🗃️", color: "text-cyan-400" };
+        }
+        if (lowerType.includes("int") || lowerType.includes("numeric") || lowerType.includes("decimal") || lowerType.includes("float")) {
+            return { icon: "🔢", color: "text-blue-400" };
+        }
+        if (lowerType.includes("bool")) {
+            return { icon: "✓✗", color: "text-green-400" };
+        }
+        if (lowerType.includes("text") || lowerType.includes("varchar") || lowerType.includes("char")) {
+            return { icon: "📝", color: "text-amber-400" };
+        }
+        if (lowerType.includes("uuid")) {
+            return { icon: "🔑", color: "text-purple-400" };
+        }
+        if (lowerType.includes("timestamp") || lowerType.includes("date") || lowerType.includes("time")) {
+            return { icon: "📅", color: "text-orange-400" };
+        }
+        return { icon: "•", color: "text-gray-400" };
     };
 
     return (
@@ -218,32 +509,39 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
                     </Button>
                 </div>
             ) : (
-                <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden">
+                <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden shadow-xl">
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="bg-gray-800/50">
-                                    {visibleColumns.map((col) => (
-                                        <th key={col.name} className="px-4 py-3 text-left text-sm font-semibold text-gray-300 whitespace-nowrap border-b border-gray-700">
-                                            <div className="flex flex-col">
-                                                <span>{col.name}</span>
-                                                <span className="text-xs text-gray-500 font-normal">{col.type}</span>
-                                            </div>
-                                        </th>
-                                    ))}
+                                <tr className="bg-gradient-to-r from-gray-800/80 to-gray-800/40">
+                                    {visibleColumns.map((col) => {
+                                        const typeInfo = getColumnTypeInfo(col.type);
+                                        return (
+                                            <th key={col.name} className="px-4 py-3 text-left text-sm font-semibold text-gray-200 whitespace-nowrap border-b border-gray-700/50">
+                                                <div className="flex flex-col gap-0.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-base">{typeInfo.icon}</span>
+                                                        <span>{col.name}</span>
+                                                    </div>
+                                                    <span className={`text-xs font-normal ${typeInfo.color}`}>{col.type}</span>
+                                                </div>
+                                            </th>
+                                        );
+                                    })}
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-gray-800/30">
                                 {filteredRows.map((row, filteredRowIndex) => {
                                     const rowId = getRowId(row);
                                     return (
-                                        <tr key={rowId} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
+                                        <tr key={rowId} className="hover:bg-gray-800/30 transition-colors group">
                                             {visibleColumns.map((col) => {
                                                 const isEditing = editingCell?.rowId === rowId && editingCell?.column === col.name;
                                                 const value = row[col.name];
+                                                const isJson = isJsonValue(value);
 
                                                 return (
-                                                    <td key={col.name} className="px-4 py-2 text-sm relative group align-top">
+                                                    <td key={col.name} className="px-4 py-3 text-sm relative align-top">
                                                         {isEditing ? (
                                                             <div className="flex items-start gap-1">
                                                                 <textarea
@@ -256,20 +554,22 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
                                                                         e.target.style.height = e.target.scrollHeight + "px";
                                                                     }}
                                                                     onKeyDown={(e) => handleKeyDown(e, rowId, col.name, filteredRowIndex)}
-                                                                    className="min-w-[200px] max-w-[400px] min-h-[32px] px-3 py-2 text-sm rounded-md resize-none overflow-hidden bg-gray-950 text-white border-2 border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 selection:bg-emerald-500 selection:text-white"
+                                                                    className="min-w-[200px] max-w-[400px] min-h-[32px] px-3 py-2 text-sm rounded-md resize-none overflow-hidden bg-gray-950 text-white border-2 border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 selection:bg-emerald-500 selection:text-white shadow-lg shadow-emerald-500/20"
                                                                     rows={1}
                                                                 />
                                                                 <div className="flex flex-col gap-1">
-                                                                    <button onClick={() => confirmEdit(rowId, col.name)} className="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/20 rounded">
+                                                                    <button onClick={() => confirmEdit(rowId, col.name)} className="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/20 rounded transition-colors">
                                                                         <IconCheck className="w-4 h-4" />
                                                                     </button>
-                                                                    <button onClick={cancelEditing} className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded">
+                                                                    <button onClick={cancelEditing} className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded transition-colors">
                                                                         <IconX className="w-4 h-4" />
                                                                     </button>
                                                                 </div>
                                                             </div>
+                                                        ) : isJson ? (
+                                                            <JsonCellPreview value={value} onClick={() => startEditing(rowId, col.name, value)} />
                                                         ) : (
-                                                            <div className={`cursor-pointer hover:bg-gray-700/50 rounded px-2 py-1 -mx-2 -my-1 ${getValueClass(value)}`} onClick={() => startEditing(rowId, col.name, value)} title="Cliquer pour modifier">
+                                                            <div className={`cursor-pointer hover:bg-gray-700/50 rounded px-2 py-1 -mx-2 -my-1 transition-all ${getValueClass(value)}`} onClick={() => startEditing(rowId, col.name, value)} title="Cliquer pour modifier">
                                                                 <span className="max-w-xs truncate block">{formatValue(value)}</span>
                                                             </div>
                                                         )}
@@ -302,11 +602,14 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
             {!isPending && !error && (
                 <div className="mt-4 text-center text-sm text-gray-500">
                     <p>
-                        Cliquez sur une cellule pour la modifier • Appuyez sur <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">Enter</kbd> pour sauvegarder • <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">Esc</kbd> pour annuler •{" "}
-                        <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">Tab</kbd> pour passer à la cellule suivante
+                        Cliquez sur une cellule pour la modifier • <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">Enter</kbd> pour sauvegarder • <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">Esc</kbd> pour annuler •{" "}
+                        <kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">Tab</kbd> pour la cellule suivante • <IconCode className="w-3 h-3 inline-block mx-1" /> JSON : cliquer pour ouvrir l&apos;éditeur
                     </p>
                 </div>
             )}
+
+            {/* JSON Modal */}
+            {jsonModal && <JsonModal isOpen={jsonModal.isOpen} onClose={() => setJsonModal(null)} value={jsonModal.value} onSave={handleJsonModalSave} columnName={jsonModal.column} />}
         </>
     );
 }

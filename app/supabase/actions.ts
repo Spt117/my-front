@@ -36,71 +36,149 @@ async function getTableRowCount(tableName: string): Promise<number> {
     }
 }
 
+// Liste de tables potentielles à découvrir (fallback)
+const POTENTIAL_TABLES = [
+    // Tables Supabase système communes
+    "profiles",
+    "users",
+    // Tables personnalisées - ajoutez vos tables ici
+    "x_products",
+    "products",
+    "categories",
+    "orders",
+    "customers",
+    "items",
+    "settings",
+    "configurations",
+    "logs",
+    "events",
+    "sessions",
+    "tokens",
+    "subscriptions",
+    "payments",
+    "invoices",
+    "notifications",
+    "messages",
+    "comments",
+    "tags",
+    "media",
+    "files",
+    "uploads",
+];
+
+// Découverte dynamique des tables via SQL
+async function discoverTablesViaSql(): Promise<string[]> {
+    try {
+        // Essayer d'exécuter une requête SQL pour obtenir toutes les tables publiques
+        const { data, error } = await supabase.rpc("get_all_tables");
+
+        if (!error && data && Array.isArray(data)) {
+            return data.map((t: { tablename?: string; table_name?: string }) => t.tablename || t.table_name || "").filter(Boolean);
+        }
+    } catch {
+        // La fonction RPC n'existe pas, on continue avec le fallback
+    }
+
+    return [];
+}
+
 // Découverte dynamique des tables
 async function discoverTables(): Promise<TableInfo[]> {
-    const potentialTables = ["x_products"];
     const validTables: TableInfo[] = [];
 
-    for (const tableName of potentialTables) {
-        try {
-            const { error } = await supabase.from(tableName).select("*").limit(1);
+    // Essayer d'abord la découverte via SQL
+    let tableNames = await discoverTablesViaSql();
 
-            if (!error) {
-                const { count } = await supabase.from(tableName).select("*", { count: "exact", head: true });
+    // Si aucune table n'a été trouvée via SQL, utiliser la liste de fallback
+    if (tableNames.length === 0) {
+        tableNames = POTENTIAL_TABLES;
+    }
 
-                validTables.push({
-                    table_name: tableName,
-                    row_count: count ?? 0,
-                });
+    // Vérifier chaque table en parallèle pour plus de rapidité
+    const results = await Promise.allSettled(
+        tableNames.map(async (tableName) => {
+            try {
+                const { error } = await supabase.from(tableName).select("*").limit(1);
+
+                if (!error) {
+                    const { count } = await supabase.from(tableName).select("*", { count: "exact", head: true });
+
+                    return {
+                        table_name: tableName,
+                        row_count: count ?? 0,
+                    };
+                }
+            } catch {
+                // Table n'existe pas ou pas accessible
             }
-        } catch {
-            // Table n'existe pas ou pas accessible
+            return null;
+        })
+    );
+
+    for (const result of results) {
+        if (result.status === "fulfilled" && result.value) {
+            validTables.push(result.value);
         }
     }
 
-    return validTables;
+    // Trier les tables par nom
+    return validTables.sort((a, b) => a.table_name.localeCompare(b.table_name));
 }
 
 // Récupérer la liste des tables
 export async function fetchTables(): Promise<{ tables: TableInfo[]; error: string | null }> {
+    // Liste des tables connues à vérifier si la découverte automatique échoue
+    const manualTableList = ["x_products"];
+    const foundTables: TableInfo[] = [];
+
     try {
-        // Méthode 1: Essayer d'utiliser une fonction RPC personnalisée
-        const { data: rpcData, error: rpcError } = await supabase.rpc("get_public_tables");
+        // Tentative 1: Utiliser la clé Service Role (Admin) pour accéder à information_schema
+        // Cette clé a les droits complets et peut voir les métadonnées
+        const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-        if (!rpcError && rpcData && Array.isArray(rpcData) && rpcData.length > 0) {
-            const tables = await Promise.all(
-                rpcData.map(async (t: { table_name: string }) => {
-                    const count = await getTableRowCount(t.table_name);
-                    return { table_name: t.table_name, row_count: count };
-                })
-            );
-            return { tables: tables.filter((t) => t.row_count >= 0), error: null };
+        if (adminKey && supabaseUrl) {
+            const { createClient } = await import("@supabase/supabase-js");
+            const adminClient = createClient(supabaseUrl, adminKey);
+
+            const { data: schemaData, error: schemaError } = await adminClient
+                .from("information_schema.tables" as string)
+                .select("table_name")
+                .eq("table_schema", "public")
+                .eq("table_type", "BASE TABLE");
+
+            if (!schemaError && schemaData && schemaData.length > 0) {
+                const tables = schemaData.map((t: { table_name: string }) => ({
+                    table_name: t.table_name,
+                    row_count: 0,
+                }));
+                return { tables: tables.sort((a: TableInfo, b: TableInfo) => a.table_name.localeCompare(b.table_name)), error: null };
+            }
         }
 
-        // Méthode 2: Interroger information_schema via une requête SQL brute
-        const { data: schemaData, error: schemaError } = await supabase
-            .from("information_schema.tables" as string)
-            .select("table_name")
-            .eq("table_schema", "public")
-            .eq("table_type", "BASE TABLE");
-
-        if (!schemaError && schemaData && schemaData.length > 0) {
-            const tables = await Promise.all(
-                schemaData.map(async (t: { table_name: string }) => {
-                    const count = await getTableRowCount(t.table_name);
-                    return { table_name: t.table_name, row_count: count };
-                })
-            );
-            return { tables: tables.filter((t) => t.row_count >= 0), error: null };
+        // Tentative 2: Fallback manuel - Vérifier l'existence de tables connues
+        // Utile si on n'a que la clé publique (anon) et pas de fonction RPC
+        for (const tableName of manualTableList) {
+            const { error, count } = await supabase.from(tableName).select("*", { count: "exact", head: true });
+            if (!error) {
+                foundTables.push({
+                    table_name: tableName,
+                    row_count: count ?? 0,
+                });
+            }
         }
 
-        // Méthode 3: Découverte dynamique
-        console.log("Fallback: découverte dynamique des tables...");
-        const discoveredTables = await discoverTables();
-        return { tables: discoveredTables, error: null };
+        if (foundTables.length > 0) {
+            return { tables: foundTables.sort((a, b) => a.table_name.localeCompare(b.table_name)), error: null };
+        }
+
+        return {
+            tables: [],
+            error: "Impossible de récupérer la liste des tables. Vérifiez que SUPABASE_SERVICE_ROLE_KEY est défini dans votre .env ou que vos tables 'x_products', etc. existent.",
+        };
     } catch (error) {
         console.error("Error fetching tables:", error);
-        return { tables: [], error: "Erreur lors de la récupération des tables" };
+        return { tables: [], error: `Erreur inattendue: ${error instanceof Error ? error.message : String(error)}` };
     }
 }
 

@@ -1,14 +1,12 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabaseKey = process.env.SUPABASE_ANON_KEY || "";
 
 // Créer le client uniquement si les variables sont définies
 let supabaseInstance: SupabaseClient | null = null;
 
 function getSupabaseClient(): SupabaseClient {
-    console.log("Supabase client initialisé " + supabaseUrl);
-
     if (!supabaseUrl || !supabaseKey) {
         throw new Error("Supabase non configuré. Veuillez définir NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY dans vos variables d'environnement.");
     }
