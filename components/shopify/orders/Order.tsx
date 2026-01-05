@@ -71,13 +71,20 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                 </div>
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    {order.name[0]}
-                                    {order.name.length > 1 && (
-                                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium border border-blue-200">
-                                            +{order.name.length - 1} autre
-                                        </span>
-                                    )}
+                                <h2 className="text-xl font-bold text-gray-900 flex flex-wrap items-center gap-3">
+                                    {order.name.map((name, index) => {
+                                        const orderId = order.legacyResourceId[index] || order.id.split('/').pop();
+                                        return (
+                                            <Link
+                                                key={index}
+                                                href={`/shopify/${boutique.id}/orders/${orderId}`}
+                                                className="group/title flex items-center gap-1.5 hover:text-blue-600 transition-colors"
+                                            >
+                                                <span>{name}</span>
+                                                <ExternalLink className="w-4 h-4 text-gray-300 opacity-0 -translate-x-1 translate-y-1 transition-all duration-200 group-hover/title:opacity-100 group-hover/title:translate-x-0 group-hover/title:translate-y-0" />
+                                            </Link>
+                                        );
+                                    })}
                                     <div className="flex gap-2 ml-2">
                                         <span
                                             className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border uppercase tracking-wider shadow-sm ${getFulfillmentStatusStyle(

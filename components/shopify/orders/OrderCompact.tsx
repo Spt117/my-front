@@ -77,15 +77,19 @@ export default function OrderCompact({ order }: { order: GroupedShopifyOrder }) 
                             </div>
 
                             <div className="flex flex-col min-w-0">
-                                <Link href={`/shopify/${boutique.id}/orders/${order.id.split('/').pop()}`} className="group/title">
-                                    <h3 className="text-sm font-bold text-gray-900 group-hover/title:text-blue-600 transition-colors flex items-center gap-2">
-                                        {order.name[0]}
-                                        {order.name.length > 1 && (
-                                            <span className="text-[11px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">+{order.name.length - 1}</span>
-                                        )}
-                                        <ExternalLink className="w-3 h-3 text-gray-300 opacity-0 -translate-x-1 translate-y-1 transition-all duration-200 group-hover/title:opacity-100 group-hover/title:translate-x-0 group-hover/title:translate-y-0 group-hover/title:text-blue-600" />
-                                    </h3>
-                                </Link>
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                    {order.name.map((name, index) => {
+                                        const orderId = order.legacyResourceId[index] || order.id.split('/').pop();
+                                        return (
+                                            <Link key={index} href={`/shopify/${boutique.id}/orders/${orderId}`} className="group/title">
+                                                <h3 className="text-sm font-bold text-gray-900 group-hover/title:text-blue-600 transition-colors flex items-center gap-1.5">
+                                                    {name}
+                                                    <ExternalLink className="w-3 h-3 text-gray-300 opacity-0 -translate-x-1 translate-y-1 transition-all duration-200 group-hover/title:opacity-100 group-hover/title:translate-x-0 group-hover/title:translate-y-0 group-hover/title:text-blue-600" />
+                                                </h3>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
                                 <div className="flex items-center gap-2 overflow-hidden">
                                     <span className="text-xs text-gray-500 whitespace-nowrap">
                                         {new Date(order.createdAt).toLocaleDateString('fr-FR', {
