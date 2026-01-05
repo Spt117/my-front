@@ -40,7 +40,7 @@ export default function RefreshOders({ boolArchived }: { boolArchived?: boolean 
     };
 
     useEffect(() => {
-        if (orders.length === 0) handleGetOrders();
+        handleGetOrders();
     }, []);
 
     return (

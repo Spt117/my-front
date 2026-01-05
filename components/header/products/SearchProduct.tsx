@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
-import { useEffect, useRef } from "react";
-import useShopifyStore from "../../shopify/shopifyStore";
-import { Input } from "../../ui/input";
-import { search } from "../serverSearch";
-import ListProducts from "./ListProducts";
-import { usePathname } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { Plus, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useRef } from 'react';
+import useShopifyStore from '../../shopify/shopifyStore';
+import { Input } from '../../ui/input';
+import { search } from '../serverSearch';
+import ListProducts from './ListProducts';
 
 export default function SearchProduct() {
     const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
@@ -20,7 +20,7 @@ export default function SearchProduct() {
             const res = await search(query, shopifyBoutique.domain);
             setProductsSearch(res);
         } catch (error) {
-            console.error("Erreur lors de la recherche:", error);
+            console.error('Erreur lors de la recherche:', error);
         } finally {
             setLoading(false);
         }
@@ -28,6 +28,15 @@ export default function SearchProduct() {
 
     // Effet de debounce
     useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                setSearchTerm('');
+                setProductsSearch([]);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
         // Nettoie le timeout précédent
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
@@ -47,6 +56,7 @@ export default function SearchProduct() {
 
         // Cleanup
         return () => {
+            window.removeEventListener('keydown', handleKeyDown);
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
@@ -75,7 +85,7 @@ export default function SearchProduct() {
                         {searchTerm && !loading && (
                             <button
                                 type="button"
-                                onClick={() => setSearchTerm("")}
+                                onClick={() => setSearchTerm('')}
                                 className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
                                 aria-label="Effacer la recherche"
                             >
@@ -89,17 +99,12 @@ export default function SearchProduct() {
                             </div>
                         )}
                     </div>
-                    <Button
-                        onClick={() => openDialog(1)}
-                        aria-label="Ajouter un produit"
-                        className="p-2"
-                        title="Ajouter un produit"
-                    >
+                    <Button onClick={() => openDialog(1)} aria-label="Ajouter un produit" className="p-2" title="Ajouter un produit">
                         <Plus size={16} />
                     </Button>
                 </div>
                 {/* Liste des produits positionnée sous l'input */}
-                {pathName.split("/").pop() !== "products" && <ListProducts />}
+                {pathName.split('/').pop() !== 'products' && <ListProducts />}
             </div>
         </div>
     );

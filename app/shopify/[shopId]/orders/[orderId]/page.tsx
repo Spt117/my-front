@@ -10,7 +10,7 @@ import * as Flags from 'country-flag-icons/react/3x2';
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import frLocale from 'i18n-iso-countries/langs/fr.json';
-import { ArrowLeft, Calendar, Copy, ExternalLink, Mail, MapPin, Package, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Calendar, ExternalLink, Mail, MapPin, Package, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -87,7 +87,7 @@ export default function OrderDetailPage() {
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1 bg-white/50 rounded-lg p-1">
-                                    <UsefullLinks domain={boutique.domain} orderId={order.id} />
+                                    <UsefullLinks domain={boutique.domain} orderId={order.id} country={order.shippingAddress.country} />
                                 </div>
                             </div>
                         </div>
@@ -148,39 +148,44 @@ export default function OrderDetailPage() {
                                         <Mail className="w-4 h-4 text-gray-400" />
                                         <h3 className="text-sm font-semibold text-gray-900">Client</h3>
                                     </div>
-                                    <div
-                                        className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                                        onClick={() => handleCopy(order.customer.email!)}
+                                    <Link
+                                        href={`/shopify/${shopId}/clients/${order.customer.id.split('/').pop()}`}
+                                        className="block bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all group/customer relative overflow-hidden ring-1 ring-black/[0.02]"
                                     >
+                                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
                                         {(order.customer.firstName || order.customer.lastName) && (
-                                            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
-                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                                            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
+                                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-indigo-200 ring-2 ring-white">
                                                     {order.customer.firstName?.[0]}
                                                     {order.customer.lastName?.[0]}
                                                 </div>
-                                                <p className="text-base font-bold text-gray-900">
-                                                    {order.customer.firstName} {order.customer.lastName}
-                                                </p>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-base font-bold text-gray-900 group-hover/customer:text-blue-600 transition-colors flex items-center justify-between">
+                                                        {order.customer.firstName} {order.customer.lastName}
+                                                        <ArrowUpRight className="w-4 h-4 text-gray-400 opacity-0 group-hover/customer:opacity-100 group-hover/customer:text-blue-600 transition-all" />
+                                                    </p>
+                                                    <p className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full inline-block">Voir le profil</p>
+                                                </div>
                                             </div>
                                         )}
-                                        <div className="flex items-center justify-between mb-3">
-                                            <p className="text-sm font-medium text-gray-900 truncate pr-2">{order.customer.email}</p>
-                                            <Copy className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                        <div className="flex items-center justify-between mb-4">
+                                            <p className="text-sm font-semibold text-gray-700 truncate pr-2 group-hover/customer:text-blue-600 transition-colors">
+                                                {order.customer.email}
+                                            </p>
                                         </div>
-                                        <div className="mt-3 flex flex-col gap-2">
-                                            <div className="flex items-center gap-2">
-                                                <span className="bg-gray-100 px-2.5 py-1 rounded-md text-gray-700 text-xs font-semibold border border-gray-200">
-                                                    {order.customer.numberOfOrders} commandes
-                                                </span>
+                                        <div className="flex flex-wrap gap-2">
+                                            <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
+                                                <Package className="w-3.5 h-3.5 text-gray-400" />
+                                                <span className="text-xs font-bold text-gray-700">{order.customer.numberOfOrders} cmds</span>
                                             </div>
-                                            <div className="flex items-center gap-2 text-sm bg-indigo-50/80 px-3 py-2 rounded-md border border-indigo-100">
-                                                <span className="text-gray-600 font-medium">Dépensé :</span>
-                                                <span className="font-bold text-indigo-700">
+                                            <div className="flex items-center gap-2 bg-indigo-50/50 px-3 py-1.5 rounded-lg border border-indigo-100/50 shadow-sm">
+                                                <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-tight">Total :</span>
+                                                <span className="text-xs font-bold text-indigo-700">
                                                     {order.customer.amountSpent.amount} {order.customer.amountSpent.currencyCode}
                                                 </span>
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

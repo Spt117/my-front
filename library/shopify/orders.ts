@@ -12,6 +12,7 @@ interface TotalPriceSet {
 }
 
 interface Customer {
+    id: string;
     email: string;
     numberOfOrders: string;
     amountSpent: ShopMoney;
@@ -23,6 +24,7 @@ interface ShippingAddress {
     address1: string;
     city: string;
     country: string;
+    zip: string;
     firstName?: string;
     lastName?: string;
     countryCode?: string;
@@ -68,7 +70,8 @@ export interface ShopifyOrder {
     legacyResourceId: string;
     name: string;
     createdAt: string; // Format ISO 8601
-    displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED';
+    displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED' | 'RESTOCKED' | 'PENDING_FULFILLMENT' | 'OPEN';
+    displayFinancialStatus: 'PAID' | 'PENDING' | 'AUTHORIZED' | 'PARTIALLY_PAID' | 'PARTIALLY_REFUNDED' | 'REFUNDED' | 'VOIDED' | 'EXPIRED';
     totalPriceSet: TotalPriceSet;
     customer: Customer;
     shippingAddress: ShippingAddress;
@@ -87,7 +90,8 @@ export interface GroupedShopifyOrder {
     legacyResourceId: string[];
     name: string[];
     createdAt: string;
-    displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED';
+    displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED' | 'RESTOCKED' | 'PENDING_FULFILLMENT' | 'OPEN';
+    displayFinancialStatus: 'PAID' | 'PENDING' | 'AUTHORIZED' | 'PARTIALLY_PAID' | 'PARTIALLY_REFUNDED' | 'REFUNDED' | 'VOIDED' | 'EXPIRED';
     totalPriceSet: TotalPriceSet;
     customer: Customer;
     shippingAddress: ShippingAddress;

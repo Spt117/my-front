@@ -39,8 +39,8 @@ export default function ProductSection({ node, domain }: { node: LineItemNode; d
                         </div>
 
                         <div className="flex items-center gap-2 mt-1.5">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-50 text-xs font-medium text-gray-600 border border-gray-100">
-                                <Tag className="w-3 h-3" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-700 border border-gray-200 shadow-sm">
+                                <Tag className="w-3 h-3 text-gray-400" />
                                 {node.sku}
                             </span>
                         </div>
@@ -48,19 +48,19 @@ export default function ProductSection({ node, domain }: { node: LineItemNode; d
 
                     <div className="flex items-end justify-between mt-2 pt-2 border-t border-gray-50 md:border-none md:pt-0">
                         <div className="flex items-center gap-1.5">
-                            <div className="text-indigo-600 font-bold text-sm md:text-base bg-indigo-50 px-2 py-0.5 rounded-md">
+                            <div className="text-indigo-600 font-bold text-sm md:text-base bg-indigo-50 px-2 py-0.5 rounded-md whitespace-nowrap">
                                 {node.variant.price} <span className="text-xs font-medium">{boutique.devise}</span>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 font-bold">
                             {node.quantity > 1 ? (
-                                <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-bold border border-amber-100 animate-pulse">
+                                <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-100 text-red-700 text-[10px] md:text-xs border border-red-200 animate-pulse">
                                     <AlertTriangle className="w-3.5 h-3.5" />x{node.quantity}
                                 </span>
                             ) : (
-                                <span className="flex items-center gap-1 text-gray-400 text-xs font-medium px-2 py-1 rounded-full bg-gray-50">
-                                    <Box className="w-3.5 h-3.5" />x{node.quantity}
+                                <span className="flex items-center gap-1 text-indigo-700 text-[10px] md:text-xs px-2 py-1 rounded-full bg-indigo-50 border border-indigo-100">
+                                    <Box className="w-3.5 h-3.5 text-indigo-400" />x{node.quantity}
                                 </span>
                             )}
                         </div>

@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import SelectAffiliationSite from '../../app/create/HeaderTaskAffiliations';
 import Orders from './Orders';
 import ShopifySelect from './ShopifySelect';
+import SearchClient from './clients/SearchClient';
 import SearchProduct from './products/SearchProduct';
 import HeaderStock from './stock/HeaderStock';
 
@@ -24,6 +25,7 @@ export function SiteHeader() {
                 {pathname === '/pokemon' && <HeaderPokemon />}
                 {pathname.includes('bulk') && <BulkHeader />}
                 {pathname.includes('products') && <SearchProduct />}
+                {pathname.includes('clients') && <SearchClient />}
                 {pathname.includes('collections') && <HeaderCollection />}
                 {pathname.includes('orders') && <Orders />}
             </div>

@@ -8,8 +8,9 @@ import * as Flags from 'country-flag-icons/react/3x2';
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import frLocale from 'i18n-iso-countries/langs/fr.json';
-import { Calendar, Copy, ExternalLink, Mail, MapPin, Package, ShoppingBag } from 'lucide-react';
+import { ArrowUpRight, Calendar, ExternalLink, Mail, MapPin, Package, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import ProductSection from './ProductSection';
 import UsefullLinks from './UsefullLinks';
 
@@ -19,6 +20,38 @@ countries.registerLocale(enLocale);
 export default function Order({ order }: { order: GroupedShopifyOrder }) {
     const { handleCopy } = useCopy();
     const boutique = boutiqueFromDomain(order.shop);
+
+    const getFulfillmentStatusStyle = (status: string) => {
+        switch (status) {
+            case 'FULFILLED':
+                return 'bg-green-100 text-green-700 border-green-200';
+            case 'UNFULFILLED':
+                return 'bg-amber-100 text-amber-700 border-amber-200';
+            case 'PARTIALLY_FULFILLED':
+                return 'bg-blue-100 text-blue-700 border-blue-200';
+            case 'PENDING_FULFILLMENT':
+                return 'bg-purple-100 text-purple-700 border-purple-200';
+            default:
+                return 'bg-gray-100 text-gray-700 border-gray-200';
+        }
+    };
+
+    const getFinancialStatusStyle = (status: string) => {
+        switch (status) {
+            case 'PAID':
+                return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+            case 'PENDING':
+                return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+            case 'REFUNDED':
+                return 'bg-red-100 text-red-700 border-red-200';
+            case 'PARTIALLY_REFUNDED':
+                return 'bg-orange-100 text-orange-700 border-orange-200';
+            case 'AUTHORIZED':
+                return 'bg-indigo-100 text-indigo-700 border-indigo-200';
+            default:
+                return 'bg-gray-100 text-gray-700 border-gray-200';
+        }
+    };
 
     const totalProducts = order.lineItems.edges.reduce((acc, { node }) => acc + node.quantity, 0);
 
@@ -42,6 +75,22 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                             +{order.name.length - 1} autre
                                         </span>
                                     )}
+                                    <div className="flex gap-2 ml-2">
+                                        <span
+                                            className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border uppercase tracking-wider shadow-sm ${getFulfillmentStatusStyle(
+                                                order.displayFulfillmentStatus
+                                            )}`}
+                                        >
+                                            {order.displayFulfillmentStatus.replace('_', ' ')}
+                                        </span>
+                                        <span
+                                            className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border uppercase tracking-wider shadow-sm ${getFinancialStatusStyle(
+                                                order.displayFinancialStatus
+                                            )}`}
+                                        >
+                                            {order.displayFinancialStatus.replace('_', ' ')}
+                                        </span>
+                                    </div>
                                 </h2>
                                 <div className="flex items-center gap-3 text-sm text-gray-500 mt-1 flex-wrap">
                                     {order.name.map((name, index) => (
@@ -75,7 +124,7 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                 </span>
                             </div>
                             <div className="flex items-center gap-1 bg-white/50 rounded-lg p-1">
-                                <UsefullLinks domain={boutique.domain} orderId={order.id} />
+                                <UsefullLinks domain={boutique.domain} orderId={order.id} country={order.shippingAddress.country} />
                             </div>
                         </div>
                     </div>
@@ -94,7 +143,11 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                     <span className="text-xl font-medium text-gray-500">{order.totalPriceSet.shopMoney.currencyCode}</span>
                                 </div>
                                 <div className="mt-4 flex items-center gap-2">
-                                    <div className="bg-white/90 backdrop-blur text-indigo-700 px-3 py-1.5 rounded-lg border border-indigo-100 shadow-sm flex items-center gap-2">
+                                    <div
+                                        className={`backdrop-blur px-3 py-1.5 rounded-lg border shadow-sm flex items-center gap-2 ${
+                                            totalProducts > 1 ? 'bg-red-50 text-red-700 border-red-200 animate-pulse' : 'bg-white/90 text-indigo-700 border-indigo-100'
+                                        }`}
+                                    >
                                         <ShoppingBag className="w-4 h-4" />
                                         <span className="font-bold text-sm">
                                             {totalProducts} Produit{totalProducts > 1 ? 's' : ''}
@@ -135,18 +188,20 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                     <Mail className="w-4 h-4 text-gray-400" />
                                     <h3 className="text-sm font-semibold text-gray-900">Client</h3>
                                 </div>
-                                <div
-                                    className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                                    onClick={() => handleCopy(order.customer.email)}
+                                <Link
+                                    href={`/shopify/${boutique.id}/clients/${order.customer.id.split('/').pop()}`}
+                                    className="block bg-white p-3 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow group/customer"
                                 >
                                     {(order.customer.firstName || order.customer.lastName) && (
-                                        <p className="text-sm font-semibold text-gray-900 mb-1">
+                                        <p className="text-sm font-semibold text-gray-900 mb-1 group-hover/customer:text-blue-600 transition-colors">
                                             {order.customer.firstName} {order.customer.lastName}
                                         </p>
                                     )}
                                     <div className="flex items-center justify-between">
-                                        <p className="text-sm font-medium text-gray-900 truncate pr-2">{order.customer.email}</p>
-                                        <Copy className="w-3.5 h-3.5 text-gray-400" />
+                                        <p className="text-sm font-medium text-gray-900 truncate pr-2 group-hover/customer:text-blue-600 transition-colors">
+                                            {order.customer.email}
+                                        </p>
+                                        <ArrowUpRight className="w-3.5 h-3.5 text-gray-400 opacity-0 group-hover/customer:opacity-100 group-hover/customer:text-blue-600 transition-all" />
                                     </div>
                                     <div className="mt-3 flex flex-col gap-2">
                                         <div className="flex items-center gap-2">
@@ -161,7 +216,7 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                             </span>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             </div>
                         </div>
                     </div>

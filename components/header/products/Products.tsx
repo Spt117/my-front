@@ -13,6 +13,12 @@ export default function ProductList({ product }: { product: ProductGET }) {
     const id = product.id.split('/').pop();
     const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
     const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
+    const { setSearchTerm, setProductsSearch } = useShopifyStore();
+
+    const handleProductClick = () => {
+        setSearchTerm('');
+        setProductsSearch([]);
+    };
 
     // Fonction pour gérer le clic sur l'icône d'œil et ouvrir le lien externe
     const handleViewOnStoreClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -45,7 +51,7 @@ export default function ProductList({ product }: { product: ProductGET }) {
             </div>
 
             {/* Le Link principal pour la navigation interne */}
-            <Link href={url} className="w-full">
+            <Link href={url} onClick={handleProductClick} className="w-full">
                 <div className="cursor-pointer flex items-center py-3 px-4 justify-start gap-3">
                     <div className="relative w-12 h-12 flex-shrink-0">
                         <Image
