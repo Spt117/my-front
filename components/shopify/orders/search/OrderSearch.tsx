@@ -4,7 +4,7 @@ import { ShopifyOrder } from '@/library/shopify/orders';
 import { Archive } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import UsefullLinks from '../UsefullLinks';
 import { archiveOrder } from '../serverAction';
@@ -12,17 +12,17 @@ import { archiveOrder } from '../serverAction';
 export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     const { shopifyBoutique, setSearchTerm } = useShopifyStore();
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     if (!shopifyBoutique) return null;
     const url = `/shopify/${shopifyBoutique.id}/orders/${order.id.split('/').pop()}`;
 
     const handleClick = () => {
-        setSearchTerm('');
-        router.push(url);
+        // La navigation est gérée par le Link, on ne vide plus ici pour éviter de casser la navigation
     };
 
     return (
-        <Link href={url}>
+        <Link href={`${url}?${searchParams.toString()}`}>
             <div className="flex border-b last:border-0" onClick={handleClick}>
                 <div className="w-min-0 cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
                     <div className="relative w-12 h-12 flex-shrink-0">

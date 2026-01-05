@@ -8,7 +8,7 @@ import { getClients } from './serverAction';
 import useClientsStore from './store';
 
 export default function MappingClients({ shopId, domain }: { shopId: string; domain: TDomainsShopify }) {
-    const { clients, setClients, filterClients, setFilterClients, isLoading, setIsLoading } = useClientsStore();
+    const { clients, setClients, filterClients, setFilterClients, isLoading, setIsLoading, searchTermClient, clientsSearch } = useClientsStore();
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -19,7 +19,10 @@ export default function MappingClients({ shopId, domain }: { shopId: string; dom
                 if (data && data.customers) {
                     const clientsWithShop = data.customers.map((c) => ({ ...c, shop: domain }));
                     setClients(clientsWithShop);
-                    setFilterClients(clientsWithShop);
+                    // On n'écrase filterClients ici que s'il n'y a pas de recherche active dans le store
+                    if (!searchTermClient) {
+                        setFilterClients(clientsWithShop);
+                    }
                 }
             } catch (error) {
                 console.error('Failed to fetch clients:', error);
@@ -31,7 +34,13 @@ export default function MappingClients({ shopId, domain }: { shopId: string; dom
         fetchInitialClients();
     }, [domain, setClients, setFilterClients, setIsLoading]);
 
+    // Synchronisation avec la recherche globale (header) ou locale
     useEffect(() => {
+        if (searchTermClient) {
+            setFilterClients(clientsSearch);
+            return;
+        }
+
         if (!searchQuery.trim()) {
             setFilterClients(clients);
             return;
@@ -39,10 +48,13 @@ export default function MappingClients({ shopId, domain }: { shopId: string; dom
 
         const query = searchQuery.toLowerCase();
         const filtered = clients.filter(
-            (client) => client.email.toLowerCase().includes(query) || client.firstName.toLowerCase().includes(query) || client.lastName.toLowerCase().includes(query)
+            (client) =>
+                (client.email?.toLowerCase() || '').includes(query) ||
+                (client.firstName?.toLowerCase() || '').includes(query) ||
+                (client.lastName?.toLowerCase() || '').includes(query)
         );
         setFilterClients(filtered);
-    }, [searchQuery, clients, setFilterClients]);
+    }, [searchQuery, clients, setFilterClients, searchTermClient, clientsSearch]);
 
     return (
         <div className="space-y-6">

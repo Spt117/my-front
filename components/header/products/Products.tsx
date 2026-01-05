@@ -3,6 +3,7 @@ import { ProductGET } from '@/library/types/graph';
 import { Eye } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import useShopifyStore from '../../shopify/shopifyStore';
 
@@ -15,9 +16,11 @@ export default function ProductList({ product }: { product: ProductGET }) {
     const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
     const { setSearchTerm, setProductsSearch } = useShopifyStore();
 
-    const handleProductClick = () => {
-        setSearchTerm('');
-        setProductsSearch([]);
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
+    const handleProductClick = (e: React.MouseEvent) => {
+        // La navigation sera gérée par le lien, mais on peut ajouter une logique si besoin
     };
 
     // Fonction pour gérer le clic sur l'icône d'œil et ouvrir le lien externe
@@ -51,7 +54,7 @@ export default function ProductList({ product }: { product: ProductGET }) {
             </div>
 
             {/* Le Link principal pour la navigation interne */}
-            <Link href={url} onClick={handleProductClick} className="w-full">
+            <Link href={`${url}?${searchParams.toString()}`} className="w-full">
                 <div className="cursor-pointer flex items-center py-3 px-4 justify-start gap-3">
                     <div className="relative w-12 h-12 flex-shrink-0">
                         <Image

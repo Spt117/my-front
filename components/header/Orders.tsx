@@ -1,13 +1,12 @@
-"use client";
-import ListOrdersSearch from "@/components/shopify/orders/search/ListOrdersSearch";
-import { searchOrders } from "@/components/shopify/orders/serverAction";
-import useOrdersStore from "@/components/shopify/orders/store";
-import { ShopifyOrder } from "@/library/shopify/orders";
-import { X } from "lucide-react";
-import { useEffect, useRef } from "react";
-import useShopifyStore from "../shopify/shopifyStore";
-import { Input } from "../ui/input";
-import ShopifySelect from "./ShopifySelect";
+'use client';
+import ListOrdersSearch from '@/components/shopify/orders/search/ListOrdersSearch';
+import { searchOrders } from '@/components/shopify/orders/serverAction';
+import useOrdersStore from '@/components/shopify/orders/store';
+import { ShopifyOrder } from '@/library/shopify/orders';
+import { X } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import useShopifyStore from '../shopify/shopifyStore';
+import { Input } from '../ui/input';
 
 export default function Orders() {
     const { setOrdersSearch } = useOrdersStore();
@@ -15,13 +14,16 @@ export default function Orders() {
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleSearch = async (query: string) => {
-        if (!query.trim() || !shopifyBoutique) return;
+        if (!query.trim() || !shopifyBoutique) {
+            setLoading(false);
+            return;
+        }
 
         try {
             const res = await searchOrders(shopifyBoutique.domain, query.trim());
-            if (res && res) setOrdersSearch(res as ShopifyOrder[]);
+            if (res) setOrdersSearch(res as ShopifyOrder[]);
         } catch (error) {
-            console.error("Erreur lors de la recherche:", error);
+            console.error('Erreur lors de la recherche:', error);
         } finally {
             setLoading(false);
         }
@@ -29,13 +31,13 @@ export default function Orders() {
 
     // Effet de debounce
     useEffect(() => {
-        // Nettoie le timeout précédent
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
 
-        if (!searchTerm) {
+        if (!searchTerm || !searchTerm.trim()) {
             setOrdersSearch([]);
+            setLoading(false);
             return;
         }
 
@@ -51,7 +53,7 @@ export default function Orders() {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [searchTerm, shopifyBoutique]); // Seulement searchTerm dans les dépendances
+    }, [searchTerm, shopifyBoutique]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
@@ -72,7 +74,7 @@ export default function Orders() {
                 {searchTerm && (
                     <button
                         type="button"
-                        onClick={() => setSearchTerm("")}
+                        onClick={() => setSearchTerm('')}
                         className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
                         aria-label="Effacer la recherche"
                     >

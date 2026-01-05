@@ -16,11 +16,15 @@ export default function SearchClient() {
     const pathname = usePathname();
 
     const handleSearch = async (query: string) => {
-        if (!query.trim() || !shopifyBoutique) return;
+        if (!query.trim() || !shopifyBoutique) {
+            setIsLoading(false);
+            return;
+        }
 
         try {
-            const res = await searchClients(shopifyBoutique.domain, query);
-            setClientsSearch(res);
+            const res = await searchClients(shopifyBoutique.domain, query.trim());
+            const clientsWithShop = res.map((c) => ({ ...c, shop: shopifyBoutique.domain }));
+            setClientsSearch(clientsWithShop);
         } catch (error) {
             console.error('Erreur lors de la recherche des clients:', error);
         } finally {
@@ -28,6 +32,7 @@ export default function SearchClient() {
         }
     };
 
+    // Gestion des touches clavier
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
@@ -35,14 +40,17 @@ export default function SearchClient() {
                 setClientsSearch([]);
             }
         };
-
         window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [setSearchTermClient, setClientsSearch]);
 
+    // Effet de debounce pour la recherche
+    useEffect(() => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
 
-        if (!searchTermClient) {
+        if (!searchTermClient || !searchTermClient.trim()) {
             setClientsSearch([]);
             setIsLoading(false);
             return;
@@ -54,7 +62,6 @@ export default function SearchClient() {
         }, 300);
 
         return () => {
-            window.removeEventListener('keydown', handleKeyDown);
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }

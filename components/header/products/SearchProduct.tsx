@@ -14,10 +14,13 @@ export default function SearchProduct() {
     const pathName = usePathname();
 
     const handleSearch = async (query: string) => {
-        if (!query.trim() || !shopifyBoutique) return;
+        if (!query.trim() || !shopifyBoutique) {
+            setLoading(false);
+            return;
+        }
 
         try {
-            const res = await search(query, shopifyBoutique.domain);
+            const res = await search(query.trim(), shopifyBoutique.domain);
             setProductsSearch(res);
         } catch (error) {
             console.error('Erreur lors de la recherche:', error);
@@ -26,7 +29,7 @@ export default function SearchProduct() {
         }
     };
 
-    // Effet de debounce
+    // Gestion des touches clavier
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
@@ -34,34 +37,33 @@ export default function SearchProduct() {
                 setProductsSearch([]);
             }
         };
-
         window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [setSearchTerm, setProductsSearch]);
 
-        // Nettoie le timeout précédent
+    // Effet de debounce pour la recherche
+    useEffect(() => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
 
-        if (!searchTerm) {
+        if (!searchTerm || !searchTerm.trim()) {
             setProductsSearch([]);
             setLoading(false);
             return;
         }
 
-        // Programme une nouvelle recherche
         setLoading(true);
         timeoutRef.current = setTimeout(() => {
             handleSearch(searchTerm);
         }, 300);
 
-        // Cleanup
         return () => {
-            window.removeEventListener('keydown', handleKeyDown);
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [searchTerm, shopifyBoutique]); // Seulement searchTerm dans les dépendances
+    }, [searchTerm, shopifyBoutique]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);

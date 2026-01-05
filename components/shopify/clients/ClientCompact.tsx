@@ -16,7 +16,8 @@ countries.registerLocale(enLocale);
 
 export default function ClientCompact({ client }: { client: ShopifyCustomer }) {
     const { handleCopy } = useCopy();
-    const boutique = boutiqueFromDomain(client.shop!);
+    if (!client.shop) return null;
+    const boutique = boutiqueFromDomain(client.shop);
 
     return (
         <div className="container mx-auto px-4 py-0.5">
@@ -31,7 +32,7 @@ export default function ClientCompact({ client }: { client: ShopifyCustomer }) {
                         </div>
 
                         <div className="flex flex-col min-w-0">
-                            <Link href={`/shopify/${boutique.id}/clients/${client.id.split('/').pop()}`} className="group/title">
+                            <Link href={`/shopify/${boutique.id}/clients/${client.id?.split('/').pop() || ''}`} className="group/title">
                                 <h3 className="text-sm font-bold text-gray-900 group-hover/title:text-blue-600 transition-colors flex items-center gap-2 truncate">
                                     {client.firstName} {client.lastName}
                                     <ArrowRight className="w-3 h-3 text-gray-300 opacity-0 -translate-x-1 transition-all duration-200 group-hover/title:opacity-100 group-hover/title:translate-x-0 group-hover/title:text-blue-600" />
@@ -39,8 +40,8 @@ export default function ClientCompact({ client }: { client: ShopifyCustomer }) {
                             </Link>
                             <div className="flex items-center gap-2 text-xs text-gray-500 min-w-0">
                                 <Mail size={12} className="shrink-0" />
-                                <span className="truncate hover:text-blue-600 cursor-pointer" onClick={() => handleCopy(client.email)}>
-                                    {client.email}
+                                <span className="truncate hover:text-blue-600 cursor-pointer" onClick={() => handleCopy(client.email || '')}>
+                                    {client.email || "Pas d'email"}
                                 </span>
                             </div>
                         </div>
@@ -71,10 +72,10 @@ export default function ClientCompact({ client }: { client: ShopifyCustomer }) {
                         <div className="text-right">
                             <div className="flex items-center gap-2 justify-end">
                                 <ShoppingBag size={12} className="text-indigo-500" />
-                                <span className="text-xs font-bold text-gray-900">{client.numberOfOrders} commandes</span>
+                                <span className="text-xs font-bold text-gray-900">{client.numberOfOrders || 0} commandes</span>
                             </div>
                             <p className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full inline-block mt-1">
-                                {client.amountSpent.amount} {client.amountSpent.currencyCode}
+                                {client.amountSpent?.amount || '0'} {client.amountSpent?.currencyCode || ''}
                             </p>
                         </div>
                     </div>
