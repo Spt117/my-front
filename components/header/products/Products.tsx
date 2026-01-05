@@ -8,16 +8,17 @@ import { useState } from 'react';
 import useShopifyStore from '../../shopify/shopifyStore';
 
 export default function ProductList({ product }: { product: ProductGET }) {
-    const { shopifyBoutique } = useShopifyStore();
+    const { shopifyBoutique, setSearchTerm, setProductsSearch } = useShopifyStore();
     const [isHovered, setIsHovered] = useState(false);
-    if (!shopifyBoutique) return;
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
+    // Return conditionnel APRÈS tous les hooks
+    if (!shopifyBoutique) return null;
+
     const id = product.id.split('/').pop();
     const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
     const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
-    const { setSearchTerm, setProductsSearch } = useShopifyStore();
-
-    const searchParams = useSearchParams();
-    const router = useRouter();
 
     const handleProductClick = (e: React.MouseEvent) => {
         // La navigation sera gérée par le lien, mais on peut ajouter une logique si besoin

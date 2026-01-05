@@ -10,6 +10,7 @@ import ListProducts from './ListProducts';
 export default function SearchProduct() {
     const { shopifyBoutique, setProductsSearch, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const latestQueryRef = useRef<string>(''); // Track la requête la plus récente
     const { openDialog } = useShopifyStore();
     const pathName = usePathname();
 
@@ -19,13 +20,23 @@ export default function SearchProduct() {
             return;
         }
 
+        // Stocker la requête actuelle
+        latestQueryRef.current = query;
+
         try {
             const res = await search(query.trim(), shopifyBoutique.domain);
-            setProductsSearch(res);
+            // Vérifier que cette réponse correspond à la requête la plus récente
+            if (latestQueryRef.current === query) {
+                setProductsSearch(res);
+            }
+            // Si ce n'est pas la requête la plus récente, on ignore les résultats
         } catch (error) {
             console.error('Erreur lors de la recherche:', error);
         } finally {
-            setLoading(false);
+            // Ne pas désactiver loading si une autre requête est en cours
+            if (latestQueryRef.current === query) {
+                setLoading(false);
+            }
         }
     };
 
