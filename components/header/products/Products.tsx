@@ -59,7 +59,7 @@ export default function ProductList({ product }: { product: ProductGET }) {
                 <div className="cursor-pointer flex items-center py-3 px-4 justify-start gap-3">
                     <div className="relative w-12 h-12 flex-shrink-0">
                         <Image
-                            src={product.media.nodes[0]?.image?.url || '/no_image.png'}
+                            src={product.media?.nodes[0]?.image?.url || '/no_image.png'}
                             alt={product.title}
                             fill
                             className="object-cover rounded-md"
