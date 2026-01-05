@@ -90,7 +90,7 @@ export default function OrderCompact({ order }: { order: GroupedShopifyOrder }) 
                                         );
                                     })}
                                     {order.lineItems.edges.some(({ node }) => node.variant?.product.precommande?.value) && (
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 border border-red-200 uppercase tracking-wider">
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-blue-100 border border-blue-200 uppercase tracking-wider">
                                             Précommande
                                         </span>
                                     )}
