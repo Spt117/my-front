@@ -13,13 +13,15 @@ interface OrderLayoutClientProps {
 }
 
 export default function OrderLayoutClient({ data, children, error, shopId }: OrderLayoutClientProps) {
-    const { setOrders } = useOrdersStore();
+    const { setOrders, setFilterOrders, setMode } = useOrdersStore();
 
     useEffect(() => {
         // Mettre à jour le store avec la commande actuelle
         setOrders([data]);
+        setFilterOrders([data]);
+        setMode('orders');
         if (error) toast.error(error);
-    }, [data, error, setOrders]);
+    }, [data, error, setOrders, setFilterOrders, setMode]);
 
     return <>{children}</>;
 }

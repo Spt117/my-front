@@ -3,11 +3,11 @@ import { myEvents } from '@/library/hooks/useEvent/classEvent';
 import { ShopifyOrder } from '@/library/shopify/orders';
 import { Archive } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import UsefullLinks from '../UsefullLinks';
 import { archiveOrder } from '../serverAction';
+import useOrdersStore from '../store';
+import UsefullLinks from '../UsefullLinks';
 
 export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     const { shopifyBoutique, setSearchTerm } = useShopifyStore();
@@ -17,14 +17,21 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     if (!shopifyBoutique) return null;
     const url = `/shopify/${shopifyBoutique.id}/orders/${order.id.split('/').pop()}`;
 
-    const handleClick = () => {
-        // La navigation est gérée par le Link, on ne vide plus ici pour éviter de casser la navigation
+    const { setOrdersSearch } = useOrdersStore();
+
+    const handleClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Stocker l'URL avant toute modification d'état
+        const targetUrl = url;
+        // Navigation directe avec window.location (fiable même après démontage)
+        window.location.href = targetUrl;
     };
 
     return (
-        <Link href={`${url}?${searchParams.toString()}`}>
-            <div className="flex border-b last:border-0" onClick={handleClick}>
-                <div className="w-min-0 cursor-pointer flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
+        <div onClick={handleClick} className="w-full text-left block cursor-pointer">
+            <div className="flex border-b last:border-0">
+                <div className="w-min-0 flex items-center py-3 px-4 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
                     <div className="relative w-12 h-12 flex-shrink-0">
                         <Image
                             src={order.lineItems.edges[0].node?.variant?.product.featuredImage.url || '/no_image.png'}
@@ -72,6 +79,6 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
                     </button>
                 </div>
             </div>
-        </Link>
+        </div>
     );
 }

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
-import useProductStore from "@/app/shopify/[shopId]/products/[productId]/storeProduct";
-import useOrdersStore from "@/components/shopify/orders/store";
-import useShopifyStore from "@/components/shopify/shopifyStore";
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import { usePathname, useRouter } from "next/navigation";
+import useCollectionStore from '@/app/shopify/[shopId]/collections/storeCollections';
+import useProductStore from '@/app/shopify/[shopId]/products/[productId]/storeProduct';
+import useOrdersStore from '@/components/shopify/orders/store';
+import useShopifyStore from '@/components/shopify/shopifyStore';
+import useKeyboardShortcuts from '@/library/hooks/useKyboardShortcuts';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function ShortCutProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const { setSearchTerm, canauxBoutique, product, setShopifyBoutique } = useShopifyStore();
@@ -17,8 +17,8 @@ export default function ShortCutProvider({ children }: Readonly<{ children: Reac
     const pathname = usePathname();
 
     const handleEscape = () => {
-        setSearchTerm("");
-        if (pathname.includes("collections")) {
+        setSearchTerm('');
+        if (pathname.includes('collections')) {
             setFilteredCollections(collections);
             const canauxActives = canauxBoutique.map((c) => {
                 const found = dataCollection?.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
@@ -27,24 +27,22 @@ export default function ShortCutProvider({ children }: Readonly<{ children: Reac
             });
             setCanauxCollection(canauxActives);
         }
-        if (pathname.includes("products")) {
+        if (pathname.includes('products')) {
             const canauxActives = canauxBoutique.map((c) => {
                 const found = product?.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
                 if (found) return { id: c.id, isPublished: found.isPublished, name: c.name };
                 else return { id: c.id, isPublished: false, name: c.name };
             });
             setCanauxProduct(canauxActives);
-            setPrice(product?.variants?.nodes[0].price ?? "0");
-            setCompareAtPrice(product?.variants?.nodes[0].compareAtPrice || "0");
+            setPrice(product?.variants?.nodes[0].price ?? '0');
+            setCompareAtPrice(product?.variants?.nodes[0].compareAtPrice || '0');
         }
-        if (pathname.includes("orders")) {
-            setShopifyBoutique(null);
+        if (pathname.includes('orders')) {
             setFilterOrders(orders);
-            router.push(`/shopify/orders`);
         }
     };
 
-    useKeyboardShortcuts("Escape", handleEscape);
+    useKeyboardShortcuts('Escape', handleEscape);
 
     return <>{children}</>;
 }
