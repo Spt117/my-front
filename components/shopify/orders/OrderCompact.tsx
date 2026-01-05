@@ -77,7 +77,7 @@ export default function OrderCompact({ order }: { order: GroupedShopifyOrder }) 
                             </div>
 
                             <div className="flex flex-col min-w-0">
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-1">
                                     {order.name.map((name, index) => {
                                         const orderId = order.legacyResourceId[index] || order.id.split('/').pop();
                                         return (
@@ -89,6 +89,11 @@ export default function OrderCompact({ order }: { order: GroupedShopifyOrder }) 
                                             </Link>
                                         );
                                     })}
+                                    {order.lineItems.edges.some(({ node }) => node.variant?.product.precommande?.value) && (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 border border-red-200 uppercase tracking-wider">
+                                            Précommande
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="flex items-center gap-2 overflow-hidden">
                                     <span className="text-xs text-gray-500 whitespace-nowrap">
@@ -106,7 +111,7 @@ export default function OrderCompact({ order }: { order: GroupedShopifyOrder }) 
                                             <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0"></span>
                                         </>
                                     )}
-                                    <div className="flex gap-1 overflow-hidden">
+                                    <div className="flex gap-1 overflow-hidden items-center">
                                         <span
                                             className={`text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-normal whitespace-nowrap ${getFulfillmentStatusStyle(
                                                 order.displayFulfillmentStatus

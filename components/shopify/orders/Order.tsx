@@ -71,7 +71,7 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                 </div>
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900 flex flex-wrap items-center gap-3">
+                                <h2 className="text-xl font-bold text-gray-900 flex flex-wrap items-center gap-x-3 gap-y-4 mb-2">
                                     {order.name.map((name, index) => {
                                         const orderId = order.legacyResourceId[index] || order.id.split('/').pop();
                                         return (
@@ -85,6 +85,11 @@ export default function Order({ order }: { order: GroupedShopifyOrder }) {
                                             </Link>
                                         );
                                     })}
+                                    {order.lineItems.edges.some(({ node }) => node.variant?.product.precommande?.value) && (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold bg-red-100 text-red-700 border border-red-200 uppercase tracking-wider">
+                                            Précommande
+                                        </span>
+                                    )}
                                     <div className="flex gap-2 ml-2">
                                         <span
                                             className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border uppercase tracking-wider shadow-sm ${getFulfillmentStatusStyle(

@@ -38,6 +38,9 @@ interface FeaturedImage {
 interface Product {
     id: string;
     featuredImage: FeaturedImage;
+    precommande?: {
+        value: string;
+    };
 }
 
 interface ProductVariant {

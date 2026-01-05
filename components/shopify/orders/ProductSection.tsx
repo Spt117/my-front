@@ -1,6 +1,6 @@
 import { LineItemNode } from '@/library/shopify/orders';
 import { boutiqueFromDomain, TDomainsShopify } from '@/params/paramsShopify';
-import { AlertTriangle, ArrowUpRight, Box, Tag } from 'lucide-react';
+import { AlertTriangle, ArrowUpRight, Box, Calendar, Tag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -10,6 +10,8 @@ export default function ProductSection({ node, domain }: { node: LineItemNode; d
     const url = `/shopify/${boutique.id}/products/${idProduct}`;
 
     if (!node.variant) return null;
+
+    const precommandeDate = node.variant?.product.precommande?.value;
 
     return (
         <Link href={url} rel="noopener noreferrer" className="block h-full group">
@@ -38,11 +40,17 @@ export default function ProductSection({ node, domain }: { node: LineItemNode; d
                             <ArrowUpRight className="w-4 h-4 text-gray-300 opacity-0 -translate-x-2 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0" />
                         </div>
 
-                        <div className="flex items-center gap-2 mt-1.5">
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-700 border border-gray-200 shadow-sm">
                                 <Tag className="w-3 h-3 text-gray-400" />
                                 {node.sku}
                             </span>
+                            {precommandeDate && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-[10px] font-bold text-amber-700 border border-amber-200 animate-pulse">
+                                    <Calendar className="w-3 h-3" />
+                                    {new Date(precommandeDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                                </span>
+                            )}
                         </div>
                     </div>
 

@@ -36,11 +36,14 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
                         />
                     </div>
                     <div className="ml-4 flex-1">
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                             <h3 className="text-sm font-medium text-foreground line-clamp-1">{order.name}</h3>
                             <span className="text-sm text-muted-foreground line-clamp-1">
                                 {order.totalPriceSet.shopMoney.amount || 'Prix indisponible'} {shopifyBoutique.devise}
                             </span>
+                            {order.lineItems.edges.some(({ node }) => node.variant?.product.precommande?.value) && (
+                                <span className="text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold uppercase">Pre-order</span>
+                            )}
                         </div>
                         <p className="text-sm text-muted-foreground">ID: {order.id.split('/').pop()}</p>
                     </div>
