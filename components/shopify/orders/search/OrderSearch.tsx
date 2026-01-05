@@ -1,9 +1,13 @@
 import useShopifyStore from '@/components/shopify/shopifyStore';
+import { myEvents } from '@/library/hooks/useEvent/classEvent';
 import { ShopifyOrder } from '@/library/shopify/orders';
+import { Archive } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import UsefullLinks from '../UsefullLinks';
+import { archiveOrder } from '../serverAction';
 
 export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     const { shopifyBoutique, setSearchTerm } = useShopifyStore();
@@ -41,7 +45,29 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
                         <p className="text-sm text-muted-foreground">ID: {order.id.split('/').pop()}</p>
                     </div>
                 </div>
-                <UsefullLinks domain={shopifyBoutique.domain} orderId={order.id} country={order.shippingAddress.country} />
+                <div className="flex items-center gap-1 mr-4">
+                    <UsefullLinks domain={shopifyBoutique.domain} orderId={order.id} country={order.shippingAddress.country} />
+                    <button
+                        onClick={async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const res = await archiveOrder(shopifyBoutique.domain, order.id);
+                            if (res.response) {
+                                toast.success('Commande archivée (mise à jour dans 3s)');
+                                setTimeout(() => {
+                                    myEvents.emit('orders/paid', { shop: shopifyBoutique.domain });
+                                    setSearchTerm('');
+                                }, 3000);
+                            } else {
+                                toast.error("Erreur lors de l'archivage");
+                            }
+                        }}
+                        className="p-1.5 rounded-lg bg-gray-50 hover:bg-amber-100 transition-all duration-200 group cursor-pointer border border-gray-100"
+                        title="Archiver la commande"
+                    >
+                        <Archive className="w-4 h-4 text-gray-500 group-hover:text-amber-600" />
+                    </button>
+                </div>
             </div>
         </Link>
     );

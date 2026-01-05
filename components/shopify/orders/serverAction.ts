@@ -67,6 +67,12 @@ export async function getOrderById(params: { orderId: string; domain: string }) 
     return groupedOrder[0];
 }
 
+export async function archiveOrder(domain: string, orderId: string) {
+    const url = `${pokeUriServer}/shopify/archive-order`;
+    const res = await postServer(url, { domain, orderId });
+    return res;
+}
+
 function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder[] {
     const groupedOrders = new Map<string, GroupedShopifyOrder>();
 

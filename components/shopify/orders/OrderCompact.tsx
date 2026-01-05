@@ -2,18 +2,21 @@
 
 import { Card } from '@/components/ui/card';
 import { useCopy } from '@/library/hooks/useCopy';
+import { myEvents } from '@/library/hooks/useEvent/classEvent';
 import { GroupedShopifyOrder } from '@/library/shopify/orders';
 import { boutiqueFromDomain } from '@/params/paramsShopify';
 import * as Flags from 'country-flag-icons/react/3x2';
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import frLocale from 'i18n-iso-countries/langs/fr.json';
-import { ArrowUpRight, ChevronDown, ChevronUp, ExternalLink, Mail, MapPin, Package, ShoppingBag } from 'lucide-react';
+import { Archive, ArrowUpRight, ChevronDown, ChevronUp, ExternalLink, Mail, MapPin, Package, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import ProductSection from './ProductSection';
+import { archiveOrder } from './serverAction';
 import UsefullLinks from './UsefullLinks';
 
 countries.registerLocale(frLocale);
@@ -122,6 +125,25 @@ export default function OrderCompact({ order }: { order: GroupedShopifyOrder }) 
                         <div className="flex items-center gap-3 shrink-0">
                             <div className="flex items-center gap-1.5 ml-1">
                                 <UsefullLinks domain={order.shop} orderId={order.id} country={order.shippingAddress.country} />
+                                <button
+                                    onClick={async (e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        const res = await archiveOrder(order.shop, order.id);
+                                        if (res.response) {
+                                            toast.success('Commande archivée (mise à jour dans 3s)');
+                                            setTimeout(() => {
+                                                myEvents.emit('orders/paid', { shop: order.shop });
+                                            }, 3000);
+                                        } else {
+                                            toast.error("Erreur lors de l'archivage");
+                                        }
+                                    }}
+                                    className="p-1.5 rounded-lg bg-gray-100 hover:bg-amber-100 transition-all duration-200 group cursor-pointer"
+                                    title="Archiver la commande"
+                                >
+                                    <Archive className="w-4 h-4 text-gray-600 group-hover:text-amber-600" />
+                                </button>
                             </div>
                             <div className="text-right hidden sm:block">
                                 <p className="text-sm font-bold text-gray-900 leading-tight whitespace-nowrap">
