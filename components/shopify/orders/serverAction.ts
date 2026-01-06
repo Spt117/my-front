@@ -119,3 +119,80 @@ function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder
 
     return Array.from(groupedOrders.values());
 }
+
+// Types pour les fulfillment orders
+export interface FulfillmentOrderLineItem {
+    id: string;
+    sku: string;
+    totalQuantity: number;
+    remainingQuantity: number;
+}
+
+export interface FulfillmentOrder {
+    id: string;
+    status: string;
+    lineItems: FulfillmentOrderLineItem[];
+}
+
+export interface FulfillmentOrdersResponse {
+    fulfillmentOrders: FulfillmentOrder[];
+}
+
+export async function getFulfillmentOrders(domain: string, orderId: string): Promise<FulfillmentOrdersResponse | null> {
+    const url = `${pokeUriServer}/shopify/get-fulfillment-orders`;
+    const res = await postServer(url, { domain, orderId });
+    if (!res || !res.response) return null;
+    return res.response as FulfillmentOrdersResponse;
+}
+
+export interface TrackingInfo {
+    number: string;
+    url?: string;
+    company?: string;
+}
+
+export interface FulfillLineItemsParams {
+    domain: string;
+    orderId: string;
+    lineItems: Array<{ fulfillmentOrderId: string; lineItemId: string; quantity: number }>;
+    trackingInfo?: TrackingInfo;
+}
+
+export interface FulfillLineItemsResponse {
+    success: boolean;
+    fulfilledItems: string[];
+    allFulfilled: boolean;
+    archived: boolean;
+    error?: string;
+}
+
+export async function fulfillLineItems(params: FulfillLineItemsParams): Promise<{ response: FulfillLineItemsResponse | null; message?: string; error?: string }> {
+    const url = `${pokeUriServer}/shopify/fulfill-line-items`;
+    const res = await postServer(url, params);
+    return res;
+}
+
+export async function unarchiveOrder(domain: string, orderId: string): Promise<{ response: boolean; message?: string; error?: string }> {
+    const url = `${pokeUriServer}/shopify/unarchive-order`;
+    const res = await postServer(url, { domain, orderId });
+    return res;
+}
+
+export interface Fulfillment {
+    id: string;
+    status: string;
+    trackingInfo: string | null;
+}
+
+export async function getFulfillments(domain: string, orderId: string): Promise<Fulfillment[]> {
+    const url = `${pokeUriServer}/shopify/get-fulfillments`;
+    const res = await postServer(url, { domain, orderId });
+    if (!res || !res.response) return [];
+    return res.response as Fulfillment[];
+}
+
+export async function cancelFulfillment(domain: string, fulfillmentId: string): Promise<{ response: boolean; message?: string; error?: string }> {
+    const url = `${pokeUriServer}/shopify/cancel-fulfillment`;
+    const res = await postServer(url, { domain, fulfillmentId });
+    return res;
+}

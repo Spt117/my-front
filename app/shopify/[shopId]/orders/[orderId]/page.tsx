@@ -1,6 +1,7 @@
 'use client';
 
-import ProductSection from '@/components/shopify/orders/ProductSection';
+import FulfillProductSection from '@/components/shopify/orders/FulfillProductSection';
+import { getOrderById } from '@/components/shopify/orders/serverAction';
 import useOrdersStore from '@/components/shopify/orders/store';
 import UsefullLinks from '@/components/shopify/orders/UsefullLinks';
 import { Card } from '@/components/ui/card';
@@ -22,10 +23,18 @@ export default function OrderDetailPage() {
     const params = useParams();
     const shopId = params.shopId as string;
     const { handleCopy } = useCopy();
-    const { orders } = useOrdersStore();
+    const { orders, setOrders } = useOrdersStore();
 
     // Les données sont déjà chargées par le layout
     const order = orders[0];
+
+    const handleOrderUpdated = async () => {
+        if (!order) return;
+        const updatedOrder = await getOrderById({ orderId: order.id, domain: order.shop });
+        if (updatedOrder) {
+            setOrders([updatedOrder]);
+        }
+    };
 
     if (!order) {
         return null; // Le layout gère déjà le cas où il n'y a pas de commande
@@ -84,6 +93,39 @@ export default function OrderDetailPage() {
                                             hour: 'numeric',
                                             minute: 'numeric',
                                         })}
+                                    </span>
+                                </div>
+                                {/* Status badges */}
+                                <div className="flex items-center gap-2">
+                                    <span
+                                        className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                            order.displayFulfillmentStatus === 'FULFILLED'
+                                                ? 'bg-green-100 text-green-700'
+                                                : order.displayFulfillmentStatus === 'PARTIALLY_FULFILLED'
+                                                ? 'bg-yellow-100 text-yellow-700'
+                                                : 'bg-orange-100 text-orange-700'
+                                        }`}
+                                    >
+                                        {order.displayFulfillmentStatus === 'FULFILLED'
+                                            ? '✓ Traité'
+                                            : order.displayFulfillmentStatus === 'PARTIALLY_FULFILLED'
+                                            ? '◐ Partiel'
+                                            : '○ Non traité'}
+                                    </span>
+                                    <span
+                                        className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                            order.displayFinancialStatus === 'PAID'
+                                                ? 'bg-green-100 text-green-700'
+                                                : order.displayFinancialStatus === 'PENDING'
+                                                ? 'bg-yellow-100 text-yellow-700'
+                                                : 'bg-red-100 text-red-700'
+                                        }`}
+                                    >
+                                        {order.displayFinancialStatus === 'PAID'
+                                            ? '💰 Payé'
+                                            : order.displayFinancialStatus === 'PENDING'
+                                            ? '⏳ En attente'
+                                            : order.displayFinancialStatus}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1 bg-white/50 rounded-lg p-1">
@@ -195,13 +237,11 @@ export default function OrderDetailPage() {
                             <div className="bg-gray-50/30 rounded-2xl p-6 border border-gray-100 h-full">
                                 <h3 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
                                     <Package className="w-5 h-5 text-indigo-500" />
-                                    Détails des produits ({order.lineItems.edges.length})
+                                    Traiter les produits
                                 </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    {order.lineItems.edges.map(({ node }) => (
-                                        <ProductSection key={node.id} node={node} domain={order.shop} />
-                                    ))}
-                                </div>
+
+                                {/* Section de fulfillment - le composant gère lui-même le filtrage */}
+                                <FulfillProductSection lineItems={order.lineItems.edges} domain={order.shop} orderId={order.id} onOrderUpdated={handleOrderUpdated} />
                             </div>
                         </div>
                     </div>
