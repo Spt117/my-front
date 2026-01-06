@@ -1,9 +1,9 @@
-import { TDomainsShopify, TVendorsShopify } from "../../params/paramsShopify";
+import { TDomainsShopify, TVendorsShopify } from '../../params/paramsShopify';
 
 type GID = `gid://shopify/${string}`;
 
-export type ProductStatus = "ACTIVE" | "ARCHIVED" | "DRAFT";
-type InventoryPolicy = "DENY" | "CONTINUE";
+export type ProductStatus = 'ACTIVE' | 'ARCHIVED' | 'DRAFT';
+type InventoryPolicy = 'DENY' | 'CONTINUE';
 
 interface ProductOption {
     id?: GID;
@@ -44,7 +44,7 @@ interface InventoryItemRef {
     requiresShipping: boolean;
     measurement: {
         weight: {
-            unit: "GRAMS" | "KILOGRAMS" | "OUNCES" | "POUNDS";
+            unit: 'GRAMS' | 'KILOGRAMS' | 'OUNCES' | 'POUNDS';
             value: number;
         };
     };
@@ -69,25 +69,28 @@ export interface CategoryProduct {
     fullName: string;
 }
 
-type MetafieldType = "single_line_text_field" | "string" | "list.product_reference" | "boolean" | (string & {});
+type MetafieldType = 'single_line_text_field' | 'multi_line_text_field' | 'number_integer' | 'number_decimal' | 'string' | 'list.product_reference' | 'boolean' | (string & {});
 const metafieldKeys = [
-    "asin",
-    "url_video",
-    "id_video_youtube",
-    "amazon_activate",
-    "lien_amazon",
-    "title_tag",
-    "description_tag",
-    "related_products",
-    "complementary_products",
-    "color-pattern",
-    "rarity",
-    "recommended-age-group",
-    "toy-game-material",
-    "trading-card-packaging",
+    'num_reviews',
+    'reviews',
+    'avg_rating',
+    'asin',
+    'url_video',
+    'id_video_youtube',
+    'amazon_activate',
+    'lien_amazon',
+    'title_tag',
+    'description_tag',
+    'related_products',
+    'complementary_products',
+    'color-pattern',
+    'rarity',
+    'recommended-age-group',
+    'toy-game-material',
+    'trading-card-packaging',
 ] as const;
 export type TMetafieldKeys = (typeof metafieldKeys)[number];
-const namespaceMetafields = ["custom", "global", "shopify"] as const;
+const namespaceMetafields = ['custom', 'global', 'shopify', 'loox'] as const;
 export type TNamespaceMetafields = (typeof namespaceMetafields)[number];
 export interface TMetafield {
     id?: GID;
@@ -158,14 +161,14 @@ export type ShopifyFile =
     | {
           originalSource: string; // URL publique absolue
           alt?: string;
-          contentType: "IMAGE" | "VIDEO";
+          contentType: 'IMAGE' | 'VIDEO';
       }
     // Image/vidéo locale (depuis le disque, encodée en base64)
     | {
           attachment: string; // Contenu encodé en base64
           filename: string; // Nom du fichier avec extension
           alt?: string;
-          contentType?: "IMAGE" | "VIDEO"; // Optionnel, déduit de l'extension si non fourni
+          contentType?: 'IMAGE' | 'VIDEO'; // Optionnel, déduit de l'extension si non fourni
       };
 interface VariantOption {
     optionName: string;

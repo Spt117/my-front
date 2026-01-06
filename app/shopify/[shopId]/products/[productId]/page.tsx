@@ -1,26 +1,27 @@
-"use client";
-import EditeurHtml from "@/components/editeurHtml/Editeur";
-import useShopifyStore from "@/components/shopify/shopifyStore";
-import { Card, CardContent } from "@/components/ui/card";
-import { boutiques } from "@/params/paramsShopify";
-import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import AboutProduct from "./AboutProduct";
-import Canaux from "./Canaux";
-import Collections from "./Collections";
-import HeaderEditeur from "./Header/HeaderEditeur";
-import HeaderProduct from "./Header/HeaderProduct";
-import ImagesProduct from "./images/Images";
-import Metafields from "./Metafields/Metafields";
-import MetafieldToClean from "./Metafields/MetafieldToClean";
-import MetaSeo from "./Metafields/MetaSeo";
-import Video from "./Metafields/Video";
-import Statut from "./Statut";
-import TagsShopify from "./Tags/Tags";
-import Prices from "./variant/Prices/Prices";
-import Sku from "./variant/Sku";
-import VariantClient from "./VariantClient";
-import AddFromAsin from "./images/AddFromAsin";
+'use client';
+import EditeurHtml from '@/components/editeurHtml/Editeur';
+import useShopifyStore from '@/components/shopify/shopifyStore';
+import { Card, CardContent } from '@/components/ui/card';
+import { boutiques } from '@/params/paramsShopify';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+import AboutProduct from './AboutProduct';
+import Canaux from './Canaux';
+import Collections from './Collections';
+import HeaderEditeur from './Header/HeaderEditeur';
+import HeaderProduct from './Header/HeaderProduct';
+import AddFromAsin from './images/AddFromAsin';
+import ImagesProduct from './images/Images';
+import LooxReviews from './Metafields/LooxReviews';
+import Metafields from './Metafields/Metafields';
+import MetafieldToClean from './Metafields/MetafieldToClean';
+import MetaSeo from './Metafields/MetaSeo';
+import Video from './Metafields/Video';
+import Statut from './Statut';
+import TagsShopify from './Tags/Tags';
+import Prices from './variant/Prices/Prices';
+import Sku from './variant/Sku';
+import VariantClient from './VariantClient';
 
 export default function Page() {
     const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
@@ -36,6 +37,7 @@ export default function Page() {
     }, [product, shopifyBoutique]);
 
     if (!product || !shopifyBoutique) return null;
+
     return (
         <div className="@container/main flex flex-1 flex-col relative">
             <Card className="m-0 p-0 border-0 shadow-none">
@@ -63,6 +65,7 @@ export default function Page() {
                         <AboutProduct />
                         {/* <LinkToShops /> */}
                         <VariantClient />
+                        <LooxReviews metafields={product.metafields.nodes} />
                         <Metafields metafields={product.metafields.nodes} />
                         <MetafieldToClean />
                     </div>

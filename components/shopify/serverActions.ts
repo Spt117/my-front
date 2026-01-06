@@ -70,3 +70,8 @@ export async function getIdsVariants(domain: TDomainsShopify, sku: string) {
     }
     return idsVariants;
 }
+export async function deleteLooxReview(domain: TDomainsShopify, productGid: string, reviewIndex: number): Promise<ResponseServer<boolean> | null> {
+    const url = 'http://localhost:9100/shopify/delete-loox-review';
+    const response = await postServer(url, { domain, productGid, reviewIndex });
+    return response;
+}
