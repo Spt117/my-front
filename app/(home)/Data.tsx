@@ -225,7 +225,7 @@ function ProductsTable({ products, shopDomain }: { products: OrderedProduct[]; s
     }
 
     return (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto py-4 px-2 -my-4 -mx-2">
             <table className="w-full">
                 <thead>
                     <tr className="border-b border-slate-200">
