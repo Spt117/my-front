@@ -14,6 +14,12 @@ export default function SearchProduct() {
     const { openDialog } = useShopifyStore();
     const pathName = usePathname();
 
+    // Vider la recherche lors du changement de page
+    useEffect(() => {
+        setSearchTerm('');
+        setProductsSearch([]);
+    }, [pathName]);
+
     const handleSearch = async (query: string) => {
         if (!query.trim() || !shopifyBoutique) {
             setLoading(false);

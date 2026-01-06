@@ -7,7 +7,7 @@ import { useState } from 'react';
 import useShopifyStore from '../../shopify/shopifyStore';
 
 export default function ProductList({ product }: { product: ProductGET }) {
-    const { shopifyBoutique, setSearchTerm, setProductsSearch } = useShopifyStore();
+    const { shopifyBoutique } = useShopifyStore();
     const [isHovered, setIsHovered] = useState(false);
 
     // Return conditionnel APRÈS tous les hooks
@@ -17,15 +17,9 @@ export default function ProductList({ product }: { product: ProductGET }) {
     const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
     const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
 
-    const handleClearSearch = () => {
-        setSearchTerm('');
-        setProductsSearch([]);
-    };
-
     // Fonction pour gérer le clic sur l'icône d'œil et ouvrir le lien externe
     const handleViewOnStoreClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        // Empêche le clic de se propager au Link (<a>) parent,
-        // ce qui éviterait la navigation vers la page de détails interne.
+        // Empêche le clic de se propager au Link parent
         e.preventDefault();
         e.stopPropagation();
 
@@ -38,16 +32,14 @@ export default function ProductList({ product }: { product: ProductGET }) {
     return (
         <Link
             href={url}
-            onClick={handleClearSearch}
             className="flex items-center hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm pr-2 relative cursor-pointer"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* L'icône doit être positionnée en dehors du Link pour éviter l'imbrication,
-                mais visuellement placée à droite. */}
+            {/* Bouton de visualisation externe */}
             <div
                 onClick={handleViewOnStoreClick}
-                className="p-1 hover:bg-gray-200 rounded-md absolute right-3 z-10 cursor-pointer" // Utilisation de absolute/right-3 pour le positionnement
+                className="p-1 hover:bg-gray-200 rounded-md absolute right-3 z-10 cursor-pointer"
                 title="Afficher sur votre boutique"
             >
                 <span className="text-slate-400 hover:text-slate-600 transition-colors">
@@ -55,7 +47,7 @@ export default function ProductList({ product }: { product: ProductGET }) {
                 </span>
             </div>
 
-            {/* Le Link principal pour la navigation interne */}
+            {/* Contenu du produit */}
             <div className="w-full flex items-center py-3 px-4 justify-start gap-3">
                 <div className="relative w-12 h-12 flex-shrink-0">
                     <Image
