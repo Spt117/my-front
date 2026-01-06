@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { IconArrowLeft, IconBrackets, IconCheck, IconChevronDown, IconChevronRight, IconCode, IconCopy, IconLoader2, IconRefresh, IconSearch, IconX } from "@tabler/icons-react";
+import { IconArrowLeft, IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsSort, IconBrackets, IconCheck, IconChevronDown, IconChevronRight, IconCode, IconCopy, IconLoader2, IconRefresh, IconSearch, IconX } from "@tabler/icons-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -281,6 +281,9 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
     const [isSaving, startSavingTransition] = useTransition();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+    // État pour le tri
+    const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" | null }>({ key: "", direction: null });
+
     // État pour le modal JSON
     const [jsonModal, setJsonModal] = useState<{ isOpen: boolean; value: unknown; rowId: string; column: string } | null>(null);
 
@@ -417,7 +420,48 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
         }
     };
 
-    const filteredRows = rows.filter((row) => {
+
+    const isJsonValue = (value: unknown): boolean => {
+        return typeof value === "object" && value !== null;
+    };
+
+    const handleSort = (columnName: string) => {
+        setSortConfig((prev) => {
+            if (prev.key === columnName) {
+                if (prev.direction === "asc") return { key: columnName, direction: "desc" };
+                if (prev.direction === "desc") return { key: "", direction: null };
+            }
+            return { key: columnName, direction: "asc" };
+        });
+    };
+
+    const sortedRows = useCallback(() => {
+        if (!sortConfig.key || !sortConfig.direction) return rows;
+
+        return [...rows].sort((a, b) => {
+            const valA = a[sortConfig.key];
+            const valB = b[sortConfig.key];
+
+            if (valA === valB) return 0;
+            if (valA === null || valA === undefined) return 1;
+            if (valB === null || valB === undefined) return -1;
+
+            if (typeof valA === "number" && typeof valB === "number") {
+                return sortConfig.direction === "asc" ? valA - valB : valB - valA;
+            }
+
+            const strA = String(valA).toLowerCase();
+            const strB = String(valB).toLowerCase();
+
+            if (sortConfig.direction === "asc") {
+                return strA.localeCompare(strB);
+            } else {
+                return strB.localeCompare(strA);
+            }
+        });
+    }, [rows, sortConfig]);
+
+    const filteredRows = sortedRows().filter((row) => {
         if (!searchTerm) return true;
         return Object.values(row).some((value) => String(value).toLowerCase().includes(searchTerm.toLowerCase()));
     });
@@ -436,9 +480,6 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
         return "text-gray-300";
     };
 
-    const isJsonValue = (value: unknown): boolean => {
-        return typeof value === "object" && value !== null;
-    };
 
     // Déterminer le type de colonne pour l'icône/badge
     const getColumnTypeInfo = (type: string) => {
@@ -522,12 +563,36 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
                                 <tr className="bg-gradient-to-r from-gray-800/80 to-gray-800/40">
                                     {visibleColumns.map((col) => {
                                         const typeInfo = getColumnTypeInfo(col.type);
+                                        const isSorted = sortConfig.key === col.name;
+                                        const canSort = !col.type.toLowerCase().includes("json");
+
                                         return (
-                                            <th key={col.name} className="px-4 py-3 text-left text-sm font-semibold text-gray-200 whitespace-nowrap border-b border-gray-700/50">
+                                            <th
+                                                key={col.name}
+                                                className={`px-4 py-3 text-left text-sm font-semibold text-gray-200 whitespace-nowrap border-b border-gray-700/50 ${
+                                                    canSort ? "cursor-pointer hover:bg-gray-700/30 transition-colors" : ""
+                                                }`}
+                                                onClick={() => canSort && handleSort(col.name)}
+                                            >
                                                 <div className="flex flex-col gap-0.5">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-base">{typeInfo.icon}</span>
-                                                        <span>{col.name}</span>
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-base">{typeInfo.icon}</span>
+                                                            <span>{col.name}</span>
+                                                        </div>
+                                                        {canSort && (
+                                                            <div className={`transition-colors ${isSorted ? "text-emerald-400" : "text-gray-600"}`}>
+                                                                {isSorted ? (
+                                                                    sortConfig.direction === "asc" ? (
+                                                                        <IconArrowNarrowUp className="w-4 h-4" />
+                                                                    ) : (
+                                                                        <IconArrowNarrowDown className="w-4 h-4" />
+                                                                    )
+                                                                ) : (
+                                                                    <IconArrowsSort className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                     <span className={`text-xs font-normal ${typeInfo.color}`}>{col.type}</span>
                                                 </div>
