@@ -182,6 +182,7 @@ export interface Fulfillment {
     id: string;
     status: string;
     trackingInfo: string | null;
+    trackingCompany: string | null;
 }
 
 export async function getFulfillments(domain: string, orderId: string): Promise<Fulfillment[]> {

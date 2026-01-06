@@ -2,7 +2,7 @@
 
 import { LineItemNode } from '@/library/shopify/orders';
 import { boutiqueFromDomain, TDomainsShopify } from '@/params/paramsShopify';
-import { Check, CheckCircle2, Loader2, Package, RotateCcw, Truck } from 'lucide-react';
+import { Check, CheckCircle2, ExternalLink, Loader2, Package, RotateCcw, Truck } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -27,6 +27,8 @@ interface FulfilledItem {
     node: LineItemNode;
     fulfillmentId: string;
     trackingNumber: string | null;
+    trackingUrl: string | null;
+    trackingCompany: string | null;
 }
 
 export default function FulfillProductSection({ lineItems, domain, orderId, onOrderUpdated }: FulfillProductSectionProps) {
@@ -42,6 +44,38 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
     const [trackingNumber, setTrackingNumber] = useState('');
     const [trackingUrl, setTrackingUrl] = useState('');
     const [trackingCompany, setTrackingCompany] = useState('Colissimo');
+
+    // Mapping des URLs de suivi par transporteur
+    const trackingUrlTemplates: Record<string, string> = {
+        Colissimo: 'https://www.laposte.fr/outils/suivre-vos-envois?code={tracking}',
+        Chronopost: 'https://www.chronopost.fr/tracking-no-cms/suivi-page?liession={tracking}',
+        'La Poste': 'https://www.laposte.fr/outils/suivre-vos-envois?code={tracking}',
+        'Mondial Relay': 'https://www.mondialrelay.fr/suivi-de-colis/?NumeroExpedition={tracking}',
+        DHL: 'https://www.dhl.com/fr-fr/home/suivi.html?tracking-id={tracking}',
+        UPS: 'https://www.ups.com/track?tracknum={tracking}&loc=fr_FR',
+        FedEx: 'https://www.fedex.com/fedextrack/?trknbr={tracking}',
+        GLS: 'https://gls-group.eu/FR/fr/suivi-colis?match={tracking}',
+        DPD: 'https://www.dpd.com/fr/fr/suivi-de-colis/?parcelno={tracking}',
+        Other: '',
+    };
+
+    // Générer l'URL de suivi avec le numéro
+    const getTrackingUrl = (company: string, number: string): string => {
+        const template = trackingUrlTemplates[company] || '';
+        if (!template || !number) return '';
+        return template.replace('{tracking}', number);
+    };
+
+    // Mettre à jour l'URL quand le transporteur ou le numéro change
+    const handleTrackingCompanyChange = (company: string) => {
+        setTrackingCompany(company);
+        setTrackingUrl(getTrackingUrl(company, trackingNumber));
+    };
+
+    const handleTrackingNumberChange = (number: string) => {
+        setTrackingNumber(number);
+        setTrackingUrl(getTrackingUrl(trackingCompany, number));
+    };
 
     useEffect(() => {
         // Réinitialiser les états quand on change de commande
@@ -103,10 +137,14 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
                         if (lineItem) {
                             // Trouver le fulfillment correspondant
                             const fulfillment = fulfillmentsData.find((f) => f.status === 'SUCCESS');
+                            const tNumber = fulfillment?.trackingInfo || null;
+                            const tCompany = fulfillment?.trackingCompany || 'Colissimo';
                             fulfilled.push({
                                 node: lineItem.node,
                                 fulfillmentId: fulfillment?.id || '',
-                                trackingNumber: fulfillment?.trackingInfo || null,
+                                trackingNumber: tNumber,
+                                trackingCompany: tCompany,
+                                trackingUrl: tNumber ? getTrackingUrl(tCompany, tNumber) : null,
                             });
                             fulfilledSkus.add(li.sku);
                         }
@@ -263,7 +301,7 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
                                 <input
                                     type="text"
                                     value={trackingNumber}
-                                    onChange={(e) => setTrackingNumber(e.target.value)}
+                                    onChange={(e) => handleTrackingNumberChange(e.target.value)}
                                     placeholder="Ex: 8R12345678901"
                                     className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
                                 />
@@ -272,7 +310,7 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
                                 <label className="block text-xs font-medium text-gray-600 mb-1">Transporteur</label>
                                 <select
                                     value={trackingCompany}
-                                    onChange={(e) => setTrackingCompany(e.target.value)}
+                                    onChange={(e) => handleTrackingCompanyChange(e.target.value)}
                                     className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm bg-white"
                                 >
                                     <option value="Colissimo">Colissimo</option>
@@ -288,12 +326,12 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">URL de suivi (optionnel)</label>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">URL de suivi (auto-remplie)</label>
                                 <input
                                     type="text"
                                     value={trackingUrl}
                                     onChange={(e) => setTrackingUrl(e.target.value)}
-                                    placeholder="https://..."
+                                    placeholder="Générée automatiquement"
                                     className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm"
                                 />
                             </div>
@@ -391,8 +429,7 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
                         {fulfilledItems.map((item) => (
                             <div key={item.node.id} className="relative flex items-center gap-4 p-4 rounded-xl border-2 border-green-200 bg-green-50/30 transition-all">
                                 {/* Badge traité */}
-                                <div className="absolute top-2 right-2 flex items-center gap-1">
-                                    {item.trackingNumber && <span className="px-2 py-0.5 rounded-md bg-blue-100 text-xs font-medium text-blue-700">{item.trackingNumber}</span>}
+                                <div className="absolute top-2 right-2">
                                     <span className="px-2 py-0.5 rounded-md bg-green-100 text-xs font-bold text-green-700">✓ Traité</span>
                                 </div>
 
@@ -400,10 +437,29 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
                                     <Image src={item.node.variant?.product?.featuredImage?.url || '/no_image.png'} alt={item.node.title} fill className="object-cover" />
                                 </div>
 
-                                <div className="flex-1 min-w-0 pr-24">
+                                <div className="flex-1 min-w-0 pr-20">
                                     <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">{item.node.title}</h4>
-                                    <div className="flex items-center gap-2 mt-1">
+                                    <div className="flex items-center gap-2 mt-1 flex-wrap">
                                         <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku}</span>
+                                        {item.trackingNumber &&
+                                            (item.trackingUrl ? (
+                                                <a
+                                                    href={item.trackingUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="px-2 py-0.5 rounded-md bg-blue-100 text-xs font-medium text-blue-700 hover:bg-blue-200 transition-colors flex items-center gap-1 cursor-pointer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <Truck className="w-3 h-3" />
+                                                    {item.trackingNumber}
+                                                    <ExternalLink className="w-3 h-3" />
+                                                </a>
+                                            ) : (
+                                                <span className="px-2 py-0.5 rounded-md bg-blue-100 text-xs font-medium text-blue-700 flex items-center gap-1">
+                                                    <Truck className="w-3 h-3" />
+                                                    {item.trackingNumber}
+                                                </span>
+                                            ))}
                                     </div>
                                     {item.fulfillmentId && (
                                         <button
