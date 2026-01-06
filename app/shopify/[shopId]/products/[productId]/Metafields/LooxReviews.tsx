@@ -1,12 +1,9 @@
-import { deleteLooxReview } from '@/components/shopify/serverActions';
 import useShopifyStore from '@/components/shopify/shopifyStore';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TMetafield } from '@/library/types/graph';
-import { Star, Trash2 } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { toast } from 'sonner';
 import { cssCard } from '../util';
 
 interface ParsedReview {
@@ -37,27 +34,6 @@ export default function LooxReviews({ metafields }: { metafields: TMetafield[] }
             index,
         }));
     }, [rawReviewsHtml]);
-
-    const handleDelete = async (index: number) => {
-        if (!product?.id || !shopifyBoutique?.domain) return;
-
-        if (!confirm('Voulez-vous vraiment supprimer cet avis ?')) return;
-
-        setDeletingIndex(index);
-        try {
-            const res = await deleteLooxReview(shopifyBoutique.domain, product.id, index);
-            if (res?.response) {
-                toast.success('Avis supprimé');
-                router.refresh();
-            } else {
-                toast.error(res?.error || 'Erreur lors de la suppression');
-            }
-        } catch (error) {
-            toast.error('Erreur serveur');
-        } finally {
-            setDeletingIndex(null);
-        }
-    };
 
     if (!avgRating && !numReviews && reviews.length === 0) return null;
 
@@ -94,15 +70,6 @@ export default function LooxReviews({ metafields }: { metafields: TMetafield[] }
                                         <div className="font-semibold text-sm text-slate-800">{rev.name}</div>
                                         <div className="text-sm text-slate-600 mt-1 leading-relaxed">{rev.text}</div>
                                     </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        onClick={() => handleDelete(rev.index)}
-                                        disabled={deletingIndex === rev.index}
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
                                 </div>
                             </div>
                         ))}

@@ -10,42 +10,70 @@ import { AnalyticsData, getAnalytics, OrderedProduct } from './serverAction';
 type PeriodType = 'today' | 'yesterday' | 'week' | 'month' | 'currentMonth' | 'currentYear' | 'year' | 'custom';
 
 // ============ Helper Functions ============
+function getParisTime(date: Date): Date {
+    // Rend une date qui représente le même "moment" mais calculée pour Paris
+    // On l'utilise pour extraire Y/M/D en heure de Paris
+    return new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+}
+
+function getParisMidnight(date: Date): Date {
+    const now = new Date();
+    // 1. Obtenir les composants de date à Paris
+    const parisLocal = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+    parisLocal.setHours(0, 0, 0, 0);
+
+    // 2. Calculer le décalage entre l'heure locale (browser) et l'heure de Paris
+    const diff = now.getTime() - new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Paris' })).getTime();
+
+    // 3. Appliquer le décalage pour obtenir l'UTC correspondant au minuit Paris
+    return new Date(parisLocal.getTime() + diff);
+}
+
 function getDateRange(period: PeriodType, customStart?: Date, customEnd?: Date): { start: Date; end: Date } {
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayParis = getParisMidnight(now);
 
     switch (period) {
         case 'today':
-            return { start: today, end: now };
-        case 'yesterday':
-            const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
-            return { start: yesterday, end: new Date(today.getTime() - 1) };
-        case 'week':
-            const weekStart = new Date(today);
-            weekStart.setDate(weekStart.getDate() - 7);
-            return { start: weekStart, end: now };
-        case 'month':
-            const monthStart = new Date(today);
-            monthStart.setDate(monthStart.getDate() - 30);
-            return { start: monthStart, end: now };
-        case 'currentMonth':
-            // Premier jour du mois en cours
-            const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-            return { start: currentMonthStart, end: now };
-        case 'currentYear':
-            // Premier jour de l'année en cours
-            const currentYearStart = new Date(now.getFullYear(), 0, 1);
-            return { start: currentYearStart, end: now };
-        case 'year':
-            // Les 12 derniers mois
-            const yearStart = new Date(today);
-            yearStart.setFullYear(yearStart.getFullYear() - 1);
-            return { start: yearStart, end: now };
+            return { start: todayParis, end: now };
+        case 'yesterday': {
+            const start = new Date(todayParis);
+            start.setDate(start.getDate() - 1);
+            const end = new Date(todayParis.getTime() - 1);
+            return { start, end };
+        }
+        case 'week': {
+            const start = new Date(todayParis);
+            start.setDate(start.getDate() - 7);
+            return { start, end: now };
+        }
+        case 'month': {
+            const start = new Date(todayParis);
+            start.setDate(start.getDate() - 30);
+            return { start, end: now };
+        }
+        case 'currentMonth': {
+            const parisNow = getParisTime(now);
+            const start = getParisMidnight(new Date(parisNow.getFullYear(), parisNow.getMonth(), 1));
+            return { start, end: now };
+        }
+        case 'currentYear': {
+            const parisNow = getParisTime(now);
+            const start = getParisMidnight(new Date(parisNow.getFullYear(), 0, 1));
+            return { start, end: now };
+        }
+        case 'year': {
+            const start = new Date(todayParis);
+            start.setFullYear(start.getFullYear() - 1);
+            return { start, end: now };
+        }
         case 'custom':
-            return { start: customStart || today, end: customEnd || now };
+            return {
+                start: customStart ? getParisMidnight(customStart) : todayParis,
+                end: customEnd ? new Date(getParisMidnight(customEnd).getTime() + 24 * 60 * 60 * 1000 - 1) : now,
+            };
         default:
-            return { start: today, end: now };
+            return { start: todayParis, end: now };
     }
 }
 
@@ -112,14 +140,20 @@ function PeriodSelector({
                     <input
                         type="date"
                         value={formatDate(customStart)}
-                        onChange={(e) => setCustomStart(new Date(e.target.value))}
+                        onChange={(e) => {
+                            const [y, m, d] = e.target.value.split('-').map(Number);
+                            if (y && m && d) setCustomStart(new Date(y, m - 1, d, 0, 0, 0));
+                        }}
                         className="px-3 py-2 rounded-xl border border-slate-200 bg-white/80 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                     />
                     <span className="text-slate-400">→</span>
                     <input
                         type="date"
                         value={formatDate(customEnd)}
-                        onChange={(e) => setCustomEnd(new Date(e.target.value))}
+                        onChange={(e) => {
+                            const [y, m, d] = e.target.value.split('-').map(Number);
+                            if (y && m && d) setCustomEnd(new Date(y, m - 1, d, 23, 59, 59));
+                        }}
                         className="px-3 py-2 rounded-xl border border-slate-200 bg-white/80 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                     />
                 </div>
