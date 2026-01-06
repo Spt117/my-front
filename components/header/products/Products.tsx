@@ -2,15 +2,13 @@
 import { ProductGET } from '@/library/types/graph';
 import { Eye } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useState } from 'react';
 import useShopifyStore from '../../shopify/shopifyStore';
 
 export default function ProductList({ product }: { product: ProductGET }) {
     const { shopifyBoutique, setSearchTerm, setProductsSearch } = useShopifyStore();
     const [isHovered, setIsHovered] = useState(false);
-    const searchParams = useSearchParams();
-    const router = useRouter();
 
     // Return conditionnel APRÈS tous les hooks
     if (!shopifyBoutique) return null;
@@ -19,16 +17,16 @@ export default function ProductList({ product }: { product: ProductGET }) {
     const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
     const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
 
-    const handleProductClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        window.location.href = url;
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setProductsSearch([]);
     };
 
     // Fonction pour gérer le clic sur l'icône d'œil et ouvrir le lien externe
     const handleViewOnStoreClick = (e: React.MouseEvent<HTMLDivElement>) => {
         // Empêche le clic de se propager au Link (<a>) parent,
         // ce qui éviterait la navigation vers la page de détails interne.
+        e.preventDefault();
         e.stopPropagation();
 
         // Ouvre le lien du produit dans un nouvel onglet
@@ -38,8 +36,9 @@ export default function ProductList({ product }: { product: ProductGET }) {
     const canaux = product.resourcePublicationsV2.nodes.length;
 
     return (
-        <div
-            onClick={handleProductClick}
+        <Link
+            href={url}
+            onClick={handleClearSearch}
             className="flex items-center hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm pr-2 relative cursor-pointer"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -77,6 +76,6 @@ export default function ProductList({ product }: { product: ProductGET }) {
                     Publié sur {canaux} {canaux > 1 ? 'canaux' : 'canal'}
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }
