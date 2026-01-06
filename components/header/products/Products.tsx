@@ -2,7 +2,6 @@
 import { ProductGET } from '@/library/types/graph';
 import { Eye } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import useShopifyStore from '../../shopify/shopifyStore';
@@ -21,7 +20,9 @@ export default function ProductList({ product }: { product: ProductGET }) {
     const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
 
     const handleProductClick = (e: React.MouseEvent) => {
-        // La navigation sera gérée par le lien, mais on peut ajouter une logique si besoin
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = url;
     };
 
     // Fonction pour gérer le clic sur l'icône d'œil et ouvrir le lien externe
@@ -38,7 +39,8 @@ export default function ProductList({ product }: { product: ProductGET }) {
 
     return (
         <div
-            className="flex items-center hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm pr-2 relative" // Ajout de 'relative' pour positionner l'icône
+            onClick={handleProductClick}
+            className="flex items-center hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm pr-2 relative cursor-pointer"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -55,29 +57,26 @@ export default function ProductList({ product }: { product: ProductGET }) {
             </div>
 
             {/* Le Link principal pour la navigation interne */}
-            <Link href={`${url}?${searchParams.toString()}`} className="w-full">
-                <div className="cursor-pointer flex items-center py-3 px-4 justify-start gap-3">
-                    <div className="relative w-12 h-12 flex-shrink-0">
-                        <Image
-                            src={product.media?.nodes[0]?.image?.url || '/no_image.png'}
-                            alt={product.title}
-                            fill
-                            className="object-cover rounded-md"
-                            sizes="48px"
-                            priority={false}
-                        />
-                    </div>
-                    <h3 className="w-1/4 text-sm font-medium text-foreground line-clamp-1">{product.title}</h3>
-                    <div className="w-1/6 text-sm text-primary">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>
-                    <div className="w-1/6 text-sm text-primary">Stock: {product.variants?.nodes[0]?.inventoryQuantity}</div>
-                    <div className="w-1/6 text-sm text-primary">{`${product.productType} `}</div>
-                    <div className="w-1/6 text-sm text-primary">{`${product.status} `}</div>
-                    <div className="w-1/6 text-sm text-primary">
-                        Publié sur {canaux} {canaux > 1 ? 'canaux' : 'canal'}
-                    </div>
-                    {/* L'ancien tag <a> a été retiré de ce Link */}
+            <div className="w-full flex items-center py-3 px-4 justify-start gap-3">
+                <div className="relative w-12 h-12 flex-shrink-0">
+                    <Image
+                        src={product.media?.nodes[0]?.image?.url || '/no_image.png'}
+                        alt={product.title}
+                        fill
+                        className="object-cover rounded-md"
+                        sizes="48px"
+                        priority={false}
+                    />
                 </div>
-            </Link>
+                <h3 className="w-1/4 text-sm font-medium text-foreground line-clamp-1">{product.title}</h3>
+                <div className="w-1/6 text-sm text-primary">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>
+                <div className="w-1/6 text-sm text-primary">Stock: {product.variants?.nodes[0]?.inventoryQuantity}</div>
+                <div className="w-1/6 text-sm text-primary">{`${product.productType} `}</div>
+                <div className="w-1/6 text-sm text-primary">{`${product.status} `}</div>
+                <div className="w-1/6 text-sm text-primary">
+                    Publié sur {canaux} {canaux > 1 ? 'canaux' : 'canal'}
+                </div>
+            </div>
         </div>
     );
 }

@@ -2,27 +2,19 @@
 
 import { ShopifyCustomer } from '@/library/shopify/clients';
 import { Mail, ShoppingBag, User } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import useClientsStore from '../../shopify/clients/store';
 import useShopifyStore from '../../shopify/shopifyStore';
 
 export default function ClientItem({ client }: { client: ShopifyCustomer }) {
-    const { shopifyBoutique } = useShopifyStore();
+    const { shopifyBoutique, setSearchTerm, setClientsSearch } = useShopifyStore();
     if (!shopifyBoutique) return null;
 
     const id = client.id?.split('/').pop() || '';
     const url = `/shopify/${shopifyBoutique.id}/clients/${id}`;
-    const { setSearchTermClient, setClientsSearch } = useClientsStore();
-
-    const searchParams = useSearchParams();
-    const router = useRouter();
 
     const handleClick = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        router.push(url);
-        setSearchTermClient('');
-        setClientsSearch([]);
+        window.location.href = url;
     };
 
     return (

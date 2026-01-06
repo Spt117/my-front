@@ -1,7 +1,6 @@
 'use client';
 import ListOrdersSearch from '@/components/shopify/orders/search/ListOrdersSearch';
 import { searchOrders } from '@/components/shopify/orders/serverAction';
-import useOrdersStore from '@/components/shopify/orders/store';
 import { ShopifyOrder } from '@/library/shopify/orders';
 import { X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
@@ -9,8 +8,7 @@ import useShopifyStore from '../shopify/shopifyStore';
 import { Input } from '../ui/input';
 
 export default function Orders() {
-    const { setOrdersSearch } = useOrdersStore();
-    const { shopifyBoutique, searchTerm, setSearchTerm, loading, setLoading } = useShopifyStore();
+    const { shopifyBoutique, searchTerm, setSearchTerm, loading, setLoading, setOrdersSearch } = useShopifyStore();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleSearch = async (query: string) => {

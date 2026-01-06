@@ -6,11 +6,9 @@ import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { usePathname } from 'next/navigation';
 import SelectAffiliationSite from '../../app/create/HeaderTaskAffiliations';
-import Orders from './Orders';
 import ShopifySelect from './ShopifySelect';
-import SearchClient from './clients/SearchClient';
-import SearchProduct from './products/SearchProduct';
 import HeaderStock from './stock/HeaderStock';
+import UnifiedSearchShopify from './UnifiedSearchShopify';
 
 export function SiteHeader() {
     const pathname = usePathname();
@@ -24,10 +22,10 @@ export function SiteHeader() {
                 {pathname === '/stock' && <HeaderStock />}
                 {pathname === '/pokemon' && <HeaderPokemon />}
                 {pathname.includes('bulk') && <BulkHeader />}
-                {pathname.includes('products') && <SearchProduct />}
-                {pathname.includes('clients') && <SearchClient />}
+                {pathname.includes('products') && <UnifiedSearchShopify type="products" />}
+                {pathname.includes('clients') && <UnifiedSearchShopify type="clients" />}
                 {pathname.includes('collections') && <HeaderCollection />}
-                {pathname.includes('orders') && <Orders />}
+                {pathname.includes('orders') && <UnifiedSearchShopify type="orders" />}
             </div>
         </header>
     );

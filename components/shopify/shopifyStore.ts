@@ -1,10 +1,12 @@
-import { TCanal } from "@/app/shopify/[shopId]/products/[productId]/util";
-import { TVariant } from "@/library/models/variantShopify/Variant";
-import { ProductGET } from "@/library/types/graph";
-import { TSearchMode } from "@/params/menu";
-import { IShopify } from "@/params/paramsShopify";
-import { create } from "zustand";
-import { TBrand, TProductType } from "./ProductType";
+import { TCanal } from '@/app/shopify/[shopId]/products/[productId]/util';
+import { TVariant } from '@/library/models/variantShopify/Variant';
+import { ShopifyCustomer } from '@/library/shopify/clients';
+import { ShopifyOrder } from '@/library/shopify/orders';
+import { ProductGET } from '@/library/types/graph';
+import { TSearchMode } from '@/params/menu';
+import { IShopify } from '@/params/paramsShopify';
+import { create } from 'zustand';
+import { TBrand, TProductType } from './ProductType';
 
 interface StoreState {
     searchTerm: string;
@@ -13,6 +15,10 @@ interface StoreState {
     setShopifyBoutique: (boutique: IShopify | null) => void;
     productsSearch: ProductGET[];
     setProductsSearch: (products: ProductGET[]) => void;
+    ordersSearch: ShopifyOrder[];
+    setOrdersSearch: (orders: ShopifyOrder[]) => void;
+    clientsSearch: ShopifyCustomer[];
+    setClientsSearch: (clients: ShopifyCustomer[]) => void;
     product: ProductGET | null;
     setProduct: (product: ProductGET | null) => void;
     loading: boolean;
@@ -37,12 +43,16 @@ interface StoreState {
 const useShopifyStore = create<StoreState>((set) => ({
     loading: false,
     setLoading: (loading) => set({ loading }),
-    searchTerm: "",
+    searchTerm: '',
     setSearchTerm: (term) => set({ searchTerm: term }),
     shopifyBoutique: null,
     setShopifyBoutique: (boutique) => set({ shopifyBoutique: boutique }),
     productsSearch: [],
     setProductsSearch: (products) => set({ productsSearch: products }),
+    ordersSearch: [],
+    setOrdersSearch: (orders) => set({ ordersSearch: orders }),
+    clientsSearch: [],
+    setClientsSearch: (clients) => set({ clientsSearch: clients }),
     product: null,
     setProduct: (product) => set({ product }),
     selectedType: null,
@@ -58,7 +68,7 @@ const useShopifyStore = create<StoreState>((set) => ({
     closeDialog: () => set({ dialogOpen: 0 }),
     canauxBoutique: [],
     setCanauxBoutique: (canauxBoutique) => set({ canauxBoutique }),
-    searchMode: "standard",
+    searchMode: 'standard',
     setSearchMode: (mode) => set({ searchMode: mode }),
 }));
 

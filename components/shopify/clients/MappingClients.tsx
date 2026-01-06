@@ -1,14 +1,15 @@
 'use client';
-
 import { TDomainsShopify } from '@/params/paramsShopify';
 import { Search, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import useShopifyStore from '../shopifyStore';
 import ClientCompact from './ClientCompact';
 import { getClients } from './serverAction';
 import useClientsStore from './store';
 
 export default function MappingClients({ shopId, domain }: { shopId: string; domain: TDomainsShopify }) {
-    const { clients, setClients, filterClients, setFilterClients, isLoading, setIsLoading, searchTermClient, clientsSearch } = useClientsStore();
+    const { clients, setClients, filterClients, setFilterClients, isLoading, setIsLoading } = useClientsStore();
+    const { searchTerm, clientsSearch } = useShopifyStore();
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -17,10 +18,9 @@ export default function MappingClients({ shopId, domain }: { shopId: string; dom
             try {
                 const data = await getClients(domain);
                 if (data && data.customers) {
-                    const clientsWithShop = data.customers.map((c) => ({ ...c, shop: domain }));
+                    const clientsWithShop = data.customers.map((c: any) => ({ ...c, shop: domain }));
                     setClients(clientsWithShop);
-                    // On n'écrase filterClients ici que s'il n'y a pas de recherche active dans le store
-                    if (!searchTermClient) {
+                    if (!searchTerm) {
                         setFilterClients(clientsWithShop);
                     }
                 }
@@ -36,7 +36,7 @@ export default function MappingClients({ shopId, domain }: { shopId: string; dom
 
     // Synchronisation avec la recherche globale (header) ou locale
     useEffect(() => {
-        if (searchTermClient) {
+        if (searchTerm) {
             setFilterClients(clientsSearch);
             return;
         }
@@ -54,7 +54,7 @@ export default function MappingClients({ shopId, domain }: { shopId: string; dom
                 (client.lastName?.toLowerCase() || '').includes(query)
         );
         setFilterClients(filtered);
-    }, [searchQuery, clients, setFilterClients, searchTermClient, clientsSearch]);
+    }, [searchQuery, clients, setFilterClients, searchTerm, clientsSearch]);
 
     return (
         <div className="space-y-6">

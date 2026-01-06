@@ -20,6 +20,9 @@ type TableEditorClientProps = {
 // Colonnes à masquer dans l'éditeur
 const HIDDEN_COLUMNS = ["created_at", "updated_at"];
 
+// Colonnes d'identifiant (non modifiables)
+const ID_COLUMNS = ["id", "uuid", "_id"];
+
 // Composant pour afficher un JSON de manière formatée
 function JsonViewer({ data, depth = 0, isExpanded = false }: { data: unknown; depth?: number; isExpanded?: boolean }) {
     const [expanded, setExpanded] = useState(isExpanded || depth < 1);
@@ -312,6 +315,9 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
     };
 
     const startEditing = (rowId: string, column: string, currentValue: unknown) => {
+        // Ne pas permettre d'éditer les colonnes d'ID
+        if (ID_COLUMNS.includes(column)) return;
+
         // Pour les objets/arrays, ouvrir le modal JSON
         if (typeof currentValue === "object" && currentValue !== null) {
             setJsonModal({ isOpen: true, value: currentValue, rowId, column });
@@ -536,45 +542,53 @@ export default function TableEditorClient({ tableName, initialRows, initialColum
                                     return (
                                         <tr key={rowId} className="hover:bg-gray-800/30 transition-colors group">
                                             {visibleColumns.map((col) => {
-                                                const isEditing = editingCell?.rowId === rowId && editingCell?.column === col.name;
-                                                const value = row[col.name];
-                                                const isJson = isJsonValue(value);
+                                                 const isEditing = editingCell?.rowId === rowId && editingCell?.column === col.name;
+                                                 const value = row[col.name];
+                                                 const isJson = isJsonValue(value);
+                                                 const isIdColumn = ID_COLUMNS.includes(col.name);
 
-                                                return (
-                                                    <td key={col.name} className="px-4 py-3 text-sm relative align-top">
-                                                        {isEditing ? (
-                                                            <div className="flex items-start gap-1">
-                                                                <textarea
-                                                                    ref={textareaRef}
-                                                                    value={editValue}
-                                                                    onChange={(e) => {
-                                                                        setEditValue(e.target.value);
-                                                                        // Auto-resize
-                                                                        e.target.style.height = "auto";
-                                                                        e.target.style.height = e.target.scrollHeight + "px";
-                                                                    }}
-                                                                    onKeyDown={(e) => handleKeyDown(e, rowId, col.name, filteredRowIndex)}
-                                                                    className="min-w-[200px] max-w-[400px] min-h-[32px] px-3 py-2 text-sm rounded-md resize-none overflow-hidden bg-gray-950 text-white border-2 border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 selection:bg-emerald-500 selection:text-white shadow-lg shadow-emerald-500/20"
-                                                                    rows={1}
-                                                                />
-                                                                <div className="flex flex-col gap-1">
-                                                                    <button onClick={() => confirmEdit(rowId, col.name)} className="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/20 rounded transition-colors">
-                                                                        <IconCheck className="w-4 h-4" />
-                                                                    </button>
-                                                                    <button onClick={cancelEditing} className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded transition-colors">
-                                                                        <IconX className="w-4 h-4" />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        ) : isJson ? (
-                                                            <JsonCellPreview value={value} onClick={() => startEditing(rowId, col.name, value)} />
-                                                        ) : (
-                                                            <div className={`cursor-pointer hover:bg-gray-700/50 rounded px-2 py-1 -mx-2 -my-1 transition-all ${getValueClass(value)}`} onClick={() => startEditing(rowId, col.name, value)} title="Cliquer pour modifier">
-                                                                <span className="max-w-xs truncate block">{formatValue(value)}</span>
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                );
+                                                 return (
+                                                     <td key={col.name} className="px-4 py-3 text-sm relative align-top">
+                                                         {isEditing && !isIdColumn ? (
+                                                             <div className="flex items-start gap-1">
+                                                                 <textarea
+                                                                     ref={textareaRef}
+                                                                     value={editValue}
+                                                                     onChange={(e) => {
+                                                                         setEditValue(e.target.value);
+                                                                         // Auto-resize
+                                                                         e.target.style.height = "auto";
+                                                                         e.target.style.height = e.target.scrollHeight + "px";
+                                                                     }}
+                                                                     onKeyDown={(e) => handleKeyDown(e, rowId, col.name, filteredRowIndex)}
+                                                                     className="min-w-[200px] max-w-[400px] min-h-[32px] px-3 py-2 text-sm rounded-md resize-none overflow-hidden bg-gray-950 text-white border-2 border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 selection:bg-emerald-500 selection:text-white shadow-lg shadow-emerald-500/20"
+                                                                     rows={1}
+                                                                 />
+                                                                 <div className="flex flex-col gap-1">
+                                                                     <button onClick={() => confirmEdit(rowId, col.name)} className="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/20 rounded transition-colors">
+                                                                         <IconCheck className="w-4 h-4" />
+                                                                     </button>
+                                                                     <button onClick={cancelEditing} className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded transition-colors">
+                                                                         <IconX className="w-4 h-4" />
+                                                                     </button>
+                                                                 </div>
+                                                             </div>
+                                                         ) : isIdColumn ? (
+                                                             <Link
+                                                                 href={`/supabase/${tableName}/${value}`}
+                                                                 className="text-emerald-400 hover:text-emerald-300 hover:underline font-mono px-2 py-1 -mx-2 -my-1 rounded transition-colors"
+                                                             >
+                                                                 {formatValue(value)}
+                                                             </Link>
+                                                         ) : isJson ? (
+                                                             <JsonCellPreview value={value} onClick={() => startEditing(rowId, col.name, value)} />
+                                                         ) : (
+                                                             <div className={`cursor-pointer hover:bg-gray-700/50 rounded px-2 py-1 -mx-2 -my-1 transition-all ${getValueClass(value)}`} onClick={() => startEditing(rowId, col.name, value)} title="Cliquer pour modifier">
+                                                                 <span className="max-w-xs truncate block">{formatValue(value)}</span>
+                                                             </div>
+                                                         )}
+                                                     </td>
+                                                 );
                                             })}
                                         </tr>
                                     );
