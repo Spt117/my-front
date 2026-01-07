@@ -12,16 +12,20 @@ export async function getOrders() {
     const filterOrdersProductsUnfulfilled = data.map((order) => ({
         ...order,
         lineItems: {
-            edges: order.lineItems.edges.filter(({ node }) => node.fulfillmentStatus === 'unfulfilled'),
+            edges: order.lineItems.edges.filter(({ node }) => {
+                const status = (node.fulfillmentStatus || '').toLowerCase();
+                return status !== 'fulfilled';
+            }),
         },
     }));
 
     const products: ProductInOrder[] = filterOrdersProductsUnfulfilled.flatMap((order) =>
         order.lineItems.edges.flatMap(({ node }) => {
+            const productId = node.variant?.product?.id?.split('/').pop() || '';
             return {
                 title: node.title,
                 image: node?.variant?.product?.featuredImage?.url || ' ',
-                productUrl: `https://${order.shop}/admin/products/${node.variant?.product.id.split('/').pop()}`,
+                productUrl: productId ? `https://${order.shop}/admin/products/${productId}` : '#',
                 quantity: node.quantity,
                 fulfillmentStatus: node.fulfillmentStatus,
                 shop: order.shop,
@@ -32,10 +36,10 @@ export async function getOrders() {
 
     // Regroupement par SKU avec addition des quantités
     const groupedProducts: ProductInOrder[] = products.reduce((acc: ProductInOrder[], product) => {
-        const existingProduct = acc.find((p) => p.sku === product.sku);
+        const existingProduct = acc.find((p) => p.sku === product.sku && p.shop === product.shop);
 
         if (existingProduct) {
-            // Si le SKU existe déjà, on additionne la quantité
+            // Si le SKU existe déjà pour la même boutique, on additionne la quantité
             existingProduct.quantity += product.quantity;
         } else {
             // Sinon on ajoute le produit à l'accumulateur
@@ -46,6 +50,16 @@ export async function getOrders() {
     }, []);
 
     return { orders: groupOrdersByCustomerEmail(filterOrdersProductsUnfulfilled), products: groupedProducts };
+}
+
+export async function getOrdersByShop(shopDomain: string) {
+    const data = await getOrders();
+    if (!data) return null;
+
+    return {
+        orders: data.orders.filter((order) => order.shop === shopDomain),
+        products: data.products.filter((product) => product.shop === shopDomain),
+    };
 }
 
 export async function searchOrders(domain: string, query: string) {
@@ -82,20 +96,32 @@ function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder
         if (groupedOrders.has(customerEmail)) {
             const existingOrder = groupedOrders.get(customerEmail)!;
 
-            // Additionner les montants
-            const existingAmount = parseFloat(existingOrder.totalPriceSet.shopMoney.amount);
-            const currentAmount = parseFloat(order.totalPriceSet.shopMoney.amount);
-            const totalAmount = (existingAmount + currentAmount).toFixed(2);
+            const sumAmount = (a: string, b: string) => (parseFloat(a) + parseFloat(b)).toFixed(2);
+
+            // Additionner les montants (avec sécurité si les champs sont absents)
+            const getAmount = (set: any) => set?.shopMoney?.amount || '0';
+
+            existingOrder.totalPriceSet.shopMoney.amount = sumAmount(existingOrder.totalPriceSet.shopMoney.amount, getAmount(order.totalPriceSet));
+            existingOrder.subtotalPriceSet.shopMoney.amount = sumAmount(existingOrder.subtotalPriceSet.shopMoney.amount, getAmount(order.subtotalPriceSet));
+            existingOrder.totalDiscountsSet.shopMoney.amount = sumAmount(existingOrder.totalDiscountsSet.shopMoney.amount, getAmount(order.totalDiscountsSet));
+            existingOrder.totalShippingPriceSet.shopMoney.amount = sumAmount(existingOrder.totalShippingPriceSet.shopMoney.amount, getAmount(order.totalShippingPriceSet));
+            existingOrder.totalTaxSet.shopMoney.amount = sumAmount(existingOrder.totalTaxSet.shopMoney.amount, getAmount(order.totalTaxSet));
+            existingOrder.totalReceivedSet.shopMoney.amount = sumAmount(existingOrder.totalReceivedSet.shopMoney.amount, getAmount(order.totalReceivedSet));
+
+            // Additionner les quantités
+            existingOrder.subtotalLineItemsQuantity = (existingOrder.subtotalLineItemsQuantity || 0) + (order.subtotalLineItemsQuantity || 0);
 
             // Ajouter le nom de la commande à l'array
             existingOrder.name.push(order.name);
             existingOrder.legacyResourceId.push(order.legacyResourceId);
 
-            // Mettre à jour le montant total
-            existingOrder.totalPriceSet.shopMoney.amount = totalAmount;
-
             // Fusionner les line items
             existingOrder.lineItems.edges.push(...order.lineItems.edges);
+
+            // Fusionner les détails (discounts, shipping, taxes)
+            if (order.discountCodes) existingOrder.discountCodes.push(...order.discountCodes);
+            if (order.shippingLines?.nodes) existingOrder.shippingLines.nodes.push(...order.shippingLines.nodes);
+            if (order.taxLines) existingOrder.taxLines.push(...order.taxLines);
 
             // Garder la date de création la plus récente
             if (new Date(order.createdAt) > new Date(existingOrder.createdAt)) {
@@ -111,6 +137,11 @@ function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder
                     edges: [...products], // Copier les edges
                 },
                 legacyResourceId: [order.legacyResourceId], // Convertir en array
+                discountCodes: order.discountCodes ? [...order.discountCodes] : [],
+                shippingLines: {
+                    nodes: order.shippingLines?.nodes ? [...order.shippingLines.nodes] : [],
+                },
+                taxLines: order.taxLines ? [...order.taxLines] : [],
             };
 
             groupedOrders.set(customerEmail, groupedOrder);
@@ -126,6 +157,7 @@ export interface FulfillmentOrderLineItem {
     sku: string;
     totalQuantity: number;
     remainingQuantity: number;
+    lineItemId: string;
 }
 
 export interface FulfillmentOrder {

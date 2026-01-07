@@ -11,6 +11,17 @@ interface TotalPriceSet {
     shopMoney: ShopMoney;
 }
 
+interface TaxLine {
+    title: string;
+    rate: number;
+    priceSet: TotalPriceSet;
+}
+
+interface ShippingLine {
+    title: string;
+    originalPriceSet: TotalPriceSet;
+}
+
 interface Customer {
     id: string;
     email: string;
@@ -76,11 +87,23 @@ export interface ShopifyOrder {
     displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED' | 'RESTOCKED' | 'PENDING_FULFILLMENT' | 'OPEN';
     displayFinancialStatus: 'PAID' | 'PENDING' | 'AUTHORIZED' | 'PARTIALLY_PAID' | 'PARTIALLY_REFUNDED' | 'REFUNDED' | 'VOIDED' | 'EXPIRED';
     totalPriceSet: TotalPriceSet;
+    subtotalLineItemsQuantity: number;
+    subtotalPriceSet: TotalPriceSet;
+    totalDiscountsSet: TotalPriceSet;
+    totalShippingPriceSet: TotalPriceSet;
+    totalTaxSet: TotalPriceSet;
+    totalReceivedSet: TotalPriceSet;
+    discountCodes: string[];
+    shippingLines: {
+        nodes: ShippingLine[];
+    };
+    taxLines: TaxLine[];
     customer: Customer;
     shippingAddress: ShippingAddress;
     lineItems: LineItems;
     shop: TDomainsShopify;
 }
+
 export interface IShopifyOrderResponse {
     response: ShopifyOrder | null;
     error?: string;
@@ -96,6 +119,17 @@ export interface GroupedShopifyOrder {
     displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED' | 'RESTOCKED' | 'PENDING_FULFILLMENT' | 'OPEN';
     displayFinancialStatus: 'PAID' | 'PENDING' | 'AUTHORIZED' | 'PARTIALLY_PAID' | 'PARTIALLY_REFUNDED' | 'REFUNDED' | 'VOIDED' | 'EXPIRED';
     totalPriceSet: TotalPriceSet;
+    subtotalLineItemsQuantity: number;
+    subtotalPriceSet: TotalPriceSet;
+    totalDiscountsSet: TotalPriceSet;
+    totalShippingPriceSet: TotalPriceSet;
+    totalTaxSet: TotalPriceSet;
+    totalReceivedSet: TotalPriceSet;
+    discountCodes: string[];
+    shippingLines: {
+        nodes: ShippingLine[];
+    };
+    taxLines: TaxLine[];
     customer: Customer;
     shippingAddress: ShippingAddress;
     lineItems: LineItems;

@@ -6,12 +6,12 @@ import { Check, CheckCircle2, ExternalLink, Loader2, Package, RotateCcw, Truck }
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { cancelFulfillment, fulfillLineItems, Fulfillment, getFulfillmentOrders, getFulfillments } from './serverAction';
+import { cancelFulfillment, fulfillLineItems, Fulfillment, FulfillmentOrder, getFulfillmentOrders, getFulfillments } from './serverAction';
 
 interface FulfillProductSectionProps {
     lineItems: Array<{ node: LineItemNode }>;
     domain: TDomainsShopify;
-    orderId: string;
+    orderIds: string[];
     onOrderUpdated?: () => void;
 }
 
@@ -31,7 +31,7 @@ interface FulfilledItem {
     trackingCompany: string | null;
 }
 
-export default function FulfillProductSection({ lineItems, domain, orderId, onOrderUpdated }: FulfillProductSectionProps) {
+export default function FulfillProductSection({ lineItems, domain, orderIds, onOrderUpdated }: FulfillProductSectionProps) {
     const router = useRouter();
     const boutique = boutiqueFromDomain(domain);
     const [loading, setLoading] = useState(true);
@@ -86,72 +86,137 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
         setTrackingNumber('');
         setTrackingUrl('');
         loadData();
-    }, [orderId, domain]);
+    }, [orderIds.join(','), domain]);
 
     const loadData = async () => {
         try {
-            // Charger les fulfillment orders et les fulfillments en parallèle
-            const [foData, fulfillmentsData] = await Promise.all([getFulfillmentOrders(domain, orderId), getFulfillments(domain, orderId)]);
+            // Charger les fulfillment orders et les fulfillments pour TOUTES les commandes du groupe
+            const foPromises = orderIds.map((id) => getFulfillmentOrders(domain, id));
+            const fPromises = orderIds.map((id) => getFulfillments(domain, id));
 
-            setFulfillments(fulfillmentsData);
+            const [foResults, fResults] = await Promise.all([Promise.all(foPromises), Promise.all(fPromises)]);
 
-            if (!foData) {
+            // Agréger les fulfillment orders
+            const allFulfillmentOrders: FulfillmentOrder[] = [];
+            for (const res of foResults) {
+                if (res?.fulfillmentOrders) {
+                    allFulfillmentOrders.push(...res.fulfillmentOrders);
+                }
+            }
+
+            // Agréger les fulfillments
+            const allFulfillments: Fulfillment[] = [];
+            for (const res of fResults) {
+                if (res) allFulfillments.push(...res);
+            }
+
+            setFulfillments(allFulfillments);
+
+            if (allFulfillmentOrders.length === 0 && foResults.some((r) => !r)) {
                 setMessage({ type: 'error', text: 'Impossible de charger les données de fulfillment' });
                 setLoading(false);
                 return;
             }
 
-            // Filtrer les fulfillment orders ouverts
-            const openFulfillmentOrders = foData.fulfillmentOrders.filter((fo) => fo.status === 'OPEN' || fo.status === 'IN_PROGRESS');
+            // Filtrer les fulfillment orders (on prend tout ce qui n'est pas CLOSED ou CANCELLED)
+            const activeFulfillmentOrders = allFulfillmentOrders.filter((fo) => {
+                const s = (fo.status || '').toUpperCase();
+                return s !== 'CLOSED' && s !== 'CANCELLED' && s !== 'CANCELED';
+            });
 
-            // Produits à traiter
-            const mappedItems: SelectableLineItem[] = lineItems
-                .map(({ node }) => {
-                    for (const fo of openFulfillmentOrders) {
-                        const foLineItem = fo.lineItems.find((li) => li.sku === node.sku && li.remainingQuantity > 0);
-                        if (foLineItem) {
-                            return {
-                                node,
-                                fulfillmentOrderId: fo.id,
-                                fulfillmentLineItemId: foLineItem.id,
-                                remainingQuantity: foLineItem.remainingQuantity,
-                                selected: false,
-                            };
-                        }
-                    }
-                    return null;
-                })
-                .filter((item): item is SelectableLineItem => item !== null);
+            // DEBUG: Log des données pour diagnostic
+            console.log('=== DEBUG FulfillProductSection ===');
+            console.log('lineItems:', lineItems);
+            console.log('allFulfillmentOrders:', allFulfillmentOrders);
+            console.log('activeFulfillmentOrders:', activeFulfillmentOrders);
+            console.log('allFulfillments:', allFulfillments);
+            console.log('===================================');
 
-            setSelectableItems(mappedItems);
-
-            // Produits déjà traités (basé sur les fulfillment orders fermés)
-            const closedFulfillmentOrders = foData.fulfillmentOrders.filter((fo) => fo.status === 'CLOSED');
-            const fulfilledSkus = new Set<string>();
-
+            const selectable: SelectableLineItem[] = [];
             const fulfilled: FulfilledItem[] = [];
-            for (const fo of closedFulfillmentOrders) {
-                for (const li of fo.lineItems) {
-                    if (!fulfilledSkus.has(li.sku)) {
-                        const lineItem = lineItems.find(({ node }) => node.sku === li.sku);
-                        if (lineItem) {
-                            // Trouver le fulfillment correspondant
-                            const fulfillment = fulfillmentsData.find((f) => f.status === 'SUCCESS');
-                            const tNumber = fulfillment?.trackingInfo || null;
-                            const tCompany = fulfillment?.trackingCompany || 'Colissimo';
-                            fulfilled.push({
-                                node: lineItem.node,
-                                fulfillmentId: fulfillment?.id || '',
-                                trackingNumber: tNumber,
-                                trackingCompany: tCompany,
-                                trackingUrl: tNumber ? getTrackingUrl(tCompany, tNumber) : null,
-                            });
-                            fulfilledSkus.add(li.sku);
-                        }
+            const processedLineItems = new Set<string>();
+
+            // Aide pour comparer les IDs Shopify de manière robuste (compare uniquement la partie numérique)
+            const getNumericId = (gid: string) => gid.split('/').pop()?.split('?')[0] || gid;
+
+            // 1. D'abord on identifie tout ce qui est sélectionnable via les FO ouverts
+            for (const { node } of lineItems) {
+                const nodeNumericId = getNumericId(node.id);
+                const nodeSku = (node.sku || '').trim().toLowerCase();
+                const nodeTitle = (node.title || '').trim().toLowerCase();
+
+                let found = false;
+                for (const fo of activeFulfillmentOrders) {
+                    const foLineItem = fo.lineItems.find((li) => {
+                        const liNumericId = getNumericId(li.lineItemId);
+                        const liSku = (li.sku || '').trim().toLowerCase();
+
+                        // Stratégie de matching :
+                        // 1. ID numérique identique
+                        if (liNumericId && nodeNumericId && liNumericId === nodeNumericId) return true;
+                        // 2. SKU identique (si présent)
+                        if (liSku && nodeSku && liSku === nodeSku) return true;
+
+                        return false;
+                    });
+
+                    if (foLineItem) {
+                        selectable.push({
+                            node,
+                            fulfillmentOrderId: fo.id,
+                            fulfillmentLineItemId: foLineItem.id,
+                            remainingQuantity: foLineItem.remainingQuantity,
+                            selected: false,
+                        });
+                        processedLineItems.add(node.id);
+                        found = true;
+                        break;
                     }
                 }
             }
 
+            // 2. Ensuite on identifie tout ce qui est déjà traité
+            for (const { node } of lineItems) {
+                if (processedLineItems.has(node.id)) continue;
+
+                const isFulfilled = (node.fulfillmentStatus || '').toLowerCase() === 'fulfilled';
+
+                if (isFulfilled) {
+                    const fulfillment = allFulfillments.find((f) => f.status === 'SUCCESS' || f.status === 'fulfilled') || allFulfillments[0];
+                    const tNumber = fulfillment?.trackingInfo || null;
+                    const tCompany = fulfillment?.trackingCompany || 'Colissimo';
+
+                    fulfilled.push({
+                        node,
+                        fulfillmentId: fulfillment?.id || '',
+                        trackingNumber: tNumber,
+                        trackingCompany: tCompany,
+                        trackingUrl: tNumber ? getTrackingUrl(tCompany, tNumber) : null,
+                    });
+                    processedLineItems.add(node.id);
+                }
+            }
+
+            // 3. Cas particulier: si un item n'est ni selectable ni fulfilled
+            // On l'ajoute quand même en "selectable" (mais sans fulfillmentOrderId/id pour bloquer le bouton)
+            // ou on pourrait créer un autre état. Pour l'instant, on l'affiche simplement pour éviter l'écran vide.
+            for (const { node } of lineItems) {
+                if (processedLineItems.has(node.id)) {
+                    continue;
+                }
+                // Si on arrive ici, l'item est "perdu". On l'ajoute aux sélectionnables
+                // mais il n'aura pas de fulfillmentOrderId donc on ne pourra pas le traiter.
+                // Cela permet au moins de voir le produit.
+                selectable.push({
+                    node,
+                    fulfillmentOrderId: '',
+                    fulfillmentLineItemId: '',
+                    remainingQuantity: node.quantity,
+                    selected: false,
+                });
+            }
+
+            setSelectableItems(selectable);
             setFulfilledItems(fulfilled);
         } catch (error) {
             console.error('Erreur lors du chargement:', error);
@@ -162,11 +227,13 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
     };
 
     const toggleSelection = (index: number) => {
+        const item = selectableItems[index];
+        if (!item.fulfillmentOrderId) return; // Empêcher la sélection si pas d'ID de fulfillment
         setSelectableItems((prev) => prev.map((item, i) => (i === index ? { ...item, selected: !item.selected } : item)));
     };
 
     const selectAll = () => {
-        setSelectableItems((prev) => prev.map((item) => ({ ...item, selected: true })));
+        setSelectableItems((prev) => prev.map((item) => (item.fulfillmentOrderId ? { ...item, selected: true } : item)));
     };
 
     const deselectAll = () => {
@@ -186,7 +253,7 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
         try {
             const result = await fulfillLineItems({
                 domain,
-                orderId,
+                orderId: orderIds[0],
                 lineItems: selectedItems.map((item) => ({
                     fulfillmentOrderId: item.fulfillmentOrderId,
                     lineItemId: item.fulfillmentLineItemId,
@@ -401,14 +468,23 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
                                 </div>
 
                                 <div className="relative w-16 h-16 min-w-[4rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
-                                    <Image src={item.node.variant?.product?.featuredImage?.url || '/no_image.png'} alt={item.node.title} fill className="object-cover" />
+                                    <Image
+                                        src={item.node.variant?.product?.featuredImage?.url || '/no_image.png'}
+                                        alt={item.node.title}
+                                        fill
+                                        sizes="64px"
+                                        className="object-cover"
+                                    />
                                 </div>
 
                                 <div className="flex-1 min-w-0 pr-8">
                                     <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">{item.node.title}</h4>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku}</span>
+                                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku || 'SANS SKU'}</span>
                                         <span className="px-2 py-0.5 rounded-md bg-indigo-50 text-xs font-bold text-indigo-600">x{item.remainingQuantity}</span>
+                                        {!item.fulfillmentOrderId && (
+                                            <span className="px-2 py-0.5 rounded-md bg-orange-100 text-[10px] font-bold text-orange-700 animate-pulse">DÉTAILS API MANQUANTS</span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -434,7 +510,13 @@ export default function FulfillProductSection({ lineItems, domain, orderId, onOr
                                 </div>
 
                                 <div className="relative w-16 h-16 min-w-[4rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
-                                    <Image src={item.node.variant?.product?.featuredImage?.url || '/no_image.png'} alt={item.node.title} fill className="object-cover" />
+                                    <Image
+                                        src={item.node.variant?.product?.featuredImage?.url || '/no_image.png'}
+                                        alt={item.node.title}
+                                        fill
+                                        sizes="64px"
+                                        className="object-cover"
+                                    />
                                 </div>
 
                                 <div className="flex-1 min-w-0 pr-20">

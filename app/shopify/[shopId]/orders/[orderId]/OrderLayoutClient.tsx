@@ -16,6 +16,7 @@ export default function OrderLayoutClient({ data, children, error, shopId }: Ord
     const { setOrders, setFilterOrders, setMode } = useOrdersStore();
 
     useEffect(() => {
+        console.log('OrderLayoutClient', data);
         // Mettre à jour le store avec la commande actuelle
         setOrders([data]);
         setFilterOrders([data]);

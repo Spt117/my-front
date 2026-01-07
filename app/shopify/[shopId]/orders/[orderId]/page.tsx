@@ -5,7 +5,6 @@ import { getOrderById } from '@/components/shopify/orders/serverAction';
 import useOrdersStore from '@/components/shopify/orders/store';
 import UsefullLinks from '@/components/shopify/orders/UsefullLinks';
 import { Card } from '@/components/ui/card';
-import { useCopy } from '@/library/hooks/useCopy';
 import { boutiqueFromDomain } from '@/params/paramsShopify';
 import * as Flags from 'country-flag-icons/react/3x2';
 import countries from 'i18n-iso-countries';
@@ -22,7 +21,6 @@ countries.registerLocale(enLocale);
 export default function OrderDetailPage() {
     const params = useParams();
     const shopId = params.shopId as string;
-    const { handleCopy } = useCopy();
     const { orders, setOrders } = useOrdersStore();
 
     // Les données sont déjà chargées par le layout
@@ -31,6 +29,8 @@ export default function OrderDetailPage() {
     const handleOrderUpdated = async () => {
         if (!order) return;
         const updatedOrder = await getOrderById({ orderId: order.id, domain: order.shop });
+        console.log(updatedOrder);
+
         if (updatedOrder) {
             setOrders([updatedOrder]);
         }
@@ -139,21 +139,97 @@ export default function OrderDetailPage() {
                     <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
                         {/* Left Column: Stats & Info (4 cols) */}
                         <div className="lg:col-span-4 space-y-4">
-                            {/* Price Card */}
-                            <div className="bg-gradient-to-br from-indigo-50/50 to-blue-50/50 rounded-2xl p-5 border border-blue-100/50 shadow-sm relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-400/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
-                                <div className="relative">
-                                    <p className="text-sm text-blue-600 font-semibold uppercase tracking-wide mb-1 flex items-center gap-2">Total Commande</p>
-                                    <div className="flex items-baseline gap-1 mt-2">
-                                        <span className="text-4xl font-extrabold text-gray-900 tracking-tight">{order.totalPriceSet.shopMoney.amount}</span>
-                                        <span className="text-xl font-medium text-gray-500">{order.totalPriceSet.shopMoney.currencyCode}</span>
+                            {/* Payment Details Card */}
+                            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+
+                                <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 mb-4 relative">
+                                    <div className="w-1.5 h-6 rounded-full bg-blue-600"></div>
+                                    Paiement
+                                </h3>
+
+                                <div className="space-y-4 relative">
+                                    {/* Sous-total */}
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-0.5">
+                                            <p className="text-sm text-gray-600 font-medium">Sous-total</p>
+                                            <p className="text-xs text-gray-400 font-medium flex items-center gap-1.5">
+                                                <ShoppingBag className="w-3 h-3" />
+                                                {totalProducts} article{totalProducts > 1 ? 's' : ''}
+                                            </p>
+                                        </div>
+                                        <p className="text-sm font-bold text-gray-900">
+                                            {order.subtotalPriceSet.shopMoney.amount} {order.subtotalPriceSet.shopMoney.currencyCode}
+                                        </p>
                                     </div>
-                                    <div className="mt-4 flex items-center gap-2">
-                                        <div className="bg-white/90 backdrop-blur text-indigo-700 px-3 py-1.5 rounded-lg border border-indigo-100 shadow-sm flex items-center gap-2">
-                                            <ShoppingBag className="w-4 h-4" />
-                                            <span className="font-bold text-sm">
-                                                {totalProducts} Produit{totalProducts > 1 ? 's' : ''}
-                                            </span>
+
+                                    {/* Réductions */}
+                                    {parseFloat(order.totalDiscountsSet.shopMoney.amount) > 0 && (
+                                        <div className="flex justify-between items-start bg-green-50/50 -mx-2 px-2 py-2 rounded-xl border border-green-100/50">
+                                            <div className="space-y-0.5">
+                                                <p className="text-sm text-green-700 font-semibold">Réduction</p>
+                                                <div className="flex flex-wrap gap-1">
+                                                    {order.discountCodes.map((code, i) => (
+                                                        <span key={i} className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                                                            {code}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <p className="text-sm font-bold text-green-600">
+                                                -{order.totalDiscountsSet.shopMoney.amount} {order.totalDiscountsSet.shopMoney.currencyCode}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Expédition */}
+                                    <div className="flex justify-between items-start pt-1">
+                                        <div className="space-y-0.5">
+                                            <p className="text-sm text-gray-600 font-medium">Expédition</p>
+                                            <div className="space-y-0.5">
+                                                {order.shippingLines.nodes.map((shipping, i) => (
+                                                    <p key={i} className="text-xs text-gray-400 font-medium leading-relaxed max-w-[180px]">
+                                                        {shipping.title}
+                                                    </p>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <p className="text-sm font-bold text-gray-900">
+                                            {order.totalShippingPriceSet.shopMoney.amount} {order.totalShippingPriceSet.shopMoney.currencyCode}
+                                        </p>
+                                    </div>
+
+                                    {/* Taxes */}
+                                    <div className="flex justify-between items-start pt-1 opacity-80">
+                                        <div className="space-y-0.5">
+                                            <p className="text-sm text-gray-500 font-medium">Taxes</p>
+                                            <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+                                                {order.taxLines.map((tax, i) => (
+                                                    <p key={i} className="text-[10px] text-gray-400 font-medium">
+                                                        {tax.title} {(tax.rate * 100).toFixed(0)}% (Inclus)
+                                                    </p>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <p className="text-sm font-semibold text-gray-500">
+                                            {order.totalTaxSet.shopMoney.amount} {order.totalTaxSet.shopMoney.currencyCode}
+                                        </p>
+                                    </div>
+
+                                    {/* Totals Section */}
+                                    <div className="border-t-2 border-dashed border-gray-100 pt-5 mt-2">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <p className="text-base font-bold text-gray-900">Total</p>
+                                            <div className="flex items-baseline gap-1">
+                                                <span className="text-2xl font-black text-gray-900 tracking-tight">{order.totalPriceSet.shopMoney.amount}</span>
+                                                <span className="text-sm font-bold text-gray-500">{order.totalPriceSet.shopMoney.currencyCode}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-center bg-blue-50/50 -mx-2 px-2 py-2 rounded-xl border border-blue-100/50">
+                                            <p className="text-sm font-bold text-blue-700">Déjà réglé</p>
+                                            <p className="text-sm font-black text-blue-700">
+                                                {order.totalReceivedSet.shopMoney.amount} {order.totalReceivedSet.shopMoney.currencyCode}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -241,7 +317,12 @@ export default function OrderDetailPage() {
                                 </h3>
 
                                 {/* Section de fulfillment - le composant gère lui-même le filtrage */}
-                                <FulfillProductSection lineItems={order.lineItems.edges} domain={order.shop} orderId={order.id} onOrderUpdated={handleOrderUpdated} />
+                                <FulfillProductSection
+                                    lineItems={order.lineItems.edges}
+                                    domain={order.shop}
+                                    orderIds={[order.id, ...order.legacyResourceId]}
+                                    onOrderUpdated={handleOrderUpdated}
+                                />
                             </div>
                         </div>
                     </div>

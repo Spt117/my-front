@@ -1,13 +1,14 @@
 'use client';
 import { CardHeader } from '@/components/ui/card';
 import { useEventListener } from '@/library/hooks/useEvent/useEvents';
+import { GroupedShopifyOrder } from '@/library/shopify/orders';
 import { Archive, RefreshCcw } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import useShopifyStore from '../shopifyStore';
 import MappingOrders from './MappingOrders';
 import Products from './ModeProducts/Products';
-import { getOrders } from './serverAction';
+import { getOrdersByShop } from './serverAction';
 import useOrdersStore, { ProductInOrder } from './store';
 import ToggleMode from './ToggleMode';
 
@@ -22,13 +23,14 @@ export default function RefreshOders({ boolArchived }: { boolArchived?: boolean 
 
     const handleGetOrders = async () => {
         try {
+            if (!shopifyBoutique) return;
             setLoading(true);
 
-            const data = await getOrders();
+            const data = await getOrdersByShop(shopifyBoutique.domain);
             console.log(data);
 
             if (data) {
-                const orders = data.orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                const orders = data.orders.sort((a: GroupedShopifyOrder, b: GroupedShopifyOrder) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
                 setOrders(orders);
                 setFilterOrders(orders);
                 setProductsInOrders(data.products);
@@ -41,7 +43,7 @@ export default function RefreshOders({ boolArchived }: { boolArchived?: boolean 
 
     useEffect(() => {
         handleGetOrders();
-    }, []);
+    }, [shopifyBoutique?.domain]);
 
     return (
         <>
