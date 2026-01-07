@@ -12,20 +12,26 @@ export default async function BackendProvider({ children }: Readonly<{ children:
     const headersList = await headers();
     const pathname = headersList.get('x-pathname') || '/unknown';
 
-    // Ne pas rediriger si on est sur une route d'authentification
+    // Ne JAMAIS rediriger les routes API d'auth
     if (pathname.startsWith('/api/auth')) return <>{children}</>;
 
-    // Redirection côté serveur si pas de session et pas sur la page boarding
-    if (!session && pathname !== '/boarding') redirect('/boarding');
-
+    // Si on n'a pas de session
     if (!session) {
-        if (pathname !== '/boarding') return null;
+        // Si on sait qu'on n'est PAS sur boarding, on redirige
+        // Si pathname est '/unknown', on ne redirige pas pour éviter la boucle infinie
+        if (pathname !== '/boarding' && pathname !== '/unknown') {
+            redirect('/boarding');
+        }
         return <>{children}</>;
     }
 
-    if (session && pathname === '/boarding') redirect('/');
+    // Si on a une session et qu'on est sur boarding, on va à l'accueil
+    if (session && pathname === '/boarding') {
+        redirect('/');
+    }
 
     if (session.user?.email !== userEmail) return null;
+
     return (
         <SidebarProvider
             style={

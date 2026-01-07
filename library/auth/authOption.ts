@@ -1,8 +1,8 @@
 // ./auth.ts (ou authOption.ts)
-import { NextAuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import EmailProvider from 'next-auth/providers/email';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
+import { NextAuthOptions } from 'next-auth';
+import EmailProvider from 'next-auth/providers/email';
+import GoogleProvider from 'next-auth/providers/google';
 import { authSecret, email, googleId, googleSecret } from '../utils/uri';
 import { getMongoClientForAuth } from './connectorAuth';
 
@@ -27,5 +27,19 @@ export const authOptions: NextAuthOptions = {
     adapter: MongoDBAdapter(getMongoClientForAuth(), {
         databaseName: 'NextAuth-my-front',
     }),
+    session: {
+        strategy: 'jwt',
+    },
+    cookies: {
+        sessionToken: {
+            name: `next-auth.session-token.my-front`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: process.env.NODE_ENV === 'production',
+            },
+        },
+    },
     secret: authSecret,
 };
