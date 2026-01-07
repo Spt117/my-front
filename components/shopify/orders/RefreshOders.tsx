@@ -15,7 +15,7 @@ import ToggleMode from './ToggleMode';
 export default function RefreshOders({ boolArchived }: { boolArchived?: boolean }) {
     const [productsInOrders, setProductsInOrders] = useState<ProductInOrder[]>([]);
     const { loading, setLoading, shopifyBoutique } = useShopifyStore();
-    const { setFilterOrders, setOrders, orders } = useOrdersStore();
+    const { setFilterOrders, setOrders, orders, setOrdersForShop } = useOrdersStore();
     const path = usePathname();
     const router = useRouter();
 
@@ -33,6 +33,8 @@ export default function RefreshOders({ boolArchived }: { boolArchived?: boolean 
                 const orders = data.orders.sort((a: GroupedShopifyOrder, b: GroupedShopifyOrder) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
                 setOrders(orders);
                 setFilterOrders(orders);
+                // Also store orders for this specific shop
+                setOrdersForShop(shopifyBoutique.domain, orders);
                 setProductsInOrders(data.products);
             }
         } catch (error) {
@@ -40,6 +42,7 @@ export default function RefreshOders({ boolArchived }: { boolArchived?: boolean 
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         handleGetOrders();

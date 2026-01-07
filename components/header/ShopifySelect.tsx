@@ -10,14 +10,14 @@ import useShopifyStore from '../shopify/shopifyStore';
 import SelectFull from './SelectFull';
 
 export default function ShopifySelect() {
-    const { orders } = useOrdersStore();
+    const { ordersByShop } = useOrdersStore();
     const { shopifyBoutique, setShopifyBoutique, setProduct, product } = useShopifyStore();
     const { cleanCollections } = useCollectionStore();
     const path = usePathname();
     const router = useRouter();
 
-    const getOrderCount = (domain: string) => {
-        return orders.filter((order) => order.shop === domain).length;
+    const getOrderCount = (domain: TDomainsShopify) => {
+        return ordersByShop[domain]?.length || 0;
     };
 
     const option2 = boutiques.map((boutique) => {
@@ -35,6 +35,7 @@ export default function ShopifySelect() {
             count: count,
         };
     });
+
 
     function replaceShopifyId(url: string, newId: string | number) {
         // et tout ce qui suit

@@ -1,11 +1,10 @@
 import { CountryFlag } from '@/app/components/CountryFlag';
 import { AMAZON_MARKETPLACES, CountryCode } from '@/library/utils/amazon';
-import { PB_URL } from '@/library/utils/uri';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import BeybladeProductManager from '../components/BeybladeProductManager';
 import { ProductTitle } from '../components/ProductTitle';
-import { beybladeService } from '../pocketbase/beyblade-service';
+import { beybladeService } from '../supabase/beyblade-service';
 
 export default async function BeybladeProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
@@ -22,15 +21,12 @@ export default async function BeybladeProductPage({ params }: { params: Promise<
         notFound();
     }
 
+    // Get adjacent products for navigation
+    const { prev, next } = await beybladeService.getAdjacentProducts(product.id || slug);
+
+    // Pour Supabase, les images sont stockées directement sous forme d'URL complètes
     const mainImage = product.images && product.images.length > 0 ? product.images[0] : null;
-    let imageUrl = null;
-    if (mainImage) {
-        if (mainImage.startsWith('http')) {
-            imageUrl = mainImage;
-        } else {
-            imageUrl = `${PB_URL}/api/files/${product.collectionId}/${product.id}/${mainImage}`;
-        }
-    }
+    const imageUrl = mainImage || null;
 
     const marketplaces = product.marketplaces || {};
     const activeCountries = Object.keys(marketplaces) as CountryCode[];
@@ -38,9 +34,51 @@ export default async function BeybladeProductPage({ params }: { params: Promise<
     return (
         <div className="min-h-screen bg-gray-950 text-gray-100 p-6 md:p-12">
             <div className="max-w-7xl mx-auto">
-                <Link href="/beyblade" className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors">
-                    ← Back to Database
-                </Link>
+                {/* Navigation Bar */}
+                <div className="flex items-center justify-between mb-8 gap-4">
+                    <Link 
+                        href="/beyblade" 
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-gray-400 hover:text-white transition-all"
+                    >
+                        <span className="text-lg">←</span>
+                        <span className="hidden sm:inline">Back to Database</span>
+                    </Link>
+
+                    <div className="flex items-center gap-2">
+                        {prev ? (
+                            <Link
+                                href={`/beyblade/${prev.slug || prev.id}`}
+                                className="group flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-500/50 rounded-xl text-gray-400 hover:text-white transition-all"
+                                title={prev.title}
+                            >
+                                <span className="text-lg group-hover:-translate-x-1 transition-transform">←</span>
+                                <span className="hidden md:inline max-w-32 truncate">{prev.title}</span>
+                                <span className="md:hidden">Prev</span>
+                            </Link>
+                        ) : (
+                            <span className="px-4 py-2 bg-white/5 border border-white/5 rounded-xl text-gray-600 cursor-not-allowed">
+                                <span className="text-lg">←</span>
+                            </span>
+                        )}
+
+                        {next ? (
+                            <Link
+                                href={`/beyblade/${next.slug || next.id}`}
+                                className="group flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-500/50 rounded-xl text-gray-400 hover:text-white transition-all"
+                                title={next.title}
+                            >
+                                <span className="md:hidden">Next</span>
+                                <span className="hidden md:inline max-w-32 truncate">{next.title}</span>
+                                <span className="text-lg group-hover:translate-x-1 transition-transform">→</span>
+                            </Link>
+                        ) : (
+                            <span className="px-4 py-2 bg-white/5 border border-white/5 rounded-xl text-gray-600 cursor-not-allowed">
+                                <span className="text-lg">→</span>
+                            </span>
+                        )}
+                    </div>
+                </div>
+
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
                     {/* Left Column: Image */}
