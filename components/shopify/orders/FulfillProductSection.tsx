@@ -29,6 +29,7 @@ interface FulfilledItem {
     trackingNumber: string | null;
     trackingUrl: string | null;
     trackingCompany: string | null;
+    otherItemsInFulfillment: number; // Number of other items in the same fulfillment
 }
 
 export default function FulfillProductSection({ lineItems, domain, orderIds, onOrderUpdated }: FulfillProductSectionProps) {
@@ -140,7 +141,14 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
             const getNumericId = (gid: string) => gid.split('/').pop()?.split('?')[0] || gid;
 
             // 1. D'abord on identifie tout ce qui est sélectionnable via les FO ouverts
+            // IMPORTANT: On n'ajoute PAS les produits déjà fulfilled
             for (const { node } of lineItems) {
+                // Skip if already fulfilled
+                const nodeFulfillmentStatus = (node.fulfillmentStatus || '').toLowerCase();
+                if (nodeFulfillmentStatus === 'fulfilled') {
+                    continue; // Will be processed in step 2
+                }
+
                 const nodeNumericId = getNumericId(node.id);
                 const nodeSku = (node.sku || '').trim().toLowerCase();
                 const nodeTitle = (node.title || '').trim().toLowerCase();
@@ -175,27 +183,64 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                 }
             }
 
+
             // 2. Ensuite on identifie tout ce qui est déjà traité
+            // Group fulfilled items by fulfillment ID to show which items will be affected by cancellation
+            const fulfillmentItemCounts: Record<string, number> = {};
+            
+            // Build a set of fulfilled line item IDs from the fulfillments data
+            // This is more reliable than checking node.fulfillmentStatus which may be stale
+            const fulfilledLineItemIds = new Set<string>();
+            
+            // Check if we have any successful fulfillments
+            const successfulFulfillments = allFulfillments.filter(
+                (f) => f.status === 'SUCCESS' || f.status === 'fulfilled' || f.status?.toLowerCase() === 'success'
+            );
+
             for (const { node } of lineItems) {
                 if (processedLineItems.has(node.id)) continue;
 
-                const isFulfilled = (node.fulfillmentStatus || '').toLowerCase() === 'fulfilled';
+                // Check fulfillment status from multiple sources
+                const nodeFulfillmentStatus = (node.fulfillmentStatus || '').toLowerCase();
+                const isFulfilledByStatus = nodeFulfillmentStatus === 'fulfilled';
+                
+                // Also check if there are any successful fulfillments for this order
+                // and the item is not in the active fulfillment orders (meaning it's been fulfilled)
+                const hasSuccessfulFulfillment = successfulFulfillments.length > 0;
+                const isNotSelectable = !selectableItems.find((s) => s.node.id === node.id);
+                
+                // Consider fulfilled if either:
+                // 1. fulfillmentStatus is 'fulfilled'
+                // 2. There are successful fulfillments AND this item wasn't found in active fulfillment orders
+                const isFulfilled = isFulfilledByStatus || (hasSuccessfulFulfillment && !selectable.find((s) => s.node.id === node.id));
 
                 if (isFulfilled) {
-                    const fulfillment = allFulfillments.find((f) => f.status === 'SUCCESS' || f.status === 'fulfilled') || allFulfillments[0];
+                    // Try to find the specific fulfillment for this item
+                    const fulfillment = successfulFulfillments[0] || allFulfillments[0];
+                    const fulfillmentId = fulfillment?.id || '';
                     const tNumber = fulfillment?.trackingInfo || null;
                     const tCompany = fulfillment?.trackingCompany || 'Colissimo';
 
+                    // Count items per fulfillment
+                    fulfillmentItemCounts[fulfillmentId] = (fulfillmentItemCounts[fulfillmentId] || 0) + 1;
+
                     fulfilled.push({
                         node,
-                        fulfillmentId: fulfillment?.id || '',
+                        fulfillmentId,
                         trackingNumber: tNumber,
                         trackingCompany: tCompany,
                         trackingUrl: tNumber ? getTrackingUrl(tCompany, tNumber) : null,
+                        otherItemsInFulfillment: 0, // Will be updated after
                     });
                     processedLineItems.add(node.id);
                 }
             }
+
+            // Update otherItemsInFulfillment for each item
+            fulfilled.forEach((item) => {
+                item.otherItemsInFulfillment = (fulfillmentItemCounts[item.fulfillmentId] || 1) - 1;
+            });
+
 
             // 3. Cas particulier: si un item n'est ni selectable ni fulfilled
             // On l'ajoute quand même en "selectable" (mais sans fulfillmentOrderId/id pour bloquer le bouton)
@@ -544,23 +589,30 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                             ))}
                                     </div>
                                     {item.fulfillmentId && (
-                                        <button
-                                            onClick={() => handleCancelFulfillment(item.fulfillmentId)}
-                                            disabled={canceling === item.fulfillmentId}
-                                            className="mt-2 px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors cursor-pointer flex items-center gap-1"
-                                        >
-                                            {canceling === item.fulfillmentId ? (
-                                                <>
-                                                    <Loader2 className="w-3 h-3 animate-spin" />
-                                                    Annulation...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <RotateCcw className="w-3 h-3" />
-                                                    Annuler le traitement
-                                                </>
+                                        <div className="mt-2">
+                                            {item.otherItemsInFulfillment > 0 && (
+                                                <p className="text-[10px] text-orange-600 bg-orange-50 px-2 py-1 rounded mb-1">
+                                                    ⚠️ L'annulation affectera {item.otherItemsInFulfillment + 1} produit(s) de ce colis
+                                                </p>
                                             )}
-                                        </button>
+                                            <button
+                                                onClick={() => handleCancelFulfillment(item.fulfillmentId)}
+                                                disabled={canceling === item.fulfillmentId}
+                                                className="px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors cursor-pointer flex items-center gap-1"
+                                            >
+                                                {canceling === item.fulfillmentId ? (
+                                                    <>
+                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                        Annulation...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <RotateCcw className="w-3 h-3" />
+                                                        Annuler le traitement
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
