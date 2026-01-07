@@ -1,19 +1,21 @@
-if (!process.env.URI_MONGODB) throw new Error('URI_MONGODB is not defined');
-else if (!process.env.EMAIL_HOST) throw new Error('EMAIL_HOST is not defined');
-else if (!process.env.EMAIL_PORT) throw new Error('EMAIL_PORT is not defined');
-else if (!process.env.EMAIL_SERVER) throw new Error('EMAIL_SERVER is not defined');
-else if (!process.env.EMAIL_PASSEWORD) throw new Error('EMAIL_PASSEWORD is not defined');
-else if (!process.env.AUTH_SECRET) throw new Error('AUTH_SECRET is not defined');
-else if (!process.env.GOOGLE_ID) throw new Error('GOOGLE_ID is not defined');
-else if (!process.env.GOOGLE_SECRET) throw new Error('GOOGLE_SECRET is not defined');
-else if (!process.env.URI_SERVER_ACCES) throw new Error('URI_SERVER_ACCES is not defined');
-else if (!process.env.USER_EMAIL) throw new Error('USER_EMAIL is not defined');
-else if (!process.env.ENCRYPTION_KEY_AMAZON) throw new Error('ENCRYPTION_KEY_AMAZON is not defined');
-else if (!process.env.POCKETBASE_URL) throw new Error('POCKETBASE_URL is not defined');
-else if (!process.env.ADMIN_EMAIL) throw new Error('ADMIN_EMAIL is not defined');
-else if (!process.env.ADMIN_PASSWORD) throw new Error('ADMIN_PASSWORD is not defined');
-else if (!process.env.KEEPA_KEY) throw new Error('KEEPA_KEY is not defined');
-else console.log('All environment variables are defined');
+if (typeof window === 'undefined') {
+    if (!process.env.URI_MONGODB) throw new Error('URI_MONGODB is not defined');
+    else if (!process.env.EMAIL_HOST) throw new Error('EMAIL_HOST is not defined');
+    else if (!process.env.EMAIL_PORT) throw new Error('EMAIL_PORT is not defined');
+    else if (!process.env.EMAIL_SERVER) throw new Error('EMAIL_SERVER is not defined');
+    else if (!process.env.EMAIL_PASSEWORD) throw new Error('EMAIL_PASSEWORD is not defined');
+    else if (!process.env.AUTH_SECRET) throw new Error('AUTH_SECRET is not defined');
+    else if (!process.env.GOOGLE_ID) throw new Error('GOOGLE_ID is not defined');
+    else if (!process.env.GOOGLE_SECRET) throw new Error('GOOGLE_SECRET is not defined');
+    else if (!process.env.URI_SERVER_ACCES) throw new Error('URI_SERVER_ACCES is not defined');
+    else if (!process.env.USER_EMAIL) throw new Error('USER_EMAIL is not defined');
+    else if (!process.env.ENCRYPTION_KEY_AMAZON) throw new Error('ENCRYPTION_KEY_AMAZON is not defined');
+    else if (!process.env.POCKETBASE_URL) throw new Error('POCKETBASE_URL is not defined');
+    else if (!process.env.ADMIN_EMAIL) throw new Error('ADMIN_EMAIL is not defined');
+    else if (!process.env.ADMIN_PASSWORD) throw new Error('ADMIN_PASSWORD is not defined');
+    else if (!process.env.KEEPA_KEY) throw new Error('KEEPA_KEY is not defined');
+    else console.log('All environment variables are defined');
+}
 
 const uriMongodb: string = process.env.URI_MONGODB;
 const authSecret: string = process.env.AUTH_SECRET;

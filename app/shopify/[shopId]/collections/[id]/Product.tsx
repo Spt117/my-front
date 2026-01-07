@@ -36,50 +36,78 @@ export default function ProductCollection({ product }: { product: CollectionProd
         <div
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="py-4 hover:bg-accent transition-colors flex items-center gap-4 cursor-pointer"
+            className="group flex items-center gap-4 p-4 hover:bg-slate-50 transition-all duration-200 cursor-pointer"
             onClick={handleClick}
         >
-            {product.featuredImage?.url ? (
-                <Image src={product.featuredImage.url} alt={product.featuredImage.altText || product.title} className="object-cover rounded" width={60} height={60} />
-            ) : (
-                <div className="w-[60px] h-[60px] bg-muted rounded flex items-center justify-center flex-shrink-0">
-                    <span className="text-muted-foreground text-xs">Aucune image</span>
+            <div className="relative w-14 h-14 rounded-lg overflow-hidden border border-slate-100 flex-shrink-0 bg-slate-50">
+                {product.featuredImage?.url ? (
+                    <Image
+                        src={product.featuredImage.url}
+                        alt={product.featuredImage.altText || product.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-[10px] text-slate-300 font-bold uppercase">No image</span>
+                    </div>
+                )}
+            </div>
+
+            <div className="flex-1 min-w-0">
+                <div className="flex flex-col">
+                    <h4 className="font-semibold text-slate-800 truncate group-hover:text-blue-600 transition-colors">{product.title}</h4>
+                    <div className="flex items-center gap-3 mt-1">
+                        <span className="text-xs font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">{product.variants.nodes[0].sku || 'PAS DE SKU'}</span>
+                        <span className="text-sm font-medium text-slate-600">
+                            {product.variants.nodes[0].price} {shopifyBoutique.devise}
+                        </span>
+                    </div>
                 </div>
-            )}
-            <div className="flex items-center justify-between w-full gap-4">
-                <div className="flex flex-col ">
-                    <h2 className="text-lg font-semibold ">{product.title}</h2>
-                    <p className={txtClass}>
-                        {product.variants.nodes[0].price}
-                        {shopifyBoutique.devise}
-                    </p>
-                    <p className={`${quantity < 6 ? 'text-red-500 font-bold' : txtClass}`}>Quantité: {quantity}</p>
-                    <div className={txtClass}>Sku : {product.variants.nodes[0].sku || 'N/A'}</div>
+            </div>
+
+            <div className="flex items-center gap-8 pr-4">
+                <div className="flex flex-col items-end min-w-[80px]">
+                    <span
+                        className={`text-xs font-bold px-2 py-1 rounded-full ${
+                            quantity >= 10
+                                ? 'bg-emerald-50 text-emerald-600'
+                                : quantity >= 5
+                                ? 'bg-amber-50 text-amber-600'
+                                : quantity > 0
+                                ? 'bg-orange-50 text-orange-600'
+                                : 'bg-red-50 text-red-600'
+                        }`}
+                    >
+                        {quantity} en stock
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">{product.status === 'ACTIVE' ? 'En ligne' : 'Brouillon'}</span>
                 </div>
-                <div className="flex items-center justify-center h-14 gap-5 mr-4">
+
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <a
                         onClick={(e) => e.stopPropagation()}
                         href={`https://${shopifyBoutique?.publicDomain}/products/${product.handle}`}
-                        className="p-1 hover:bg-gray-200 rounded-md right-3 "
+                        className="p-2 hover:bg-white hover:shadow-sm rounded-lg text-slate-400 hover:text-blue-600 transition-all"
                         target="_blank"
                         rel="noopener noreferrer"
+                        title="Voir sur la boutique"
                     >
-                        <span title="Afficher sur votre boutique" className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
-                            <Eye size={20} color={isHovered ? 'currentColor' : 'transparent'} />
-                        </span>
+                        <Eye size={18} />
                     </a>
                     {!dataCollection?.ruleSet && (
-                        <span
+                        <button
                             title="Retirer de la collection"
-                            className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-                            onClick={(e) => e.stopPropagation()}
+                            className="p-2 hover:bg-white hover:shadow-sm rounded-lg text-slate-400 hover:text-red-600 transition-all"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleRemove();
+                            }}
                         >
-                            <X color={isHovered ? 'currentColor' : 'transparent'} onClick={handleRemove} />
-                        </span>
+                            <X size={18} />
+                        </button>
                     )}
-                </div>
-                <div className="flex items-center justify-center h-14 gap-5 mr-4">
-                    <span className="text-muted-foreground text-xs">{product.status}</span>
                 </div>
             </div>
         </div>

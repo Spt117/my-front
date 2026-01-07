@@ -11,6 +11,10 @@ export default async function BackendProvider({ children }: Readonly<{ children:
     const session = await getServerSession(authOptions);
     const headersList = await headers();
     const pathname = headersList.get('x-pathname') || '/unknown';
+
+    // Ne pas rediriger si on est sur une route d'authentification
+    if (pathname.startsWith('/api/auth')) return <>{children}</>;
+
     // Redirection côté serveur si pas de session et pas sur la page boarding
     if (!session && pathname !== '/boarding') redirect('/boarding');
 

@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { TCanal } from "../products/[productId]/util";
-import { ShopifyCollection, ShopifyCollectionWithProducts } from "./utils";
+import { create } from 'zustand';
+import { TCanal } from '../products/[productId]/util';
+import { ShopifyCollection, ShopifyCollectionWithProducts } from './utils';
 
 interface StoreState {
     collections: ShopifyCollection[];
@@ -20,6 +20,8 @@ interface StoreState {
     setCollectionTitle: (title: string) => void;
     collectionDescription: string;
     setCollectionDescription: (description: string) => void;
+    collectionDescriptionHtml: string;
+    setCollectionDescriptionHtml: (html: string) => void;
     ancreUrl: string;
     setAncreUrl: (ancreUrl: string) => void;
     metaTitle: string;
@@ -42,15 +44,17 @@ const useCollectionStore = create<StoreState>((set) => ({
     loadingCollection: false,
     setLoadingCollection: (loading) => set({ loadingCollection: loading }),
     cleanCollections: () => set({ collections: [], filteredCollections: [], dataCollection: null }),
-    collectionTitle: "",
+    collectionTitle: '',
     setCollectionTitle: (title) => set({ collectionTitle: title }),
-    collectionDescription: "",
+    collectionDescription: '',
     setCollectionDescription: (description) => set({ collectionDescription: description }),
-    ancreUrl: "",
+    collectionDescriptionHtml: '',
+    setCollectionDescriptionHtml: (html) => set({ collectionDescriptionHtml: html }),
+    ancreUrl: '',
     setAncreUrl: (ancreUrl) => set({ ancreUrl }),
-    metaTitle: "",
+    metaTitle: '',
     setMetaTitle: (metaTitle) => set({ metaTitle }),
-    metaDescription: "",
+    metaDescription: '',
     setMetaDescription: (metaDescription) => set({ metaDescription }),
     canauxCollection: [],
     setCanauxCollection: (canaux) => set({ canauxCollection: canaux }),

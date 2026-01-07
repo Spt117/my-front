@@ -1,30 +1,31 @@
-"use client";
+'use client';
 
-import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
-import useShopifyStore from "../../shopify/shopifyStore";
-import AddCollection from "./AddCollection";
-import AddProduct from "./AddProduct";
-import BulkActions from "./BulkActions";
-import ChoiceDuplicate from "./ChoiceDuplicate";
-import DeleteCollection from "./DeleteCollection";
-import DeleteProduct from "./DeleteProduct";
-import DuplicateOtherShop from "./DuplicateOtherShop";
-import DuplicateProduct from "./DuplicateProduct";
+import useKeyboardShortcuts from '@/library/hooks/useKyboardShortcuts';
+import useShopifyStore from '../../shopify/shopifyStore';
+import AddCollection from './AddCollection';
+import AddProduct from './AddProduct';
+import AddProductsToCollection from './AddProductsToCollection';
+import BulkActions from './BulkActions';
+import ChoiceDuplicate from './ChoiceDuplicate';
+import DeleteCollection from './DeleteCollection';
+import DeleteProduct from './DeleteProduct';
+import DuplicateOtherShop from './DuplicateOtherShop';
+import DuplicateProduct from './DuplicateProduct';
 
 export default function BodyDialogue() {
     const { dialogOpen, closeDialog } = useShopifyStore();
 
-    useKeyboardShortcuts("Escape", () => {
+    useKeyboardShortcuts('Escape', () => {
         closeDialog();
     });
     if (!dialogOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50  flex items-center justify-center">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/60" onClick={closeDialog} />
             {/* Dialogue content */}
-            <div className="z-200 min-w-[600px] min-h-[200px] relative z-10 rounded-xl border bg-white p-4 shadow-xl">
+            <div className="relative min-w-[600px] min-h-[200px] z-[101] rounded-xl border bg-white p-4 shadow-xl">
                 {dialogOpen === 1 && <AddProduct />}
                 {dialogOpen === 2 && <DeleteProduct />}
                 {dialogOpen === 34 && <ChoiceDuplicate />}
@@ -33,6 +34,7 @@ export default function BodyDialogue() {
                 {dialogOpen === 5 && <AddCollection />}
                 {dialogOpen === 6 && <DeleteCollection />}
                 {dialogOpen === 7 && <BulkActions />}
+                {dialogOpen === 8 && <AddProductsToCollection />}
             </div>
         </div>
     );

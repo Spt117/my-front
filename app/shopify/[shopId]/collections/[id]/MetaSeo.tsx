@@ -1,27 +1,16 @@
-import CopyComponent from "@/components/Copy";
-import useShopifyStore from "@/components/shopify/shopifyStore";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useEffect } from "react";
-import useProductStore from "../../products/[productId]/storeProduct";
-import { cssCard } from "../../products/[productId]/util";
-import useCollectionStore from "../storeCollections";
+import CopyComponent from '@/components/Copy';
+import useShopifyStore from '@/components/shopify/shopifyStore';
+import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Search } from 'lucide-react';
+import { useEffect } from 'react';
+import useCollectionStore from '../storeCollections';
 
 export default function MetaSeo() {
     const { shopifyBoutique } = useShopifyStore();
-    const {
-        dataCollection,
-        setMetaTitle,
-        setMetaDescription,
-        setAncreUrl,
-        redirectionUrl,
-        setRedirectionUrl,
-        metaDescription,
-        metaTitle,
-        ancreUrl,
-    } = useCollectionStore();
+    const { dataCollection, setMetaTitle, setMetaDescription, setAncreUrl, redirectionUrl, setRedirectionUrl, metaDescription, metaTitle, ancreUrl } = useCollectionStore();
 
     const metaTitleCollection = dataCollection?.seo.title;
     const metaDescriptionCollection = dataCollection?.seo.description;
@@ -34,60 +23,75 @@ export default function MetaSeo() {
 
     if (!dataCollection) return null;
 
-    const url = `https://${shopifyBoutique?.publicDomain}/collections/${dataCollection.handle}`;
+    const url = `https://${shopifyBoutique?.publicDomain}/collections/${ancreUrl}`;
 
     return (
-        <Card className={cssCard}>
-            <CardContent className="p-0">
-                <div className="p-6">
-                    <h3 className="m-2 text-sm font-medium flex items-center gap-2">Titre de la page</h3>
-                    <Input value={metaTitle} onChange={(e) => setMetaTitle(e.target.value)} className="w-full" />
-                    <p className={`text-sm ml-1 mt-1 ${metaTitle.length > 70 ? "text-red-600" : "text-gray-500"}`}>
-                        {metaTitle.length} sur 70 caractères utilisés
-                    </p>
+        <Card className="border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-slate-100 bg-slate-50/30 flex items-center gap-2">
+                <Search size={16} className="text-slate-500" />
+                <h3 className="font-bold text-slate-800 text-sm">Référencement (SEO)</h3>
+            </div>
+            <CardContent className="p-4 space-y-6">
+                {/* Search Engine Preview */}
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Aperçu Google</span>
+                    <h4 className="text-blue-700 font-medium text-base leading-tight truncate">{metaTitle || dataCollection.title}</h4>
+                    <p className="text-emerald-700 text-xs truncate">{url}</p>
+                    <p className="text-slate-600 text-xs line-clamp-2 leading-relaxed">{metaDescription || dataCollection.description || 'Aucune description fournie...'}</p>
                 </div>
-                <div className="p-6">
-                    <h3 className="m-2 text-sm font-medium flex items-center gap-2">Méta description</h3>
-                    <textarea
-                        value={metaDescription}
-                        onChange={(e) => setMetaDescription(e.target.value)}
-                        className="w-full min-h-[100px] p-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        rows={4}
-                    />{" "}
-                    <p className={`text-sm ml-1 ${metaDescription.length > 160 ? "text-red-600" : "text-gray-500"}`}>
-                        {metaDescription.length} sur 160 caractères utilisés
-                    </p>
-                </div>
-                <div className="p-6 w-min">
-                    <div className="flex items-center align-center gap-2 mb-2">
-                        <h3 className="m-2 text-sm font-medium flex items-center gap-2">Ancre d'URL</h3>{" "}
-                        <CopyComponent contentToCopy={url} message="URL copiée !" size={16} />
-                    </div>
-                    <div className="relative flex-1">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
-                            /products/
-                        </span>
-                        <Input value={ancreUrl} onChange={(e) => setAncreUrl(e.target.value)} className="pl-[85px]" />
-                    </div>
-                    {ancreUrl.trim() !== dataCollection.handle && (
-                        <div
-                            onClick={() => setRedirectionUrl(!redirectionUrl)}
-                            className={`
-                               w-max flex items-center gap-3 p-1 mt-2 rounded-lg border-2 transition-all cursor-pointer
-                                ${
-                                    ancreUrl.trim() !== dataCollection.handle
-                                        ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
-                                        : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-                                }
-                            `}
-                        >
-                            <Checkbox checked={redirectionUrl} className="cursor-pointer" />
-                            <Label className="flex-1 cursor-pointer font-medium text-sm h-full">
-                                Créer une redirection d’URL : <br /> {dataCollection.handle} {" -> "}
-                                {ancreUrl}
-                            </Label>
+
+                <div className="space-y-4">
+                    <div className="space-y-1.5 w-full">
+                        <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Titre de la page</Label>
+                        <Input
+                            value={metaTitle}
+                            onChange={(e) => setMetaTitle(e.target.value)}
+                            className="bg-white border-slate-200 rounded-lg h-9 focus:ring-blue-500/10 focus:border-blue-500 transition-all w-full"
+                        />
+                        <div className="flex justify-end">
+                            <span className={`text-[10px] font-medium ${metaTitle.length > 70 ? 'text-red-500' : 'text-slate-400'}`}>{metaTitle.length} / 70</span>
                         </div>
-                    )}
+                    </div>
+
+                    <div className="space-y-1.5 w-full">
+                        <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Méta description</Label>
+                        <textarea
+                            value={metaDescription}
+                            onChange={(e) => setMetaDescription(e.target.value)}
+                            className="w-full min-h-[80px] p-3 text-sm border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all text-slate-600"
+                            rows={3}
+                        />
+                        <div className="flex justify-end">
+                            <span className={`text-[10px] font-medium ${metaDescription.length > 160 ? 'text-red-500' : 'text-slate-400'}`}>{metaDescription.length} / 160</span>
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5 w-full">
+                        <div className="flex items-center justify-between">
+                            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">URL de la collection</Label>
+                            <CopyComponent contentToCopy={url} message="URL copiée !" size={14} />
+                        </div>
+                        <div className="relative w-full">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none">/collections/</span>
+                            <Input
+                                value={ancreUrl}
+                                onChange={(e) => setAncreUrl(e.target.value)}
+                                className="pl-[85px] bg-white border-slate-200 rounded-lg h-9 focus:ring-blue-500/10 focus:border-blue-500 transition-all w-full"
+                            />
+                        </div>
+
+                        {ancreUrl.trim() !== dataCollection.handle && (
+                            <div
+                                onClick={() => setRedirectionUrl(!redirectionUrl)}
+                                className="flex items-center gap-2 p-3 mt-3 rounded-lg border border-blue-100 bg-blue-50/50 cursor-pointer hover:bg-blue-50 transition-colors"
+                            >
+                                <Checkbox checked={redirectionUrl} onCheckedChange={(val) => setRedirectionUrl(!!val)} />
+                                <Label className="text-[11px] font-medium text-blue-700 cursor-pointer leading-tight">
+                                    Créer une redirection de <strong>/{dataCollection.handle}</strong> vers cette nouvelle URL
+                                </Label>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </CardContent>
         </Card>
