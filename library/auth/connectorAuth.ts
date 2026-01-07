@@ -1,6 +1,3 @@
-// library/auth/authClient.ts
-"use server";
-
 import { MongoClient } from "mongodb";
 import { uriMongodb } from "../utils/uri";
 
