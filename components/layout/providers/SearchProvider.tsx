@@ -7,6 +7,8 @@ import { useEffect, useRef } from 'react';
 export default function SearchProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const { searchTerm, setSearchTerm, setProductsSearch, setOrdersSearch, setClientsSearch, setIsSearchOpen, loading, mySpinner } = useShopifyStore();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const lastPathnameRef = useRef(pathname);
 
     // 0) Cursor loader effect
     useEffect(() => {
@@ -17,23 +19,29 @@ export default function SearchProvider({ children }: Readonly<{ children: React.
         }
     }, [loading, mySpinner]);
 
-    const searchParams = useSearchParams();
-    const internalUpdateRef = useRef(false);
-    const lastPathnameRef = useRef(pathname);
-
-    // 1) Sync URL -> State (ex: back button)
+    // 1) Sync URL -> State : Seulement au montage ou changement de page (Deep links / Navigation initiale)
+    // On retire searchParams des dépendances pour éviter les conflits pendant la saisie
     useEffect(() => {
         const urlSearchTerm = searchParams.get('search') ?? '';
-        if (internalUpdateRef.current) {
-            internalUpdateRef.current = false;
-            return;
-        }
-        if (urlSearchTerm !== (searchTerm ?? '')) {
+        if (urlSearchTerm !== searchTerm) {
             setSearchTerm(urlSearchTerm);
         }
-    }, [searchParams]);
+    }, [pathname]);
 
-    // 2) Sync State -> URL + Auto-clear
+    // 2) Sync URL -> State sur événement PopState (Bouton retour du navigateur)
+    useEffect(() => {
+        const handlePopState = () => {
+            const params = new URLSearchParams(window.location.search);
+            const urlSearchTerm = params.get('search') ?? '';
+            if (urlSearchTerm !== searchTerm) {
+                setSearchTerm(urlSearchTerm);
+            }
+        };
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [searchTerm, setSearchTerm]);
+
+    // 3) Sync State -> URL + Auto-clear
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
@@ -43,8 +51,7 @@ export default function SearchProvider({ children }: Readonly<{ children: React.
         const segments = pathname.split('/');
         const isDetailPage = segments.length > 4;
 
-        // Auto-clear logic:
-        // If we just navigated TO a detail page from somewhere else (or from another detail page)
+        // Auto-clear logic au changement de page détail
         if (pathChanged && isDetailPage) {
             if (searchTerm) {
                 setSearchTerm('');
@@ -61,19 +68,18 @@ export default function SearchProvider({ children }: Readonly<{ children: React.
 
         if ((searchTerm ?? '') === currentSearch) return;
 
-        // SYNC TO URL (Autorisé partout maintenant)
+        // Update URL bar
         if (searchTerm) params.set('search', searchTerm);
         else params.delete('search');
 
         const query = params.toString();
         const href = query ? `${pathname}?${query}` : pathname;
 
-        // Update URL bar without triggering Next.js navigation
+        // On utilise replaceState pour ne pas polluer l'historique à chaque caractère
         if (href !== window.location.pathname + window.location.search) {
-            internalUpdateRef.current = true;
             window.history.replaceState(null, '', href);
         }
-    }, [searchTerm, pathname, setSearchTerm, setProductsSearch, setOrdersSearch, setClientsSearch, setIsSearchOpen]);
+    }, [searchTerm, pathname]);
 
     return <>{children}</>;
 }

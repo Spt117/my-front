@@ -7,7 +7,7 @@ import { useState } from 'react';
 import useShopifyStore from '../../shopify/shopifyStore';
 
 export default function ProductList({ product }: { product: ProductGET }) {
-    const { shopifyBoutique, setIsSearchOpen } = useShopifyStore();
+    const { shopifyBoutique, setIsSearchOpen, setProduct } = useShopifyStore();
     const [isHovered, setIsHovered] = useState(false);
 
     // Return conditionnel APRÈS tous les hooks
@@ -32,8 +32,12 @@ export default function ProductList({ product }: { product: ProductGET }) {
     return (
         <Link
             href={url}
-            onClick={() => setIsSearchOpen(false)}
+            onClick={() => {
+                setIsSearchOpen(false);
+                setProduct(null); // Vide le produit actuel immédiatement
+            }}
             className="flex items-center hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm pr-2 relative cursor-pointer"
+
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >

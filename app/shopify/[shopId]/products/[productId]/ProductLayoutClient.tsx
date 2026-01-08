@@ -58,8 +58,14 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
         };
 
         initializeStores();
-        console.log(product);
+
+        // Nettoyage lors du changement de produit ou démontage
+        return () => {
+            setProduct(null);
+            setVariant(null);
+        };
     }, [product]); // Dépend uniquement de productId pour éviter les recharges inutiles
+
 
     // ✅ Gestion des prix - optimisée
     useEffect(() => {

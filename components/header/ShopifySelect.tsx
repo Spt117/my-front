@@ -16,12 +16,36 @@ export default function ShopifySelect() {
     const path = usePathname();
     const router = useRouter();
 
-    const getOrderCount = (domain: TDomainsShopify) => {
-        return ordersByShop[domain]?.length || 0;
+    const getOrderCounts = (domain: TDomainsShopify) => {
+        const groupedOrders = ordersByShop[domain] || [];
+        let orderCount = 0;
+        let preorderCount = 0;
+
+        groupedOrders.forEach((grouped) => {
+            // Regrouper les line items par ID de commande d'origine
+            const itemsByOrder = new Map<string, any[]>();
+            grouped.lineItems.edges.forEach((edge) => {
+                const orderId = edge.node.orderId || grouped.id;
+                if (!itemsByOrder.has(orderId)) itemsByOrder.set(orderId, []);
+                itemsByOrder.get(orderId)!.push(edge.node);
+            });
+
+            // Pour chaque commande d'origine, déterminer si c'est une précommande
+            itemsByOrder.forEach((items) => {
+                const isPreorder = items.some((item) => item.variant?.product?.precommande?.value);
+                if (isPreorder) {
+                    preorderCount++;
+                } else {
+                    orderCount++;
+                }
+            });
+        });
+
+        return { orderCount, preorderCount };
     };
 
     const option2 = boutiques.map((boutique) => {
-        const count = getOrderCount(boutique.domain);
+        const { orderCount, preorderCount } = getOrderCounts(boutique.domain);
         return {
             label: (
                 <div className="flex flex-col items-center">
@@ -32,9 +56,11 @@ export default function ShopifySelect() {
                 </div>
             ),
             value: boutique.domain,
-            count: count,
+            count: orderCount,
+            preorderCount: preorderCount,
         };
     });
+
 
 
     function replaceShopifyId(url: string, newId: string | number) {

@@ -22,7 +22,14 @@ export default function OrderLayoutClient({ data, children, error, shopId }: Ord
         setFilterOrders([data]);
         setMode('orders');
         if (error) toast.error(error);
+
+        // Nettoyage lors du changement de commande ou démontage
+        return () => {
+            setOrders([]);
+            setFilterOrders([]);
+        };
     }, [data, error, setOrders, setFilterOrders, setMode]);
+
 
     return <>{children}</>;
 }

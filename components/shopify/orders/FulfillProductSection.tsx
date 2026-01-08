@@ -4,7 +4,9 @@ import { LineItemNode } from '@/library/shopify/orders';
 import { boutiqueFromDomain, TDomainsShopify } from '@/params/paramsShopify';
 import { Check, CheckCircle2, ExternalLink, Loader2, Package, RotateCcw, Truck } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
 import { useEffect, useState } from 'react';
 import { cancelFulfillment, fulfillLineItems, Fulfillment, FulfillmentOrder, getFulfillmentOrders, getFulfillments } from './serverAction';
 
@@ -523,7 +525,15 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                 </div>
 
                                 <div className="flex-1 min-w-0 pr-8">
-                                    <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">{item.node.title}</h4>
+                                    <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">
+                                        <Link 
+                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split('/').pop()}`}
+                                            className="hover:text-blue-600 transition-colors"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {item.node.title}
+                                        </Link>
+                                    </h4>
                                     <div className="flex items-center gap-2 mt-1">
                                         <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku || 'SANS SKU'}</span>
                                         <span className="px-2 py-0.5 rounded-md bg-indigo-50 text-xs font-bold text-indigo-600">x{item.remainingQuantity}</span>
@@ -565,7 +575,15 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                 </div>
 
                                 <div className="flex-1 min-w-0 pr-20">
-                                    <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">{item.node.title}</h4>
+                                    <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">
+                                        <Link 
+                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split('/').pop()}`}
+                                            className="hover:text-blue-600 transition-colors"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {item.node.title}
+                                        </Link>
+                                    </h4>
                                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                                         <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku}</span>
                                         {item.trackingNumber &&

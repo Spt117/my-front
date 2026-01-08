@@ -8,8 +8,11 @@ import { toast } from 'sonner';
 import { archiveOrder } from '../serverAction';
 import UsefullLinks from '../UsefullLinks';
 
+import useOrdersStore from '../store';
+
 export default function OrderSearch({ order }: { order: ShopifyOrder }) {
     const { shopifyBoutique, setIsSearchOpen, setSearchTerm, setMySpinner } = useShopifyStore();
+    const { setOrders } = useOrdersStore();
 
     
     if (!shopifyBoutique) return null;
@@ -20,7 +23,10 @@ export default function OrderSearch({ order }: { order: ShopifyOrder }) {
         <div className="flex border-b last:border-0 hover:bg-gray-50/80 transition-all duration-200 group">
             <Link 
                 href={url}
-                onClick={() => setIsSearchOpen(false)}
+                onClick={() => {
+                    setIsSearchOpen(false);
+                    setOrders([]); // Vide la commande actuelle immédiatement
+                }}
                 className="flex-1 flex items-center py-3 px-4 min-w-0"
             >
                 <div className="relative w-12 h-12 flex-shrink-0 shadow-sm border border-gray-100 rounded-md overflow-hidden">
