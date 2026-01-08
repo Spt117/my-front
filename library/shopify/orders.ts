@@ -83,6 +83,7 @@ export interface ShopifyOrder {
     id: string;
     legacyResourceId: string;
     name: string;
+    note: string | null;
     createdAt: string; // Format ISO 8601
     displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED' | 'RESTOCKED' | 'PENDING_FULFILLMENT' | 'OPEN';
     displayFinancialStatus: 'PAID' | 'PENDING' | 'AUTHORIZED' | 'PARTIALLY_PAID' | 'PARTIALLY_REFUNDED' | 'REFUNDED' | 'VOIDED' | 'EXPIRED';
@@ -115,6 +116,7 @@ export interface GroupedShopifyOrder {
     id: string;
     legacyResourceId: string[];
     name: string[];
+    note: string | null;
     createdAt: string;
     displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED' | 'RESTOCKED' | 'PENDING_FULFILLMENT' | 'OPEN';
     displayFinancialStatus: 'PAID' | 'PENDING' | 'AUTHORIZED' | 'PARTIALLY_PAID' | 'PARTIALLY_REFUNDED' | 'REFUNDED' | 'VOIDED' | 'EXPIRED';

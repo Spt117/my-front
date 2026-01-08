@@ -229,3 +229,9 @@ export async function cancelFulfillment(domain: string, fulfillmentId: string): 
     const res = await postServer(url, { domain, fulfillmentId });
     return res;
 }
+
+export async function updateOrderNote(domain: string, orderId: string, note: string): Promise<{ response: string | null; message?: string; error?: string }> {
+    const url = `${pokeUriServer}/shopify/update-order-note`;
+    const res = await postServer(url, { domain, orderId, note });
+    return res;
+}

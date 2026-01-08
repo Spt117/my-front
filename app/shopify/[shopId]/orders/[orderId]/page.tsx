@@ -1,6 +1,7 @@
 'use client';
 
 import FulfillProductSection from '@/components/shopify/orders/FulfillProductSection';
+import OrderNotes from '@/components/shopify/orders/OrderNotes';
 import { getOrderById } from '@/components/shopify/orders/serverAction';
 import useOrdersStore from '@/components/shopify/orders/store';
 import UsefullLinks from '@/components/shopify/orders/UsefullLinks';
@@ -306,6 +307,17 @@ export default function OrderDetailPage() {
                                     </Link>
                                 </div>
                             </div>
+
+                            {/* Notes Section */}
+                            <OrderNotes
+                                orderId={order.id}
+                                domain={order.shop}
+                                initialNote={order.note}
+                                onNoteUpdated={(newNote) => {
+                                    // Mettre à jour le store avec la nouvelle note
+                                    setOrders([{ ...order, note: newNote }]);
+                                }}
+                            />
                         </div>
 
                         {/* Right Column: Products (8 cols) */}
