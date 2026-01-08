@@ -2,23 +2,22 @@
 
 import { ShopifyCustomer } from '@/library/shopify/clients';
 import { Mail, ShoppingBag, User } from 'lucide-react';
+import Link from 'next/link';
 import useShopifyStore from '../../shopify/shopifyStore';
 
 export default function ClientItem({ client }: { client: ShopifyCustomer }) {
-    const { shopifyBoutique, setSearchTerm, setClientsSearch } = useShopifyStore();
+    const { shopifyBoutique, setIsSearchOpen } = useShopifyStore();
     if (!shopifyBoutique) return null;
 
     const id = client.id?.split('/').pop() || '';
     const url = `/shopify/${shopifyBoutique.id}/clients/${id}`;
 
-    const handleClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        window.location.href = url;
-    };
-
     return (
-        <div onClick={handleClick} className="w-full text-left block hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 cursor-pointer">
+        <Link 
+            href={url}
+            onClick={() => setIsSearchOpen(false)}
+            className="w-full text-left block hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 cursor-pointer"
+        >
             <div className="flex items-center py-3 px-4 gap-3">
                 <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
                     <User size={20} />
@@ -44,6 +43,6 @@ export default function ClientItem({ client }: { client: ShopifyCustomer }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }

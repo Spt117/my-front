@@ -38,10 +38,15 @@ interface StoreState {
     setCanauxBoutique: (canaux: TCanal[]) => void;
     searchMode: TSearchMode;
     setSearchMode: (mode: TSearchMode) => void;
+    isSearchOpen: boolean;
+    setIsSearchOpen: (open: boolean) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
+    isSearchOpen: false,
+    setIsSearchOpen: (open) => set({ isSearchOpen: open }),
     loading: false,
+
     setLoading: (loading) => set({ loading }),
     searchTerm: '',
     setSearchTerm: (term) => set({ searchTerm: term }),

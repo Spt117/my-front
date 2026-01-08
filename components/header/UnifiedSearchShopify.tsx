@@ -18,7 +18,8 @@ interface UnifiedSearchShopifyProps {
 }
 
 export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps) {
-    const { shopifyBoutique, searchTerm, setSearchTerm, loading, setLoading, setProductsSearch, setOrdersSearch, setClientsSearch, openDialog } = useShopifyStore();
+    const { shopifyBoutique, searchTerm, setSearchTerm, loading, setLoading, setProductsSearch, setOrdersSearch, setClientsSearch, openDialog, isSearchOpen, setIsSearchOpen } =
+        useShopifyStore();
 
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const latestQueryRef = useRef<string>('');
@@ -57,15 +58,12 @@ export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
-                setSearchTerm('');
-                setProductsSearch([]);
-                setOrdersSearch([]);
-                setClientsSearch([]);
+                setIsSearchOpen(false);
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [setSearchTerm, setProductsSearch, setOrdersSearch, setClientsSearch]);
+    }, [setIsSearchOpen]);
 
     // Debounce
     useEffect(() => {
@@ -76,9 +74,11 @@ export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps
             setOrdersSearch([]);
             setClientsSearch([]);
             setLoading(false);
+            setIsSearchOpen(false);
             return;
         }
 
+        setIsSearchOpen(true);
         setLoading(true);
         timeoutRef.current = setTimeout(() => {
             handleSearch(searchTerm);
@@ -104,6 +104,7 @@ export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps
                             disabled={!shopifyBoutique}
                             type="text"
                             value={searchTerm}
+                            onClick={() => searchTerm && setIsSearchOpen(true)}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder={placeholder}
                             className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
@@ -112,7 +113,10 @@ export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps
                         {searchTerm && !loading && (
                             <button
                                 type="button"
-                                onClick={() => setSearchTerm('')}
+                                onClick={() => {
+                                    setSearchTerm('');
+                                    setIsSearchOpen(false);
+                                }}
                                 className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
                             >
                                 <X size={16} />
@@ -133,10 +137,16 @@ export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps
                 </div>
 
                 {/* List placement based on type and context */}
-                {type === 'products' && pathname.split('/').pop() !== 'products' && <ListProducts />}
-                {type === 'clients' && pathname.split('/').pop() !== 'clients' && <ListClients />}
-                {type === 'orders' && <ListOrdersSearch />}
+                {isSearchOpen && (
+                    <>
+                        {type === 'products' && <ListProducts />}
+                        {type === 'clients' && <ListClients />}
+                        {type === 'orders' && <ListOrdersSearch />}
+                    </>
+                )}
+
             </div>
         </div>
     );
 }
+

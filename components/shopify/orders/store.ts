@@ -17,6 +17,8 @@ interface StoreState {
     setMode: (mode: "orders" | "products") => void;
     products: ProductInOrder[];
     setProducts: (products: ProductInOrder[]) => void;
+    hidePreorders: boolean;
+    setHidePreorders: (hide: boolean) => void;
 }
 
 const useOrdersStore = create<StoreState>((set, get) => ({
@@ -42,7 +44,10 @@ const useOrdersStore = create<StoreState>((set, get) => ({
     setMode: (mode) => set({ mode }),
     products: [],
     setProducts: (products) => set({ products }),
+    hidePreorders: false,
+    setHidePreorders: (hide) => set({ hidePreorders: hide }),
 }));
+
 
 export default useOrdersStore;
 

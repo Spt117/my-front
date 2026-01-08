@@ -68,7 +68,10 @@ export interface LineItemNode {
     sku: string;
     quantity: number;
     variant: ProductVariant;
+    orderName?: string;
+    orderId?: string;
 }
+
 
 interface LineItemEdge {
     node: LineItemNode;

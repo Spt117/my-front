@@ -93,6 +93,16 @@ function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder
     orders.forEach((order) => {
         const customerEmail = order.customer.email;
 
+        // On tague chaque item avec le nom de sa commande avant de fusionner
+        const itemsWithTag = order.lineItems.edges.map(edge => ({
+            ...edge,
+            node: {
+                ...edge.node,
+                orderName: order.name,
+                orderId: order.id
+            }
+        }));
+
         if (groupedOrders.has(customerEmail)) {
             const existingOrder = groupedOrders.get(customerEmail)!;
 
@@ -115,8 +125,8 @@ function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder
             existingOrder.name.push(order.name);
             existingOrder.legacyResourceId.push(order.legacyResourceId);
 
-            // Fusionner les line items
-            existingOrder.lineItems.edges.push(...order.lineItems.edges);
+            // Fusionner les line items tagués
+            existingOrder.lineItems.edges.push(...itemsWithTag);
 
             // Fusionner les détails (discounts, shipping, taxes)
             if (order.discountCodes) existingOrder.discountCodes.push(...order.discountCodes);
@@ -129,12 +139,11 @@ function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder
             }
         } else {
             // Créer une nouvelle entrée groupée
-            const products = order.lineItems.edges;
             const groupedOrder: GroupedShopifyOrder = {
                 ...order,
                 name: [order.name], // Convertir en array
                 lineItems: {
-                    edges: [...products], // Copier les edges
+                    edges: [...itemsWithTag], // Copier les edges tagués
                 },
                 legacyResourceId: [order.legacyResourceId], // Convertir en array
                 discountCodes: order.discountCodes ? [...order.discountCodes] : [],
@@ -150,6 +159,7 @@ function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder
 
     return Array.from(groupedOrders.values());
 }
+
 
 // Types pour les fulfillment orders
 export interface FulfillmentOrderLineItem {

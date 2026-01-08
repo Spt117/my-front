@@ -9,7 +9,7 @@ import * as Flags from 'country-flag-icons/react/3x2';
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import frLocale from 'i18n-iso-countries/langs/fr.json';
-import { Archive, ArrowUpRight, ChevronDown, ChevronUp, ExternalLink, Mail, MapPin, Package, ShoppingBag } from 'lucide-react';
+import { Archive, ArrowUpRight, CalendarClock, ChevronDown, ChevronUp, ExternalLink, Mail, MapPin, Package, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -22,7 +22,12 @@ import UsefullLinks from './UsefullLinks';
 countries.registerLocale(frLocale);
 countries.registerLocale(enLocale);
 
-export default function OrderCompact({ order }: { order: GroupedShopifyOrder }) {
+interface OrderCompactProps {
+    order: GroupedShopifyOrder;
+    hiddenPreorderCount?: number; // Number of preorder items hidden from this order
+}
+
+export default function OrderCompact({ order, hiddenPreorderCount = 0 }: OrderCompactProps) {
     const { handleCopy } = useCopy();
     const boutique = boutiqueFromDomain(order.shop);
     const totalProducts = order.lineItems.edges.reduce((acc, { node }) => acc + node.quantity, 0);
@@ -92,6 +97,12 @@ export default function OrderCompact({ order }: { order: GroupedShopifyOrder }) 
                                     {order.lineItems.edges.some(({ node }) => node.variant?.product.precommande?.value) && (
                                         <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-blue-100 border border-blue-200 uppercase tracking-wider">
                                             Précommande
+                                        </span>
+                                    )}
+                                    {hiddenPreorderCount > 0 && (
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-700 border border-orange-200 uppercase tracking-wider" title={`${hiddenPreorderCount} précommande(s) en attente pour ce client`}>
+                                            <CalendarClock size={10} />
+                                            +{hiddenPreorderCount} préco
                                         </span>
                                     )}
                                 </div>
