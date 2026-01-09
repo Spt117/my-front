@@ -1,6 +1,6 @@
 // Types pour l'objet commande Shopify
 
-import { TDomainsShopify } from '../../params/paramsShopify';
+import { TDomainsShopify } from "../../params/paramsShopify";
 
 interface ShopMoney {
     amount: string;
@@ -64,14 +64,13 @@ interface ProductVariant {
 export interface LineItemNode {
     id: string;
     title: string;
-    fulfillmentStatus: 'unfulfilled' | 'fulfilled';
+    fulfillmentStatus: "unfulfilled" | "fulfilled";
     sku: string;
     quantity: number;
     variant: ProductVariant;
     orderName?: string;
     orderId?: string;
 }
-
 
 interface LineItemEdge {
     node: LineItemNode;
@@ -88,8 +87,8 @@ export interface ShopifyOrder {
     name: string;
     note: string | null;
     createdAt: string; // Format ISO 8601
-    displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED' | 'RESTOCKED' | 'PENDING_FULFILLMENT' | 'OPEN';
-    displayFinancialStatus: 'PAID' | 'PENDING' | 'AUTHORIZED' | 'PARTIALLY_PAID' | 'PARTIALLY_REFUNDED' | 'REFUNDED' | 'VOIDED' | 'EXPIRED';
+    displayFulfillmentStatus: "FULFILLED" | "UNFULFILLED" | "PARTIALLY_FULFILLED" | "RESTOCKED" | "PENDING_FULFILLMENT" | "OPEN";
+    displayFinancialStatus: "PAID" | "PENDING" | "AUTHORIZED" | "PARTIALLY_PAID" | "PARTIALLY_REFUNDED" | "REFUNDED" | "VOIDED" | "EXPIRED";
     totalPriceSet: TotalPriceSet;
     subtotalLineItemsQuantity: number;
     subtotalPriceSet: TotalPriceSet;
@@ -121,8 +120,8 @@ export interface GroupedShopifyOrder {
     name: string[];
     note: string | null;
     createdAt: string;
-    displayFulfillmentStatus: 'FULFILLED' | 'UNFULFILLED' | 'PARTIALLY_FULFILLED' | 'RESTOCKED' | 'PENDING_FULFILLMENT' | 'OPEN';
-    displayFinancialStatus: 'PAID' | 'PENDING' | 'AUTHORIZED' | 'PARTIALLY_PAID' | 'PARTIALLY_REFUNDED' | 'REFUNDED' | 'VOIDED' | 'EXPIRED';
+    displayFulfillmentStatus: "FULFILLED" | "UNFULFILLED" | "PARTIALLY_FULFILLED" | "RESTOCKED" | "PENDING_FULFILLMENT" | "OPEN";
+    displayFinancialStatus: "PAID" | "PENDING" | "AUTHORIZED" | "PARTIALLY_PAID" | "PARTIALLY_REFUNDED" | "REFUNDED" | "VOIDED" | "EXPIRED";
     totalPriceSet: TotalPriceSet;
     subtotalLineItemsQuantity: number;
     subtotalPriceSet: TotalPriceSet;
