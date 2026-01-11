@@ -1,9 +1,9 @@
-'use server';
+"use server";
 
-import { getServer, postServer } from '@/library/utils/fetchServer';
-import { pokeUriServer } from '@/library/utils/uri';
-import { IShopify, TDomainsShopify } from '@/params/paramsShopify';
-import { revalidatePath } from 'next/cache';
+import { getServer, postServer } from "@/library/utils/fetchServer";
+import { pokeUriServer } from "@/library/utils/uri";
+import { IShopify, TDomainsShopify } from "@/params/paramsShopify";
+import { revalidatePath } from "next/cache";
 
 export async function updateCollection(domain: TDomainsShopify, collectionGid: string, input: any) {
     const url = `${pokeUriServer}/shopify/update-collection`;
@@ -20,7 +20,7 @@ export async function createCollection(title: string, domain: TDomainsShopify) {
 export async function deleteCollection(shop: IShopify, collectionGid: string) {
     const url = `${pokeUriServer}/shopify/delete-collection?domain=${shop.domain}&collectionGid=${collectionGid}`;
     const response = await getServer(url);
-    revalidatePath(`/shopify/${shop.id}`, 'layout');
+    revalidatePath(`/shopify/${shop.id}`, "layout");
     return response;
 }
 
@@ -30,9 +30,9 @@ export async function removeProductFromCollection(domain: TDomainsShopify, colle
     return response;
 }
 
-export async function addProductToCollection(domain: TDomainsShopify, collectionGid: string, productGids: string[]) {
-    const url = `${pokeUriServer}/shopify/add-product-to-collection?domain=${domain}&collectionGid=${collectionGid}&productGids=${productGids}`;
-    const response = await getServer(url);
+export async function addProductsToCollection(domain: TDomainsShopify, collectionGid: string, productGids: string[]) {
+    const url = `${pokeUriServer}/shopify/add-products-to-collection`;
+    const response = await postServer(url, { domain, collectionGid, productGids });
     return response;
 }
 

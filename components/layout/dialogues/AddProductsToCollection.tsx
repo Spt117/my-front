@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { addProductToCollection, searchProductsShopify } from '@/app/shopify/[shopId]/collections/server';
-import useCollectionStore from '@/app/shopify/[shopId]/collections/storeCollections';
-import useShopifyStore from '@/components/shopify/shopifyStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Spinner } from '@/components/ui/shadcn-io/spinner/index';
-import { Check, Plus, Search } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { addProductsToCollection, searchProductsShopify } from "@/app/shopify/[shopId]/collections/server";
+import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
+import useShopifyStore from "@/components/shopify/shopifyStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import { Check, Plus, Search } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function AddProductsToCollection() {
     const { closeDialog, shopifyBoutique } = useShopifyStore();
     const { dataCollection } = useCollectionStore();
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useState("");
     const [results, setResults] = useState<any[]>([]);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [loadingSearch, setLoadingSearch] = useState(false);
@@ -33,7 +33,7 @@ export default function AddProductsToCollection() {
                 setResults(data.response.filter((p: any) => !existingIds.includes(p.id)));
             }
         } catch (error) {
-            toast.error('Erreur lors de la recherche');
+            toast.error("Erreur lors de la recherche");
         } finally {
             setLoadingSearch(false);
         }
@@ -47,7 +47,7 @@ export default function AddProductsToCollection() {
         if (!shopifyBoutique || !dataCollection || selectedIds.length === 0) return;
         setLoadingSave(true);
         try {
-            const res = await addProductToCollection(shopifyBoutique.domain, dataCollection.id, selectedIds);
+            const res = await addProductsToCollection(shopifyBoutique.domain, dataCollection.id, selectedIds);
             if (res.message) {
                 toast.success(`${selectedIds.length} produit(s) ajouté(s)`);
                 router.refresh();
@@ -77,11 +77,11 @@ export default function AddProductsToCollection() {
                         className="pl-10"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     />
                 </div>
                 <Button onClick={handleSearch} disabled={loadingSearch}>
-                    {loadingSearch ? <Spinner className="w-4 h-4" /> : 'Rechercher'}
+                    {loadingSearch ? <Spinner className="w-4 h-4" /> : "Rechercher"}
                 </Button>
             </div>
 
@@ -91,7 +91,7 @@ export default function AddProductsToCollection() {
                         <div
                             key={product.id}
                             onClick={() => toggleSelect(product.id)}
-                            className={`flex items-center gap-4 p-3 cursor-pointer transition-colors ${selectedIds.includes(product.id) ? 'bg-blue-50' : 'hover:bg-white'}`}
+                            className={`flex items-center gap-4 p-3 cursor-pointer transition-colors ${selectedIds.includes(product.id) ? "bg-blue-50" : "hover:bg-white"}`}
                         >
                             <div className="relative w-12 h-12 rounded border bg-white overflow-hidden flex-shrink-0">
                                 {product.featuredImage?.url && <Image src={product.featuredImage.url} alt={product.title} fill className="object-cover" />}
@@ -99,12 +99,12 @@ export default function AddProductsToCollection() {
                             <div className="flex-1 min-w-0">
                                 <h4 className="text-sm font-semibold truncate">{product.title}</h4>
                                 <p className="text-xs text-slate-500 font-mono">
-                                    {product.variants.nodes[0].sku || 'N/A'} • {product.variants.nodes[0].price} {shopifyBoutique?.devise}
+                                    {product.variants.nodes[0].sku || "N/A"} • {product.variants.nodes[0].price} {shopifyBoutique?.devise}
                                 </p>
                             </div>
                             <div
                                 className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${
-                                    selectedIds.includes(product.id) ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 bg-white'
+                                    selectedIds.includes(product.id) ? "bg-blue-600 border-blue-600 text-white" : "border-slate-300 bg-white"
                                 }`}
                             >
                                 {selectedIds.includes(product.id) ? <Check size={14} /> : <Plus size={14} className="text-slate-400" />}
@@ -113,7 +113,7 @@ export default function AddProductsToCollection() {
                     ))
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full py-12 text-slate-400 italic text-sm">
-                        {query ? 'Aucun nouveau produit trouvé' : 'Recherchez des produits à ajouter'}
+                        {query ? "Aucun nouveau produit trouvé" : "Recherchez des produits à ajouter"}
                     </div>
                 )}
             </div>
@@ -124,7 +124,7 @@ export default function AddProductsToCollection() {
                 </Button>
                 <Button disabled={selectedIds.length === 0 || loadingSave} onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
                     {loadingSave ? <Spinner className="w-4 h-4 mr-2" /> : null}
-                    Ajouter {selectedIds.length} produit{selectedIds.length > 1 ? 's' : ''}
+                    Ajouter {selectedIds.length} produit{selectedIds.length > 1 ? "s" : ""}
                 </Button>
             </div>
         </div>
