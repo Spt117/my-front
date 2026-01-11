@@ -8,14 +8,14 @@ import { extractProductId, formatCurrency, getShopIdFromDomain } from './Analyti
 
 interface ProductsTableProps {
     products: OrderedProduct[];
-    shopDomain: TDomainsShopify;
+    shopDomain?: TDomainsShopify;
 }
 
 export function AnalyticsProductsTable({ products, shopDomain }: ProductsTableProps) {
     const [showAll, setShowAll] = useState(false);
     const [sortConfig, setSortConfig] = useState<{ key: 'title' | 'sku' | 'quantity' | 'revenue'; direction: 'asc' | 'desc' } | null>(null);
 
-    const shopId = getShopIdFromDomain(shopDomain);
+    const shopId = shopDomain ? getShopIdFromDomain(shopDomain) : null;
 
     const sortedProducts = [...products].sort((a, b) => {
         if (!sortConfig) return 0;
@@ -112,8 +112,8 @@ export function AnalyticsProductsTable({ products, shopDomain }: ProductsTablePr
                     {displayedProducts.map((product, index) => (
                         <tr
                             key={product.productId + index}
-                            className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-violet-50 hover:to-purple-50 hover:shadow-md hover:scale-[1.01] transition-all duration-200 cursor-pointer group"
-                            onClick={() => (window.location.href = `/shopify/${shopId}/products/${extractProductId(product.productId)}`)}
+                            className={`border-b border-slate-100 hover:bg-gradient-to-r hover:from-violet-50 hover:to-purple-50 hover:shadow-sm transition-all duration-200 group ${shopId ? 'cursor-pointer hover:scale-[1.01]' : ''}`}
+                            onClick={() => shopId && (window.location.href = `/shopify/${shopId}/products/${extractProductId(product.productId)}`)}
                         >
                             <td className="py-4 px-4">
                                 <div className="flex items-center gap-3">

@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { formatCurrency, getDateRange, PeriodType } from './AnalyticsUtils';
 import { KPICard } from './KPICard';
+import { AnalyticsProductsTable } from './AnalyticsProductsTable';
 
 interface GlobalAnalyticsViewProps {
     period: PeriodType;
@@ -186,6 +187,45 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Global Products Table */}
+            <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-sm">
+                <CardHeader>
+                    <CardTitle className="text-slate-800 flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-purple-500" />
+                        Top des produits vendus (Global)
+                    </CardTitle>
+                    <CardDescription>Liste agrégée de tous les produits vendus sur toutes les boutiques</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {(() => {
+                        const allProducts: any[] = [];
+                        stats.forEach((s) => {
+                            if (s.data?.orderedProducts) {
+                                allProducts.push(...s.data.orderedProducts);
+                            }
+                        });
+
+                        const groupedProducts = allProducts.reduce((acc: Record<string, any>, curr) => {
+                            const key = curr.sku || curr.title;
+                            if (!acc[key]) {
+                                acc[key] = { ...curr };
+                            } else {
+                                acc[key].quantity += curr.quantity;
+                                acc[key].revenue += curr.revenue;
+                                if (!acc[key].imageUrl && curr.imageUrl) {
+                                    acc[key].imageUrl = curr.imageUrl;
+                                }
+                            }
+                            return acc;
+                        }, {});
+
+                        const finalProducts = Object.values(groupedProducts).sort((a: any, b: any) => b.revenue - a.revenue);
+
+                        return <AnalyticsProductsTable products={finalProducts as any} />;
+                    })()}
+                </CardContent>
+            </Card>
         </div>
     );
 }
