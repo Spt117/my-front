@@ -139,9 +139,9 @@ export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps
                 {/* List placement based on type and context */}
                 {isSearchOpen && (
                     <>
-                        {type === 'products' && <ListProducts />}
-                        {type === 'clients' && <ListClients />}
-                        {type === 'orders' && <ListOrdersSearch />}
+                        {type === 'products' && !pathname.endsWith('/products') && <ListProducts />}
+                        {type === 'clients' && !pathname.endsWith('/clients') && <ListClients />}
+                        {type === 'orders' && !pathname.endsWith('/orders') && <ListOrdersSearch />}
                     </>
                 )}
 
