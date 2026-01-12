@@ -27,6 +27,7 @@ export function AnalyticsPeriodSelector({
         { value: 'month', label: '30 jours' },
         { value: 'currentMonth', label: 'Mois en cours' },
         { value: 'currentYear', label: 'Année en cours' },
+        { value: 'lastYear', label: 'Année dernière' },
         { value: 'year', label: '1 an' },
         { value: 'custom', label: 'Personnalisé' },
     ];

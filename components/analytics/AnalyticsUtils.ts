@@ -1,6 +1,6 @@
 import { boutiques, TDomainsShopify } from '@/params/paramsShopify';
 
-export type PeriodType = 'today' | 'yesterday' | 'week' | 'month' | 'currentMonth' | 'currentYear' | 'year' | 'custom';
+export type PeriodType = 'today' | 'yesterday' | 'week' | 'month' | 'currentMonth' | 'currentYear' | 'year' | 'lastYear' | 'custom';
 
 export function getParisTime(date: Date): Date {
     return new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
@@ -51,6 +51,13 @@ export function getDateRange(period: PeriodType, customStart?: Date, customEnd?:
             const start = new Date(todayParis);
             start.setFullYear(start.getFullYear() - 1);
             return { start, end: now };
+        }
+        case 'lastYear': {
+            const parisNow = getParisTime(now);
+            const lastYear = parisNow.getFullYear() - 1;
+            const start = getParisMidnight(new Date(lastYear, 0, 1));
+            const end = new Date(getParisMidnight(new Date(lastYear, 11, 31)).getTime() + 24 * 60 * 60 * 1000 - 1);
+            return { start, end };
         }
         case 'custom':
             return {
