@@ -88,6 +88,7 @@ const metafieldKeys = [
     'recommended-age-group',
     'toy-game-material',
     'trading-card-packaging',
+    'precommande',
 ] as const;
 export type TMetafieldKeys = (typeof metafieldKeys)[number];
 const namespaceMetafields = ['custom', 'global', 'shopify', 'loox'] as const;
