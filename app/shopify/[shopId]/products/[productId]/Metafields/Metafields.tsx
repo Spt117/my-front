@@ -1,20 +1,26 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { TMetafield } from '@/library/types/graph';
+import { ShoppingBag } from 'lucide-react';
 import { cssCard } from '../util';
 import Amazon from './Amazon';
 import Precommande from './Precommande';
 
-export default function Metafields({ metafields }: { metafields: TMetafield[] }) {
-    const keys = ['id_video_youtube', 'url_video', 'amazon_activate', 'asin', 'avg_rating', 'num_reviews', 'reviews', 'precommande'];
-    const filteredMetafields = metafields.filter((mf) => !keys.includes(mf.key));
-
-    if (filteredMetafields.length === 0) return null;
-
+/**
+ * Section regroupant les metafields Amazon et Précommande
+ * Affichage toujours visible pour la gestion de l'affiliation et des précommandes
+ */
+export default function Metafields() {
     return (
         <Card className={cssCard}>
-            <CardContent className="flex flex-col justify-between h-full text-sm text-muted-foreground gap-4">
+            <CardContent className="space-y-4">
+                <h3 className="text-sm font-semibold flex items-center gap-2 text-gray-700">
+                    <ShoppingBag size={16} />
+                    Amazon & Précommande
+                </h3>
+                
                 <Precommande />
-                <hr />
+                
+                <hr className="border-gray-200" />
+                
                 <Amazon />
             </CardContent>
         </Card>

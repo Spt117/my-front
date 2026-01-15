@@ -17,7 +17,7 @@ export default function Selecteur({ value, onChange, array, placeholder, disable
                 <SelectTrigger className="cursor-pointer w-full rounded-lg border-gray-200 bg-white shadow-sm hover:border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all">
                     <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
-                <SelectContent className="rounded-lg border-gray-200 bg-white shadow-lg">
+                <SelectContent className="z-[200] rounded-lg border-gray-200 bg-white shadow-lg">
                     {array.map((option, index) => (
                         <SelectItem
                             key={`${option.value}-${index}`}

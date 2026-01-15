@@ -64,12 +64,15 @@ export default function ProductList({ product }: { product: ProductGET }) {
                         priority={false}
                     />
                 </div>
-                <h3 className="w-1/4 text-sm font-medium text-foreground line-clamp-1">{product.title}</h3>
-                <div className="w-1/6 text-sm text-primary">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>
-                <div className="w-1/6 text-sm text-primary">Stock: {product.variants?.nodes[0]?.inventoryQuantity}</div>
-                <div className="w-1/6 text-sm text-primary">{`${product.productType} `}</div>
-                <div className="w-1/6 text-sm text-primary">{`${product.status} `}</div>
-                <div className="w-1/6 text-sm text-primary">
+                <h3 className="w-1/5 text-sm font-medium text-foreground line-clamp-1">{product.title}</h3>
+                <div className="w-[10%] text-sm text-primary">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>
+                <div className="w-[8%] text-sm text-primary">Stock: {product.variants?.nodes[0]?.inventoryQuantity}</div>
+                <div className="w-[12%] text-sm text-gray-500 font-mono truncate" title={product.variants?.nodes[0]?.sku || ''}>
+                    {product.variants?.nodes[0]?.sku || '-'}
+                </div>
+                <div className="w-[10%] text-sm text-primary">{`${product.productType} `}</div>
+                <div className="w-[8%] text-sm text-primary">{`${product.status} `}</div>
+                <div className="w-[12%] text-sm text-primary">
                     Publié sur {canaux} {canaux > 1 ? 'canaux' : 'canal'}
                 </div>
             </div>

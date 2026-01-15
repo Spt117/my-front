@@ -38,4 +38,9 @@ export interface ICollectionBulkAction extends IBulkProductsAction<"collection">
     collectionGid: string;
     type: "add" | "remove";
 }
-export type BulkAction = ITagBulkAction | IPriceBulkAction | ICollectionBulkAction;
+
+export interface IQuickPublishBulkAction extends IBulkProductsAction<"quick_publish"> {
+    canauxIds: string[];
+}
+
+export type BulkAction = ITagBulkAction | IPriceBulkAction | ICollectionBulkAction | IQuickPublishBulkAction;

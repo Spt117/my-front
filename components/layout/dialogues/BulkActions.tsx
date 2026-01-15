@@ -7,13 +7,17 @@ import { BulkAction } from "@/components/shopify/typesShopify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { X } from "lucide-react";
+import { Rocket, Tag, FolderPlus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+/**
+ * Composant pour les actions en masse sur les produits sélectionnés
+ * Actions disponibles: Publication rapide, Ajouter à collection, Ajouter/Supprimer tag
+ */
 export default function BulkActions() {
-    const { closeDialog, openDialog, shopifyBoutique } = useShopifyStore();
+    const { closeDialog, shopifyBoutique, canauxBoutique } = useShopifyStore();
     const { collections } = useCollectionStore();
     const [action, setAction] = useState<string | null>(null);
     const [collectionId, setCollectionId] = useState<string | null>(null);
@@ -24,22 +28,70 @@ export default function BulkActions() {
 
     const bulkActions = [
         {
-            label: "Ajouter à une collection",
+            label: (
+                <span className="flex items-center gap-2">
+                    <Rocket size={16} className="text-green-500" />
+                    Publication rapide
+                </span>
+            ),
+            value: "quick_publish",
+        },
+        {
+            label: (
+                <span className="flex items-center gap-2">
+                    <FolderPlus size={16} className="text-blue-500" />
+                    Ajouter à une collection
+                </span>
+            ),
             value: "add_to_collection",
         },
-        { label: "Ajouter un tag", value: "add_tag" },
-        { label: "Supprimer un tag", value: "remove_tag" },
-        { label: "Mettre à jour le prix", value: "update_price" },
+        {
+            label: (
+                <span className="flex items-center gap-2">
+                    <Tag size={16} className="text-purple-500" />
+                    Ajouter un tag
+                </span>
+            ),
+            value: "add_tag",
+        },
+        {
+            label: (
+                <span className="flex items-center gap-2">
+                    <Tag size={16} className="text-red-500" />
+                    Supprimer un tag
+                </span>
+            ),
+            value: "remove_tag",
+        },
     ];
+
     const collectionsOptions = collections.filter((c) => !c.ruleSet).map((c) => ({ label: c.title, value: c.id }));
     const productIds = selectedProducts.map((p) => p.id);
 
     const handleAction = async () => {
         if (!shopifyBoutique?.domain) return;
         setLoading(true);
+        
         try {
             switch (action) {
-                case "add_to_collection":
+                case "quick_publish": {
+                    // Publication rapide: mettre en ACTIVE + publier sur tous les canaux
+                    const canauxIds = canauxBoutique.map((c) => c.id);
+                    const payload: BulkAction = {
+                        productsId: productIds,
+                        domain: shopifyBoutique.domain,
+                        actionType: "quick_publish",
+                        canauxIds,
+                    };
+                    const res = await actionBulk(payload);
+                    if (res.error) toast.error(res.error);
+                    if (res.message) toast.success(res.message);
+                    closeDialog();
+                    router.refresh();
+                    break;
+                }
+
+                case "add_to_collection": {
                     if (collectionId) {
                         const res = await addProductsToCollection(shopifyBoutique.domain, collectionId, productIds);
                         if (res.error) toast.error(res.error);
@@ -50,7 +102,9 @@ export default function BulkActions() {
                         }
                     }
                     break;
-                case "add_tag":
+                }
+
+                case "add_tag": {
                     if (tag) {
                         const payload: BulkAction = {
                             productsId: productIds,
@@ -59,43 +113,147 @@ export default function BulkActions() {
                             tag: tag,
                             type: "add",
                         };
-                        // Implement add tag functionality here
                         const res = await actionBulk(payload);
                         if (res.error) toast.error(res.error);
                         if (res.message) toast.success(res.message);
                         closeDialog();
                     }
+                    break;
+                }
+
+                case "remove_tag": {
+                    if (tag) {
+                        const payload: BulkAction = {
+                            productsId: productIds,
+                            domain: shopifyBoutique.domain,
+                            actionType: "tag",
+                            tag: tag,
+                            type: "remove",
+                        };
+                        const res = await actionBulk(payload);
+                        if (res.error) toast.error(res.error);
+                        if (res.message) toast.success(res.message);
+                        closeDialog();
+                    }
+                    break;
+                }
             }
         } catch (error) {
             console.error("Error during bulk action:", error);
+            toast.error("Une erreur est survenue");
         } finally {
             setLoading(false);
         }
     };
 
+    // Vérification si l'action peut être exécutée
+    const canExecute = () => {
+        if (!action) return false;
+        if (action === "quick_publish") return true;
+        if (action === "add_to_collection") return !!collectionId;
+        if (action === "add_tag" || action === "remove_tag") return !!tag.trim();
+        return false;
+    };
+
     return (
-        <>
-            <X className="absolute right-4 top-4 cursor-pointer" onClick={closeDialog} />
-            <div className="space-y-3">
-                <span className="mb-1 block text-s font-medium text-slate-600">Choisir une action</span>
-            </div>
-            <div className="flex gap-3">
-                <Selecteur className="w-2/5" array={bulkActions} onChange={(value) => setAction(value)} placeholder="Sélectionner une action" value={action} />
-                {action === "add_to_collection" && <Selecteur className="w-2/5" array={collectionsOptions} onChange={(value) => setCollectionId(value)} placeholder="Sélectionner une collection" value={collectionId} />}
-                {action === "add_tag" && <Input onChange={(e) => setTag(e.target.value.trim())} type="text" className="w-2/5 border border-slate-300 rounded px-3 py-2" placeholder="Entrer le tag à ajouter" />}
-            </div>
-            <div className="mt-4 flex flex-col justify-between gap-5">
-                <div className="flex items-center gap-2 w-full"></div>
-                <div className="flex gap-2 items-center justify-between">
-                    <Button type="button" size="sm" disabled={loading} onClick={handleAction}>
-                        Confirmer
-                        {loading && <Spinner />}
+        <div className="relative">
+            <button 
+                onClick={closeDialog} 
+                className="absolute right-0 top-0 p-1 hover:bg-gray-100 rounded-full transition-colors"
+            >
+                <X size={20} className="text-gray-500" />
+            </button>
+
+            <div className="space-y-4 pt-2">
+                <div>
+                    <h2 className="text-lg font-semibold mb-1">Actions en masse</h2>
+                    <p className="text-sm text-gray-500">
+                        {selectedProducts.length} produit{selectedProducts.length > 1 ? "s" : ""} sélectionné{selectedProducts.length > 1 ? "s" : ""}
+                    </p>
+                </div>
+
+                <div className="space-y-3">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Choisir une action
+                        </label>
+                        <Selecteur
+                            className="w-full"
+                            array={bulkActions}
+                            onChange={(value) => setAction(value)}
+                            placeholder="Sélectionner une action"
+                            value={action}
+                        />
+                    </div>
+
+                    {/* Options supplémentaires selon l'action */}
+                    {action === "add_to_collection" && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Collection cible
+                            </label>
+                            <Selecteur
+                                className="w-full"
+                                array={collectionsOptions}
+                                onChange={(value) => setCollectionId(value)}
+                                placeholder="Sélectionner une collection"
+                                value={collectionId}
+                            />
+                        </div>
+                    )}
+
+                    {(action === "add_tag" || action === "remove_tag") && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {action === "add_tag" ? "Tag à ajouter" : "Tag à supprimer"}
+                            </label>
+                            <Input
+                                onChange={(e) => setTag(e.target.value.trim())}
+                                type="text"
+                                placeholder={action === "add_tag" ? "Entrer le tag à ajouter" : "Entrer le tag à supprimer"}
+                            />
+                        </div>
+                    )}
+
+                    {action === "quick_publish" && (
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <p className="text-sm text-green-800">
+                                <strong>Publication rapide</strong> : Les produits sélectionnés seront mis en statut 
+                                <span className="font-semibold"> Actif</span> et publiés sur 
+                                <span className="font-semibold"> {canauxBoutique.length} canaux</span>.
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 justify-end pt-2 border-t">
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={closeDialog}
+                        disabled={loading}
+                    >
+                        Annuler
                     </Button>
-                    <Button disabled={loading} type="button" size="sm" variant="outline" onClick={() => openDialog(34)}>
-                        Retour
+                    <Button
+                        type="button"
+                        size="sm"
+                        disabled={loading || !canExecute()}
+                        onClick={handleAction}
+                    >
+                        {loading ? (
+                            <>
+                                <Spinner className="mr-2" />
+                                En cours...
+                            </>
+                        ) : (
+                            "Confirmer"
+                        )}
                     </Button>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
