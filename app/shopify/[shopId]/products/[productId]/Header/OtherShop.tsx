@@ -1,4 +1,4 @@
-import { brandTypes, TProductType } from "@/components/shopify/ProductType";
+import { brandTypes, getProductTypeKey, TProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { boutiqueFromDomain, boutiques } from "@/params/paramsShopify";
@@ -17,7 +17,7 @@ export default function OtherShop() {
     useEffect(() => {
         const brand = brandTypes.find((b) => product?.tags.includes(b));
         if (brand) setSelectedBrand(brand);
-        setSelectedType(product?.productType.toLowerCase() as TProductType);
+        setSelectedType(getProductTypeKey(product?.productType));
     }, [product?.tags, product?.productType]);
 
     useEffect(() => {
