@@ -116,9 +116,11 @@ export default function OrderCompact({ order, hiddenPreorderCount = 0 }: OrderCo
                                     <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0"></span>
                                     {!isClientPage && (
                                         <>
-                                            <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                {order.customer.numberOfOrders} cmds
-                                            </span>
+                                            <Link href={`/shopify/${boutique.id}/clients/${order.customer.id.split('/').pop()}`} className="hover:opacity-80 transition-opacity">
+                                                <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                    {order.customer.numberOfOrders} cmds
+                                                </span>
+                                            </Link>
                                             <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0"></span>
                                         </>
                                     )}
