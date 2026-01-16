@@ -3,7 +3,7 @@
 import { AnalyticsData, getAnalytics } from '@/app/(home)/serverAction';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { boutiques, IShopify } from '@/params/paramsShopify';
-import { DollarSign, Package, RefreshCw, ShoppingCart, Store, TrendingUp } from 'lucide-react';
+import { DollarSign, ExternalLink, Package, RefreshCw, ShoppingCart, Store, TrendingUp } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { formatCurrency, getDateRange, PeriodType } from './AnalyticsUtils';
@@ -156,13 +156,24 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                     <CardContent className="p-0">
                         <div className="divide-y divide-slate-100">
                             {stats.map((s) => (
-                                <div key={s.boutique.domain} className="p-4 flex items-center justify-between hover:bg-white/50 transition-colors">
+                                <div key={s.boutique.domain} className="p-4 flex items-center justify-between hover:bg-white/50 transition-colors group/row">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden">
+                                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
                                             <img src={s.boutique.flag} alt={s.boutique.langue} className="w-6 h-6 object-contain" />
                                         </div>
-                                        <div>
-                                            <p className="font-semibold text-slate-800 text-sm">{s.boutique.publicDomain}</p>
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-semibold text-slate-800 text-sm whitespace-nowrap">{s.boutique.publicDomain}</p>
+                                                <a
+                                                    href={`https://admin.shopify.com/store/${s.boutique.domain.replace(".myshopify.com", "")}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-slate-300 hover:text-purple-500 transition-colors opacity-0 group-hover/row:opacity-100"
+                                                    title="Shopify Admin"
+                                                >
+                                                    <ExternalLink className="w-3.5 h-3.5" />
+                                                </a>
+                                            </div>
                                             <p className="text-xs text-slate-500">{s.boutique.vendor}</p>
                                         </div>
                                     </div>

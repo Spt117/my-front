@@ -6,7 +6,7 @@ import { AnalyticsPeriodSelector } from '@/components/analytics/AnalyticsPeriodS
 import { PeriodType } from '@/components/analytics/AnalyticsUtils';
 import useShopifyStore from '@/components/shopify/shopifyStore';
 import { boutiques, IShopify } from '@/params/paramsShopify';
-import { LayoutGrid, Store } from 'lucide-react';
+import { ExternalLink, LayoutGrid, Store } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ShopifyDashboard() {
@@ -30,9 +30,22 @@ export default function ShopifyDashboard() {
                         <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent">
                             Analytics Dashboard
                         </h1>
-                        <p className="text-slate-600">
-                            {viewMode === 'global' ? 'Vue d\'ensemble de toutes les boutiques' : `Statistiques pour ${shopifyBoutique?.publicDomain}`}
-                        </p>
+                        <div className="flex items-center justify-center md:justify-start gap-3">
+                            <p className="text-slate-600">
+                                {viewMode === 'global' ? 'Vue d\'ensemble de toutes les boutiques' : `Statistiques pour ${shopifyBoutique?.publicDomain}`}
+                            </p>
+                            {viewMode === 'shop' && shopifyBoutique && (
+                                <a
+                                    href={`https://admin.shopify.com/store/${shopifyBoutique.domain.replace(".myshopify.com", "")}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-purple-600 text-xs font-medium hover:bg-purple-100 transition-colors border border-purple-100"
+                                >
+                                    Admin Shopify
+                                    <ExternalLink className="w-3 h-3" />
+                                </a>
+                            )}
+                        </div>
                     </div>
 
                     {/* View Switcher */}
@@ -49,7 +62,7 @@ export default function ShopifyDashboard() {
                             Global
                         </button>
                         <div className="w-px h-6 bg-slate-200 my-auto mx-1" />
-                        <div className="relative group">
+                        <div className="relative group/shops">
                             <button
                                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                                     viewMode === 'shop'
@@ -62,16 +75,26 @@ export default function ShopifyDashboard() {
                             </button>
                             
                             {/* Dropdown for shops */}
-                            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                            <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 opacity-0 invisible group-hover/shops:opacity-100 group-hover/shops:visible transition-all duration-200 z-50">
                                 {boutiques.map((b) => (
-                                    <button
-                                        key={b.domain}
-                                        onClick={() => handleShopSelect(b)}
-                                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
-                                    >
-                                        <img src={b.flag} alt="" className="w-5 h-5 object-contain" />
-                                        {b.publicDomain}
-                                    </button>
+                                    <div key={b.domain} className="group/item flex items-center gap-1">
+                                        <button
+                                            onClick={() => handleShopSelect(b)}
+                                            className="flex-1 flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-colors text-left truncate"
+                                        >
+                                            <img src={b.flag} alt="" className="w-5 h-5 object-contain shrink-0" />
+                                            <span className="truncate">{b.publicDomain}</span>
+                                        </button>
+                                        <a
+                                            href={`https://admin.shopify.com/store/${b.domain.replace(".myshopify.com", "")}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="p-2 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-purple-600 transition-all opacity-0 group-hover/item:opacity-100 shrink-0"
+                                            title="Ouvrir l'admin Shopify"
+                                        >
+                                            <ExternalLink className="w-3.5 h-3.5" />
+                                        </a>
+                                    </div>
                                 ))}
                             </div>
                         </div>
