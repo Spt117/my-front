@@ -19,6 +19,7 @@ export interface AnalyticsData {
     totalRevenue: number;
     productsCreatedCount: number;
     orderedProducts: OrderedProduct[];
+    productsCreated: any[]; // On peut typer plus finement si nécessaire, mais any[] suffit pour commencer
 }
 
 export interface AnalyticsRequest {

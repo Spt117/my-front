@@ -25,7 +25,7 @@ export default function ShopifyDashboard() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100 p-6">
             <div className="max-w-7xl mx-auto space-y-6">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8 relative z-30">
                     <div className="text-center md:text-left space-y-2">
                         <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent">
                             Analytics Dashboard

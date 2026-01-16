@@ -3,12 +3,13 @@
 import { AnalyticsData, getAnalytics } from '@/app/(home)/serverAction';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { boutiques, IShopify } from '@/params/paramsShopify';
-import { DollarSign, ExternalLink, Package, RefreshCw, ShoppingCart, Store, TrendingUp } from 'lucide-react';
+import { DollarSign, ExternalLink, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { formatCurrency, getDateRange, PeriodType } from './AnalyticsUtils';
 import { KPICard } from './KPICard';
 import { AnalyticsProductsTable } from './AnalyticsProductsTable';
+import { CreatedProductsTable } from './CreatedProductsTable';
 
 interface GlobalAnalyticsViewProps {
     period: PeriodType;
@@ -67,6 +68,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     const totalRevenue = stats.reduce((sum, s) => sum + (s.data?.totalRevenue || 0), 0);
     const totalOrders = stats.reduce((sum, s) => sum + (s.data?.ordersCount || 0), 0);
     const totalProducts = stats.reduce((sum, s) => sum + (s.data?.orderedProducts.reduce((pSum, p) => pSum + p.quantity, 0) || 0), 0);
+    const totalCreated = stats.reduce((sum, s) => sum + (s.data?.productsCreatedCount || 0), 0);
 
     const chartData = stats
         .filter((s) => s.data)
@@ -80,7 +82,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     return (
         <div className="space-y-6">
             {/* Global KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <KPICard
                     title="CA Total Global"
                     value={formatCurrency(totalRevenue)}
@@ -101,6 +103,13 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                     icon={Package}
                     gradient="bg-gradient-to-br from-orange-600 via-amber-600 to-orange-700"
                     subtitle="Nombre d'articles expédiés"
+                />
+                <KPICard
+                    title="Produits Créés"
+                    value={totalCreated}
+                    icon={PackagePlus}
+                    gradient="bg-gradient-to-br from-pink-600 via-rose-600 to-pink-700"
+                    subtitle="Nouveaux produits ajoutés"
                 />
             </div>
 

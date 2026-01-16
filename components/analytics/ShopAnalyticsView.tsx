@@ -7,6 +7,7 @@ import { DollarSign, Package, PackagePlus, RefreshCw, ShoppingCart, TrendingUp }
 import { useCallback, useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { AnalyticsProductsTable } from './AnalyticsProductsTable';
+import { CreatedProductsTable } from './CreatedProductsTable';
 import { formatCurrency, getDateRange, PeriodType } from './AnalyticsUtils';
 import { KPICard } from './KPICard';
 
