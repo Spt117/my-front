@@ -80,7 +80,7 @@ export default function ShopifyDashboard() {
                                     <div key={b.domain} className="group/item flex items-center gap-1">
                                         <button
                                             onClick={() => handleShopSelect(b)}
-                                            className="flex-1 flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-colors text-left truncate"
+                                            className="flex-1 flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-colors text-left truncate cursor-pointer"
                                         >
                                             <img src={b.flag} alt="" className="w-5 h-5 object-contain shrink-0" />
                                             <span className="truncate">{b.publicDomain}</span>
@@ -89,7 +89,7 @@ export default function ShopifyDashboard() {
                                             href={`https://admin.shopify.com/store/${b.domain.replace(".myshopify.com", "")}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="p-2 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-purple-600 transition-all opacity-0 group-hover/item:opacity-100 shrink-0"
+                                            className="p-2 rounded-lg text-slate-300 hover:bg-slate-100 hover:text-purple-600 transition-all opacity-0 group-hover/item:opacity-100 shrink-0 cursor-pointer"
                                             title="Ouvrir l'admin Shopify"
                                         >
                                             <ExternalLink className="w-3.5 h-3.5" />
@@ -102,14 +102,16 @@ export default function ShopifyDashboard() {
                 </div>
 
                 {/* Period Selector */}
-                <AnalyticsPeriodSelector
-                    period={period}
-                    setPeriod={setPeriod}
-                    customStart={customStart}
-                    setCustomStart={setCustomStart}
-                    customEnd={customEnd}
-                    setCustomEnd={setCustomEnd}
-                />
+                <div className="relative z-10">
+                    <AnalyticsPeriodSelector
+                        period={period}
+                        setPeriod={setPeriod}
+                        customStart={customStart}
+                        setCustomStart={setCustomStart}
+                        customEnd={customEnd}
+                        setCustomEnd={setCustomEnd}
+                    />
+                </div>
 
                 {/* Main Content */}
                 {viewMode === 'global' ? (
