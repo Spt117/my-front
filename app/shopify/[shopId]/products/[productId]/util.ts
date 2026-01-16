@@ -9,7 +9,7 @@ export const cssCard = "shadow-md border border-gray-200 bg-white rounded-lg tra
 export const classCopy = "cursor-pointer transition-transform duration-150 ease-out active:scale-95 hover:bg-gray-100";
 
 // Types des champs de variante
-const fieldsVariant = ["price", "compareAtPrice", "barcode", "sku"] as const;
+const fieldsVariant = ["price", "compareAtPrice", "barcode", "sku", "weight", "weightUnit"] as const;
 export type TFieldVariant = (typeof fieldsVariant)[number];
 
 // Types des champs de produit

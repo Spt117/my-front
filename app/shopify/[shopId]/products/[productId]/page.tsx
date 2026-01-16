@@ -136,7 +136,6 @@ export default function Page() {
 
                     {/* --- SECTION: Informations & Autres --- */}
                     <div className="space-y-4">
-                        <AboutProduct />
                         <LooxReviews metafields={product.metafields.nodes} />
                         <MetafieldToClean />
                     </div>

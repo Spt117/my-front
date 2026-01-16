@@ -106,6 +106,25 @@ export default function Statut() {
                         </Button>
                     )}
                 </div>
+
+                <div className="pt-4 border-t border-gray-100 grid grid-cols-2 gap-4 text-xs">
+                    <div className="space-y-1">
+                        <p className="text-gray-400 font-medium flex items-center gap-1.5 uppercase tracking-wider">
+                            Créé le
+                        </p>
+                        <p className="text-gray-700 font-semibold bg-gray-50 px-2 py-1.5 rounded-md border border-gray-100">
+                            {new Date(product.createdAt).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-gray-400 font-medium flex items-center gap-1.5 uppercase tracking-wider">
+                            Modifié le
+                        </p>
+                        <p className="text-gray-700 font-semibold bg-gray-50 px-2 py-1.5 rounded-md border border-gray-100">
+                            {new Date(product.updatedAt).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
+                    </div>
+                </div>
             </CardContent>
         </Card>
     );

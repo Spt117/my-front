@@ -10,9 +10,16 @@ import { pokeUriServer } from "@/library/utils/uri";
 import { TDomainsShopify } from "@/params/paramsShopify";
 import { TFieldProduct, TFieldVariant } from "./util";
 
-export async function updateVariant(domain: TDomainsShopify, productGid: string, variantGid: string, field: TFieldVariant, value: number | string | boolean) {
+export async function updateVariant(
+    domain: TDomainsShopify,
+    productGid: string,
+    variantGid: string,
+    field: TFieldVariant,
+    value: number | string | boolean,
+    extra?: any
+) {
     const url = `${pokeUriServer}/shopify/update-variant`;
-    const data = { domain, productGid, variantGid, field, value };
+    const data = { domain, productGid, variantGid, field, value, extra };
     const response = await postServer(url, data);
     return response;
 }
