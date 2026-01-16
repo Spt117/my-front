@@ -52,7 +52,7 @@ export default function ShopifyDashboard() {
                     <div className="flex bg-white/50 backdrop-blur-sm p-1 rounded-2xl border border-white/20 shadow-lg">
                         <button
                             onClick={() => setViewMode('global')}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer ${
                                 viewMode === 'global'
                                     ? 'bg-white text-purple-600 shadow-sm'
                                     : 'text-slate-600 hover:text-purple-500'
@@ -64,7 +64,7 @@ export default function ShopifyDashboard() {
                         <div className="w-px h-6 bg-slate-200 my-auto mx-1" />
                         <div className="relative group/shops">
                             <button
-                                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer ${
                                     viewMode === 'shop'
                                         ? 'bg-white text-purple-600 shadow-sm'
                                         : 'text-slate-600 hover:text-purple-500'
@@ -75,7 +75,7 @@ export default function ShopifyDashboard() {
                             </button>
                             
                             {/* Dropdown for shops */}
-                            <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 opacity-0 invisible group-hover/shops:opacity-100 group-hover/shops:visible transition-all duration-200 z-50">
+                            <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 opacity-0 invisible group-hover/shops:opacity-100 group-hover/shops:visible transition-all duration-200 z-[100]">
                                 {boutiques.map((b) => (
                                     <div key={b.domain} className="group/item flex items-center gap-1">
                                         <button

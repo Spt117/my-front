@@ -156,23 +156,21 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                     <CardContent className="p-0">
                         <div className="divide-y divide-slate-100">
                             {stats.map((s) => (
-                                <div key={s.boutique.domain} className="p-4 flex items-center justify-between hover:bg-white/50 transition-colors group/row">
+                                <a 
+                                    key={s.boutique.domain} 
+                                    href={`https://admin.shopify.com/store/${s.boutique.domain.replace(".myshopify.com", "")}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-4 flex items-center justify-between hover:bg-purple-50/50 transition-all cursor-pointer group/row"
+                                >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
+                                        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 group-hover/row:scale-110 transition-transform">
                                             <img src={s.boutique.flag} alt={s.boutique.langue} className="w-6 h-6 object-contain" />
                                         </div>
                                         <div className="flex flex-col">
                                             <div className="flex items-center gap-2">
                                                 <p className="font-semibold text-slate-800 text-sm whitespace-nowrap">{s.boutique.publicDomain}</p>
-                                                <a
-                                                    href={`https://admin.shopify.com/store/${s.boutique.domain.replace(".myshopify.com", "")}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-slate-300 hover:text-purple-500 transition-colors opacity-0 group-hover/row:opacity-100"
-                                                    title="Shopify Admin"
-                                                >
-                                                    <ExternalLink className="w-3.5 h-3.5" />
-                                                </a>
+                                                <ExternalLink className="w-3.5 h-3.5 text-slate-300 group-hover/row:text-purple-500 transition-colors" />
                                             </div>
                                             <p className="text-xs text-slate-500">{s.boutique.vendor}</p>
                                         </div>
@@ -192,7 +190,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                                             </>
                                         )}
                                     </div>
-                                </div>
+                                </a>
                             ))}
                         </div>
                     </CardContent>
