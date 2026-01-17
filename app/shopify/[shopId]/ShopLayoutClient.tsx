@@ -15,10 +15,11 @@ interface ShopLayoutClientProps {
     canauxPublication: CanauxPublication[];
     collections: ShopifyCollection[];
     shopId: string;
+    settings: { amazonPartnerId: string; amazonDomain: string };
 }
 
-export default function ShopLayoutClient({ children, boutique, canauxPublication, collections, shopId }: ShopLayoutClientProps) {
-    const { setShopifyBoutique, setCanauxBoutique } = useShopifyStore();
+export default function ShopLayoutClient({ children, boutique, canauxPublication, collections, shopId, settings }: ShopLayoutClientProps) {
+    const { setShopifyBoutique, setCanauxBoutique, setShopSettings } = useShopifyStore();
     const { socket } = useUserStore();
     const { setFilterOrders, orders } = useOrdersStore();
     const { setFilteredCollections, setCollections } = useCollectionStore();
@@ -27,6 +28,7 @@ export default function ShopLayoutClient({ children, boutique, canauxPublication
     useEffect(() => {
         if (boutique) {
             setShopifyBoutique(boutique);
+            setShopSettings(settings);
             // Transformer les canaux
             const canauxProduits: TCanal[] = canauxPublication.map((c) => ({
                 ...c,
@@ -38,7 +40,7 @@ export default function ShopLayoutClient({ children, boutique, canauxPublication
             setCollections(collections);
             setFilteredCollections(collections);
         }
-    }, [shopId, collections, canauxPublication]);
+    }, [shopId, collections, canauxPublication, settings]);
 
     // Filtrage des orders
     useEffect(() => {

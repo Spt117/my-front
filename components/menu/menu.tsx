@@ -17,13 +17,12 @@ export default function Menu({ path, label, disabled }: MenuProps) {
         currentPath === path ||
         (path.includes("orders") && currentPath.includes("orders")) ||
         (path.includes("products") && currentPath.includes("products")) ||
-        (path.includes("collections") && currentPath.includes("collections"));
+        (path.includes("collections") && currentPath.includes("collections")) ||
+        (path.includes("boutique") && currentPath.includes("boutique"));
 
     const baseClasses = "min-w-8 duration-200 ease-linear flex items-center gap-2";
-    const activeClasses =
-        "bg-primary text-primary-foreground opacity-97 hover:bg-primary hover:text-primary-foreground active:bg-primary/97 ";
-    const inactiveClasses =
-        "bg-accent/100 hover:bg-primary/80 hover:text-primary-foreground active:bg-accent/90 active:text-accent-foreground";
+    const activeClasses = "bg-primary text-primary-foreground opacity-97 hover:bg-primary hover:text-primary-foreground active:bg-primary/97 ";
+    const inactiveClasses = "bg-accent/100 hover:bg-primary/80 hover:text-primary-foreground active:bg-accent/90 active:text-accent-foreground";
 
     return (
         <Link href={path} className={cn(disabled && "pointer-events-none opacity-50")}>

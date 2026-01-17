@@ -40,6 +40,8 @@ interface StoreState {
     setSearchMode: (mode: TSearchMode) => void;
     isSearchOpen: boolean;
     setIsSearchOpen: (open: boolean) => void;
+    shopSettings: { amazonPartnerId: string; amazonDomain: string } | null;
+    setShopSettings: (settings: { amazonPartnerId: string; amazonDomain: string } | null) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
@@ -75,6 +77,8 @@ const useShopifyStore = create<StoreState>((set) => ({
     setCanauxBoutique: (canauxBoutique) => set({ canauxBoutique }),
     searchMode: 'standard',
     setSearchMode: (mode) => set({ searchMode: mode }),
+    shopSettings: null,
+    setShopSettings: (settings) => set({ shopSettings: settings }),
 }));
 
 export default useShopifyStore;
