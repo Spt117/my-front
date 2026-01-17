@@ -54,10 +54,16 @@ interface Product {
     };
 }
 
+interface VariantImage {
+    url: string;
+    altText?: string;
+}
+
 interface ProductVariant {
     id: string;
+    title: string; // Titre de la variante (ex: "Rouge / M", "Default Title")
     price: string;
-    image: null | string; // Peut être null ou une URL d'image
+    image: VariantImage | null; // Image spécifique de la variante
     product: Product;
 }
 

@@ -1,17 +1,21 @@
-import { LineItemNode } from '@/library/shopify/orders';
-import { boutiqueFromDomain, TDomainsShopify } from '@/params/paramsShopify';
-import { AlertTriangle, ArrowUpRight, Box, Calendar, Tag } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { LineItemNode } from "@/library/shopify/orders";
+import { boutiqueFromDomain, TDomainsShopify } from "@/params/paramsShopify";
+import { AlertTriangle, ArrowUpRight, Box, Calendar, Tag } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function ProductSection({ node, domain }: { node: LineItemNode; domain: TDomainsShopify }) {
-    const idProduct = node.variant?.product.id.split('/').pop();
+    const idProduct = node.variant?.product.id.split("/").pop();
     const boutique = boutiqueFromDomain(domain);
     const url = `/shopify/${boutique.id}/products/${idProduct}`;
 
     if (!node.variant) return null;
 
     const precommandeDate = node.variant?.product.precommande?.value;
+    // Priorité à l'image de la variante, sinon image du produit
+    const imageUrl = node.variant?.image?.url || node.variant?.product.featuredImage?.url || "/no_image.png";
+    const variantTitle = node.variant?.title;
+    const showVariantTitle = variantTitle && variantTitle !== "Default Title";
 
     return (
         <Link href={url} rel="noopener noreferrer" className="block h-full group">
@@ -23,8 +27,8 @@ export default function ProductSection({ node, domain }: { node: LineItemNode; d
                 <div className="relative w-20 h-20 min-w-[5rem] md:w-24 md:h-24 md:min-w-[6rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0">
                     <Image
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        src={node.variant?.product.featuredImage.url || '/no_image.png'}
-                        alt={node.title}
+                        src={imageUrl}
+                        alt={variantTitle || node.title}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -40,6 +44,8 @@ export default function ProductSection({ node, domain }: { node: LineItemNode; d
                             <ArrowUpRight className="w-4 h-4 text-gray-300 opacity-0 -translate-x-2 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0" />
                         </div>
 
+                        {showVariantTitle && <p className="text-xs text-purple-600 font-medium mt-0.5">Variante : {variantTitle}</p>}
+
                         <div className="flex flex-wrap items-center gap-2 mt-1.5">
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-700 border border-gray-200 shadow-sm">
                                 <Tag className="w-3 h-3 text-gray-400" />
@@ -48,7 +54,7 @@ export default function ProductSection({ node, domain }: { node: LineItemNode; d
                             {precommandeDate && (
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-[10px] font-bold text-amber-700 border border-amber-200 animate-pulse">
                                     <Calendar className="w-3 h-3" />
-                                    {new Date(precommandeDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                                    {new Date(precommandeDate).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                                 </span>
                             )}
                         </div>

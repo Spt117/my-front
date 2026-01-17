@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { LineItemNode } from '@/library/shopify/orders';
-import { boutiqueFromDomain, TDomainsShopify } from '@/params/paramsShopify';
-import { Check, CheckCircle2, ExternalLink, Loader2, Package, RotateCcw, Truck } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { LineItemNode } from "@/library/shopify/orders";
+import { boutiqueFromDomain, TDomainsShopify } from "@/params/paramsShopify";
+import { Check, CheckCircle2, ExternalLink, Loader2, Package, RotateCcw, Truck } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import { useEffect, useState } from 'react';
-import { cancelFulfillment, fulfillLineItems, Fulfillment, FulfillmentOrder, getFulfillmentOrders, getFulfillments } from './serverAction';
+import { useEffect, useState } from "react";
+import { cancelFulfillment, fulfillLineItems, Fulfillment, FulfillmentOrder, getFulfillmentOrders, getFulfillments } from "./serverAction";
 
 interface FulfillProductSectionProps {
     lineItems: Array<{ node: LineItemNode }>;
@@ -43,30 +43,30 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
     const [selectableItems, setSelectableItems] = useState<SelectableLineItem[]>([]);
     const [fulfilledItems, setFulfilledItems] = useState<FulfilledItem[]>([]);
     const [fulfillments, setFulfillments] = useState<Fulfillment[]>([]);
-    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-    const [trackingNumber, setTrackingNumber] = useState('');
-    const [trackingUrl, setTrackingUrl] = useState('');
-    const [trackingCompany, setTrackingCompany] = useState('Colissimo');
+    const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+    const [trackingNumber, setTrackingNumber] = useState("");
+    const [trackingUrl, setTrackingUrl] = useState("");
+    const [trackingCompany, setTrackingCompany] = useState("Colissimo");
 
     // Mapping des URLs de suivi par transporteur
     const trackingUrlTemplates: Record<string, string> = {
-        Colissimo: 'https://www.laposte.fr/outils/suivre-vos-envois?code={tracking}',
-        Chronopost: 'https://www.chronopost.fr/tracking-no-cms/suivi-page?liession={tracking}',
-        'La Poste': 'https://www.laposte.fr/outils/suivre-vos-envois?code={tracking}',
-        'Mondial Relay': 'https://www.mondialrelay.fr/suivi-de-colis/?NumeroExpedition={tracking}',
-        DHL: 'https://www.dhl.com/fr-fr/home/suivi.html?tracking-id={tracking}',
-        UPS: 'https://www.ups.com/track?tracknum={tracking}&loc=fr_FR',
-        FedEx: 'https://www.fedex.com/fedextrack/?trknbr={tracking}',
-        GLS: 'https://gls-group.eu/FR/fr/suivi-colis?match={tracking}',
-        DPD: 'https://www.dpd.com/fr/fr/suivi-de-colis/?parcelno={tracking}',
-        Other: '',
+        Colissimo: "https://www.laposte.fr/outils/suivre-vos-envois?code={tracking}",
+        Chronopost: "https://www.chronopost.fr/tracking-no-cms/suivi-page?liession={tracking}",
+        "La Poste": "https://www.laposte.fr/outils/suivre-vos-envois?code={tracking}",
+        "Mondial Relay": "https://www.mondialrelay.fr/suivi-de-colis/?NumeroExpedition={tracking}",
+        DHL: "https://www.dhl.com/fr-fr/home/suivi.html?tracking-id={tracking}",
+        UPS: "https://www.ups.com/track?tracknum={tracking}&loc=fr_FR",
+        FedEx: "https://www.fedex.com/fedextrack/?trknbr={tracking}",
+        GLS: "https://gls-group.eu/FR/fr/suivi-colis?match={tracking}",
+        DPD: "https://www.dpd.com/fr/fr/suivi-de-colis/?parcelno={tracking}",
+        Other: "",
     };
 
     // Générer l'URL de suivi avec le numéro
     const getTrackingUrl = (company: string, number: string): string => {
-        const template = trackingUrlTemplates[company] || '';
-        if (!template || !number) return '';
-        return template.replace('{tracking}', number);
+        const template = trackingUrlTemplates[company] || "";
+        if (!template || !number) return "";
+        return template.replace("{tracking}", number);
     };
 
     // Mettre à jour l'URL quand le transporteur ou le numéro change
@@ -86,10 +86,10 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
         setMessage(null);
         setSelectableItems([]);
         setFulfilledItems([]);
-        setTrackingNumber('');
-        setTrackingUrl('');
+        setTrackingNumber("");
+        setTrackingUrl("");
         loadData();
-    }, [orderIds.join(','), domain]);
+    }, [orderIds.join(","), domain]);
 
     const loadData = async () => {
         try {
@@ -116,50 +116,50 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
             setFulfillments(allFulfillments);
 
             if (allFulfillmentOrders.length === 0 && foResults.some((r) => !r)) {
-                setMessage({ type: 'error', text: 'Impossible de charger les données de fulfillment' });
+                setMessage({ type: "error", text: "Impossible de charger les données de fulfillment" });
                 setLoading(false);
                 return;
             }
 
             // Filtrer les fulfillment orders (on prend tout ce qui n'est pas CLOSED ou CANCELLED)
             const activeFulfillmentOrders = allFulfillmentOrders.filter((fo) => {
-                const s = (fo.status || '').toUpperCase();
-                return s !== 'CLOSED' && s !== 'CANCELLED' && s !== 'CANCELED';
+                const s = (fo.status || "").toUpperCase();
+                return s !== "CLOSED" && s !== "CANCELLED" && s !== "CANCELED";
             });
 
             // DEBUG: Log des données pour diagnostic
-            console.log('=== DEBUG FulfillProductSection ===');
-            console.log('lineItems:', lineItems);
-            console.log('allFulfillmentOrders:', allFulfillmentOrders);
-            console.log('activeFulfillmentOrders:', activeFulfillmentOrders);
-            console.log('allFulfillments:', allFulfillments);
-            console.log('===================================');
+            console.log("=== DEBUG FulfillProductSection ===");
+            console.log("lineItems:", lineItems);
+            console.log("allFulfillmentOrders:", allFulfillmentOrders);
+            console.log("activeFulfillmentOrders:", activeFulfillmentOrders);
+            console.log("allFulfillments:", allFulfillments);
+            console.log("===================================");
 
             const selectable: SelectableLineItem[] = [];
             const fulfilled: FulfilledItem[] = [];
             const processedLineItems = new Set<string>();
 
             // Aide pour comparer les IDs Shopify de manière robuste (compare uniquement la partie numérique)
-            const getNumericId = (gid: string) => gid.split('/').pop()?.split('?')[0] || gid;
+            const getNumericId = (gid: string) => gid.split("/").pop()?.split("?")[0] || gid;
 
             // 1. D'abord on identifie tout ce qui est sélectionnable via les FO ouverts
             // IMPORTANT: On n'ajoute PAS les produits déjà fulfilled
             for (const { node } of lineItems) {
                 // Skip if already fulfilled
-                const nodeFulfillmentStatus = (node.fulfillmentStatus || '').toLowerCase();
-                if (nodeFulfillmentStatus === 'fulfilled') {
+                const nodeFulfillmentStatus = (node.fulfillmentStatus || "").toLowerCase();
+                if (nodeFulfillmentStatus === "fulfilled") {
                     continue; // Will be processed in step 2
                 }
 
                 const nodeNumericId = getNumericId(node.id);
-                const nodeSku = (node.sku || '').trim().toLowerCase();
-                const nodeTitle = (node.title || '').trim().toLowerCase();
+                const nodeSku = (node.sku || "").trim().toLowerCase();
+                const nodeTitle = (node.title || "").trim().toLowerCase();
 
                 let found = false;
                 for (const fo of activeFulfillmentOrders) {
                     const foLineItem = fo.lineItems.find((li) => {
                         const liNumericId = getNumericId(li.lineItemId);
-                        const liSku = (li.sku || '').trim().toLowerCase();
+                        const liSku = (li.sku || "").trim().toLowerCase();
 
                         // Stratégie de matching :
                         // 1. ID numérique identique
@@ -185,32 +185,29 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                 }
             }
 
-
             // 2. Ensuite on identifie tout ce qui est déjà traité
             // Group fulfilled items by fulfillment ID to show which items will be affected by cancellation
             const fulfillmentItemCounts: Record<string, number> = {};
-            
+
             // Build a set of fulfilled line item IDs from the fulfillments data
             // This is more reliable than checking node.fulfillmentStatus which may be stale
             const fulfilledLineItemIds = new Set<string>();
-            
+
             // Check if we have any successful fulfillments
-            const successfulFulfillments = allFulfillments.filter(
-                (f) => f.status === 'SUCCESS' || f.status === 'fulfilled' || f.status?.toLowerCase() === 'success'
-            );
+            const successfulFulfillments = allFulfillments.filter((f) => f.status === "SUCCESS" || f.status === "fulfilled" || f.status?.toLowerCase() === "success");
 
             for (const { node } of lineItems) {
                 if (processedLineItems.has(node.id)) continue;
 
                 // Check fulfillment status from multiple sources
-                const nodeFulfillmentStatus = (node.fulfillmentStatus || '').toLowerCase();
-                const isFulfilledByStatus = nodeFulfillmentStatus === 'fulfilled';
-                
+                const nodeFulfillmentStatus = (node.fulfillmentStatus || "").toLowerCase();
+                const isFulfilledByStatus = nodeFulfillmentStatus === "fulfilled";
+
                 // Also check if there are any successful fulfillments for this order
                 // and the item is not in the active fulfillment orders (meaning it's been fulfilled)
                 const hasSuccessfulFulfillment = successfulFulfillments.length > 0;
                 const isNotSelectable = !selectableItems.find((s) => s.node.id === node.id);
-                
+
                 // Consider fulfilled if either:
                 // 1. fulfillmentStatus is 'fulfilled'
                 // 2. There are successful fulfillments AND this item wasn't found in active fulfillment orders
@@ -219,9 +216,9 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                 if (isFulfilled) {
                     // Try to find the specific fulfillment for this item
                     const fulfillment = successfulFulfillments[0] || allFulfillments[0];
-                    const fulfillmentId = fulfillment?.id || '';
+                    const fulfillmentId = fulfillment?.id || "";
                     const tNumber = fulfillment?.trackingInfo || null;
-                    const tCompany = fulfillment?.trackingCompany || 'Colissimo';
+                    const tCompany = fulfillment?.trackingCompany || "Colissimo";
 
                     // Count items per fulfillment
                     fulfillmentItemCounts[fulfillmentId] = (fulfillmentItemCounts[fulfillmentId] || 0) + 1;
@@ -243,7 +240,6 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                 item.otherItemsInFulfillment = (fulfillmentItemCounts[item.fulfillmentId] || 1) - 1;
             });
 
-
             // 3. Cas particulier: si un item n'est ni selectable ni fulfilled
             // On l'ajoute quand même en "selectable" (mais sans fulfillmentOrderId/id pour bloquer le bouton)
             // ou on pourrait créer un autre état. Pour l'instant, on l'affiche simplement pour éviter l'écran vide.
@@ -256,8 +252,8 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                 // Cela permet au moins de voir le produit.
                 selectable.push({
                     node,
-                    fulfillmentOrderId: '',
-                    fulfillmentLineItemId: '',
+                    fulfillmentOrderId: "",
+                    fulfillmentLineItemId: "",
                     remainingQuantity: node.quantity,
                     selected: false,
                 });
@@ -266,8 +262,8 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
             setSelectableItems(selectable);
             setFulfilledItems(fulfilled);
         } catch (error) {
-            console.error('Erreur lors du chargement:', error);
-            setMessage({ type: 'error', text: 'Erreur lors du chargement' });
+            console.error("Erreur lors du chargement:", error);
+            setMessage({ type: "error", text: "Erreur lors du chargement" });
         } finally {
             setLoading(false);
         }
@@ -290,7 +286,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
     const handleFulfill = async () => {
         const selectedItems = selectableItems.filter((item) => item.selected);
         if (selectedItems.length === 0) {
-            setMessage({ type: 'error', text: 'Veuillez sélectionner au moins un produit' });
+            setMessage({ type: "error", text: "Veuillez sélectionner au moins un produit" });
             return;
         }
 
@@ -316,12 +312,12 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
             });
 
             if (result.error) {
-                setMessage({ type: 'error', text: result.error });
+                setMessage({ type: "error", text: result.error });
             } else if (result.response) {
                 if (result.response.archived) {
                     setMessage({
-                        type: 'success',
-                        text: '✅ Tous les produits traités ! Commande archivée.',
+                        type: "success",
+                        text: "✅ Tous les produits traités ! Commande archivée.",
                     });
                     setTimeout(() => {
                         router.push(`/shopify/${boutique.id}/orders`);
@@ -329,7 +325,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                     }, 2000);
                 } else {
                     setMessage({
-                        type: 'success',
+                        type: "success",
                         text: `${selectedItems.length} produit(s) traité(s) avec succès`,
                     });
                     await loadData();
@@ -337,8 +333,8 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                 }
             }
         } catch (error) {
-            console.error('Erreur lors du fulfillment:', error);
-            setMessage({ type: 'error', text: 'Erreur lors du traitement' });
+            console.error("Erreur lors du fulfillment:", error);
+            setMessage({ type: "error", text: "Erreur lors du traitement" });
         } finally {
             setFulfilling(false);
         }
@@ -346,7 +342,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
 
     const handleCancelFulfillment = async (fulfillmentId: string) => {
         if (!fulfillmentId) {
-            setMessage({ type: 'error', text: "Impossible d'annuler ce fulfillment" });
+            setMessage({ type: "error", text: "Impossible d'annuler ce fulfillment" });
             return;
         }
 
@@ -356,15 +352,15 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
         try {
             const result = await cancelFulfillment(domain, fulfillmentId);
             if (result.error) {
-                setMessage({ type: 'error', text: result.error });
+                setMessage({ type: "error", text: result.error });
             } else {
-                setMessage({ type: 'success', text: 'Fulfillment annulé avec succès' });
+                setMessage({ type: "success", text: "Fulfillment annulé avec succès" });
                 await loadData();
                 onOrderUpdated?.();
             }
         } catch (error) {
             console.error("Erreur lors de l'annulation:", error);
-            setMessage({ type: 'error', text: "Erreur lors de l'annulation" });
+            setMessage({ type: "error", text: "Erreur lors de l'annulation" });
         } finally {
             setCanceling(null);
         }
@@ -387,10 +383,10 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
             {message && (
                 <div
                     className={`p-4 rounded-xl flex items-center gap-2 ${
-                        message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+                        message.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"
                     }`}
                 >
-                    {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-lg">⚠️</span>}
+                    {message.type === "success" ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-lg">⚠️</span>}
                     {message.text}
                 </div>
             )}
@@ -477,8 +473,8 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                 disabled={selectedCount === 0 || fulfilling}
                                 className={`px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-all shadow-lg ${
                                     selectedCount > 0 && !fulfilling
-                                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 shadow-green-200 cursor-pointer'
-                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
+                                        ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 shadow-green-200 cursor-pointer"
+                                        : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
                                 }`}
                             >
                                 {fulfilling ? (
@@ -503,12 +499,12 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                 key={item.node.id}
                                 onClick={() => toggleSelection(index)}
                                 className={`relative flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                    item.selected ? 'border-green-400 bg-green-50/50 shadow-lg shadow-green-100' : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-md'
+                                    item.selected ? "border-green-400 bg-green-50/50 shadow-lg shadow-green-100" : "border-gray-100 bg-white hover:border-gray-200 hover:shadow-md"
                                 }`}
                             >
                                 <div
                                     className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-                                        item.selected ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'
+                                        item.selected ? "bg-green-500 text-white" : "bg-gray-100 text-gray-400"
                                     }`}
                                 >
                                     <Check className="w-4 h-4" />
@@ -516,8 +512,8 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
 
                                 <div className="relative w-16 h-16 min-w-[4rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
                                     <Image
-                                        src={item.node.variant?.product?.featuredImage?.url || '/no_image.png'}
-                                        alt={item.node.title}
+                                        src={item.node.variant?.image?.url || item.node.variant?.product?.featuredImage?.url || "/no_image.png"}
+                                        alt={item.node.variant?.title || item.node.title}
                                         fill
                                         sizes="64px"
                                         className="object-cover"
@@ -526,16 +522,19 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
 
                                 <div className="flex-1 min-w-0 pr-8">
                                     <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">
-                                        <Link 
-                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split('/').pop()}`}
+                                        <Link
+                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
                                             className="hover:text-blue-600 transition-colors"
                                             onClick={(e) => e.stopPropagation()}
                                         >
                                             {item.node.title}
                                         </Link>
                                     </h4>
+                                    {item.node.variant?.title && item.node.variant.title !== "Default Title" && (
+                                        <p className="text-xs text-purple-600 font-medium mt-0.5">Variante : {item.node.variant.title}</p>
+                                    )}
                                     <div className="flex items-center gap-2 mt-1">
-                                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku || 'SANS SKU'}</span>
+                                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku || "SANS SKU"}</span>
                                         <span className="px-2 py-0.5 rounded-md bg-indigo-50 text-xs font-bold text-indigo-600">x{item.remainingQuantity}</span>
                                         {!item.fulfillmentOrderId && (
                                             <span className="px-2 py-0.5 rounded-md bg-orange-100 text-[10px] font-bold text-orange-700 animate-pulse">DÉTAILS API MANQUANTS</span>
@@ -566,8 +565,8 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
 
                                 <div className="relative w-16 h-16 min-w-[4rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
                                     <Image
-                                        src={item.node.variant?.product?.featuredImage?.url || '/no_image.png'}
-                                        alt={item.node.title}
+                                        src={item.node.variant?.image?.url || item.node.variant?.product?.featuredImage?.url || "/no_image.png"}
+                                        alt={item.node.variant?.title || item.node.title}
                                         fill
                                         sizes="64px"
                                         className="object-cover"
@@ -576,14 +575,17 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
 
                                 <div className="flex-1 min-w-0 pr-20">
                                     <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">
-                                        <Link 
-                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split('/').pop()}`}
+                                        <Link
+                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
                                             className="hover:text-blue-600 transition-colors"
                                             onClick={(e) => e.stopPropagation()}
                                         >
                                             {item.node.title}
                                         </Link>
                                     </h4>
+                                    {item.node.variant?.title && item.node.variant.title !== "Default Title" && (
+                                        <p className="text-xs text-purple-600 font-medium mt-0.5">Variante : {item.node.variant.title}</p>
+                                    )}
                                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                                         <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku}</span>
                                         {item.trackingNumber &&
