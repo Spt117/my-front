@@ -23,9 +23,25 @@ export async function updateVariant(
     const response = await postServer(url, data);
     return response;
 }
-export async function updateSku(domain: TDomainsShopify, id: string, sku: string) {
+
+// Mise à jour SKU locale (MongoDB uniquement) - gardé pour compatibilité
+export async function updateSkuLocal(domain: TDomainsShopify, id: string, sku: string) {
     const res = await variantController(domain).updateSkuById(id, sku);
     return res;
+}
+
+// Synchronisation SKU entre toutes les boutiques Beyblade
+export async function syncSkuAcrossShops(
+    domain: TDomainsShopify,
+    oldSku: string,
+    newSku: string,
+    variantGid: string,
+    productGid: string
+) {
+    const url = `${pokeUriServer}/shopify/sync-sku`;
+    const data = { domain, oldSku, newSku, variantGid, productGid };
+    const response = await postServer(url, data);
+    return response;
 }
 
 export async function updateProduct(domain: TDomainsShopify, productGid: string, field: TFieldProduct, value: string) {

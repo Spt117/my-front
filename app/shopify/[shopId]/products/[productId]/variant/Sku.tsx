@@ -7,7 +7,7 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Barcode, KeySquare, Save, Weight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { updateSku, updateVariant } from "../serverAction";
+import { syncSkuAcrossShops, updateSkuLocal, updateVariant } from "../serverAction";
 import useVariantStore from "../storeVariant";
 import { cssCard } from "../util";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
@@ -45,9 +45,52 @@ export default function Sku() {
         try {
             const promises = [];
 
+            // Si le SKU a changé et que c'est une boutique Beyblade, synchroniser avec les autres boutiques
             if (hasSkuChanged) {
-                promises.push(updateSku(shopifyBoutique.domain, variant.id, sku));
-                promises.push(updateVariant(shopifyBoutique.domain, product.id, variant.id, "sku", sku));
+                const isBeybladeBoutique = shopifyBoutique.niche === "beyblade";
+                const oldSku = variant.sku || "";
+
+                if (isBeybladeBoutique && oldSku) {
+                    // Utiliser la synchronisation multi-boutiques
+                    const syncResult = await syncSkuAcrossShops(
+                        shopifyBoutique.domain,
+                        oldSku,
+                        sku,
+                        variant.id,
+                        product.id
+                    );
+
+                    if (syncResult?.response) {
+                        const result = syncResult.response;
+                        
+                        if (result.sourceUpdated) {
+                            toast.success(`SKU mis à jour sur ${shopifyBoutique.publicDomain}`);
+                        }
+
+                        // Afficher les résultats pour les autres boutiques
+                        result.otherShops?.forEach((shop: any) => {
+                            if (shop.updated) {
+                                toast.success(`SKU synchronisé sur ${shop.domain.split('.')[0]}`);
+                            } else {
+                                toast.error(`Échec sync ${shop.domain.split('.')[0]}: ${shop.error || 'Erreur'}`);
+                            }
+                        });
+
+                        // Signaler les boutiques où le produit n'existe pas
+                        result.notFoundOn?.forEach((domain: string) => {
+                            toast.info(`Produit non trouvé sur ${domain.split('.')[0]}`, {
+                                description: "SKU non synchronisé sur cette boutique",
+                                duration: 4000,
+                            });
+                        });
+                    } else if (syncResult?.error) {
+                        toast.error(syncResult.error);
+                    }
+                } else {
+                    // Boutique non-Beyblade ou pas d'ancien SKU : mise à jour simple
+                    promises.push(updateSkuLocal(shopifyBoutique.domain, variant.id, sku));
+                    promises.push(updateVariant(shopifyBoutique.domain, product.id, variant.id, "sku", sku));
+                }
             }
 
             if (hasBarcodeChanged) {
@@ -61,16 +104,20 @@ export default function Sku() {
                 }));
             }
 
-            const results = await Promise.all(promises);
-            const errors = results.filter((r: any) => r?.error);
-            
-            if (errors.length > 0) {
-                errors.forEach((e: any) => toast.error(e.error));
-            } else {
-                toast.success("Informations de variante mises à jour !");
+            if (promises.length > 0) {
+                const results = await Promise.all(promises);
+                const errors = results.filter((r: any) => r?.error);
+                
+                if (errors.length > 0) {
+                    errors.forEach((e: any) => toast.error(e.error));
+                } else if (!hasSkuChanged || shopifyBoutique.niche !== "beyblade") {
+                    // Message générique si pas de sync SKU Beyblade
+                    toast.success("Informations de variante mises à jour !");
+                }
             }
         } catch (error) {
             toast.error("Une erreur est survenue");
+            console.error(error);
         } finally {
             setLoading(false);
             router.refresh();
