@@ -10,19 +10,19 @@ import { pokeUriServer } from "@/library/utils/uri";
 import { TDomainsShopify } from "@/params/paramsShopify";
 import { TFieldProduct, TFieldVariant } from "./util";
 
-export async function updateVariant(
-    domain: TDomainsShopify,
-    productGid: string,
-    variantGid: string,
-    field: TFieldVariant,
-    value: number | string | boolean,
-    extra?: any
-) {
+export async function updateVariant(domain: TDomainsShopify, productGid: string, variantGid: string, field: TFieldVariant, value: number | string | boolean, extra?: any) {
     const url = `${pokeUriServer}/shopify/update-variant`;
     const data = { domain, productGid, variantGid, field, value, extra };
     const response = await postServer(url, data);
     return response;
 }
+
+export const updateVariantStock = async (domain: TDomainsShopify, variantGid: string, quantity: number) => {
+    const url = `${pokeUriServer}/shopify/update-variant-stock`;
+    const data = { domain, variantGid, quantity };
+    const response = await postServer(url, data);
+    return response;
+};
 
 // Mise à jour SKU locale (MongoDB uniquement)
 export async function updateSkuLocal(domain: TDomainsShopify, id: string, sku: string) {

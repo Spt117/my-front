@@ -11,8 +11,7 @@ import useProductStore from "../storeProduct";
 
 export default function Save() {
     const { product, shopifyBoutique, canauxBoutique } = useShopifyStore();
-    const { newTitle, loadingSave, setLoadingSave, statut, canauxProduct, metaTitle, metaDescription, ancreUrl } =
-        useProductStore();
+    const { newTitle, loadingSave, setLoadingSave, statut, canauxProduct, metaTitle, metaDescription, ancreUrl } = useProductStore();
     const { hasChanges, modifiedHtml } = useEditorHtmlStore();
     const { getProductData } = useDataProduct();
 
@@ -24,21 +23,16 @@ export default function Save() {
         else return { id: c.id, isPublished: false, name: c.name };
     });
 
-    const canauxToUpdate = canauxActives.filter((c) => c.isPublished !== canauxProduct.find((cp) => cp.id === c.id)?.isPublished);
+    const canauxToUpdate = canauxProduct.filter((cp) => {
+        const active = canauxActives.find((ca) => ca.id === cp.id);
+        return active && active.isPublished !== cp.isPublished;
+    });
     const metaTitleProduct = product?.metafields.nodes.find((mf) => mf.key === "title_tag");
     const metaDescriptionProduct = product?.metafields.nodes.find((mf) => mf.key === "description_tag");
 
     const hasMetaChanges =
-        metaTitle.trim() !== (metaTitleProduct?.value.trim() || "") ||
-        metaDescription.trim() !== (metaDescriptionProduct?.value.trim() || "") ||
-        ancreUrl !== product.handle;
-    const disabledSave =
-        (!hasChanges &&
-            newTitle === product.title &&
-            statut === product.status &&
-            canauxToUpdate.length === 0 &&
-            !hasMetaChanges) ||
-        loadingSave;
+        metaTitle.trim() !== (metaTitleProduct?.value.trim() || "") || metaDescription.trim() !== (metaDescriptionProduct?.value.trim() || "") || ancreUrl !== product.handle;
+    const disabledSave = (!hasChanges && newTitle === product.title && statut === product.status && canauxToUpdate.length === 0 && !hasMetaChanges) || loadingSave;
 
     const handleSave = async () => {
         if (disabledSave || !product) return;
@@ -96,13 +90,7 @@ export default function Save() {
         }
         if (metaDescription !== (metaDescriptionProduct?.value || "")) {
             try {
-                const res = await updateMetafieldKey(
-                    shopifyBoutique.domain,
-                    product.id,
-                    "description_tag",
-                    metaDescription,
-                    "global"
-                );
+                const res = await updateMetafieldKey(shopifyBoutique.domain, product.id, "description_tag", metaDescription, "global");
                 if (res.error) toast.error(res.error);
                 if (res.message) toast.success(res.message);
             } catch (err) {

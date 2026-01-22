@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { postServer } from "@/library/utils/fetchServer";
-import { pokeUriServer } from "@/library/utils/uri";
+import { TDomainsShopify } from "@/params/paramsShopify";
 import { useState } from "react";
 import { toast } from "sonner";
+import { updateVariantStock } from "../shopify/[shopId]/products/[productId]/serverAction";
 
 interface IUpdateStockProps {
     sku: string;
     quantity: number;
-    domain: string;
+    domain: TDomainsShopify;
 }
 
 export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
@@ -18,15 +18,9 @@ export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
 
     const handleUpdateVariantStock = async () => {
         setIsLoading(true);
-        const url = `${pokeUriServer}/shopify/update-stock`;
 
-        const data = {
-            domain: params.domain,
-            sku: params.sku,
-            quantity: numberInput + params.quantity,
-        };
         try {
-            const res = await postServer(url, data);
+            const res = await updateVariantStock(params.domain, params.sku, numberInput + params.quantity);
             if (res.error) toast.error("Erreur lors de la mise à jour du stock");
         } catch (error) {
             toast.error("Erreur serveur lors de la mise à jour du stock");

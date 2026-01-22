@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { useDataProduct } from "@/library/hooks/useDataProduct";
+import { CircleDot, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { CircleDot, Zap } from "lucide-react";
 import { updateCanauxVente, updateProduct } from "./serverAction";
 import useProductStore from "./storeProduct";
 import { cssCard } from "./util";
@@ -46,7 +46,12 @@ export default function Statut() {
             toast.error("Erreur lors de la publication rapide !");
         }
         try {
-            const res = await updateCanauxVente(shopifyBoutique.domain, product.id, canauxBoutique);
+            // Force la publication sur tous les canaux disponibles de la boutique
+            const itemsToPublish = canauxBoutique.map((c) => ({
+                id: c.id,
+                isPublished: true,
+            }));
+            const res = await updateCanauxVente(shopifyBoutique.domain, product.id, itemsToPublish);
             if (res.error) toast.error(res.error);
             if (res.message) toast.success(res.message);
             router.refresh();
@@ -86,20 +91,10 @@ export default function Statut() {
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                    <Selecteur
-                        array={statuts}
-                        value={statut}
-                        onChange={setStatut}
-                        placeholder="Statut"
-                        className="flex-1 min-w-[150px]"
-                    />
-                    
+                    <Selecteur array={statuts} value={statut} onChange={setStatut} placeholder="Statut" className="flex-1 min-w-[150px]" />
+
                     {product.status !== "ACTIVE" && (
-                        <Button 
-                            disabled={loading} 
-                            onClick={handleQuickPublish}
-                            className="flex items-center gap-2"
-                        >
+                        <Button disabled={loading} onClick={handleQuickPublish} className="flex items-center gap-2">
                             <Zap size={16} />
                             Publication rapide
                             {loading && <Spinner className="ml-1" />}
@@ -109,19 +104,15 @@ export default function Statut() {
 
                 <div className="pt-4 border-t border-gray-100 grid grid-cols-2 gap-4 text-xs">
                     <div className="space-y-1">
-                        <p className="text-gray-400 font-medium flex items-center gap-1.5 uppercase tracking-wider">
-                            Créé le
-                        </p>
+                        <p className="text-gray-400 font-medium flex items-center gap-1.5 uppercase tracking-wider">Créé le</p>
                         <p className="text-gray-700 font-semibold bg-gray-50 px-2 py-1.5 rounded-md border border-gray-100">
-                            {new Date(product.createdAt).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric' })}
+                            {new Date(product.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                         </p>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-gray-400 font-medium flex items-center gap-1.5 uppercase tracking-wider">
-                            Modifié le
-                        </p>
+                        <p className="text-gray-400 font-medium flex items-center gap-1.5 uppercase tracking-wider">Modifié le</p>
                         <p className="text-gray-700 font-semibold bg-gray-50 px-2 py-1.5 rounded-md border border-gray-100">
-                            {new Date(product.updatedAt).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric' })}
+                            {new Date(product.updatedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                         </p>
                     </div>
                 </div>
