@@ -1,0 +1,78 @@
+name: Build and Deploy my-front
+
+on:
+    push:
+        branches:
+            - main
+
+env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: spt117/my-front
+
+jobs:
+    build-and-push:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Log in to Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Create .env for build
+              run: echo '${{ fromJson(secrets.ENV_MY_FRONT).ENV_MY_FRONT }}' > .env.production
+
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v5
+              with:
+                  context: . # On reste sur le point (.) car ton Dockerfile est à la racine git
+                  push: true
+                  tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+                  build-args: |
+                      ENV_MY_FRONT=${{ secrets.ENV_MY_FRONT }}
+
+    deploy:
+        needs: build-and-push
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Deploy to VPS via SSH
+              uses: appleboy/ssh-action@master
+              env:
+                  # On encode en base64 pour éviter les problèmes de caractères spéciaux/troncature
+                  ENV_MY_FRONT_B64: ${{ secrets.ENV_MY_FRONT }}
+              with:
+                  host: ${{ secrets.VPS_HOST }}
+                  username: ${{ secrets.PROD00 }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  port: 30602
+                  envs: ENV_MY_FRONT_B64
+                  script: |
+                      # 1. On va au dossier racine
+                      cd /home/jb
+
+                      # Décodage sécurisé du fichier .env
+                      # On utilise printf pour éviter les soucis d'echo avec les longs strings
+                      printf "%s" "$ENV_MY_FRONT_B64" > .env.my-front
+
+                      # 2. Login au registre
+                      echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+                      # 3. Pull de la nouvelle image
+                      # Docker télécharge les calques manquants uniquement
+                      docker compose pull my-front
+
+                      # 4. Mise à jour "Zero Downtime" (ou presque)
+                      # Docker ne redémarre le conteneur QUE si l'image a changé
+                      docker compose up -d --remove-orphans my-front
+
+                      # 5. Ménage (On supprime les vieilles images qui prennent de la place)
+                      docker image prune -f
