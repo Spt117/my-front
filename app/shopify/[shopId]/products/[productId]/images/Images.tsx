@@ -1,13 +1,15 @@
 "use client";
-import { deleteImage, reorderMedia } from "@/components/shopify/serverActions";
+import { deleteImage, reorderMedia, updateMediaAlt } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { useDataProduct } from "@/library/hooks/useDataProduct";
-import { ChevronLeft, ChevronRight, GripVertical, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Edit2, GripVertical, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import AddImage from "./AddImage";
 
@@ -33,10 +35,18 @@ export default function ImagesProduct() {
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [tempAlt, setTempAlt] = useState("");
+
+    const images: MediaNode[] = product?.media?.nodes || [];
+
+    // Mettre à jour le texte alt temporaire quand l'image change
+    useEffect(() => {
+        if (images[currentImageIndex]) {
+            setTempAlt(images[currentImageIndex].alt || "");
+        }
+    }, [currentImageIndex, images]);
 
     if (!product || !shopifyBoutique) return null;
-
-    const images: MediaNode[] = product.media.nodes;
 
     // === NAVIGATION ===
     const handlePrevImage = () => {
@@ -74,6 +84,7 @@ export default function ImagesProduct() {
 
     const handleDrop = useCallback(
         async (e: React.DragEvent, dropIndex: number) => {
+            if (!product || !shopifyBoutique) return;
             e.preventDefault();
             setDragOverIndex(null);
 
@@ -125,6 +136,7 @@ export default function ImagesProduct() {
     }, []);
 
     const handleDeleteImage = async () => {
+        if (!product || !shopifyBoutique) return;
         const imageToDelete = images[currentImageIndex];
         if (!imageToDelete) return;
 
@@ -153,6 +165,34 @@ export default function ImagesProduct() {
         } catch (error) {
             console.error("Error deleting image:", error);
             toast.error("Erreur lors de la suppression de l'image");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleUpdateAlt = async () => {
+        if (!product || !shopifyBoutique) return;
+        const imageToUpdate = images[currentImageIndex];
+        if (!imageToUpdate) return;
+
+        setIsSaving(true);
+        try {
+            const res = await updateMediaAlt({
+                domain: shopifyBoutique.domain,
+                productGid: product.id,
+                mediaId: imageToUpdate.id,
+                altText: tempAlt,
+            });
+
+            if (res?.error) {
+                toast.error(res.error);
+            } else {
+                toast.success("Texte alternatif mis à jour");
+                await getProductData();
+            }
+        } catch (error) {
+            console.error("Error updating alt text:", error);
+            toast.error("Erreur lors de la mise à jour");
         } finally {
             setIsSaving(false);
         }
@@ -218,6 +258,36 @@ export default function ImagesProduct() {
                         </div>
                     ) : (
                         <div className="aspect-square flex items-center justify-center bg-gray-100 rounded-lg text-gray-400">Aucune image</div>
+                    )}
+
+                    {/* === ÉDITEUR DE TEXTE ALT === */}
+                    {images.length > 0 && (
+                        <div className="mt-4 space-y-2 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="alt-text" className="text-xs font-semibold text-gray-500 flex items-center gap-1">
+                                    <Edit2 size={12} />
+                                    Texte alternatif (SEO)
+                                </Label>
+                                {tempAlt !== (images[currentImageIndex]?.alt || "") && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 px-2 text-[10px] text-blue-600 hover:text-blue-700 font-bold"
+                                        onClick={handleUpdateAlt}
+                                        disabled={isSaving}
+                                    >
+                                        {isSaving ? "Enregistrement..." : "ENREGISTRER"}
+                                    </Button>
+                                )}
+                            </div>
+                            <Input
+                                id="alt-text"
+                                value={tempAlt}
+                                onChange={(e) => setTempAlt(e.target.value)}
+                                placeholder="Décrivez l'image pour le SEO..."
+                                className="h-8 text-sm bg-white"
+                            />
+                        </div>
                     )}
 
                     {/* === THUMBNAILS AVEC DRAG & DROP === */}

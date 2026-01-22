@@ -95,6 +95,12 @@ export async function deleteImage(data: { domain: string; mediaId: string }): Pr
     return response;
 }
 
+export async function updateMediaAlt(data: { domain: string; productGid: string; mediaId: string; altText: string }): Promise<ResponseServer<any> | null> {
+    const url = `${pokeUriServer}/shopify/update-media-alt`;
+    const response = await postServer(url, data);
+    return response;
+}
+
 export async function addImage(data: { domain: string; productId: string; image: { url: string; name: string; altText: string } }): Promise<ResponseServer<any> | null> {
     const url = `${pokeUriServer}/shopify/add-image`;
     const response = await postServer(url, data);
