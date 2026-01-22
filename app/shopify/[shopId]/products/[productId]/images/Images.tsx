@@ -1,11 +1,11 @@
 "use client";
-import { reorderMedia } from "@/components/shopify/serverActions";
+import { deleteImage, reorderMedia } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { useDataProduct } from "@/library/hooks/useDataProduct";
-import { ChevronLeft, ChevronRight, GripVertical } from "lucide-react";
+import { ChevronLeft, ChevronRight, GripVertical, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
@@ -124,13 +124,47 @@ export default function ImagesProduct() {
         setDragOverIndex(null);
     }, []);
 
+    const handleDeleteImage = async () => {
+        const imageToDelete = images[currentImageIndex];
+        if (!imageToDelete) return;
+
+        if (!confirm("Êtes-vous sûr de vouloir supprimer cette image ? Elle sera retirée du produit et de la bibliothèque de fichiers Shopify.")) {
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const res = await deleteImage({
+                domain: shopifyBoutique.domain,
+                mediaId: imageToDelete.id,
+            });
+
+            if (res?.error) {
+                toast.error(res.error);
+            } else {
+                toast.success("Image supprimée avec succès");
+                // Ajuster l'index pour ne pas tomber sur un index invalide
+                if (currentImageIndex > 0 && currentImageIndex === images.length - 1) {
+                    setCurrentImageIndex(currentImageIndex - 1);
+                }
+                // Rafraîchir les données
+                await getProductData();
+            }
+        } catch (error) {
+            console.error("Error deleting image:", error);
+            toast.error("Erreur lors de la suppression de l'image");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     return (
         <Card className="w-full h-min p-5 gap-0">
             <div className="relative flex gap-4 flex-wrap justify-center">
                 {/* === IMAGE PRINCIPALE === */}
-                <div className="max-w-[350px] h-min">
+                <div className="max-w-[350px] h-min group">
                     {images.length > 0 ? (
-                        <div className="relative aspect-square flex items-center justify-center rounded-lg overflow-hidden bg-gray-50">
+                        <div className="relative aspect-square flex items-center justify-center rounded-lg overflow-hidden bg-gray-50 border border-gray-100">
                             <Image
                                 priority={true}
                                 src={images[currentImageIndex]?.image?.url || "/no_image.png"}
@@ -162,6 +196,20 @@ export default function ImagesProduct() {
                                     </Button>
                                 </>
                             )}
+
+                            {/* Bouton de suppression */}
+                            <Button
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteImage();
+                                }}
+                                disabled={isSaving}
+                            >
+                                {isSaving ? <Spinner className="w-4 h-4 text-white" /> : <Trash2 className="h-4 w-4" />}
+                            </Button>
 
                             {/* Indicateur de position */}
                             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">

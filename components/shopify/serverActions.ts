@@ -89,6 +89,12 @@ export async function reorderMedia(data: { domain: string; productId: string; mo
     return response;
 }
 
+export async function deleteImage(data: { domain: string; mediaId: string }): Promise<ResponseServer<any> | null> {
+    const url = `${pokeUriServer}/shopify/delete-image`;
+    const response = await postServer(url, data);
+    return response;
+}
+
 export async function addImage(data: { domain: string; productId: string; image: { url: string; name: string; altText: string } }): Promise<ResponseServer<any> | null> {
     const url = `${pokeUriServer}/shopify/add-image`;
     const response = await postServer(url, data);
