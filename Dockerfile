@@ -16,6 +16,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Création du fichier .env dans le cas de Next.js
+RUN echo "$ENV_MY_FRONT" > .env
 
 RUN npm run build
 
