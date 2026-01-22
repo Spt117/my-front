@@ -1,8 +1,8 @@
-'use server';
-import { GroupedShopifyOrder, IShopifyOrderResponse, ShopifyOrder } from '@/library/shopify/orders';
-import { getServer, postServer } from '@/library/utils/fetchServer';
-import { pokeUriServer } from '@/library/utils/uri';
-import { ProductInOrder } from './store';
+"use server";
+import { GroupedShopifyOrder, IShopifyOrderResponse, ShopifyOrder } from "@/library/shopify/orders";
+import { getServer, postServer } from "@/library/utils/fetchServer";
+import { pokeUriServer } from "@/library/utils/uri";
+import { ProductInOrder } from "./store";
 
 export async function getOrders() {
     const url = `${pokeUriServer}/shopify/orders`;
@@ -13,25 +13,25 @@ export async function getOrders() {
         ...order,
         lineItems: {
             edges: order.lineItems.edges.filter(({ node }) => {
-                const status = (node.fulfillmentStatus || '').toLowerCase();
-                return status !== 'fulfilled';
+                const status = (node.fulfillmentStatus || "").toLowerCase();
+                return status !== "fulfilled";
             }),
         },
     }));
 
     const products: ProductInOrder[] = filterOrdersProductsUnfulfilled.flatMap((order) =>
         order.lineItems.edges.flatMap(({ node }) => {
-            const productId = node.variant?.product?.id?.split('/').pop() || '';
+            const productId = node.variant?.product?.id?.split("/").pop() || "";
             return {
                 title: node.title,
-                image: node?.variant?.product?.featuredImage?.url || ' ',
-                productUrl: productId ? `https://${order.shop}/admin/products/${productId}` : '#',
+                image: node?.variant?.product?.featuredImage?.url || " ",
+                productUrl: productId ? `https://${order.shop}/admin/products/${productId}` : "#",
                 quantity: node.quantity,
                 fulfillmentStatus: node.fulfillmentStatus,
                 shop: order.shop,
                 sku: node.sku,
             };
-        })
+        }),
     );
 
     // Regroupement par SKU avec addition des quantités
@@ -63,8 +63,8 @@ export async function getOrdersByShop(shopDomain: string) {
 }
 
 export async function searchOrders(domain: string, query: string) {
-    const req = query.includes('@') ? 'orders-customer' : 'get-order';
-    const uri = `http://localhost:9100/shopify/${req}`;
+    const req = query.includes("@") ? "orders-customer" : "get-order";
+    const uri = `${pokeUriServer}/shopify/${req}`;
     const res = await postServer(uri, {
         domain,
         orderName: query.trim(),
@@ -73,7 +73,7 @@ export async function searchOrders(domain: string, query: string) {
 }
 
 export async function getOrderById(params: { orderId: string; domain: string }) {
-    const url = `http://localhost:9100/shopify/get-order-by-id`;
+    const url = `${pokeUriServer}/shopify/get-order-by-id`;
     const res = (await postServer(url, params)) as IShopifyOrderResponse;
     const order = res.response;
     if (!order) return null;
@@ -94,13 +94,13 @@ function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder
         const customerEmail = order.customer.email;
 
         // On tague chaque item avec le nom de sa commande avant de fusionner
-        const itemsWithTag = order.lineItems.edges.map(edge => ({
+        const itemsWithTag = order.lineItems.edges.map((edge) => ({
             ...edge,
             node: {
                 ...edge.node,
                 orderName: order.name,
-                orderId: order.id
-            }
+                orderId: order.id,
+            },
         }));
 
         if (groupedOrders.has(customerEmail)) {
@@ -109,7 +109,7 @@ function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder
             const sumAmount = (a: string, b: string) => (parseFloat(a) + parseFloat(b)).toFixed(2);
 
             // Additionner les montants (avec sécurité si les champs sont absents)
-            const getAmount = (set: any) => set?.shopMoney?.amount || '0';
+            const getAmount = (set: any) => set?.shopMoney?.amount || "0";
 
             existingOrder.totalPriceSet.shopMoney.amount = sumAmount(existingOrder.totalPriceSet.shopMoney.amount, getAmount(order.totalPriceSet));
             existingOrder.subtotalPriceSet.shopMoney.amount = sumAmount(existingOrder.subtotalPriceSet.shopMoney.amount, getAmount(order.subtotalPriceSet));
@@ -159,7 +159,6 @@ function groupOrdersByCustomerEmail(orders: ShopifyOrder[]): GroupedShopifyOrder
 
     return Array.from(groupedOrders.values());
 }
-
 
 // Types pour les fulfillment orders
 export interface FulfillmentOrderLineItem {

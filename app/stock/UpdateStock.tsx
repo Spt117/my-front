@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { postServer } from "@/library/utils/fetchServer";
+import { pokeUriServer } from "@/library/utils/uri";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +18,7 @@ export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
 
     const handleUpdateVariantStock = async () => {
         setIsLoading(true);
-        const url = `http://localhost:9100/shopify/update-stock`;
+        const url = `${pokeUriServer}/shopify/update-stock`;
 
         const data = {
             domain: params.domain,

@@ -1,11 +1,11 @@
 "use client";
+import { addImage, addImageBase64 } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { postServer } from "@/library/utils/fetchServer";
-import { X, Plus, ImageIcon, Upload, Link2 } from "lucide-react";
-import { useState, useCallback, useMemo, useRef } from "react";
+import { ImageIcon, Link2, Plus, Upload, X } from "lucide-react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface IAddImageParams {
@@ -76,12 +76,12 @@ export default function AddImage() {
 
             await Promise.allSettled(
                 validImages.map((image) =>
-                    postServer("http://localhost:9100/shopify/add-image", {
+                    addImage({
                         domain: shopifyBoutique!.domain,
                         productId: product!.id,
                         image,
-                    })
-                )
+                    }),
+                ),
             );
             toast.success(`${validImages.length} image(s) ajoutée(s) avec succès !`);
             setImages([{ ...EMPTY_IMAGE }]);
@@ -141,7 +141,7 @@ export default function AddImage() {
             setIsDragging(false);
             handleFileSelect(e.dataTransfer.files);
         },
-        [handleFileSelect]
+        [handleFileSelect],
     );
 
     const handleUploadFiles = useCallback(async () => {
@@ -157,14 +157,14 @@ export default function AddImage() {
                         reader.onload = async () => {
                             try {
                                 const base64Data = reader.result as string;
-                                const res = await postServer("http://localhost:9100/shopify/add-image-base64", {
+                                const res = await addImageBase64({
                                     domain: shopifyBoutique.domain,
                                     productId: product.id,
                                     base64Data,
                                     filename: fileData.name,
                                     altText: fileData.altText,
                                 });
-                                if (res.error) reject(new Error(res.error));
+                                if (!res || res.error) reject(new Error(res?.error || "Erreur inconnue"));
                                 else resolve();
                             } catch (err) {
                                 reject(err);
@@ -173,7 +173,7 @@ export default function AddImage() {
                         reader.onerror = () => reject(new Error("Erreur de lecture du fichier"));
                         reader.readAsDataURL(fileData.file);
                     });
-                })
+                }),
             );
 
             const successes = results.filter((r) => r.status === "fulfilled").length;
@@ -245,14 +245,7 @@ export default function AddImage() {
                     </div>
                     <div className="space-y-4">
                         {images.map((image, index) => (
-                            <ImageField
-                                key={index}
-                                image={image}
-                                index={index}
-                                showRemove={images.length > 1}
-                                onRemove={handleRemoveImageField}
-                                onChange={handleImageChange}
-                            />
+                            <ImageField key={index} image={image} index={index} showRemove={images.length > 1} onRemove={handleRemoveImageField} onChange={handleImageChange} />
                         ))}
                     </div>
                 </>
@@ -274,27 +267,14 @@ export default function AddImage() {
                         <Upload size={32} className="mx-auto mb-2 text-gray-400" />
                         <p className="text-gray-600">Glissez-déposez vos images ici</p>
                         <p className="text-sm text-gray-400">ou cliquez pour sélectionner</p>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={(e) => handleFileSelect(e.target.files)}
-                            className="hidden"
-                        />
+                        <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={(e) => handleFileSelect(e.target.files)} className="hidden" />
                     </div>
 
                     {/* Liste des fichiers sélectionnés */}
                     {files.length > 0 && (
                         <div className="space-y-4 mb-4">
                             {files.map((fileData, index) => (
-                                <FileUploadField
-                                    key={index}
-                                    fileData={fileData}
-                                    index={index}
-                                    onRemove={handleRemoveFile}
-                                    onChange={handleFileChange}
-                                />
+                                <FileUploadField key={index} fileData={fileData} index={index} onRemove={handleRemoveFile} onChange={handleFileChange} />
                             ))}
                         </div>
                     )}
@@ -385,21 +365,21 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
             setImageLoaded(false);
             setImageError(false);
         },
-        [onChange, index]
+        [onChange, index],
     );
 
     const handleNameChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             onChange(index, "name", e.target.value);
         },
-        [onChange, index]
+        [onChange, index],
     );
 
     const handleAltTextChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             onChange(index, "altText", e.target.value);
         },
-        [onChange, index]
+        [onChange, index],
     );
 
     const handleImageLoad = useCallback(() => {
@@ -445,9 +425,7 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
                                     <img
                                         src={image.url}
                                         alt={image.altText || "Aperçu"}
-                                        className={`w-full h-full object-cover transition-opacity duration-200 ${
-                                            imageLoaded ? "opacity-100" : "opacity-0"
-                                        }`}
+                                        className={`w-full h-full object-cover transition-opacity duration-200 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
                                         onLoad={handleImageLoad}
                                         onError={handleImageError}
                                     />
@@ -480,9 +458,7 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
                             required
                             className={imageError ? "border-red-300 focus:border-red-500" : ""}
                         />
-                        {imageError && (
-                            <p className="text-xs text-red-500 mt-1">Impossible de charger l'image depuis cette URL</p>
-                        )}
+                        {imageError && <p className="text-xs text-red-500 mt-1">Impossible de charger l'image depuis cette URL</p>}
                     </div>
                     <Input value={image.name} onChange={handleNameChange} placeholder="Nom de l'image *" required />
                     <Input value={image.altText} onChange={handleAltTextChange} placeholder="Texte alternatif (optionnel)" />
@@ -492,14 +468,8 @@ function ImageField({ image, index, showRemove, onRemove, onChange }: ImageField
             {/* Indicateur de statut */}
             {image.url && (
                 <div className="mt-3 flex items-center gap-2">
-                    <div
-                        className={`w-2 h-2 rounded-full ${
-                            imageError ? "bg-red-500" : imageLoaded ? "bg-green-500" : "bg-yellow-500"
-                        }`}
-                    />
-                    <span className="text-xs text-gray-600">
-                        {imageError ? "URL invalide" : imageLoaded ? "Image chargée" : "Chargement..."}
-                    </span>
+                    <div className={`w-2 h-2 rounded-full ${imageError ? "bg-red-500" : imageLoaded ? "bg-green-500" : "bg-yellow-500"}`} />
+                    <span className="text-xs text-gray-600">{imageError ? "URL invalide" : imageLoaded ? "Image chargée" : "Chargement..."}</span>
                 </div>
             )}
         </div>

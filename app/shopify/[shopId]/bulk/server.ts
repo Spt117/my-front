@@ -18,7 +18,7 @@ export async function addProductsToCollection(domain: string, collectionGid: str
 }
 
 export async function actionBulk(data: BulkAction): Promise<ResponseServer<any>> {
-    const url = "http://localhost:9100/shopify/bulk";
+    const url = `${pokeUriServer}/shopify/bulk`;
     const response = await postServer(url, data);
     return response;
 }

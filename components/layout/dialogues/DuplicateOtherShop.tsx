@@ -4,6 +4,7 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { postServer } from "@/library/utils/fetchServer";
+import { pokeUriServer } from "@/library/utils/uri";
 import { TDomainsShopify, boutiqueFromDomain, boutiques } from "@/params/paramsShopify";
 import { ArrowBigLeft, X } from "lucide-react";
 import Image from "next/image";
@@ -17,16 +18,11 @@ export default function DuplicateOtherShop() {
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
 
-    const options = boutiques.filter(
-        (b) =>
-            b.domain !== shopifyBoutique?.domain &&
-            b.niche === shopifyBoutique?.niche &&
-            !idsOtherShop.find((id) => b.domain === id.domain)
-    );
+    const options = boutiques.filter((b) => b.domain !== shopifyBoutique?.domain && b.niche === shopifyBoutique?.niche && !idsOtherShop.find((id) => b.domain === id.domain));
 
     const handleValidate = async (domainDest: TDomainsShopify) => {
         setLoading(true);
-        const uri = "http://localhost:9100/shopify/duplicate";
+        const uri = `${pokeUriServer}/shopify/duplicate`;
         if (!shopifyBoutique || !product || !selectedType || !selectedBrand) {
             console.log("Missing required fields");
             return;

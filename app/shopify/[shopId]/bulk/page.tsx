@@ -1,22 +1,13 @@
 "use client";
+import { bulkUpdateStock } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { postServer } from "@/library/utils/fetchServer";
 import useUpdateEffect from "@/library/hooks/useUpdateEffect";
 import { ProductGET } from "@/library/types/graph";
-import { 
-    Check, 
-    CheckCircle2, 
-    Filter, 
-    Layers, 
-    Package, 
-    Search, 
-    Settings2,
-    XCircle
-} from "lucide-react";
+import { Check, CheckCircle2, Filter, Layers, Package, Search, Settings2, XCircle } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import ProductBulk from "./ProductBulk";
@@ -64,12 +55,7 @@ interface BulkActionsBarProps {
     isDisabled: boolean;
 }
 
-const BulkActionsBar = memo(function BulkActionsBar({ 
-    selectedCount, 
-    onOpenActions,
-    onUpdateStock,
-    isDisabled 
-}: BulkActionsBarProps) {
+const BulkActionsBar = memo(function BulkActionsBar({ selectedCount, onOpenActions, onUpdateStock, isDisabled }: BulkActionsBarProps) {
     if (selectedCount === 0) return null;
 
     return (
@@ -79,21 +65,11 @@ const BulkActionsBar = memo(function BulkActionsBar({
                 <strong>{selectedCount}</strong> produit{selectedCount > 1 ? "s" : ""} sélectionné{selectedCount > 1 ? "s" : ""}
             </span>
             <div className="w-px h-6 bg-gray-600" />
-            <Button 
-                size="sm" 
-                variant="secondary" 
-                onClick={onOpenActions}
-                disabled={isDisabled}
-            >
+            <Button size="sm" variant="secondary" onClick={onOpenActions} disabled={isDisabled}>
                 <Settings2 size={16} className="mr-2" />
                 Actions en masse
             </Button>
-            <Button
-                size="sm"
-                variant="outline"
-                onClick={onUpdateStock}
-                className="bg-transparent border-gray-500 hover:bg-gray-800"
-            >
+            <Button size="sm" variant="outline" onClick={onUpdateStock} className="bg-transparent border-gray-500 hover:bg-gray-800">
                 <Package size={16} className="mr-2" />
                 Modifier stock
             </Button>
@@ -112,13 +88,7 @@ interface BulkHeaderProps {
     onToggleSelectAll: () => void;
 }
 
-const BulkHeader = memo(function BulkHeader({
-    total,
-    selectedCount,
-    filterByTag,
-    onFilterChange,
-    onToggleSelectAll,
-}: BulkHeaderProps) {
+const BulkHeader = memo(function BulkHeader({ total, selectedCount, filterByTag, onFilterChange, onToggleSelectAll }: BulkHeaderProps) {
     const allSelected = selectedCount === total && total > 0;
 
     return (
@@ -144,12 +114,7 @@ const BulkHeader = memo(function BulkHeader({
                     </div>
 
                     {/* Bouton sélectionner tout */}
-                    <Button 
-                        variant={allSelected ? "default" : "outline"} 
-                        size="sm" 
-                        onClick={onToggleSelectAll}
-                        className="gap-2"
-                    >
+                    <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={onToggleSelectAll} className="gap-2">
                         {allSelected ? (
                             <>
                                 <XCircle size={16} />
@@ -168,17 +133,9 @@ const BulkHeader = memo(function BulkHeader({
                 <div className="flex items-center gap-3">
                     <div className="relative flex-1 max-w-md">
                         <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <Input
-                            className="pl-10"
-                            placeholder="Filtrer par tag..."
-                            value={filterByTag}
-                            onChange={(e) => onFilterChange(e.target.value)}
-                        />
+                        <Input className="pl-10" placeholder="Filtrer par tag..." value={filterByTag} onChange={(e) => onFilterChange(e.target.value)} />
                         {filterByTag && (
-                            <button
-                                onClick={() => onFilterChange("")}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
+                            <button onClick={() => onFilterChange("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                 <XCircle size={16} />
                             </button>
                         )}
@@ -216,34 +173,36 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
 
         setLoading(true);
         try {
-            const items = selectedProducts.map((p) => {
-                const currentStock = p.variants?.nodes[0]?.inventoryQuantity || 0;
-                let newQuantity: number;
-                
-                switch (mode) {
-                    case "add":
-                        newQuantity = currentStock + qty;
-                        break;
-                    case "subtract":
-                        newQuantity = Math.max(0, currentStock - qty);
-                        break;
-                    default:
-                        newQuantity = qty;
-                }
+            const items = selectedProducts
+                .map((p) => {
+                    const currentStock = p.variants?.nodes[0]?.inventoryQuantity || 0;
+                    let newQuantity: number;
 
-                return {
-                    sku: p.variants?.nodes[0]?.sku || "",
-                    quantity: newQuantity,
-                };
-            }).filter((item) => item.sku);
+                    switch (mode) {
+                        case "add":
+                            newQuantity = currentStock + qty;
+                            break;
+                        case "subtract":
+                            newQuantity = Math.max(0, currentStock - qty);
+                            break;
+                        default:
+                            newQuantity = qty;
+                    }
 
-            const res = await postServer("http://localhost:9100/shopify/bulk-update-stock", {
+                    return {
+                        sku: p.variants?.nodes[0]?.sku || "",
+                        quantity: newQuantity,
+                    };
+                })
+                .filter((item) => item.sku);
+
+            const res = await bulkUpdateStock({
                 domain,
                 items,
             });
 
-            if (res?.error) {
-                toast.error(res.error);
+            if (!res || res.error) {
+                toast.error(res?.error || "Erreur lors de la mise à jour");
             } else {
                 toast.success(res.message || "Stock mis à jour");
                 onSuccess();
@@ -259,11 +218,8 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Overlay */}
-            <div 
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
-                onClick={onClose}
-            />
-            
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+
             {/* Modal */}
             <Card className="relative z-10 w-full max-w-md mx-4 shadow-2xl">
                 <CardContent className="p-6">
@@ -276,25 +232,13 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
                     <div className="mb-4">
                         <label className="text-sm font-medium text-gray-700 mb-2 block">Mode</label>
                         <div className="flex gap-2">
-                            <Button
-                                size="sm"
-                                variant={mode === "set" ? "default" : "outline"}
-                                onClick={() => setMode("set")}
-                            >
+                            <Button size="sm" variant={mode === "set" ? "default" : "outline"} onClick={() => setMode("set")}>
                                 Définir à
                             </Button>
-                            <Button
-                                size="sm"
-                                variant={mode === "add" ? "default" : "outline"}
-                                onClick={() => setMode("add")}
-                            >
+                            <Button size="sm" variant={mode === "add" ? "default" : "outline"} onClick={() => setMode("add")}>
                                 Ajouter
                             </Button>
-                            <Button
-                                size="sm"
-                                variant={mode === "subtract" ? "default" : "outline"}
-                                onClick={() => setMode("subtract")}
-                            >
+                            <Button size="sm" variant={mode === "subtract" ? "default" : "outline"} onClick={() => setMode("subtract")}>
                                 Retirer
                             </Button>
                         </div>
@@ -302,17 +246,8 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
 
                     {/* Quantité */}
                     <div className="mb-6">
-                        <label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Quantité
-                        </label>
-                        <Input
-                            type="number"
-                            min="0"
-                            value={quantity}
-                            onChange={(e) => setQuantity(e.target.value)}
-                            placeholder="Entrez la quantité..."
-                            className="text-lg"
-                        />
+                        <label className="text-sm font-medium text-gray-700 mb-2 block">Quantité</label>
+                        <Input type="number" min="0" value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="Entrez la quantité..." className="text-lg" />
                         <p className="text-xs text-gray-500 mt-1">
                             {mode === "set" && "Le stock sera défini à cette valeur"}
                             {mode === "add" && "Cette quantité sera ajoutée au stock actuel"}
@@ -371,15 +306,7 @@ const ProductList = memo(function ProductList({ products }: { products: ProductG
 export default function Page() {
     const { productsSearch, setProductsSearch, shopifyBoutique, canauxBoutique, openDialog } = useShopifyStore();
 
-    const {
-        setSelectedProducts,
-        selectedProducts,
-        setFilteredProducts,
-        filterByTag,
-        setFilterByTag,
-        dataUpdate,
-        setDataUpdate,
-    } = useBulkStore();
+    const { setSelectedProducts, selectedProducts, setFilteredProducts, filterByTag, setFilterByTag, dataUpdate, setDataUpdate } = useBulkStore();
 
     const [showStockModal, setShowStockModal] = useState(false);
 
@@ -391,12 +318,8 @@ export default function Page() {
 
     // Produits filtrés
     const filteredProducts = useMemo<ProductGET[]>(
-        () => (filterByTag 
-            ? productsSearch.filter((p: ProductGET) => 
-                p.tags.some(tag => tag.toLowerCase().includes(filterByTag.toLowerCase()))
-              ) 
-            : productsSearch),
-        [productsSearch, filterByTag]
+        () => (filterByTag ? productsSearch.filter((p: ProductGET) => p.tags.some((tag) => tag.toLowerCase().includes(filterByTag.toLowerCase()))) : productsSearch),
+        [productsSearch, filterByTag],
     );
 
     // Synchronise le store

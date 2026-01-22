@@ -1,9 +1,9 @@
 "use client";
+import { updateMetafield } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { postServer } from "@/library/utils/fetchServer";
 import { useDataProduct } from "@/library/hooks/useDataProduct";
 import { CalendarDays, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -40,7 +40,7 @@ export default function Precommande() {
 
         setLoading(true);
         try {
-            const res = await postServer("http://localhost:9100/shopify/update-metafield", {
+            const res = await updateMetafield({
                 domain: shopifyBoutique.domain,
                 productGid: product.id,
                 key: "precommande",
@@ -64,7 +64,7 @@ export default function Precommande() {
     const handleDelete = async () => {
         setLoading(true);
         try {
-            const res = await postServer("http://localhost:9100/shopify/update-metafield", {
+            const res = await updateMetafield({
                 domain: shopifyBoutique.domain,
                 productGid: product.id,
                 key: "precommande",
@@ -100,41 +100,23 @@ export default function Precommande() {
             <div className="flex items-center gap-2">
                 <CalendarDays size={18} className="text-orange-500" />
                 <span className="font-medium">Précommande</span>
-                {displayDate && (
-                    <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-sm font-semibold">
-                        {displayDate}
-                    </span>
-                )}
+                {displayDate && <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-sm font-semibold">{displayDate}</span>}
             </div>
 
             <div className="flex gap-2 items-center">
-                <Input
-                    type="date"
-                    value={dateValue}
-                    onChange={(e) => setDateValue(e.target.value)}
-                    className="w-auto"
-                    disabled={loading}
-                />
+                <Input type="date" value={dateValue} onChange={(e) => setDateValue(e.target.value)} className="w-auto" disabled={loading} />
                 <Button onClick={handleSave} disabled={loading || !dateValue} size="sm">
                     {loading ? <Spinner className="w-4 h-4" /> : "Enregistrer"}
                 </Button>
                 {precommandeMeta?.value && (
-                    <Button
-                        onClick={handleDelete}
-                        disabled={loading}
-                        size="sm"
-                        variant="destructive"
-                        title="Supprimer la date de précommande"
-                    >
+                    <Button onClick={handleDelete} disabled={loading} size="sm" variant="destructive" title="Supprimer la date de précommande">
                         <X size={16} />
                     </Button>
                 )}
             </div>
 
             {!precommandeMeta?.value && (
-                <p className="text-sm text-muted-foreground">
-                    Aucune date de précommande définie. Sélectionnez une date pour activer le mode précommande.
-                </p>
+                <p className="text-sm text-muted-foreground">Aucune date de précommande définie. Sélectionnez une date pour activer le mode précommande.</p>
             )}
         </div>
     );

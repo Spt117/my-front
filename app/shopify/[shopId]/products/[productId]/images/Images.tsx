@@ -1,13 +1,13 @@
 "use client";
+import { reorderMedia } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { postServer } from "@/library/utils/fetchServer";
 import { useDataProduct } from "@/library/hooks/useDataProduct";
 import { ChevronLeft, ChevronRight, GripVertical } from "lucide-react";
 import Image from "next/image";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import AddImage from "./AddImage";
 
@@ -35,7 +35,7 @@ export default function ImagesProduct() {
     const [isSaving, setIsSaving] = useState(false);
 
     if (!product || !shopifyBoutique) return null;
-    
+
     const images: MediaNode[] = product.media.nodes;
 
     // === NAVIGATION ===
@@ -57,61 +57,67 @@ export default function ImagesProduct() {
         e.dataTransfer.setDragImage(img, 0, 0);
     }, []);
 
-    const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-        if (draggedIndex !== null && draggedIndex !== index) {
-            setDragOverIndex(index);
-        }
-    }, [draggedIndex]);
+    const handleDragOver = useCallback(
+        (e: React.DragEvent, index: number) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            if (draggedIndex !== null && draggedIndex !== index) {
+                setDragOverIndex(index);
+            }
+        },
+        [draggedIndex],
+    );
 
     const handleDragLeave = useCallback(() => {
         setDragOverIndex(null);
     }, []);
 
-    const handleDrop = useCallback(async (e: React.DragEvent, dropIndex: number) => {
-        e.preventDefault();
-        setDragOverIndex(null);
+    const handleDrop = useCallback(
+        async (e: React.DragEvent, dropIndex: number) => {
+            e.preventDefault();
+            setDragOverIndex(null);
 
-        if (draggedIndex === null || draggedIndex === dropIndex) {
-            setDraggedIndex(null);
-            return;
-        }
-
-        // Calculer les mouvements nécessaires pour le réordonnancement
-        const moves = [{ id: images[draggedIndex].id, newPosition: dropIndex }];
-
-        setIsSaving(true);
-        try {
-            const res = await postServer("http://localhost:9100/shopify/reorder-media", {
-                domain: shopifyBoutique.domain,
-                productId: product.id,
-                moves,
-            });
-
-            if (res?.error) {
-                toast.error(res.error);
-            } else {
-                toast.success("Ordre des images mis à jour");
-                // Rafraîchir les données du produit
-                await getProductData();
-                // Ajuster l'index de l'image courante si nécessaire
-                if (currentImageIndex === draggedIndex) {
-                    setCurrentImageIndex(dropIndex);
-                } else if (draggedIndex < currentImageIndex && dropIndex >= currentImageIndex) {
-                    setCurrentImageIndex(currentImageIndex - 1);
-                } else if (draggedIndex > currentImageIndex && dropIndex <= currentImageIndex) {
-                    setCurrentImageIndex(currentImageIndex + 1);
-                }
+            if (draggedIndex === null || draggedIndex === dropIndex) {
+                setDraggedIndex(null);
+                return;
             }
-        } catch (error) {
-            console.error("Error reordering images:", error);
-            toast.error("Erreur lors du réordonnancement");
-        } finally {
-            setIsSaving(false);
-            setDraggedIndex(null);
-        }
-    }, [draggedIndex, images, shopifyBoutique, product, getProductData, currentImageIndex]);
+
+            // Calculer les mouvements nécessaires pour le réordonnancement
+            const moves = [{ id: images[draggedIndex].id, newPosition: dropIndex }];
+
+            setIsSaving(true);
+            try {
+                const res = await reorderMedia({
+                    domain: shopifyBoutique.domain,
+                    productId: product.id,
+                    moves,
+                });
+
+                if (res?.error) {
+                    toast.error(res.error);
+                } else {
+                    toast.success("Ordre des images mis à jour");
+                    // Rafraîchir les données du produit
+                    await getProductData();
+                    // Ajuster l'index de l'image courante si nécessaire
+                    if (currentImageIndex === draggedIndex) {
+                        setCurrentImageIndex(dropIndex);
+                    } else if (draggedIndex < currentImageIndex && dropIndex >= currentImageIndex) {
+                        setCurrentImageIndex(currentImageIndex - 1);
+                    } else if (draggedIndex > currentImageIndex && dropIndex <= currentImageIndex) {
+                        setCurrentImageIndex(currentImageIndex + 1);
+                    }
+                }
+            } catch (error) {
+                console.error("Error reordering images:", error);
+                toast.error("Erreur lors du réordonnancement");
+            } finally {
+                setIsSaving(false);
+                setDraggedIndex(null);
+            }
+        },
+        [draggedIndex, images, shopifyBoutique, product, getProductData, currentImageIndex],
+    );
 
     const handleDragEnd = useCallback(() => {
         setDraggedIndex(null);
@@ -134,7 +140,7 @@ export default function ImagesProduct() {
                                 width={750}
                                 height={750}
                             />
-                            
+
                             {/* Contrôles de navigation */}
                             {images.length > 1 && (
                                 <>
@@ -156,16 +162,14 @@ export default function ImagesProduct() {
                                     </Button>
                                 </>
                             )}
-                            
+
                             {/* Indicateur de position */}
                             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
                                 {currentImageIndex + 1} / {images.length}
                             </div>
                         </div>
                     ) : (
-                        <div className="aspect-square flex items-center justify-center bg-gray-100 rounded-lg text-gray-400">
-                            Aucune image
-                        </div>
+                        <div className="aspect-square flex items-center justify-center bg-gray-100 rounded-lg text-gray-400">Aucune image</div>
                     )}
 
                     {/* === THUMBNAILS AVEC DRAG & DROP === */}
@@ -176,7 +180,7 @@ export default function ImagesProduct() {
                                 <span>Glissez pour réordonner</span>
                                 {isSaving && <Spinner className="ml-2 w-3 h-3" />}
                             </div>
-                            
+
                             <div className="flex gap-2 overflow-x-auto pb-2">
                                 {images.map((img, index) => (
                                     <div
@@ -191,10 +195,7 @@ export default function ImagesProduct() {
                                         className={`
                                             flex-shrink-0 relative w-16 h-16 rounded-md overflow-hidden 
                                             border-2 transition-all cursor-grab active:cursor-grabbing
-                                            ${index === currentImageIndex 
-                                                ? "border-blue-500 shadow-md ring-2 ring-blue-200" 
-                                                : "border-gray-200 hover:border-gray-400"
-                                            }
+                                            ${index === currentImageIndex ? "border-blue-500 shadow-md ring-2 ring-blue-200" : "border-gray-200 hover:border-gray-400"}
                                             ${draggedIndex === index ? "opacity-50 scale-95" : ""}
                                             ${dragOverIndex === index ? "border-blue-400 border-dashed scale-105" : ""}
                                         `}
@@ -207,18 +208,12 @@ export default function ImagesProduct() {
                                             sizes="64px"
                                             loading="lazy"
                                         />
-                                        
+
                                         {/* Badge numéro */}
-                                        <div className="absolute bottom-0 right-0 bg-black/70 text-white text-[10px] px-1 rounded-tl">
-                                            {index + 1}
-                                        </div>
-                                        
+                                        <div className="absolute bottom-0 right-0 bg-black/70 text-white text-[10px] px-1 rounded-tl">{index + 1}</div>
+
                                         {/* Indicateur première image (image principale) */}
-                                        {index === 0 && (
-                                            <div className="absolute top-0 left-0 bg-blue-500 text-white text-[8px] px-1 rounded-br font-bold">
-                                                ★
-                                            </div>
-                                        )}
+                                        {index === 0 && <div className="absolute top-0 left-0 bg-blue-500 text-white text-[8px] px-1 rounded-br font-bold">★</div>}
                                     </div>
                                 ))}
                             </div>
