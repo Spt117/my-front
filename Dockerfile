@@ -20,8 +20,8 @@ COPY . .
 RUN echo "$ENV_MY_FRONT_B64" | base64 -d > .env
 
 # Log des clés trouvées pour vérification (sans les valeurs)
-RUN echo "✅ .env created with $(wc -l < .env) lines"
-RUN echo "Double check - Keys found:" && grep -o "^[^=]*=" .env | sed 's/[[:space:]]*=//' || true
+# RUN echo "✅ .env created with $(wc -l < .env) lines"
+# RUN echo "Double check - Keys found:" && grep -o "^[^=]*=" .env | sed 's/[[:space:]]*=//' || true
 
 RUN npm run build
 
