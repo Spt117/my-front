@@ -34,24 +34,15 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Utiliser l'utilisateur temporairement pour copier les fichiers avec les bonnes permissions
 USER nextjs
 
 COPY --from=builder /app/public ./public
-
-# Automatically leverage output traces to reduce image size
-# La commande COPY avec l'option --chown gère la propriété des fichiers lors du transfert !
-# Le dossier .next/standalone contient déjà une partie de .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Note: Il n'est plus nécessaire de faire 'mkdir .next' ou 'chown' manuellement ici
 
 EXPOSE 3000
 
 ENV PORT=3000
-
-# set hostname to localhost
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]
