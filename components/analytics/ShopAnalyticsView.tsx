@@ -1,15 +1,14 @@
-'use client';
+"use client";
 
-import { AnalyticsData, getAnalytics } from '@/app/(home)/serverAction';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { IShopify, TDomainsShopify } from '@/params/paramsShopify';
-import { DollarSign, Package, PackagePlus, RefreshCw, ShoppingCart, TrendingUp } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { AnalyticsProductsTable } from './AnalyticsProductsTable';
-import { CreatedProductsTable } from './CreatedProductsTable';
-import { formatCurrency, getDateRange, PeriodType } from './AnalyticsUtils';
-import { KPICard } from './KPICard';
+import { AnalyticsData, getAnalytics } from "@/app/(home)/serverAction";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { IShopify } from "@/params/paramsShopify";
+import { DollarSign, Package, PackagePlus, RefreshCw, ShoppingCart, TrendingUp } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { AnalyticsProductsTable } from "./AnalyticsProductsTable";
+import { formatCurrency, getDateRange, PeriodType } from "./AnalyticsUtils";
+import { KPICard } from "./KPICard";
 
 interface ShopAnalyticsViewProps {
     boutique: IShopify;
@@ -42,8 +41,8 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
 
             setAnalytics(res.response);
         } catch (err) {
-            console.error('Erreur lors du chargement des analytics:', err);
-            setError('Impossible de charger les analytics pour ' + boutique.publicDomain);
+            console.error("Erreur lors du chargement des analytics:", err);
+            setError("Impossible de charger les analytics pour " + boutique.publicDomain);
         } finally {
             setLoading(false);
         }
@@ -77,17 +76,17 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
 
     const topProducts = analytics.orderedProducts.slice(0, 6);
     const chartData = topProducts.map((p) => ({
-        name: p.title.length > 20 ? p.title.substring(0, 20) + '...' : p.title,
+        name: p.title.length > 20 ? p.title.substring(0, 20) + "..." : p.title,
         quantité: p.quantity,
         CA: p.revenue,
     }));
 
     const pieData = topProducts.map((p) => ({
-        name: p.title.length > 15 ? p.title.substring(0, 15) + '...' : p.title,
+        name: p.title.length > 15 ? p.title.substring(0, 15) + "..." : p.title,
         value: p.quantity,
     }));
 
-    const COLORS = ['#8b5cf6', '#a855f7', '#d946ef', '#f59e0b', '#10b981', '#06b6d4'];
+    const COLORS = ["#8b5cf6", "#a855f7", "#d946ef", "#f59e0b", "#10b981", "#06b6d4"];
 
     return (
         <div className="space-y-6">
@@ -133,13 +132,13 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
                             <ResponsiveContainer width="100%" height={300}>
                                 <BarChart data={chartData}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 11, fill: '#64748b' }} />
-                                    <YAxis tick={{ fill: '#64748b' }} />
+                                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 11, fill: "#64748b" }} />
+                                    <YAxis tick={{ fill: "#64748b" }} />
                                     <Tooltip
                                         contentStyle={{
-                                            borderRadius: '12px',
-                                            border: 'none',
-                                            boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+                                            borderRadius: "12px",
+                                            border: "none",
+                                            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
                                         }}
                                     />
                                     <Bar dataKey="quantité" fill="url(#colorGradient)" radius={[8, 8, 0, 0]} />
@@ -184,9 +183,9 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
                                     </Pie>
                                     <Tooltip
                                         contentStyle={{
-                                            borderRadius: '12px',
-                                            border: 'none',
-                                            boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+                                            borderRadius: "12px",
+                                            border: "none",
+                                            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
                                         }}
                                     />
                                 </PieChart>

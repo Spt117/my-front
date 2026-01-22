@@ -260,36 +260,6 @@ export default function ImagesProduct() {
                         <div className="aspect-square flex items-center justify-center bg-gray-100 rounded-lg text-gray-400">Aucune image</div>
                     )}
 
-                    {/* === ÉDITEUR DE TEXTE ALT === */}
-                    {images.length > 0 && (
-                        <div className="mt-4 space-y-2 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="alt-text" className="text-xs font-semibold text-gray-500 flex items-center gap-1">
-                                    <Edit2 size={12} />
-                                    Texte alternatif (SEO)
-                                </Label>
-                                {tempAlt !== (images[currentImageIndex]?.alt || "") && (
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-6 px-2 text-[10px] text-blue-600 hover:text-blue-700 font-bold"
-                                        onClick={handleUpdateAlt}
-                                        disabled={isSaving}
-                                    >
-                                        {isSaving ? "Enregistrement..." : "ENREGISTRER"}
-                                    </Button>
-                                )}
-                            </div>
-                            <Input
-                                id="alt-text"
-                                value={tempAlt}
-                                onChange={(e) => setTempAlt(e.target.value)}
-                                placeholder="Décrivez l'image pour le SEO..."
-                                className="h-8 text-sm bg-white"
-                            />
-                        </div>
-                    )}
-
                     {/* === THUMBNAILS AVEC DRAG & DROP === */}
                     {images.length > 1 && (
                         <div className="mt-3">
@@ -342,6 +312,33 @@ export default function ImagesProduct() {
                 {/* === SECTION AJOUT D'IMAGES === */}
                 <AddImage />
             </div>
+
+            {/* === ÉDITEUR DE TEXTE ALT (Full Width) === */}
+            {images.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-gray-100 space-y-2">
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="alt-text" className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                            <Edit2 size={14} />
+                            Texte alternatif SEO pour l'image {currentImageIndex + 1}
+                        </Label>
+                        {tempAlt !== (images[currentImageIndex]?.alt || "") && (
+                            <Button variant="default" size="sm" className="h-8 px-4 text-xs font-bold" onClick={handleUpdateAlt} disabled={isSaving}>
+                                {isSaving ? "Enregistrement..." : "ENREGISTRER LES MODIFICATIONS"}
+                            </Button>
+                        )}
+                    </div>
+                    <div className="flex gap-2">
+                        <Input
+                            id="alt-text"
+                            value={tempAlt}
+                            onChange={(e) => setTempAlt(e.target.value)}
+                            placeholder="Décrivez l'image pour les moteurs de recherche et l'accessibilité..."
+                            className="flex-1 h-10 text-sm bg-gray-50/50"
+                        />
+                    </div>
+                    <p className="text-[10px] text-gray-400 italic">Ce texte aide Google à comprendre votre image et améliore l'accessibilité pour les malvoyants.</p>
+                </div>
+            )}
         </Card>
     );
 }

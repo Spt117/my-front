@@ -1,8 +1,8 @@
-'use server';
+"use server";
 
-import { postServer } from '@/library/utils/fetchServer';
-import { pokeUriServer } from '@/library/utils/uri';
-import { TDomainsShopify } from '@/params/paramsShopify';
+import { postServer } from "@/library/utils/fetchServer";
+import { pokeUriServer } from "@/library/utils/uri";
+import { TDomainsShopify } from "@/params/paramsShopify";
 
 // ============ Types pour les analytics ============
 export interface OrderedProduct {

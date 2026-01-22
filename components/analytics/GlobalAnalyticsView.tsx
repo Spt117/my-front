@@ -1,15 +1,14 @@
-'use client';
+"use client";
 
-import { AnalyticsData, getAnalytics } from '@/app/(home)/serverAction';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { boutiques, IShopify } from '@/params/paramsShopify';
-import { DollarSign, ExternalLink, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { formatCurrency, getDateRange, PeriodType } from './AnalyticsUtils';
-import { KPICard } from './KPICard';
-import { AnalyticsProductsTable } from './AnalyticsProductsTable';
-import { CreatedProductsTable } from './CreatedProductsTable';
+import { AnalyticsData, getAnalytics } from "@/app/(home)/serverAction";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { boutiques, IShopify } from "@/params/paramsShopify";
+import { DollarSign, ExternalLink, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { AnalyticsProductsTable } from "./AnalyticsProductsTable";
+import { formatCurrency, getDateRange, PeriodType } from "./AnalyticsUtils";
+import { KPICard } from "./KPICard";
 
 interface GlobalAnalyticsViewProps {
     period: PeriodType;
@@ -25,9 +24,7 @@ interface BoutiqueStats {
 }
 
 export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAnalyticsViewProps) {
-    const [stats, setStats] = useState<BoutiqueStats[]>(
-        boutiques.map((b) => ({ boutique: b, data: null, loading: true, error: null }))
-    );
+    const [stats, setStats] = useState<BoutiqueStats[]>(boutiques.map((b) => ({ boutique: b, data: null, loading: true, error: null })));
 
     const fetchAllAnalytics = useCallback(async () => {
         const { start, end } = getDateRange(period, customStart, customEnd);
@@ -52,7 +49,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
             } catch (err) {
                 setStats((prev) => {
                     const newStats = [...prev];
-                    newStats[index] = { ...newStats[index], loading: false, error: 'Erreur' };
+                    newStats[index] = { ...newStats[index], loading: false, error: "Erreur" };
                     return newStats;
                 });
             }
@@ -129,23 +126,18 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                                 <BarChart data={chartData} layout="vertical" margin={{ left: 40, right: 40 }}>
                                     <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
                                     <XAxis type="number" hide />
-                                    <YAxis 
-                                        dataKey="name" 
-                                        type="category" 
-                                        width={150} 
-                                        tick={{ fontSize: 12, fill: '#64748b', fontWeight: 500 }}
-                                    />
+                                    <YAxis dataKey="name" type="category" width={150} tick={{ fontSize: 12, fill: "#64748b", fontWeight: 500 }} />
                                     <Tooltip
                                         formatter={(value: number) => formatCurrency(value)}
                                         contentStyle={{
-                                            borderRadius: '12px',
-                                            border: 'none',
-                                            boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+                                            borderRadius: "12px",
+                                            border: "none",
+                                            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
                                         }}
                                     />
                                     <Bar dataKey="CA" fill="#8b5cf6" radius={[0, 8, 8, 0]}>
                                         {chartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={index === 0 ? '#8b5cf6' : '#a855f7'} opacity={1 - index * 0.15} />
+                                            <Cell key={`cell-${index}`} fill={index === 0 ? "#8b5cf6" : "#a855f7"} opacity={1 - index * 0.15} />
                                         ))}
                                     </Bar>
                                 </BarChart>
@@ -165,8 +157,8 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                     <CardContent className="p-0">
                         <div className="divide-y divide-slate-100">
                             {stats.map((s) => (
-                                <a 
-                                    key={s.boutique.domain} 
+                                <a
+                                    key={s.boutique.domain}
                                     href={`https://admin.shopify.com/store/${s.boutique.domain.replace(".myshopify.com", "")}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -194,7 +186,9 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                                                 <p className="font-bold text-slate-900">{formatCurrency(s.data?.totalRevenue || 0)}</p>
                                                 <div className="flex flex-col gap-0">
                                                     <p className="text-xs text-emerald-600 font-medium">{s.data?.ordersCount || 0} cmds</p>
-                                                    <p className="text-xs text-blue-600 font-medium">{s.data?.orderedProducts.reduce((sum, p) => sum + p.quantity, 0) || 0} produits</p>
+                                                    <p className="text-xs text-blue-600 font-medium">
+                                                        {s.data?.orderedProducts.reduce((sum, p) => sum + p.quantity, 0) || 0} produits
+                                                    </p>
                                                 </div>
                                             </>
                                         )}
