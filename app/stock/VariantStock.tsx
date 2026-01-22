@@ -1,12 +1,12 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { toggleBought, toggleRebuy, toggleRebuyLater } from '@/library/models/variantShopify/middlewareVariants';
-import { TVariant } from '@/library/models/variantShopify/Variant';
-import { boutiqueFromDomain, TDomainsShopify } from '@/params/paramsShopify';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cssCard } from '../shopify/[shopId]/products/[productId]/util';
-import UpdateStock from './UpdateStock';
+import { Card, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { toggleBought, toggleRebuy, toggleRebuyLater } from "@/library/models/variantShopify/middlewareVariants";
+import { TVariant } from "@/library/models/variantShopify/Variant";
+import { boutiqueFromDomain, TDomainsShopify } from "@/params/paramsShopify";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cssCard } from "../shopify/[shopId]/products/[productId]/util";
+import UpdateStock from "./UpdateStock";
 
 export function VariantStock({ domain, variant, action }: { domain: TDomainsShopify; variant: TVariant; action: () => void }) {
     const path = usePathname();
@@ -26,13 +26,13 @@ export function VariantStock({ domain, variant, action }: { domain: TDomainsShop
     };
 
     const boutique = boutiqueFromDomain(domain);
-    const idProduct = variant.idProduct.replace('gid://shopify/Product/', '');
+    const idProduct = variant.idProduct.replace("gid://shopify/Product/", "");
     const urlProduct = `/shopify/${boutique.id}/products/${idProduct}`;
 
     return (
         <Card className={cssCard}>
             <CardContent className="space-y-6">
-                {path === '/stock' && (
+                {path === "/stock" && (
                     <h2 className="text-lg font-semibold">
                         <Link href={urlProduct} rel="noopener noreferrer" className="text-blue-500 hover:underline">
                             {variant.title}
@@ -40,7 +40,7 @@ export function VariantStock({ domain, variant, action }: { domain: TDomainsShop
                     </h2>
                 )}
                 <div className="space-y-1">
-                    {path === '/stock' && (
+                    {path === "/stock" && (
                         <>
                             <p className="text-sm text-gray-600">Prix: {variant.price} €</p>
                             <p className="text-sm text-gray-600">SKU: {variant.sku}</p>
@@ -66,7 +66,7 @@ export function VariantStock({ domain, variant, action }: { domain: TDomainsShop
                     </div>
                 </div>
                 <div className="border-t border-gray-200" /> {/* Ligne de séparation */}
-                <UpdateStock params={{ sku: variant.sku, quantity: variant.quantity, domain: domain }} />
+                <UpdateStock params={{ variantGid: variant.idVariant, quantity: variant.quantity, domain: domain }} />
             </CardContent>
         </Card>
     );

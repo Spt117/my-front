@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { updateVariantStock } from "../shopify/[shopId]/products/[productId]/serverAction";
 
 interface IUpdateStockProps {
-    sku: string;
+    variantGid: string;
     quantity: number;
     domain: TDomainsShopify;
 }
@@ -20,8 +20,8 @@ export default function UpdateStock({ params }: { params: IUpdateStockProps }) {
         setIsLoading(true);
 
         try {
-            const res = await updateVariantStock(params.domain, params.sku, numberInput + params.quantity);
-            if (res.error) toast.error("Erreur lors de la mise à jour du stock");
+            const res = await updateVariantStock(params.domain, params.variantGid, numberInput + params.quantity);
+            if (res.error) toast.error(res.error);
         } catch (error) {
             toast.error("Erreur serveur lors de la mise à jour du stock");
         } finally {
