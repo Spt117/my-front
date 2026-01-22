@@ -11,17 +11,17 @@ RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
-ARG ENV_MY_FRONT
+ARG ENV_MY_FRONT_B64
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Création du fichier .env dans le cas de Next.js
-RUN printf '%s\n' "$ENV_MY_FRONT" > .env
+# Création du fichier .env à partir du Base64 pour préserver les retours à la ligne
+RUN echo "$ENV_MY_FRONT_B64" | base64 -d > .env
 
-#log
+# Log des clés trouvées pour vérification (sans les valeurs)
 RUN echo "✅ .env created with $(wc -l < .env) lines"
-RUN head -3 .env | grep -o "^[A-Z_]*="
+RUN echo "Double check - Keys found:" && grep -o "^[^=]*=" .env | sed 's/[[:space:]]*=//' || true
 
 RUN npm run build
 
