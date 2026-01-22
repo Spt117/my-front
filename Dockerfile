@@ -18,6 +18,8 @@ COPY . .
 
 # Création du fichier .env dans le cas de Next.js
 RUN echo "$ENV_MY_FRONT" > .env
+#log
+RUN cat .env
 
 RUN npm run build
 
