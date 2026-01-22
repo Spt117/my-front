@@ -27,9 +27,6 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Create .env for build
-              run: echo '${{ fromJson(secrets.ENV_MY_FRONT).ENV_MY_FRONT }}' > .env.production
-
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
               with:
