@@ -18,7 +18,7 @@ export async function updateVariant(domain: TDomainsShopify, productGid: string,
 }
 
 export const updateVariantStock = async (domain: TDomainsShopify, variantGid: string, quantity: number) => {
-    const url = `${pokeUriServer}/shopify/update-variant-stock`;
+    const url = `${pokeUriServer}/shopify/update-stock`;
     console.log(url);
 
     const data = { domain, variantGid, quantity };
