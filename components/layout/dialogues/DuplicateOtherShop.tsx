@@ -3,14 +3,13 @@ import { ProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { postServer } from "@/library/utils/fetchServer";
-import { pokeUriServer } from "@/library/utils/uri";
 import { TDomainsShopify, boutiqueFromDomain, boutiques } from "@/params/paramsShopify";
 import { ArrowBigLeft, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { serverActionDuplicateOtherShop } from "./serverActionDialog";
 
 export default function DuplicateOtherShop() {
     const { closeDialog, openDialog, shopifyBoutique, product, selectedType, selectedBrand } = useShopifyStore();
@@ -22,7 +21,6 @@ export default function DuplicateOtherShop() {
 
     const handleValidate = async (domainDest: TDomainsShopify) => {
         setLoading(true);
-        const uri = `${pokeUriServer}/shopify/duplicate`;
         if (!shopifyBoutique || !product || !selectedType || !selectedBrand) {
             console.log("Missing required fields");
             return;
@@ -31,20 +29,22 @@ export default function DuplicateOtherShop() {
             domainsDest: domainDest,
             productId: product.id,
             tags: product.tags,
-            domainOrigin: shopifyBoutique.domain,
+            domainOrigin: shopifyBoutique.domain as TDomainsShopify,
             productType: selectedType,
             productBrand: selectedBrand,
         };
 
-        const res = await postServer(uri, data);
+        const res = await serverActionDuplicateOtherShop(data);
         if (res.error) toast.error(res.error);
         if (res.message) toast.success(res.message);
         console.log(res.response);
-        const newShop = boutiqueFromDomain(domainDest);
-        const id = res.response.id.replace("gid://shopify/Product/", "");
-        const url = `/shopify/${newShop.id}/products/${id}`;
-        router.push(url);
-        closeDialog();
+        if (res.response?.id) {
+            const newShop = boutiqueFromDomain(domainDest);
+            const id = res.response.id.replace("gid://shopify/Product/", "");
+            const url = `/shopify/${newShop.id}/products/${id}`;
+            router.push(url);
+            closeDialog();
+        }
         setLoading(false);
     };
 
@@ -58,14 +58,7 @@ export default function DuplicateOtherShop() {
             <ProductType />
             <div>
                 {options.map((boutique) => (
-                    <Button
-                        disabled={loading || !selectedType || !selectedBrand}
-                        onClick={() => handleValidate(boutique.domain)}
-                        key={boutique.domain}
-                        variant="outline"
-                        size="sm"
-                        className="m-1"
-                    >
+                    <Button disabled={loading || !selectedType || !selectedBrand} onClick={() => handleValidate(boutique.domain)} key={boutique.domain} variant="outline" size="sm" className="m-1">
                         <Image src={boutique.flag} alt={boutique.langue} width={20} height={20} className="inline mr-2" />
                         {boutique.vendor}
                     </Button>
