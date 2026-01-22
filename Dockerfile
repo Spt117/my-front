@@ -17,10 +17,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Création du fichier .env dans le cas de Next.js
-RUN echo "$ENV_MY_FRONT" > .env
-#log
-RUN grep -o "^[A-Z_]*=" .env || echo "No variables found"
+RUN printf '%s\n' "$ENV_MY_FRONT" > .env
 
+#log
+RUN echo "✅ .env created with $(wc -l < .env) lines"
+RUN head -3 .env | grep -o "^[A-Z_]*="
 
 RUN npm run build
 
