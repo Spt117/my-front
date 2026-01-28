@@ -543,7 +543,13 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                         <p className="text-xs text-purple-600 font-medium mt-0.5">Variante : {item.node.variant.title}</p>
                                     )}
                                     <div className="flex items-center gap-2 mt-1">
-                                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku || "SANS SKU"}</span>
+                                        <Link
+                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
+                                            className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600 hover:bg-gray-200 hover:text-blue-600 transition-all cursor-pointer"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {item.node.sku || "SANS SKU"}
+                                        </Link>
                                         <span className="px-2 py-0.5 rounded-md bg-indigo-50 text-xs font-bold text-indigo-600">x{item.remainingQuantity}</span>
                                         {!item.fulfillmentOrderId && (
                                             <span className="px-2 py-0.5 rounded-md bg-orange-100 text-[10px] font-bold text-orange-700 animate-pulse">DÉTAILS API MANQUANTS</span>
@@ -605,7 +611,13 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                         <p className="text-xs text-purple-600 font-medium mt-0.5">Variante : {item.node.variant.title}</p>
                                     )}
                                     <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku || "SANS SKU"}</span>
+                                        <Link
+                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
+                                            className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600 hover:bg-gray-200 hover:text-blue-600 transition-all cursor-pointer"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {item.node.sku || "SANS SKU"}
+                                        </Link>
                                         {item.trackingNumber &&
                                             (item.trackingUrl ? (
                                                 <a
