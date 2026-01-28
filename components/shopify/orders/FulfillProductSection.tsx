@@ -510,14 +510,23 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                     <Check className="w-4 h-4" />
                                 </div>
 
-                                <div className="relative w-16 h-16 min-w-[4rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
-                                    <Image
-                                        src={item.node.variant?.image?.url || item.node.variant?.product?.featuredImage?.url || "/no_image.png"}
-                                        alt={item.node.variant?.title || item.node.title}
-                                        fill
-                                        sizes="64px"
-                                        className="object-cover"
-                                    />
+                                <div className="relative w-16 h-16 min-m-w-[4rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50 group/image">
+                                    <Link
+                                        href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
+                                        className="block w-full h-full"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <Image
+                                            src={item.node.variant?.image?.url || item.node.variant?.product?.featuredImage?.url || "/no_image.png"}
+                                            alt={item.node.variant?.title || item.node.title}
+                                            fill
+                                            sizes="64px"
+                                            className="object-cover transition-transform group-hover/image:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/10 transition-colors flex items-center justify-center">
+                                            <ExternalLink className="w-4 h-4 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
+                                        </div>
+                                    </Link>
                                 </div>
 
                                 <div className="flex-1 min-w-0 pr-8">
@@ -563,14 +572,23 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                     <span className="px-2 py-0.5 rounded-md bg-green-100 text-xs font-bold text-green-700">✓ Traité</span>
                                 </div>
 
-                                <div className="relative w-16 h-16 min-w-[4rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
-                                    <Image
-                                        src={item.node.variant?.image?.url || item.node.variant?.product?.featuredImage?.url || "/no_image.png"}
-                                        alt={item.node.variant?.title || item.node.title}
-                                        fill
-                                        sizes="64px"
-                                        className="object-cover"
-                                    />
+                                <div className="relative w-16 h-16 min-w-[4rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50 group/image">
+                                    <Link
+                                        href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
+                                        className="block w-full h-full"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <Image
+                                            src={item.node.variant?.image?.url || item.node.variant?.product?.featuredImage?.url || "/no_image.png"}
+                                            alt={item.node.variant?.title || item.node.title}
+                                            fill
+                                            sizes="64px"
+                                            className="object-cover transition-transform group-hover/image:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/10 transition-colors flex items-center justify-center">
+                                            <ExternalLink className="w-4 h-4 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
+                                        </div>
+                                    </Link>
                                 </div>
 
                                 <div className="flex-1 min-w-0 pr-20">
@@ -587,7 +605,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                         <p className="text-xs text-purple-600 font-medium mt-0.5">Variante : {item.node.variant.title}</p>
                                     )}
                                     <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku}</span>
+                                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600">{item.node.sku || "SANS SKU"}</span>
                                         {item.trackingNumber &&
                                             (item.trackingUrl ? (
                                                 <a
