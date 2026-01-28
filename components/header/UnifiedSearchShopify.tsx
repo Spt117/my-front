@@ -10,6 +10,7 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 interface UnifiedSearchShopifyProps {
@@ -17,11 +18,14 @@ interface UnifiedSearchShopifyProps {
 }
 
 export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps) {
-    const { shopifyBoutique, searchTerm, setSearchTerm, loading, setLoading, setProductsSearch, setOrdersSearch, setClientsSearch, openDialog, isSearchOpen, setIsSearchOpen } =
-        useShopifyStore();
+    const { shopifyBoutique, searchTerm, setSearchTerm, loading, setLoading, setProductsSearch, setOrdersSearch, setClientsSearch, openDialog, isSearchOpen, setIsSearchOpen } = useShopifyStore();
 
+    const pathname = usePathname();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const latestQueryRef = useRef<string>("");
+
+    const isProductsListPage = type === "products" && pathname.match(/\/products\/?$/);
+    const isClientsListPage = type === "clients" && pathname.match(/\/clients\/?$/);
 
     const handleSearch = async (query: string) => {
         if (!query.trim() || !shopifyBoutique) {
@@ -137,8 +141,8 @@ export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps
                 {/* List placement based on type and context */}
                 {isSearchOpen && (
                     <>
-                        {type === "products" && <ListProducts />}
-                        {type === "clients" && <ListClients />}
+                        {type === "products" && !isProductsListPage && <ListProducts />}
+                        {type === "clients" && !isClientsListPage && <ListClients />}
                         {type === "orders" && <ListOrdersSearch />}
                     </>
                 )}
