@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { CountryFlag } from '@/app/components/CountryFlag';
-import useKeyboardShortcuts from '@/library/hooks/useKyboardShortcuts';
-import { AMAZON_MARKETPLACES, COUNTRY_REGIONS, CountryCode, MarketplaceData } from '@/library/utils/amazon';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { updateBeybladeProduct } from '../actions';
-import { BeybladeProduct } from '../pocketbase/types/beyblade';
+import { CountryFlag } from "@/app/components/CountryFlag";
+import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import { AMAZON_MARKETPLACES, COUNTRY_REGIONS, CountryCode, MarketplaceData } from "@/library/utils/amazon";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { updateBeybladeProduct } from "../actions";
+import { BeybladeProduct } from "../supabase/beyblade";
 
 interface Props {
     product: BeybladeProduct;
@@ -18,7 +18,7 @@ export default function BeybladeProductManager({ product }: Props) {
     const [isSaving, setIsSaving] = useState(false);
 
     // New Entry State
-    const [newAsin, setNewAsin] = useState('');
+    const [newAsin, setNewAsin] = useState("");
     const [selectedNewCountries, setSelectedNewCountries] = useState<CountryCode[]>([]);
 
     const handleSave = async () => {
@@ -27,12 +27,12 @@ export default function BeybladeProductManager({ product }: Props) {
         if (result.success) {
             router.refresh();
         } else {
-            alert('Failed to save changes');
+            alert("Failed to save changes");
         }
         setIsSaving(false);
     };
 
-    useKeyboardShortcuts('Enter', handleSave);
+    useKeyboardShortcuts("Enter", handleSave);
 
     // Sort based on ORIGINAL DB state to avoid jumping during edit
     const activeCountries = (Object.keys(marketplaces) as CountryCode[]).sort((a, b) => {
@@ -85,7 +85,7 @@ export default function BeybladeProductManager({ product }: Props) {
         });
 
         setMarketplaces(updated);
-        setNewAsin('');
+        setNewAsin("");
         setSelectedNewCountries([]);
     };
 
@@ -117,7 +117,7 @@ export default function BeybladeProductManager({ product }: Props) {
         } else {
             // Revert on failure
             setMarketplaces(previousMarketplaces);
-            alert('Failed to remove marketplace');
+            alert("Failed to remove marketplace");
         }
         setIsSaving(false);
     };
@@ -165,8 +165,8 @@ export default function BeybladeProductManager({ product }: Props) {
                                     {Object.values(COUNTRY_REGIONS)
                                         .flat()
                                         .every((c) => selectedNewCountries.includes(c))
-                                        ? 'Deselect All'
-                                        : 'Select All'}
+                                        ? "Deselect All"
+                                        : "Select All"}
                                 </button>
                             </label>
 
@@ -183,7 +183,7 @@ export default function BeybladeProductManager({ product }: Props) {
                                         <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
                                             <span className="font-bold text-gray-300">{region}</span>
                                             <button onClick={() => handleSelectRegion(region)} className="text-xs text-blue-400 hover:text-blue-300 font-medium cursor-pointer">
-                                                {isRegionSelected ? 'None' : 'All'}
+                                                {isRegionSelected ? "None" : "All"}
                                             </button>
                                         </div>
                                         <div className="grid grid-cols-2 gap-2">
@@ -200,10 +200,10 @@ export default function BeybladeProductManager({ product }: Props) {
                                                         <div
                                                             className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                                                                 isSelected
-                                                                    ? 'bg-blue-600 border-blue-600'
+                                                                    ? "bg-blue-600 border-blue-600"
                                                                     : isConfigured
-                                                                    ? 'border-green-500/50 bg-green-500/10'
-                                                                    : 'border-gray-600 group-hover:border-gray-500'
+                                                                      ? "border-green-500/50 bg-green-500/10"
+                                                                      : "border-gray-600 group-hover:border-gray-500"
                                                             }`}
                                                         >
                                                             {isSelected ? (
@@ -219,10 +219,10 @@ export default function BeybladeProductManager({ product }: Props) {
                                                             <span
                                                                 className={`text-sm ${
                                                                     isSelected
-                                                                        ? 'text-white'
+                                                                        ? "text-white"
                                                                         : isConfigured
-                                                                        ? 'text-green-400 font-medium'
-                                                                        : 'text-gray-500 group-hover:text-gray-400'
+                                                                          ? "text-green-400 font-medium"
+                                                                          : "text-gray-500 group-hover:text-gray-400"
                                                                 }`}
                                                             >
                                                                 {code}
@@ -274,7 +274,7 @@ export default function BeybladeProductManager({ product }: Props) {
                                     Saving...
                                 </>
                             ) : (
-                                'Save All Changes'
+                                "Save All Changes"
                             )}
                         </button>
                     </div>
@@ -293,7 +293,7 @@ export default function BeybladeProductManager({ product }: Props) {
                                 <div
                                     key={code}
                                     className={`rounded-xl p-4 border transition-colors group relative ${
-                                        isMissingPrice ? 'bg-orange-900/10 border-orange-500/50 hover:border-orange-400' : 'bg-black/40 border-white/5 hover:border-white/10'
+                                        isMissingPrice ? "bg-orange-900/10 border-orange-500/50 hover:border-orange-400" : "bg-black/40 border-white/5 hover:border-white/10"
                                     }`}
                                 >
                                     {isMissingPrice && (
@@ -324,11 +324,11 @@ export default function BeybladeProductManager({ product }: Props) {
                                             <span className="text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">{mpInfo.currency}</span>
                                         </div>
                                         <a
-                                            href={data.asin ? `${mpInfo.url}/dp/${data.asin}` : '#'}
+                                            href={data.asin ? `${mpInfo.url}/dp/${data.asin}` : "#"}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className={`text-sm font-medium text-blue-400 hover:text-blue-300 bg-blue-900/30 hover:bg-blue-900/50 px-3 py-1.5 rounded-lg transition-all flex items-center gap-2 ${
-                                                !data.asin ? 'opacity-50 pointer-events-none' : ''
+                                                !data.asin ? "opacity-50 pointer-events-none" : ""
                                             }`}
                                         >
                                             View Page
@@ -350,7 +350,7 @@ export default function BeybladeProductManager({ product }: Props) {
                                                 <input
                                                     type="text"
                                                     value={data.asin}
-                                                    onChange={(e) => handleUpdateField(code, 'asin', e.target.value)}
+                                                    onChange={(e) => handleUpdateField(code, "asin", e.target.value)}
                                                     className="w-full bg-gray-800 border-none rounded px-3 py-1.5 text-sm text-white focus:ring-1 focus:ring-blue-500"
                                                 />
                                             </div>
@@ -361,7 +361,7 @@ export default function BeybladeProductManager({ product }: Props) {
                                                 <input
                                                     type="number"
                                                     value={data.price}
-                                                    onChange={(e) => handleUpdateField(code, 'price', parseFloat(e.target.value) || 0)}
+                                                    onChange={(e) => handleUpdateField(code, "price", parseFloat(e.target.value) || 0)}
                                                     className="w-full bg-gray-800 border-none rounded px-3 py-1.5 text-sm text-white focus:ring-1 focus:ring-green-500 font-mono"
                                                     placeholder="0.00"
                                                 />

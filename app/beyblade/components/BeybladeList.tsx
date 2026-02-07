@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { updateBeybladeProduct } from "../actions";
-import { BeybladeProduct } from "../pocketbase/types/beyblade";
+import { BeybladeProduct } from "../supabase/beyblade";
 
 interface BeybladeListProps {
     products: BeybladeProduct[];
@@ -36,7 +36,15 @@ export default function BeybladeList({ products: initialProducts, pbUrl }: Beybl
     );
 }
 
-function ProductRow({ product, onUpdate, pbUrl }: { product: BeybladeProduct; onUpdate: (id: string, data: Partial<Record<CountryCode, MarketplaceData>>) => void; pbUrl: string }) {
+function ProductRow({
+    product,
+    onUpdate,
+    pbUrl,
+}: {
+    product: BeybladeProduct;
+    onUpdate: (id: string, data: Partial<Record<CountryCode, MarketplaceData>>) => void;
+    pbUrl: string;
+}) {
     const [isEditing, setIsEditing] = useState(false);
     // Local state for edits before saving
     const [marketplaces, setMarketplaces] = useState<Partial<Record<CountryCode, MarketplaceData>>>(product.marketplaces || {});
@@ -72,23 +80,18 @@ function ProductRow({ product, onUpdate, pbUrl }: { product: BeybladeProduct; on
     };
 
     const mainImage = product.images && product.images.length > 0 ? product.images[0] : null;
-    let imageUrl = null;
-    if (mainImage) {
-        if (mainImage.startsWith("http")) {
-            imageUrl = mainImage;
-        } else if (pbUrl.includes("supabase")) {
-            imageUrl = `${pbUrl}/storage/v1/object/public/beyblade_products/${mainImage}`;
-        } else {
-            imageUrl = `${pbUrl}/api/files/${product.collectionId}/${product.id}/${mainImage}`;
-        }
-    }
+    const imageUrl = mainImage?.url || null;
 
     return (
         <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
             <div className="flex flex-col md:flex-row items-stretch md:items-center p-4 gap-4 md:h-32">
                 {/* Image Section */}
                 <Link href={`/beyblade/${product.id}`} className="block relative w-full md:w-24 h-24 flex-shrink-0 bg-gray-800 rounded-lg overflow-hidden">
-                    {imageUrl ? <img src={imageUrl} alt={product.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /> : <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs">No Img</div>}
+                    {imageUrl ? (
+                        <img src={imageUrl} alt={product.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-600 text-xs">No Img</div>
+                    )}
                 </Link>
 
                 {/* Content Section */}
@@ -115,7 +118,10 @@ function ProductRow({ product, onUpdate, pbUrl }: { product: BeybladeProduct; on
                         {activeCountries.length > 3 && <span className="text-xs text-gray-500">+{activeCountries.length - 3}</span>}
                     </div>
 
-                    <button onClick={() => setIsEditing(!isEditing)} className="py-1.5 px-3 text-sm bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors whitespace-nowrap">
+                    <button
+                        onClick={() => setIsEditing(!isEditing)}
+                        className="py-1.5 px-3 text-sm bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors whitespace-nowrap"
+                    >
                         {isEditing ? "Close" : "Manage Amazon"}
                     </button>
                 </div>
@@ -125,7 +131,11 @@ function ProductRow({ product, onUpdate, pbUrl }: { product: BeybladeProduct; on
             <div className={`overflow-hidden transition-all duration-500 bg-black/20 ${isEditing ? "max-h-[1000px] border-t border-white/5" : "max-h-0"}`}>
                 <div className="p-4 space-y-4">
                     <div className="flex gap-2 max-w-md">
-                        <select value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value as CountryCode)} className="flex-1 bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <select
+                            value={selectedCountry}
+                            onChange={(e) => setSelectedCountry(e.target.value as CountryCode)}
+                            className="flex-1 bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
                             {availableCountries.map((code) => (
                                 <option key={code} value={code}>
                                     {code} - {AMAZON_MARKETPLACES[code].currency}
@@ -148,13 +158,24 @@ function ProductRow({ product, onUpdate, pbUrl }: { product: BeybladeProduct; on
                                             <span className="font-bold text-blue-400">{code}</span>
                                             <span className="text-xs text-gray-500">{data.currency}</span>
                                         </div>
-                                        <a href={`${AMAZON_MARKETPLACES[code].url}/dp/${data.asin}`} target="_blank" rel="noopener noreferrer" className={`text-xs text-gray-400 hover:text-white ${!data.asin ? "pointer-events-none opacity-50" : ""}`}>
+                                        <a
+                                            href={`${AMAZON_MARKETPLACES[code].url}/dp/${data.asin}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={`text-xs text-gray-400 hover:text-white ${!data.asin ? "pointer-events-none opacity-50" : ""}`}
+                                        >
                                             View ↗
                                         </a>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                            <input type="text" value={data.asin} onChange={(e) => handleChange(code, "asin", e.target.value)} placeholder="ASIN" className="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-white focus:border-blue-500 outline-none" />
+                                            <input
+                                                type="text"
+                                                value={data.asin}
+                                                onChange={(e) => handleChange(code, "asin", e.target.value)}
+                                                placeholder="ASIN"
+                                                className="w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-white focus:border-blue-500 outline-none"
+                                            />
                                         </div>
                                         <div>
                                             <input
@@ -172,7 +193,10 @@ function ProductRow({ product, onUpdate, pbUrl }: { product: BeybladeProduct; on
                     </div>
 
                     <div className="flex justify-end">
-                        <button onClick={handleSave} className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold shadow-lg shadow-green-900/20 transition-all hover:scale-[1.02]">
+                        <button
+                            onClick={handleSave}
+                            className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold shadow-lg shadow-green-900/20 transition-all hover:scale-[1.02]"
+                        >
                             Save Changes
                         </button>
                     </div>

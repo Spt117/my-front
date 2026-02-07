@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { BeybladeProduct } from "./pocketbase/types/beyblade";
+import { BeybladeProduct } from "./supabase/beyblade";
 import { beybladeService } from "./supabase/beyblade-service";
 
 export async function updateBeybladeProduct(id: string, data: Partial<BeybladeProduct>) {

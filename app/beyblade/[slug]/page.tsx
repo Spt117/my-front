@@ -26,7 +26,7 @@ export default async function BeybladeProductPage({ params }: { params: Promise<
 
     // Pour Supabase, les images sont stockées directement sous forme d'URL complètes
     const mainImage = product.images && product.images.length > 0 ? product.images[0] : null;
-    const imageUrl = mainImage || null;
+    const imageUrl = mainImage?.url || null;
 
     const marketplaces = product.marketplaces || {};
     const activeCountries = Object.keys(marketplaces) as CountryCode[];

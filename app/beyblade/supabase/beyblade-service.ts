@@ -1,5 +1,5 @@
 import { supabase } from "@/library/supabase/client";
-import { BeybladeProduct } from "../pocketbase/types/beyblade";
+import { BeybladeProduct } from "./beyblade";
 
 class BeybladeSupabaseService {
     private readonly tableName = "x_products";
@@ -101,21 +101,18 @@ class BeybladeSupabaseService {
      * Get adjacent products (previous and next) based on list order
      * Uses the same ordering as getFullList (created_at DESC)
      */
-    async getAdjacentProducts(currentIdOrSlug: string): Promise<{ prev: { id: string; slug: string; title: string } | null; next: { id: string; slug: string; title: string } | null }> {
+    async getAdjacentProducts(
+        currentIdOrSlug: string,
+    ): Promise<{ prev: { id: string; slug: string; title: string } | null; next: { id: string; slug: string; title: string } | null }> {
         // Get the full list in the same order as displayed
-        const { data: allProducts, error } = await supabase
-            .from(this.tableName)
-            .select("id, slug, title")
-            .order("created_at", { ascending: false });
+        const { data: allProducts, error } = await supabase.from(this.tableName).select("id, slug, title").order("created_at", { ascending: false });
 
         if (error || !allProducts || allProducts.length === 0) {
             return { prev: null, next: null };
         }
 
         // Find current product index
-        const currentIndex = allProducts.findIndex(
-            (p) => p.id.toString() === currentIdOrSlug || p.slug === currentIdOrSlug
-        );
+        const currentIndex = allProducts.findIndex((p) => p.id.toString() === currentIdOrSlug || p.slug === currentIdOrSlug);
 
         if (currentIndex === -1) {
             return { prev: null, next: null };
@@ -123,7 +120,7 @@ class BeybladeSupabaseService {
 
         // Previous = the one BEFORE in the list (index - 1)
         const prevProduct = currentIndex > 0 ? allProducts[currentIndex - 1] : null;
-        
+
         // Next = the one AFTER in the list (index + 1)
         const nextProduct = currentIndex < allProducts.length - 1 ? allProducts[currentIndex + 1] : null;
 
@@ -134,6 +131,4 @@ class BeybladeSupabaseService {
     }
 }
 
-
 export const beybladeService = new BeybladeSupabaseService();
-
