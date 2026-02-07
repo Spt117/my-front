@@ -14,7 +14,7 @@ else if (!process.env.ADMIN_EMAIL) throw new Error("ADMIN_EMAIL is not defined")
 else if (!process.env.ADMIN_PASSWORD) throw new Error("ADMIN_PASSWORD is not defined");
 else if (!process.env.KEEPA_KEY) throw new Error("KEEPA_KEY is not defined");
 else if (!process.env.POKE_API_URL) throw new Error("POKE_API_URL is not defined");
-else console.log("All environment variables are defined");
+else console.log("All environment variables are defined on " + process.env.NODE_ENV);
 
 const uriMongodb: string = process.env.URI_MONGODB;
 const authSecret: string = process.env.AUTH_SECRET;
