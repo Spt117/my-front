@@ -9,9 +9,8 @@ else if (!process.env.GOOGLE_SECRET) throw new Error("GOOGLE_SECRET is not defin
 else if (!process.env.URI_SERVER_ACCES) throw new Error("URI_SERVER_ACCES is not defined");
 else if (!process.env.USER_EMAIL) throw new Error("USER_EMAIL is not defined");
 else if (!process.env.ENCRYPTION_KEY_AMAZON) throw new Error("ENCRYPTION_KEY_AMAZON is not defined");
-else if (!process.env.POCKETBASE_URL) throw new Error("POCKETBASE_URL is not defined");
-else if (!process.env.ADMIN_EMAIL) throw new Error("ADMIN_EMAIL is not defined");
-else if (!process.env.ADMIN_PASSWORD) throw new Error("ADMIN_PASSWORD is not defined");
+else if (!process.env.POCKETBASE_URI) throw new Error("POCKETBASE_URI is not defined");
+else if (!process.env.POCKETBASE_PASSWORD) throw new Error("POCKETBASE_PASSWORD is not defined");
 else if (!process.env.KEEPA_KEY) throw new Error("KEEPA_KEY is not defined");
 else if (!process.env.POKE_API_URL) throw new Error("POKE_API_URL is not defined");
 else console.log("All environment variables are defined on " + process.env.NODE_ENV);
@@ -23,9 +22,8 @@ const googleSecret: string = process.env.GOOGLE_SECRET;
 const userEmail: string = process.env.USER_EMAIL;
 const uriServerAcces: string = process.env.URI_SERVER_ACCES;
 
-export const PB_URL: string = process.env.POCKETBASE_URL;
-export const ADMIN_EMAIL: string = process.env.ADMIN_EMAIL;
-export const ADMIN_PASSWORD: string = process.env.ADMIN_PASSWORD;
+export const PB_URL: string = process.env.POCKETBASE_URI;
+export const PB_PASSWORD: string = process.env.POCKETBASE_PASSWORD;
 
 const encryptedKeyAmazon: string = process.env.ENCRYPTION_KEY_AMAZON;
 const keepaKey: string = process.env.KEEPA_KEY;
