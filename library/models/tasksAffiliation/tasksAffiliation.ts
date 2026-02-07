@@ -1,5 +1,4 @@
 import { Schema } from "mongoose";
-import { TNameMarketplace } from "../../../params/paramsAmazon";
 import { TPublicDomainsShopify } from "../../../params/paramsShopify";
 import { TDomainWordpress } from "../../../params/paramsWordpress";
 import { TPokemonProducts } from "@/params/paramsCreateAffiliation";
@@ -13,7 +12,7 @@ export type TAffiliationTask = {
     brand?: string;
     asin: string;
     productType: TPokemonProducts;
-    marketplace: TNameMarketplace;
+    marketplace: string;
     website: TDomainWordpress | TPublicDomainsShopify;
     status: "pending" | "done" | "error";
     createdAt?: Date;

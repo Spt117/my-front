@@ -7,18 +7,15 @@ import { Select } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { TAmazonKeys } from "@/library/models/keysAmazon/keysDeploy";
 import { addKeys } from "@/library/models/keysAmazon/middleware";
-import { amazonMarketPlaces } from "@/params/paramsAmazon";
-import { getServer } from "@/library/utils/fetchServer";
 import { useState } from "react";
 import { toast } from "sonner";
 import { clearKeys } from "./server";
 
-export default function AddKeys() {
-    const marketplaces = amazonMarketPlaces.map((mp) => ({ label: mp.domain, value: mp.domain }));
+export default function AddKeys({ marketplaces }: { marketplaces: { label: string; value: string }[] }) {
     const [data, setData] = useState<TAmazonKeys>({
         accessKeyId: "",
         secretAccessKey: "",
-        marketplace: marketplaces[0].value,
+        marketplace: marketplaces[0]?.value ?? "",
     });
     const [loading, setLoading] = useState(false);
 

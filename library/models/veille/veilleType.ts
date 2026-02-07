@@ -1,4 +1,4 @@
-import { IMarketplace } from "@/params/paramsAmazon";
+import { IMarketplace } from "@/library/pocketbase/AmazonService";
 import { TPublicDomainsShopify } from "@/params/paramsShopify";
 import { TDomainWordpress } from "@/params/paramsWordpress";
 import { Schema } from "mongoose";
@@ -9,7 +9,7 @@ export type TVeille = {
     searchTerm: string;
     active: boolean;
     brand?: string;
-    marketplace: IMarketplace["name"];
+    marketplace: IMarketplace["domain"];
     count?: number;
     createdAt?: Date;
     updatedAt?: Date;

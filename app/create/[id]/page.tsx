@@ -1,7 +1,6 @@
-import { TaskDetails } from '@/app/create/[id]/TaskDetails';
-import { tasksAffiliationController } from '@/library/models/tasksAffiliation/tasksAffiliationController';
-import { SegmentParams } from '@/library/types/utils';
-import CartePokemon from './CartePokemon';
+import { TaskDetails } from "@/app/create/[id]/TaskDetails";
+import { tasksAffiliationController } from "@/library/models/tasksAffiliation/tasksAffiliationController";
+import { SegmentParams } from "@/library/types/utils";
 
 interface props {
     params: Promise<SegmentParams>;
@@ -26,7 +25,6 @@ export default async function Page({ params }: props) {
     return (
         <div className="container mx-auto py-10 px-4 space-y-4">
             <TaskDetails task={task} />
-            <CartePokemon task={task} />
         </div>
     );
 }

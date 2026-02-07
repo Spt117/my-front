@@ -1,6 +1,6 @@
 "use server";
 
-import { IMarketplace } from "@/params/paramsAmazon";
+import { IMarketplace } from "@/library/pocketbase/AmazonService";
 import { TVeilleProduct } from "./veilleProducts";
 import { listVeilleController } from "./veilleProductsController";
 

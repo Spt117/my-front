@@ -1,11 +1,10 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
-import { TDomainMarketplace } from "@/params/paramsAmazon";
 import { encryptedKeyAmazon } from "@/library/utils/uri";
 import crypto from "crypto";
 import { model, Model, models, Schema } from "mongoose";
 
 export type TAmazonKeys = {
-    marketplace: TDomainMarketplace;
+    marketplace: string;
     accessKeyId: string;
     secretAccessKey: string;
     iv?: string;

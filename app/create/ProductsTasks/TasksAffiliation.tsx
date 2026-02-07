@@ -1,10 +1,11 @@
 "use client";
 import { TAffiliationTask } from "@/library/models/tasksAffiliation/tasksAffiliation";
+import { Inbox } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAffiliationStore from "../storeTasksAffiliation";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { AffiliationTaskProvider } from "./ContextTaskAffiliation";
 import TaskAffiliation from "./TaskAffiliation";
-import useShopifyStore from "@/components/shopify/shopifyStore";
 
 export default function TasksAffiliation() {
     const { searchTerm } = useShopifyStore();
@@ -53,17 +54,31 @@ export default function TasksAffiliation() {
     }, [websiteFilter, tasksFiltered, typesProducts, setArrayTypesProducts, setTypesProducts]);
 
     return (
-        <div className="flex flex-wrap gap-4 p-4 items-center justify-center">
-            <h2 className="w-full text-center text-2xl font-bold mb-4">
-                {tasksFiltered.length} {tasksFiltered.length > 1 ? "produits" : "produit"} en attente
-            </h2>
-            <div className="flex flex-wrap gap-4">
-                {tasksFiltered.map((task) => (
-                    <AffiliationTaskProvider key={task._id} task={task}>
-                        <TaskAffiliation />
-                    </AffiliationTaskProvider>
-                ))}
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h1 className="text-3xl font-bold text-gray-100">
+                    File d&apos;affiliation
+                </h1>
+                <span className="text-sm font-medium px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                    {tasksFiltered.length} {tasksFiltered.length > 1 ? "produits" : "produit"}
+                </span>
             </div>
+
+            {tasksFiltered.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+                    <Inbox className="w-16 h-16 mb-4 text-gray-600" />
+                    <p className="text-lg font-medium text-gray-400">Aucune tâche trouvée</p>
+                    <p className="text-sm text-gray-500 mt-1">Modifiez vos filtres ou ajoutez de nouvelles tâches</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {tasksFiltered.map((task) => (
+                        <AffiliationTaskProvider key={task._id} task={task}>
+                            <TaskAffiliation />
+                        </AffiliationTaskProvider>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

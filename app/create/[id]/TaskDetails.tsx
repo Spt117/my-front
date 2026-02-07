@@ -1,26 +1,24 @@
-'use client';
+"use client";
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
-import { amazonMarketPlaces } from '@/params/paramsAmazon';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { Calendar, DollarSign, ExternalLink, Globe, Package, Store, Tag, User } from 'lucide-react';
-import Image from 'next/image';
-import { TaskDetailsProps } from '../util';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Calendar, DollarSign, ExternalLink, Globe, Package, Store, Tag, User } from "lucide-react";
+import Image from "next/image";
+import { TaskDetailsProps } from "../util";
 
 export function TaskDetails({ task }: TaskDetailsProps) {
     const statusColor = {
-        pending: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/25',
-        done: 'bg-green-500/15 text-green-700 dark:text-green-400 hover:bg-green-500/25',
-        error: 'bg-red-500/15 text-red-700 dark:text-red-400 hover:bg-red-500/25',
+        pending: "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/25",
+        done: "bg-green-500/15 text-green-700 dark:text-green-400 hover:bg-green-500/25",
+        error: "bg-red-500/15 text-red-700 dark:text-red-400 hover:bg-red-500/25",
     };
 
-    const marketplace = amazonMarketPlaces.find((m) => m.name === task.marketplace);
-    const amazonUrl = marketplace ? `https://${marketplace.domain}/dp/${task.asin}` : '#';
+    const amazonUrl = task.marketplace ? `https://${task.marketplace}/dp/${task.asin}` : "#";
 
     return (
         <Card className="w-full max-w-4xl mx-auto overflow-hidden shadow-lg border-border/50">
@@ -87,7 +85,7 @@ export function TaskDetails({ task }: TaskDetailsProps) {
                                     <DollarSign className="w-4 h-4" />
                                     <span>Prix</span>
                                 </div>
-                                <p className="font-medium">{task.price ? `${task.price} €` : 'N/A'}</p>
+                                <p className="font-medium">{task.price ? `${task.price} €` : "N/A"}</p>
                             </div>
 
                             <div className="space-y-1">
@@ -150,12 +148,12 @@ export function TaskDetails({ task }: TaskDetailsProps) {
             <CardFooter className="bg-muted/30 p-4 text-xs text-muted-foreground flex justify-between">
                 <div className="flex items-center gap-2">
                     <Calendar className="w-3.5 h-3.5" />
-                    <span>Créé le {task.createdAt ? format(new Date(task.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr }) : '-'}</span>
+                    <span>Créé le {task.createdAt ? format(new Date(task.createdAt), "dd MMM yyyy à HH:mm", { locale: fr }) : "-"}</span>
                 </div>
                 {task.updatedAt && (
                     <div className="flex items-center gap-2">
                         <Calendar className="w-3.5 h-3.5" />
-                        <span>Mis à jour le {format(new Date(task.updatedAt), 'dd MMM yyyy à HH:mm', { locale: fr })}</span>
+                        <span>Mis à jour le {format(new Date(task.updatedAt), "dd MMM yyyy à HH:mm", { locale: fr })}</span>
                     </div>
                 )}
             </CardFooter>

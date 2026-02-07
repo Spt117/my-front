@@ -1,5 +1,5 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
-import { IMarketplace } from "@/params/paramsAmazon";
+import { IMarketplace } from "@/library/pocketbase/AmazonService";
 import { Connection, Model } from "mongoose";
 import { createVeilleProductSchema, TVeilleProduct } from "./veilleProducts";
 
@@ -23,7 +23,7 @@ class ControllerVeilleProducts {
      */
     private async getModel(): Promise<Model<TVeilleProduct>> {
         const manager = await getMongoConnectionManager();
-        const nameBdd = "veille_" + this.marketplace.name.replace(".", "_").toLowerCase();
+        const nameBdd = "veille_" + this.marketplace.domain.replace(".", "_").toLowerCase();
         const connection: Connection = await manager.getConnection(nameBdd);
         const collectionName = this.collectionName;
         if (connection.models[collectionName]) return connection.models[collectionName];
@@ -34,7 +34,7 @@ class ControllerVeilleProducts {
     async dropCollection(): Promise<boolean> {
         try {
             const manager = await getMongoConnectionManager();
-            const nameBdd = "veille_" + this.marketplace.name.replace(".", "_").toLowerCase();
+            const nameBdd = "veille_" + this.marketplace.domain.replace(".", "_").toLowerCase();
             const connection = await manager.getConnection(nameBdd);
             if (!connection.db) return true;
             await connection.db.dropCollection(this.collectionName);

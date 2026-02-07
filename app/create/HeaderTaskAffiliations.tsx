@@ -6,6 +6,7 @@ import useShopifyStore from '@/components/shopify/shopifyStore';
 import { Input } from '@/components/ui/input';
 import useKeyboardShortcuts from '@/library/hooks/useKyboardShortcuts';
 import { boutiqueFromPublicDomain, boutiques, TPublicDomainsShopify } from '@/params/paramsShopify';
+import { X } from 'lucide-react';
 import { useEffect } from 'react';
 
 export default function SelectAffiliationSite() {
@@ -26,6 +27,7 @@ export default function SelectAffiliationSite() {
         setWebsiteFilter('');
         setTypesProducts('');
         setShopifyBoutique(null);
+        setSearchTerm('');
     };
     useKeyboardShortcuts('Escape', handleEscape);
 
@@ -38,11 +40,27 @@ export default function SelectAffiliationSite() {
         setShopifyBoutique(boutique);
     };
 
+    const hasActiveFilters = websiteFilter || typesProducts || searchTerm;
+
     return (
         <>
-            <Selecteur array={optionWebsite} value={websiteFilter} onChange={handleChangeWebsite} placeholder="Choisir l'origine" />
-            <Selecteur array={optionTypesProducts} value={typesProducts} onChange={setTypesProducts} placeholder="Choisir le type de produit" />
-            <Input className="flex-1" placeholder="Rechercher un produit" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            <Selecteur className="w-[180px] shrink-0" array={optionWebsite} value={websiteFilter} onChange={handleChangeWebsite} placeholder="Site d'origine" />
+            <Selecteur className="w-[180px] shrink-0" array={optionTypesProducts} value={typesProducts} onChange={setTypesProducts} placeholder="Type de produit" />
+            <Input
+                className="flex-1 min-w-[150px]"
+                placeholder="Rechercher un produit..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {hasActiveFilters && (
+                <button
+                    onClick={handleEscape}
+                    className="shrink-0 p-1.5 text-gray-400 hover:text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
+                    title="Réinitialiser les filtres"
+                >
+                    <X className="w-4 h-4" />
+                </button>
+            )}
         </>
     );
 }

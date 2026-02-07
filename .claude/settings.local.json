@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del \"H:\\\\Code\\\\Debian\\\\my-front\\\\params\\\\paramsAmazon.ts\")",
+      "Bash(npm run build:*)"
+    ]
+  }
+}
