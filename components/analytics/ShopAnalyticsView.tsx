@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { IShopify } from "@/params/paramsShopify";
 import { DollarSign, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { Bar, BarChart, CartesianGrid, Pie, PieChart, ResponsiveContainer, Sector, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AnalyticsProductsTable } from "./AnalyticsProductsTable";
 import { formatCurrency, getDateRange, PeriodType } from "./AnalyticsUtils";
 import { KPICard } from "./KPICard";
@@ -90,12 +90,49 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
 
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <KPICard title="Commandes" value={analytics.ordersCount} icon={ShoppingCart} gradient="bg-gradient-to-br from-violet-500 via-purple-500 to-violet-600" subtitle="sur la période" />
-                <KPICard title="Chiffre d'Affaires" value={formatCurrency(analytics.totalRevenue)} icon={DollarSign} gradient="bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600" subtitle="total encaissé" />
-                <KPICard title="Produits commandés" value={analytics.orderedProducts.reduce((sum, p) => sum + p.quantity, 0)} icon={Package} gradient="bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600" subtitle={`${analytics.orderedProducts.length} références`} />
-                <KPICard title="Produits créés" value={analytics.productsCreatedCount} icon={PackagePlus} gradient="bg-gradient-to-br from-pink-500 via-rose-500 to-pink-600" subtitle="nouveaux produits" />
-                <KPICard title="Brouillons" value={analytics.draftProductsCount} icon={FileEdit} gradient="bg-gradient-to-br from-slate-500 via-gray-500 to-slate-600" subtitle="en attente" />
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <KPICard
+                    title="Commandes"
+                    value={analytics.ordersCount}
+                    icon={ShoppingCart}
+                    gradient="bg-gradient-to-br from-violet-500 via-purple-500 to-violet-600"
+                    subtitle="sur la période"
+                />
+                <KPICard
+                    title="Chiffre d'Affaires"
+                    value={formatCurrency(analytics.totalRevenue)}
+                    icon={DollarSign}
+                    gradient="bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600"
+                    subtitle="total encaissé"
+                />
+                <KPICard
+                    title="Remboursements"
+                    value={formatCurrency(analytics.totalRefunds)}
+                    icon={RefreshCw}
+                    gradient="bg-gradient-to-br from-red-500 via-rose-500 to-red-600"
+                    subtitle="montant total"
+                />
+                <KPICard
+                    title="Produits commandés"
+                    value={analytics.orderedProducts.reduce((sum, p) => sum + p.quantity, 0)}
+                    icon={Package}
+                    gradient="bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600"
+                    subtitle={`${analytics.orderedProducts.length} références`}
+                />
+                <KPICard
+                    title="Produits créés"
+                    value={analytics.productsCreatedCount}
+                    icon={PackagePlus}
+                    gradient="bg-gradient-to-br from-pink-500 via-rose-500 to-pink-600"
+                    subtitle="nouveaux produits"
+                />
+                <KPICard
+                    title="Brouillons"
+                    value={analytics.draftProductsCount}
+                    icon={FileEdit}
+                    gradient="bg-gradient-to-br from-slate-500 via-gray-500 to-slate-600"
+                    subtitle="en attente"
+                />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -152,8 +189,11 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
                                         innerRadius={40}
                                         dataKey="value"
                                         paddingAngle={2}
-                                        shape={(props: any) => <Sector {...props} fill={COLORS[props.index % COLORS.length]} />}
-                                    />
+                                    >
+                                        {pieData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
                                     <Tooltip
                                         contentStyle={{
                                             borderRadius: "12px",

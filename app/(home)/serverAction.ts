@@ -17,6 +17,7 @@ export interface OrderedProduct {
 export interface AnalyticsData {
     ordersCount: number;
     totalRevenue: number;
+    totalRefunds: number;
     productsCreatedCount: number;
     draftProductsCount: number;
     orderedProducts: OrderedProduct[];

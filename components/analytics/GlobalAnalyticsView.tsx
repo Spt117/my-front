@@ -63,6 +63,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     }, [fetchAllAnalytics]);
 
     const totalRevenue = stats.reduce((sum, s) => sum + (s.data?.totalRevenue || 0), 0);
+    const totalRefunds = stats.reduce((sum, s) => sum + (s.data?.totalRefunds || 0), 0);
     const totalOrders = stats.reduce((sum, s) => sum + (s.data?.ordersCount || 0), 0);
     const totalProducts = stats.reduce((sum, s) => sum + (s.data?.orderedProducts.reduce((pSum, p) => pSum + p.quantity, 0) || 0), 0);
     const totalCreated = stats.reduce((sum, s) => sum + (s.data?.productsCreatedCount || 0), 0);
@@ -81,12 +82,49 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     return (
         <div className="space-y-6">
             {/* Global KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <KPICard title="CA Total Global" value={formatCurrency(totalRevenue)} icon={DollarSign} gradient="bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700" subtitle="Toutes boutiques confondues" />
-                <KPICard title="Commandes Globales" value={totalOrders} icon={ShoppingCart} gradient="bg-gradient-to-br from-violet-600 via-purple-600 to-violet-700" subtitle="Volume total des ventes" />
-                <KPICard title="Produits Vendus" value={totalProducts} icon={Package} gradient="bg-gradient-to-br from-orange-600 via-amber-600 to-orange-700" subtitle="Nombre d'articles expédiés" />
-                <KPICard title="Produits Créés" value={totalCreated} icon={PackagePlus} gradient="bg-gradient-to-br from-pink-600 via-rose-600 to-pink-700" subtitle="Nouveaux produits ajoutés" />
-                <KPICard title="Produits en Brouillon" value={allLoading && totalDrafts === 0 ? "..." : totalDrafts} icon={FileEdit} gradient="bg-gradient-to-br from-slate-600 via-gray-600 to-slate-700" subtitle="État actuel" />
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <KPICard
+                    title="CA Total Global"
+                    value={formatCurrency(totalRevenue)}
+                    icon={DollarSign}
+                    gradient="bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700"
+                    subtitle="Toutes boutiques confondues"
+                />
+                <KPICard
+                    title="Commandes Globales"
+                    value={totalOrders}
+                    icon={ShoppingCart}
+                    gradient="bg-gradient-to-br from-violet-600 via-purple-600 to-violet-700"
+                    subtitle="Volume total des ventes"
+                />
+                <KPICard
+                    title="Remboursements"
+                    value={formatCurrency(totalRefunds)}
+                    icon={RefreshCw}
+                    gradient="bg-gradient-to-br from-red-600 via-rose-600 to-red-700"
+                    subtitle="Total remboursements"
+                />
+                <KPICard
+                    title="Produits Vendus"
+                    value={totalProducts}
+                    icon={Package}
+                    gradient="bg-gradient-to-br from-orange-600 via-amber-600 to-orange-700"
+                    subtitle="Nombre d'articles expédiés"
+                />
+                <KPICard
+                    title="Produits Créés"
+                    value={totalCreated}
+                    icon={PackagePlus}
+                    gradient="bg-gradient-to-br from-pink-600 via-rose-600 to-pink-700"
+                    subtitle="Nouveaux produits ajoutés"
+                />
+                <KPICard
+                    title="Produits en Brouillon"
+                    value={allLoading && totalDrafts === 0 ? "..." : totalDrafts}
+                    icon={FileEdit}
+                    gradient="bg-gradient-to-br from-slate-600 via-gray-600 to-slate-700"
+                    subtitle="État actuel"
+                />
             </div>
 
             {/* Main Content */}
@@ -114,7 +152,11 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                                             boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
                                         }}
                                     />
-                                    <Bar dataKey="CA" radius={[0, 8, 8, 0]} shape={(props: any) => <Rectangle {...props} fill={props.index === 0 ? "#8b5cf6" : "#a855f7"} opacity={1 - props.index * 0.15} />} />
+                                    <Bar
+                                        dataKey="CA"
+                                        radius={[0, 8, 8, 0]}
+                                        shape={(props: any) => <Rectangle {...props} fill={props.index === 0 ? "#8b5cf6" : "#a855f7"} opacity={1 - props.index * 0.15} />}
+                                    />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -161,7 +203,9 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                                                 <p className="font-bold text-slate-900">{formatCurrency(s.data?.totalRevenue || 0)}</p>
                                                 <div className="flex flex-col gap-0">
                                                     <p className="text-xs text-emerald-600 font-medium">{s.data?.ordersCount || 0} cmds</p>
-                                                    <p className="text-xs text-blue-600 font-medium">{s.data?.orderedProducts.reduce((sum, p) => sum + p.quantity, 0) || 0} produits</p>
+                                                    <p className="text-xs text-blue-600 font-medium">
+                                                        {s.data?.orderedProducts.reduce((sum, p) => sum + p.quantity, 0) || 0} produits
+                                                    </p>
                                                 </div>
                                             </>
                                         )}
