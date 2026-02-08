@@ -1,5 +1,5 @@
 import PocketBase from "pocketbase";
-import { PB_URL, PB_PASSWORD, userEmail } from "../utils/uri";
+import { PB_PASSWORD, PB_URL, userEmail } from "../utils/uri";
 
 class PocketBaseManager {
     private static _instance: PocketBaseManager;
@@ -33,9 +33,8 @@ class PocketBaseManager {
         try {
             await this._pb.collection("_superusers").authWithPassword(userEmail, PB_PASSWORD);
             this.isAdminConnected = true;
-        } catch (error) {
+        } catch (error: any) {
             this.isAdminConnected = false;
-            console.error("Echec de la connexion Admin PocketBase:", error);
             throw error;
         }
     }

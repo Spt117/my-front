@@ -2,7 +2,21 @@
   "permissions": {
     "allow": [
       "Bash(del \"H:\\\\Code\\\\Debian\\\\my-front\\\\params\\\\paramsAmazon.ts\")",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "WebSearch",
+      "WebFetch(domain:authjs.dev)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(npm view:*)",
+      "Bash(python3:*)",
+      "WebFetch(domain:medium.com)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(find:*)",
+      "Bash(node -e:*)",
+      "Bash(curl:*)",
+      "Bash(printf:*)"
     ]
   }
 }

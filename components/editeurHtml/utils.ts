@@ -1,17 +1,13 @@
-import ListItem from "@tiptap/extension-list-item";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
+import ListItem from "@tiptap/extension-list-item";
 
-const LinkStrict = Link.extend({
-    addOptions() {
-        return {
-            ...this.parent?.(),
-            openOnClick: false,
-            autolink: false,
-            linkOnPaste: false,
-            HTMLAttributes: {},
-        };
-    },
+const LinkStrict = Link.configure({
+    openOnClick: false,
+    autolink: false,
+    linkOnPaste: false,
+    HTMLAttributes: {},
+}).extend({
     addAttributes() {
         return {
             href: {
@@ -129,9 +125,9 @@ const PlainListItem = ListItem.extend({
     parseHTML() {
         return [{ tag: "li" }];
     },
-    renderHTML({ HTMLAttributes }: { HTMLAttributes: string }) {
+    renderHTML({ HTMLAttributes }: { HTMLAttributes: Record<string, any> }) {
         return ["li", HTMLAttributes, 0];
     },
 });
 
-export { formatHTML, ImageInline, LinkStrict, PlainListItem };
+export { ImageInline, LinkStrict, PlainListItem, formatHTML };

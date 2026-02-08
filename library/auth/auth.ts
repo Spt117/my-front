@@ -1,18 +1,17 @@
-// ./auth.ts (ou authOption.ts)
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import { NextAuthOptions } from "next-auth";
-import EmailProvider from "next-auth/providers/email";
-import GoogleProvider from "next-auth/providers/google";
+import NextAuth from "next-auth";
+import Nodemailer from "next-auth/providers/nodemailer";
+import Google from "next-auth/providers/google";
 import { authSecret, email, googleId, googleSecret } from "../utils/uri";
 import { getMongoClientForAuth } from "./connectorAuth";
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
     providers: [
-        GoogleProvider({
+        Google({
             clientId: googleId as string,
             clientSecret: googleSecret as string,
         }),
-        EmailProvider({
+        Nodemailer({
             server: {
                 host: email.host,
                 port: Number(email.port),
@@ -65,7 +64,7 @@ export const authOptions: NextAuthOptions = {
                 sameSite: "lax",
                 path: "/",
                 secure: process.env.NODE_ENV === "production",
-                maxAge: 900, // 15 minutes
+                maxAge: 900,
             },
         },
         pkceCodeVerifier: {
@@ -75,9 +74,9 @@ export const authOptions: NextAuthOptions = {
                 sameSite: "lax",
                 path: "/",
                 secure: process.env.NODE_ENV === "production",
-                maxAge: 900, // 15 minutes
+                maxAge: 900,
             },
         },
     },
     secret: authSecret,
-};
+});
