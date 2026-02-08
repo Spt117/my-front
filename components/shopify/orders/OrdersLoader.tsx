@@ -2,7 +2,7 @@
 
 import { boutiques, TDomainsShopify } from '@/params/paramsShopify';
 import { useEffect, useRef } from 'react';
-import { getOrdersByShop } from './serverAction';
+import { getOrders } from './serverAction';
 import useOrdersStore from './store';
 
 /**
@@ -10,33 +10,29 @@ import useOrdersStore from './store';
  * This ensures the order count badges are always up to date
  */
 export default function OrdersLoader() {
-    const { setOrdersForShop, ordersByShop } = useOrdersStore();
+    const { setOrdersForShop } = useOrdersStore();
     const loadedRef = useRef(false);
 
     useEffect(() => {
-        // Only load once per session
         if (loadedRef.current) return;
         loadedRef.current = true;
 
         const loadAllOrders = async () => {
-            // Load orders for each shop in parallel
-            const promises = boutiques.map(async (boutique) => {
-                try {
-                    const data = await getOrdersByShop(boutique.domain);
-                    if (data?.orders) {
-                        setOrdersForShop(boutique.domain as TDomainsShopify, data.orders);
-                    }
-                } catch (error) {
-                    console.error(`Error loading orders for ${boutique.domain}:`, error);
-                }
-            });
+            try {
+                const data = await getOrders();
+                if (!data) return;
 
-            await Promise.all(promises);
+                for (const boutique of boutiques) {
+                    const shopOrders = data.orders.filter((order) => order.shop === boutique.domain);
+                    setOrdersForShop(boutique.domain as TDomainsShopify, shopOrders);
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+            }
         };
 
         loadAllOrders();
     }, [setOrdersForShop]);
 
-    // This component doesn't render anything
     return null;
 }

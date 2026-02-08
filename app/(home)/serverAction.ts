@@ -45,6 +45,29 @@ export async function getAnalytics(params: AnalyticsRequest): Promise<AnalyticsR
     return res as AnalyticsResponse;
 }
 
+// ============ Analytics All (toutes boutiques en parallèle côté serveur) ============
+export interface ShopAnalyticsResult {
+    domain: string;
+    data: AnalyticsData | null;
+    error: string | null;
+}
+
+export interface AllAnalyticsResponse {
+    response: ShopAnalyticsResult[] | null;
+    message?: string;
+    error?: string;
+}
+
+/**
+ * Récupère les analytics de toutes les boutiques en un seul appel
+ * Le serveur Pokemon fetch toutes les boutiques en parallèle
+ */
+export async function getAllAnalytics(params: { startDate: string; endDate: string }): Promise<AllAnalyticsResponse> {
+    const url = `${pokeUriServer}/shopify/analytics-all`;
+    const res = await postServer(url, params);
+    return res as AllAnalyticsResponse;
+}
+
 export interface DraftCountItem {
     domain: string;
     count: number;

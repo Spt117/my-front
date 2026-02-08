@@ -1,6 +1,6 @@
 "use client";
 
-import { AnalyticsData, getAnalytics } from "@/app/(home)/serverAction";
+import { AnalyticsData, getAllAnalytics } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { boutiques, IShopify } from "@/params/paramsShopify";
 import { DollarSign, ExternalLink, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from "lucide-react";
@@ -31,31 +31,27 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
 
         setStats((prev) => prev.map((s) => ({ ...s, loading: true, error: null })));
 
-        const promises = boutiques.map(async (boutique, index) => {
-            try {
-                const res = await getAnalytics({
-                    domain: boutique.domain,
-                    startDate: start.toISOString(),
-                    endDate: end.toISOString(),
-                });
+        try {
+            const res = await getAllAnalytics({
+                startDate: start.toISOString(),
+                endDate: end.toISOString(),
+            });
 
-                if (res.error) throw new Error(res.error);
-
-                setStats((prev) => {
-                    const newStats = [...prev];
-                    newStats[index] = { ...newStats[index], data: res.response, loading: false };
-                    return newStats;
-                });
-            } catch (err) {
-                setStats((prev) => {
-                    const newStats = [...prev];
-                    newStats[index] = { ...newStats[index], loading: false, error: "Erreur" };
-                    return newStats;
-                });
+            if (res.error || !res.response) {
+                setStats((prev) => prev.map((s) => ({ ...s, loading: false, error: "Erreur serveur" })));
+                return;
             }
-        });
 
-        await Promise.all(promises);
+            setStats((prev) =>
+                prev.map((s) => {
+                    const result = res.response!.find((r) => r.domain === s.boutique.domain);
+                    if (!result) return { ...s, loading: false, error: "Boutique non trouvée" };
+                    return { ...s, data: result.data, loading: false, error: result.error };
+                })
+            );
+        } catch (err) {
+            setStats((prev) => prev.map((s) => ({ ...s, loading: false, error: "Erreur" })));
+        }
     }, [period, customStart, customEnd]);
 
     useEffect(() => {
@@ -118,13 +114,44 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                     gradient="bg-gradient-to-br from-pink-600 via-rose-600 to-pink-700"
                     subtitle="Nouveaux produits ajoutés"
                 />
-                <KPICard
-                    title="Produits en Brouillon"
-                    value={allLoading && totalDrafts === 0 ? "..." : totalDrafts}
-                    icon={FileEdit}
-                    gradient="bg-gradient-to-br from-slate-600 via-gray-600 to-slate-700"
-                    subtitle="État actuel"
-                />
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-slate-600 via-gray-600 to-slate-700">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                    <CardHeader className="pb-2 relative z-10">
+                        <CardTitle className="text-sm font-medium text-white/90 flex items-center gap-2">
+                            <div className="p-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                                <FileEdit className="w-4 h-4 text-white" />
+                            </div>
+                            Produits en Brouillon
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="relative z-10">
+                        <div className="text-3xl font-bold text-white tracking-tight">
+                            {allLoading && totalDrafts === 0 ? "..." : totalDrafts}
+                        </div>
+                        <div className="mt-2 space-y-1">
+                            {stats.map((s) => {
+                                const count = s.data?.draftProductsCount ?? 0;
+                                return (
+                                    <a
+                                        key={s.boutique.domain}
+                                        href={`/shopify/${s.boutique.id}/draft`}
+                                        className="flex items-center justify-between text-xs text-white/80 hover:text-white transition-colors group"
+                                    >
+                                        <span className="flex items-center gap-1.5">
+                                            <img src={s.boutique.flag} alt="" className="w-3.5 h-3.5 object-contain" />
+                                            <span className="truncate">{s.boutique.publicDomain}</span>
+                                        </span>
+                                        <span className="flex items-center gap-1 font-semibold">
+                                            {s.loading ? "..." : count}
+                                            <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </span>
+                                    </a>
+                                );
+                            })}
+                        </div>
+                    </CardContent>
+                    <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-2xl" />
+                </Card>
             </div>
 
             {/* Main Content */}
