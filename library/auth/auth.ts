@@ -1,7 +1,7 @@
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import NextAuth from "next-auth";
-import Nodemailer from "next-auth/providers/nodemailer";
 import Google from "next-auth/providers/google";
+import Nodemailer from "next-auth/providers/nodemailer";
 import { authSecret, email, googleId, googleSecret } from "../utils/uri";
 import { getMongoClientForAuth } from "./connectorAuth";
 
@@ -79,4 +79,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
     },
     secret: authSecret,
+    trustHost: true,
 });
