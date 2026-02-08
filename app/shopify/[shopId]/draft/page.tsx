@@ -9,6 +9,7 @@ export default async function Page() {
     const pathname = headersList.get("x-pathname") || "/unknown";
     const boutique = boutiqueFromId(Number(pathname.split("/")[2]));
     const url = `${pokeUriServer}/shopify/draft-products?domain=${boutique?.domain}`;
+    console.log(url);
     const response = await getServer(url);
     const draftProducts = response.response.products;
 

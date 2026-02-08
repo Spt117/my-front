@@ -3,9 +3,9 @@
 import { AnalyticsData, getAnalytics } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { boutiques, IShopify } from "@/params/paramsShopify";
-import { DollarSign, ExternalLink, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from "lucide-react";
+import { DollarSign, ExternalLink, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AnalyticsProductsTable } from "./AnalyticsProductsTable";
 import { formatCurrency, getDateRange, PeriodType } from "./AnalyticsUtils";
 import { KPICard } from "./KPICard";
@@ -66,6 +66,8 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     const totalOrders = stats.reduce((sum, s) => sum + (s.data?.ordersCount || 0), 0);
     const totalProducts = stats.reduce((sum, s) => sum + (s.data?.orderedProducts.reduce((pSum, p) => pSum + p.quantity, 0) || 0), 0);
     const totalCreated = stats.reduce((sum, s) => sum + (s.data?.productsCreatedCount || 0), 0);
+    const totalDrafts = stats.reduce((sum, s) => sum + (s.data?.draftProductsCount || 0), 0);
+    const allLoading = stats.some((s) => s.loading);
 
     const chartData = stats
         .filter((s) => s.data)
@@ -79,11 +81,12 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     return (
         <div className="space-y-6">
             {/* Global KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <KPICard title="CA Total Global" value={formatCurrency(totalRevenue)} icon={DollarSign} gradient="bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700" subtitle="Toutes boutiques confondues" />
                 <KPICard title="Commandes Globales" value={totalOrders} icon={ShoppingCart} gradient="bg-gradient-to-br from-violet-600 via-purple-600 to-violet-700" subtitle="Volume total des ventes" />
                 <KPICard title="Produits Vendus" value={totalProducts} icon={Package} gradient="bg-gradient-to-br from-orange-600 via-amber-600 to-orange-700" subtitle="Nombre d'articles expédiés" />
                 <KPICard title="Produits Créés" value={totalCreated} icon={PackagePlus} gradient="bg-gradient-to-br from-pink-600 via-rose-600 to-pink-700" subtitle="Nouveaux produits ajoutés" />
+                <KPICard title="Produits en Brouillon" value={allLoading && totalDrafts === 0 ? "..." : totalDrafts} icon={FileEdit} gradient="bg-gradient-to-br from-slate-600 via-gray-600 to-slate-700" subtitle="État actuel" />
             </div>
 
             {/* Main Content */}
@@ -111,11 +114,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                                             boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
                                         }}
                                     />
-                                    <Bar dataKey="CA" fill="#8b5cf6" radius={[0, 8, 8, 0]}>
-                                        {chartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={index === 0 ? "#8b5cf6" : "#a855f7"} opacity={1 - index * 0.15} />
-                                        ))}
-                                    </Bar>
+                                    <Bar dataKey="CA" radius={[0, 8, 8, 0]} shape={(props: any) => <Rectangle {...props} fill={props.index === 0 ? "#8b5cf6" : "#a855f7"} opacity={1 - props.index * 0.15} />} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
