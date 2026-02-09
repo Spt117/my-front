@@ -4,7 +4,7 @@ import { ShopifyCustomer } from '@/library/shopify/clients';
 import { ShopifyOrder } from '@/library/shopify/orders';
 import { ProductGET } from '@/library/types/graph';
 import { TSearchMode } from '@/params/menu';
-import { IShopify } from '@/params/paramsShopify';
+import { IShopify, TDomainsShopify } from '@/params/paramsShopify';
 import { create } from 'zustand';
 import { TBrand, TProductType } from './ProductType';
 
@@ -42,6 +42,8 @@ interface StoreState {
     setIsSearchOpen: (open: boolean) => void;
     shopSettings: { amazonPartnerId: string; amazonDomain: string } | null;
     setShopSettings: (settings: { amazonPartnerId: string; amazonDomain: string } | null) => void;
+    draftCountByShop: Record<string, number>;
+    setDraftCountForShop: (shop: TDomainsShopify, count: number) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
@@ -79,6 +81,10 @@ const useShopifyStore = create<StoreState>((set) => ({
     setSearchMode: (mode) => set({ searchMode: mode }),
     shopSettings: null,
     setShopSettings: (settings) => set({ shopSettings: settings }),
+    draftCountByShop: {},
+    setDraftCountForShop: (shop, count) => set((state) => ({
+        draftCountByShop: { ...state.draftCountByShop, [shop]: count },
+    })),
 }));
 
 export default useShopifyStore;

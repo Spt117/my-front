@@ -11,7 +11,7 @@ import SelectFull from './SelectFull';
 
 export default function ShopifySelect() {
     const { ordersByShop } = useOrdersStore();
-    const { shopifyBoutique, setShopifyBoutique, setProduct, product } = useShopifyStore();
+    const { shopifyBoutique, setShopifyBoutique, setProduct, product, draftCountByShop } = useShopifyStore();
     const { cleanCollections } = useCollectionStore();
     const path = usePathname();
     const router = useRouter();
@@ -46,6 +46,7 @@ export default function ShopifySelect() {
 
     const option2 = boutiques.map((boutique) => {
         const { orderCount, preorderCount } = getOrderCounts(boutique.domain);
+        const draftCount = draftCountByShop[boutique.domain] || 0;
         return {
             label: (
                 <div className="flex flex-col items-center">
@@ -58,6 +59,7 @@ export default function ShopifySelect() {
             value: boutique.domain,
             count: orderCount,
             preorderCount: preorderCount,
+            draftCount: draftCount,
         };
     });
 

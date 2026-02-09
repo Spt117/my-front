@@ -2,7 +2,7 @@ import React from 'react';
 
 interface SelectFullProps {
     action: (selected: string) => void;
-    options: { label: string | React.ReactNode; value: string; count?: number; preorderCount?: number }[];
+    options: { label: string | React.ReactNode; value: string; count?: number; preorderCount?: number; draftCount?: number }[];
     currentValue: string;
 }
 
@@ -32,15 +32,25 @@ export default function SelectFull({ action, options, currentValue }: SelectFull
 
                     {/* Badge Précommandes (Bleu) */}
                     {option.preorderCount !== undefined && option.preorderCount > 0 && (
-                        <div 
+                        <div
                             className={`absolute bg-blue-600 text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5 border-2 border-white shadow-sm z-10 transition-all ${
-                                option.count && option.count > 0 
+                                option.count && option.count > 0
                                     ? 'top-3 -right-2' // Légère superposition si le rouge existe
                                     : '-top-2 -right-2'
                             }`}
                             title={`${option.preorderCount} précommande(s) en attente`}
                         >
                             {option.preorderCount}
+                        </div>
+                    )}
+
+                    {/* Badge Brouillons (Ambre discret) */}
+                    {option.draftCount !== undefined && option.draftCount > 0 && (
+                        <div
+                            className="absolute -bottom-1.5 -left-1.5 bg-amber-500/80 text-white text-[9px] font-semibold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 border-2 border-white shadow-sm z-10"
+                            title={`${option.draftCount} brouillon(s)`}
+                        >
+                            {option.draftCount}
                         </div>
                     )}
                 </button>
