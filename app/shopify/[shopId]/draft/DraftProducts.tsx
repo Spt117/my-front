@@ -1,15 +1,15 @@
 "use client";
 import { actionBulk } from "@/app/shopify/[shopId]/bulk/server";
+import ProductList from "@/components/header/products/Products";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { BulkAction } from "@/components/shopify/typesShopify";
-import ProductList from "@/components/header/products/Products";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 import { ProductGET } from "@/library/types/graph";
-import { Separator } from "@radix-ui/react-separator";
-import { Check, CheckCircle2, FileEdit, Loader2, RefreshCw, Rocket, XCircle } from "lucide-react";
+import { Check, CheckCircle2, FileEdit, Loader2, RefreshCw, Rocket, Search, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 export default function DraftProducts({ products, error }: { products: ProductGET[]; error?: string | null }) {
@@ -21,8 +21,45 @@ export default function DraftProducts({ products, error }: { products: ProductGE
     }, [error]);
 
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [displayProducts, setDisplayProducts] = useState<ProductGET[]>(products);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [publishing, setPublishing] = useState(false);
+    const { searchTerm, setSearchTerm } = useShopifyStore();
+
+    // Effet pour synchroniser et fusionner les produits lors des rafraîchissements
+    useEffect(() => {
+        if (!products || products.length === 0) return;
+
+        setDisplayProducts((prev) => {
+            const next = [...prev];
+            let hasChanged = false;
+
+            products.forEach((newProduct) => {
+                const index = next.findIndex((p) => p.id === newProduct.id);
+                if (index !== -1) {
+                    // Mise à jour si nécessaire (comparaison superficielle ou profonde selon besoin, ici on met à jour systématiquement)
+                    next[index] = newProduct;
+                } else {
+                    // Ajout au début si nouveau
+                    next.unshift(newProduct);
+                    hasChanged = true;
+                }
+            });
+
+            return hasChanged ? [...next] : next;
+        });
+    }, [products]);
+
+    // Filtrage des produits par titre ou SKU via le store global
+    const filteredProducts = useMemo(() => {
+        if (!searchTerm.trim()) return displayProducts;
+        const query = searchTerm.toLowerCase();
+        return displayProducts.filter((product) => {
+            const hasMatchTitle = product.title.toLowerCase().includes(query);
+            const hasMatchSku = product.variants?.nodes?.some((v) => v.sku.toLowerCase().includes(query));
+            return hasMatchTitle || hasMatchSku;
+        });
+    }, [displayProducts, searchTerm]);
 
     const handleRefresh = () => {
         setIsRefreshing(true);
@@ -43,10 +80,10 @@ export default function DraftProducts({ products, error }: { products: ProductGE
     };
 
     const toggleSelectAll = () => {
-        if (selectedIds.size === products.length) {
+        if (selectedIds.size === filteredProducts.length && filteredProducts.length > 0) {
             setSelectedIds(new Set());
         } else {
-            setSelectedIds(new Set(products.map((p) => p.id)));
+            setSelectedIds(new Set(filteredProducts.map((p) => p.id)));
         }
     };
 
@@ -63,7 +100,11 @@ export default function DraftProducts({ products, error }: { products: ProductGE
             };
             const res = await actionBulk(payload);
             if (res.error) toast.error(res.error);
-            if (res.message) toast.success(res.message);
+            if (res.message) {
+                toast.success(res.message);
+                // Retrait local des produits publiés pour éviter de les voir rester si le serveur est lent à rafraîchir
+                setDisplayProducts((prev) => prev.filter((p) => !selectedIds.has(p.id)));
+            }
             setSelectedIds(new Set());
             router.refresh();
         } catch (err) {
@@ -74,59 +115,71 @@ export default function DraftProducts({ products, error }: { products: ProductGE
         }
     };
 
-    const allSelected = selectedIds.size === products.length && products.length > 0;
+    const allSelected = selectedIds.size === filteredProducts.length && filteredProducts.length > 0;
 
     return (
         <div className="w-full">
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                    <FileEdit className="h-5 w-5 text-amber-500" />
-                    <h2 className="text-lg font-semibold">Produits en brouillon ({products.length})</h2>
-                </div>
-                <div className="flex items-center gap-2">
-                    {products.length > 0 && (
-                        <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={toggleSelectAll}>
-                            {allSelected ? (
-                                <>
-                                    <XCircle className="h-4 w-4 mr-2" />
-                                    Tout désélectionner
-                                </>
-                            ) : (
-                                <>
-                                    <Check className="h-4 w-4 mr-2" />
-                                    Tout sélectionner
-                                </>
-                            )}
+            <div className="flex flex-col gap-4 mb-6">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <FileEdit className="h-5 w-5 text-amber-500" />
+                        <h2 className="text-lg font-semibold">Produits en brouillon ({displayProducts.length})</h2>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {filteredProducts.length > 0 && (
+                            <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={toggleSelectAll}>
+                                {allSelected ? (
+                                    <>
+                                        <XCircle className="h-4 w-4 mr-2" />
+                                        Tout désélectionner
+                                    </>
+                                ) : (
+                                    <>
+                                        <Check className="h-4 w-4 mr-2" />
+                                        Tout sélectionner
+                                    </>
+                                )}
+                            </Button>
+                        )}
+                        <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshing}>
+                            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+                            Actualiser
                         </Button>
-                    )}
-                    <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshing}>
-                        <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
-                        Actualiser
-                    </Button>
+                    </div>
                 </div>
             </div>
 
-            {products.length === 0 ? (
-                <div className="text-center py-10 text-muted-foreground">
-                    <FileEdit className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Aucun produit en brouillon</p>
-                    <p className="text-sm">Tous les produits sont publiés !</p>
+            {filteredProducts.length === 0 ? (
+                <div className="text-center py-10 text-muted-foreground bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                    {searchTerm ? (
+                        <>
+                            <Search className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                            <p>Aucun brouillon ne correspond à votre recherche</p>
+                            <Button variant="link" size="sm" onClick={() => setSearchTerm("")} className="mt-2 text-amber-600">
+                                Effacer la recherche
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <FileEdit className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                            <p>Aucun produit en brouillon</p>
+                            <p className="text-sm">Tous les produits sont publiés !</p>
+                        </>
+                    )}
                 </div>
             ) : (
                 <>
-                    {products.map((product, index) => (
-                        <div key={product.id} className="flex items-center gap-2">
-                            <Checkbox
-                                checked={selectedIds.has(product.id)}
-                                onCheckedChange={() => toggleSelect(product.id)}
-                                className="ml-2 shrink-0"
-                            />
-                            <div className="flex-1 min-w-0">
-                                <ProductList product={product} compact />
+                    <div className="space-y-2">
+                        {filteredProducts.map((product) => (
+                            <div key={product.id} className="flex items-center gap-2 group">
+                                <Checkbox checked={selectedIds.has(product.id)} onCheckedChange={() => toggleSelect(product.id)} className="ml-2 shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                    <ProductList product={product} compact />
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                    <Separator />
+                        ))}
+                    </div>
+                    <Separator className="my-4" />
                 </>
             )}
 
@@ -151,12 +204,7 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                             </>
                         )}
                     </Button>
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setSelectedIds(new Set())}
-                        className="bg-transparent border-gray-500 hover:bg-gray-800"
-                    >
+                    <Button size="sm" variant="outline" onClick={() => setSelectedIds(new Set())} className="bg-transparent border-gray-500 hover:bg-gray-800">
                         <XCircle size={16} className="mr-2" />
                         Annuler
                     </Button>

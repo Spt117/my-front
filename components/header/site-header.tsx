@@ -31,6 +31,7 @@ export function SiteHeader() {
                 {pathname.includes('clients') && <UnifiedSearchShopify type="clients" />}
                 {pathname.includes('collections') && <HeaderCollection />}
                 {pathname.includes('orders') && <UnifiedSearchShopify type="orders" />}
+                {pathname.includes('draft') && <UnifiedSearchShopify type="drafts" />}
             </div>
         </header>
     );
