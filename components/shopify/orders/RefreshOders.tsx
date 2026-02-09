@@ -12,6 +12,8 @@ import { getOrdersByShop } from './serverAction';
 import useOrdersStore, { ProductInOrder } from './store';
 import ToggleMode from './ToggleMode';
 
+import { toast } from 'sonner';
+
 export default function RefreshOders({ boolArchived }: { boolArchived?: boolean }) {
     const [productsInOrders, setProductsInOrders] = useState<ProductInOrder[]>([]);
     const { loading, setLoading, shopifyBoutique } = useShopifyStore();
@@ -29,15 +31,21 @@ export default function RefreshOders({ boolArchived }: { boolArchived?: boolean 
             const data = await getOrdersByShop(shopifyBoutique.domain);
             console.log(data);
 
-            if (data) {
-                const orders = data.orders.sort((a: GroupedShopifyOrder, b: GroupedShopifyOrder) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-                setOrders(orders);
-                setFilterOrders(orders);
+            if (data?.error) {
+                toast.error(data.error);
+            }
+
+            if (data?.orders) {
+                const sortedOrders = data.orders.sort((a: GroupedShopifyOrder, b: GroupedShopifyOrder) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                setOrders(sortedOrders);
+                setFilterOrders(sortedOrders);
                 // Also store orders for this specific shop
-                setOrdersForShop(shopifyBoutique.domain, orders);
-                setProductsInOrders(data.products);
+                setOrdersForShop(shopifyBoutique.domain, sortedOrders);
+                setProductsInOrders(data.products || []);
             }
         } catch (error) {
+            console.error('Failed to fetch orders:', error);
+            toast.error('Erreur lors de la récupération des commandes');
         } finally {
             setLoading(false);
         }

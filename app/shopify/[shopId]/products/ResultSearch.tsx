@@ -3,8 +3,15 @@ import ProductList from "@/components/header/products/Products";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Separator } from "@radix-ui/react-separator";
 
-export default function ResultSearch({ products }: { products: any[] }) {
+import { toast } from "sonner";
+import { useEffect } from "react";
+
+export default function ResultSearch({ products, error }: { products: any[]; error?: string | null }) {
     const { productsSearch } = useShopifyStore();
+
+    useEffect(() => {
+        if (error) toast.error(error);
+    }, [error]);
 
     if (productsSearch.length === 0)
         return (

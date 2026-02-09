@@ -9,12 +9,17 @@ import { ProductGET } from "@/library/types/graph";
 import { Separator } from "@radix-ui/react-separator";
 import { Check, CheckCircle2, FileEdit, Loader2, RefreshCw, Rocket, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function DraftProducts({ products }: { products: ProductGET[] }) {
+export default function DraftProducts({ products, error }: { products: ProductGET[]; error?: string | null }) {
     const router = useRouter();
     const { shopifyBoutique, canauxBoutique } = useShopifyStore();
+
+    useEffect(() => {
+        if (error) toast.error(error);
+    }, [error]);
+
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [publishing, setPublishing] = useState(false);

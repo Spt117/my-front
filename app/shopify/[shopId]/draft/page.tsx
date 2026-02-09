@@ -9,11 +9,12 @@ export default async function Page({ params }: { params: Promise<{ shopId: strin
     const boutique = boutiqueFromId(Number(shopId));
     const url = `${pokeUriServer}/shopify/draft-products?domain=${boutique?.domain}`;
     const response = await getServer(url);
-    const draftProducts = response.response.products;
+    const draftProducts = response?.response?.products || [];
+    const error = response?.error || null;
 
     return (
         <div className="p-4 flex flex-col items-center justify-center">
-            <DraftProducts products={draftProducts} />
+            <DraftProducts products={draftProducts} error={error} />
         </div>
     );
 }

@@ -17,7 +17,7 @@ export default async function ProductLayout({ children, params }: LayoutPropsSho
     if (boutique) {
         try {
             const [productData, tasksData] = await Promise.all([
-                getProduct({ productId, domain: boutique.domain }),
+                getProduct({ productId, domain: boutique?.domain || "" }),
                 getTasks(`gid://shopify/Product/${productId}`),
             ]);
 

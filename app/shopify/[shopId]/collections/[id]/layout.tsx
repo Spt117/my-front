@@ -12,20 +12,13 @@ export default async function CollectionLayout({ children, params }: LayoutProps
     let error = null;
 
     const collectionData = (await getDataBoutique(
-        boutique.domain,
+        boutique?.domain || "",
         "collectionGid",
         `gid://shopify/Collection/${id}`
     )) as ResponseServer<ShopifyCollectionWithProducts>;
-    error = collectionData.error || null;
-    const data = collectionData.response;
+    error = collectionData?.error || null;
+    const data = collectionData?.response || null;
 
-    if (!data) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <p className="text-center text-gray-600">Collection introuvable.</p>
-            </div>
-        );
-    }
     return (
         <CollectionLayoutClient error={error} data={data}>
             {children}

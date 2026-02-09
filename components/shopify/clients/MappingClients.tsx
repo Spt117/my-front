@@ -7,6 +7,8 @@ import ClientCompact from './ClientCompact';
 import { getClients } from './serverAction';
 import useClientsStore from './store';
 
+import { toast } from 'sonner';
+
 export default function MappingClients({ shopId, domain }: { shopId: string; domain: TDomainsShopify }) {
     const { clients, setClients, filterClients, setFilterClients, isLoading, setIsLoading } = useClientsStore();
     const { searchTerm, clientsSearch } = useShopifyStore();
@@ -17,8 +19,10 @@ export default function MappingClients({ shopId, domain }: { shopId: string; dom
             setIsLoading(true);
             try {
                 const data = await getClients(domain);
-                if (data && data.customers) {
-                    const clientsWithShop = data.customers.map((c: any) => ({ ...c, shop: domain }));
+                if (data.error) toast.error(data.error);
+                
+                if (data && data.response?.customers) {
+                    const clientsWithShop = data.response.customers.map((c: any) => ({ ...c, shop: domain }));
                     setClients(clientsWithShop);
                     if (!searchTerm) {
                         setFilterClients(clientsWithShop);
@@ -26,6 +30,7 @@ export default function MappingClients({ shopId, domain }: { shopId: string; dom
                 }
             } catch (error) {
                 console.error('Failed to fetch clients:', error);
+                toast.error('Erreur lors de la récupération des clients');
             } finally {
                 setIsLoading(false);
             }

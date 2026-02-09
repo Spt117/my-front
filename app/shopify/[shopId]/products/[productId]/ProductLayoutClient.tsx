@@ -45,10 +45,7 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
 
     // ✅ Initialisation initiale - une seule fois
     useEffect(() => {
-        if (error) {
-            toast.error(error);
-            return;
-        }
+        if (error) toast.error(error);
 
         // Initialisation groupée pour éviter les re-renders
         const initializeStores = () => {
@@ -64,7 +61,24 @@ export default function ProductLayoutClient({ children, product, tasks, boutique
             setProduct(null);
             setVariant(null);
         };
-    }, [product]); // Dépend uniquement de productId pour éviter les recharges inutiles
+    }, [product, error]); // Retiré le return prématuré pour permettre le rendu du fallback
+
+    if (!product && !error) {
+        return (
+            <div className="min-h-[60vh] flex items-center justify-center">
+                <p className="text-gray-500">Chargement du produit...</p>
+            </div>
+        );
+    }
+
+    if (!product && error) {
+        return (
+            <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+                <p className="text-xl text-red-600 font-semibold">{error}</p>
+                <button onClick={() => router.back()} className="text-blue-600 hover:underline">Retour</button>
+            </div>
+        );
+    }
 
 
     // ✅ Gestion des prix - optimisée

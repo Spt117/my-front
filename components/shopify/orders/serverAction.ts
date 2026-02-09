@@ -7,7 +7,7 @@ import { ProductInOrder } from "./store";
 export async function getOrders() {
     const url = `${pokeUriServer}/shopify/orders`;
     const response = await getServer(url);
-    if (!response || !response.response) return null;
+    if (!response || !response.response) return { orders: [], products: [], error: response?.error || "Erreur lors de la récupération des commandes" };
     const data: ShopifyOrder[] = response.response;
     const filterOrdersProductsUnfulfilled = data.map((order) => ({
         ...order,
@@ -49,16 +49,17 @@ export async function getOrders() {
         return acc;
     }, []);
 
-    return { orders: groupOrdersByCustomerEmail(filterOrdersProductsUnfulfilled), products: groupedProducts };
+    return { orders: groupOrdersByCustomerEmail(filterOrdersProductsUnfulfilled), products: groupedProducts, error: response?.error };
 }
 
 export async function getOrdersByShop(shopDomain: string) {
     const data = await getOrders();
-    if (!data) return null;
+    if (!data || data.error) return data;
 
     return {
         orders: data.orders.filter((order) => order.shop === shopDomain),
         products: data.products.filter((product) => product.shop === shopDomain),
+        error: data.error
     };
 }
 
