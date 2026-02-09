@@ -9,6 +9,7 @@ import { searchOrders } from "@/components/shopify/orders/serverAction";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ShopifyCustomer } from "@/library/shopify/clients";
 import { Plus, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -18,7 +19,8 @@ interface UnifiedSearchShopifyProps {
 }
 
 export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps) {
-    const { shopifyBoutique, searchTerm, setSearchTerm, loading, setLoading, setProductsSearch, setOrdersSearch, setClientsSearch, openDialog, isSearchOpen, setIsSearchOpen } = useShopifyStore();
+    const { shopifyBoutique, searchTerm, setSearchTerm, loading, setLoading, setProductsSearch, setOrdersSearch, setClientsSearch, openDialog, isSearchOpen, setIsSearchOpen } =
+        useShopifyStore();
 
     const pathname = usePathname();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -41,7 +43,7 @@ export default function UnifiedSearchShopify({ type }: UnifiedSearchShopifyProps
                 if (latestQueryRef.current === query) setProductsSearch(res);
             } else if (type === "clients") {
                 const res = await searchClients(shopifyBoutique.domain, query.trim());
-                const clientsWithShop = res.map((c: any) => ({ ...c, shop: shopifyBoutique.domain }));
+                const clientsWithShop = res.response.map((c: ShopifyCustomer) => ({ ...c, shop: shopifyBoutique.domain }));
                 if (latestQueryRef.current === query) setClientsSearch(clientsWithShop);
             } else if (type === "orders") {
                 const res = await searchOrders(shopifyBoutique.domain, query.trim());

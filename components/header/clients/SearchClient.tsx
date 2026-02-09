@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import { X } from 'lucide-react';
-import { usePathname } from 'next/navigation';
-import { useEffect, useRef } from 'react';
-import { searchClients } from '../../shopify/clients/serverAction';
-import useShopifyStore from '../../shopify/shopifyStore';
-import { Input } from '../../ui/input';
-import ListClients from './ListClients';
+import { ShopifyCustomer } from "@/library/shopify/clients";
+import { X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { searchClients } from "../../shopify/clients/serverAction";
+import useShopifyStore from "../../shopify/shopifyStore";
+import { Input } from "../../ui/input";
+import ListClients from "./ListClients";
 
 export default function SearchClient() {
     const { shopifyBoutique, searchTerm, setSearchTerm, clientsSearch, setClientsSearch, loading, setLoading } = useShopifyStore();
@@ -21,10 +22,10 @@ export default function SearchClient() {
 
         try {
             const res = await searchClients(shopifyBoutique.domain, query.trim());
-            const clientsWithShop = res.map((c: any) => ({ ...c, shop: shopifyBoutique.domain }));
+            const clientsWithShop = res.response.map((c: ShopifyCustomer) => ({ ...c, shop: shopifyBoutique.domain }));
             setClientsSearch(clientsWithShop);
         } catch (error) {
-            console.error('Erreur lors de la recherche des clients:', error);
+            console.error("Erreur lors de la recherche des clients:", error);
         } finally {
             setLoading(false);
         }
@@ -33,13 +34,13 @@ export default function SearchClient() {
     // Gestion des touches clavier
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                setSearchTerm('');
+            if (e.key === "Escape") {
+                setSearchTerm("");
                 setClientsSearch([]);
             }
         };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
     }, [setSearchTerm, setClientsSearch]);
 
     // Effet de debounce pour la recherche
@@ -83,7 +84,7 @@ export default function SearchClient() {
                         {searchTerm && !loading && (
                             <button
                                 type="button"
-                                onClick={() => setSearchTerm('')}
+                                onClick={() => setSearchTerm("")}
                                 className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
                             >
                                 <X size={16} />
@@ -97,7 +98,7 @@ export default function SearchClient() {
                         )}
                     </div>
                 </div>
-                {pathname.split('/').pop() !== 'clients' && <ListClients />}
+                {pathname.split("/").pop() !== "clients" && <ListClients />}
             </div>
         </div>
     );
