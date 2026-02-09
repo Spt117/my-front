@@ -38,7 +38,7 @@ export default function DraftProducts({ products }: { products: any[] }) {
             ) : (
                 <>
                     {products.map((product, index) => (
-                        <ProductList product={product} key={index} />
+                        <ProductList product={product} key={index} compact />
                     ))}
                     <Separator />
                 </>

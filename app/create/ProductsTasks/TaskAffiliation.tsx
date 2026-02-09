@@ -10,11 +10,12 @@ import { IconCategoryFilled } from "@tabler/icons-react";
 import { Archive, Globe, Package, Plus, SquarePlus, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { archiveTaskStatus, createCarte, registerShopifyPublication } from "../serverTasksAffiliation";
 import { useAffiliationTask } from "./ContextTaskAffiliation";
 import Inputs from "./Inputs";
+import IsMyBooster from "./IsMyBooster";
 
 const statusConfig: Record<string, { className: string; label: string }> = {
     pending: { className: "bg-amber-500/20 text-amber-200 border-2 border-amber-500/40 font-semibold", label: "En attente" },
@@ -82,15 +83,6 @@ export default function TaskAffiliation() {
     };
 
     const isMyBooster = task.brand === "my-booster";
-
-    useEffect(() => {
-        const asins = ["B0DFZ3F44H", "B0DF3P9F52"];
-        if (asins.includes(task.asin)) {
-            console.log(task);
-
-            console.log(isMyBooster);
-        }
-    }, [task]);
 
     const [showImageModal, setShowImageModal] = useState(false);
     useKeyboardShortcuts("Escape", () => setShowImageModal(false));
@@ -171,22 +163,7 @@ export default function TaskAffiliation() {
                 )}
 
                 {/* Liens marketplace/website pour my-booster */}
-                {isMyBooster && (
-                    <div className="px-4 pb-3">
-                        <div className="flex items-center gap-4 text-xs text-gray-400">
-                            <span className="flex items-center gap-1">
-                                <Globe className="w-3 h-3 text-blue-400" />
-                                <Link href={`https://${task.marketplace}/dp/${task.asin}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
-                                    {task.marketplace}
-                                </Link>
-                            </span>
-                            <span className="flex items-center gap-1">
-                                <Globe className="w-3 h-3 text-gray-500" />
-                                {task.website}
-                            </span>
-                        </div>
-                    </div>
-                )}
+                {isMyBooster && <IsMyBooster />}
 
                 {/* Actions */}
                 <div className="border-t border-white/5 px-4 py-3">

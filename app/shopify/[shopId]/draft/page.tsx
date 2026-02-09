@@ -1,15 +1,13 @@
 import { getServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 import { boutiqueFromId } from "@/params/paramsShopify";
-import { headers } from "next/headers";
+
 import DraftProducts from "./DraftProducts";
 
-export default async function Page() {
-    const headersList = await headers();
-    const pathname = headersList.get("x-pathname") || "/unknown";
-    const boutique = boutiqueFromId(Number(pathname.split("/")[2]));
+export default async function Page({ params }: { params: Promise<{ shopId: string }> }) {
+    const { shopId } = await params;
+    const boutique = boutiqueFromId(Number(shopId));
     const url = `${pokeUriServer}/shopify/draft-products?domain=${boutique?.domain}`;
-    console.log(url);
     const response = await getServer(url);
     const draftProducts = response.response.products;
 
