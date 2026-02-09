@@ -9,11 +9,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const { shopifyBoutique } = useShopifyStore();
 
-    useEventListener("products/update", () => {
+    useEventListener("products/update", (data) => {
+        console.log("data.domain");
+        console.log(data.domain);
+        console.log("shopifyBoutique.domain");
+        console.log(shopifyBoutique?.domain);
+
         if (shopifyBoutique?.domain) router.refresh();
     });
 
     useEventListener("products/create", (data) => {
+        console.log("data.domain");
+        console.log(data.domain);
+        console.log("shopifyBoutique.domain");
+        console.log(shopifyBoutique?.domain);
+
         if (data.domain === shopifyBoutique?.domain) router.refresh();
     });
 

@@ -56,8 +56,9 @@ export default function DraftProducts({ products, error }: { products: ProductGE
         const query = searchTerm.toLowerCase();
         return displayProducts.filter((product) => {
             const hasMatchTitle = product.title.toLowerCase().includes(query);
+            const hasMatchHandle = product.handle.toLowerCase().includes(query);
             const hasMatchSku = product.variants?.nodes?.some((v) => v.sku.toLowerCase().includes(query));
-            return hasMatchTitle || hasMatchSku;
+            return hasMatchTitle || hasMatchHandle || hasMatchSku;
         });
     }, [displayProducts, searchTerm]);
 
