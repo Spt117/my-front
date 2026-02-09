@@ -4,13 +4,15 @@ import { boutiqueFromId } from '@/params/paramsShopify';
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ shopId: string; clientId: string }> }) {
     const { shopId, clientId } = await params;
-    const boutique = boutiqueFromId(shopId);
-
-    if (!boutique) {
+    let boutique;
+    try {
+        boutique = boutiqueFromId(shopId);
+    } catch (error) {
         return <div className="p-8 text-center text-red-500 font-bold">Boutique introuvable</div>;
     }
 
-    const client = await getFullClient(boutique.domain, clientId);
+    const clientResponse = await getFullClient(boutique.domain, clientId);
+    const client = clientResponse.response;
 
     if (!client) {
         return (

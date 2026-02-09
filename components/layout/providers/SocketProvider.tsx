@@ -87,8 +87,21 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                             data: data.body,
                         });
                         break;
-                    case "products/create":
-                        if (shopifyBoutique?.domain !== data.domain) return;
+                    case "products/create": {
+                        const boutiquePc = boutiqueFromDomain(data.domain);
+                        const msgPc = (
+                            <p className="flex items-center gap-1 whitespace-nowrap">
+                                Nouveau produit créé sur {boutiquePc.vendor}
+                                <Image
+                                    src={boutiquePc.flag}
+                                    alt={boutiquePc.langue}
+                                    width={20}
+                                    height={20}
+                                    className="inline-block ml-1"
+                                />
+                            </p>
+                        );
+                        toast.success(msgPc);
                         emit("products/create", {
                             domain: data.domain,
                             sku: data.body.variants?.[0]?.sku,
@@ -96,6 +109,7 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                             data: data.body,
                         });
                         break;
+                    }
                     default:
                         toast.info(`Événement reçu : ${data.topic}`);
                         console.log(data);
