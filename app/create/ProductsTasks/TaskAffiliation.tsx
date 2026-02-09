@@ -10,7 +10,7 @@ import { IconCategoryFilled } from "@tabler/icons-react";
 import { Archive, Globe, Package, Plus, SquarePlus, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { archiveTaskStatus, createCarte, registerShopifyPublication } from "../serverTasksAffiliation";
 import { useAffiliationTask } from "./ContextTaskAffiliation";
@@ -81,7 +81,16 @@ export default function TaskAffiliation() {
         }
     };
 
-    const isMyBooster = task.seller === "My-Booster";
+    const isMyBooster = task.brand === "my-booster";
+
+    useEffect(() => {
+        const asins = ["B0DFZ3F44H", "B0DF3P9F52"];
+        if (asins.includes(task.asin)) {
+            console.log(task);
+
+            console.log(isMyBooster);
+        }
+    }, [task]);
 
     const [showImageModal, setShowImageModal] = useState(false);
     useKeyboardShortcuts("Escape", () => setShowImageModal(false));
@@ -94,7 +103,12 @@ export default function TaskAffiliation() {
                 {/* Header: image + infos */}
                 <div className="flex gap-4 p-4">
                     {/* Image */}
-                    <img src={task.image} alt={task.title} className="w-20 h-20 object-cover rounded-lg cursor-pointer shrink-0 border border-white/10 group-hover:scale-105 transition-transform duration-300" onClick={() => setShowImageModal(true)} />
+                    <img
+                        src={task.image}
+                        alt={task.title}
+                        className="w-20 h-20 object-cover rounded-lg cursor-pointer shrink-0 border border-white/10 group-hover:scale-105 transition-transform duration-300"
+                        onClick={() => setShowImageModal(true)}
+                    />
 
                     {/* Infos principales */}
                     <div className="flex-1 min-w-0 space-y-1.5">
@@ -120,7 +134,11 @@ export default function TaskAffiliation() {
                         <div className="flex items-center gap-2">
                             <IconCategoryFilled className="w-3.5 h-3.5 text-purple-400" />
                             <span className="text-xs text-gray-400">Type:</span>
-                            <Input className="h-6 text-xs bg-gray-800 border-gray-700 text-gray-100 flex-1" value={productType} onChange={(e) => setProductType(e.target.value as TPokemonProducts)} />
+                            <Input
+                                className="h-6 text-xs bg-gray-800 border-gray-700 text-gray-100 flex-1"
+                                value={productType}
+                                onChange={(e) => setProductType(e.target.value as TPokemonProducts)}
+                            />
                         </div>
 
                         <Inputs size={size} setSize={setSize} productType={productType} setNamePokemon={setNamePokemon} namePokemon={namePokemon} />
@@ -208,7 +226,10 @@ export default function TaskAffiliation() {
             {showImageModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowImageModal(false)}>
                     <div className="relative max-w-2xl w-full bg-gray-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => setShowImageModal(false)} className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/50 hover:bg-black/70 text-gray-300 hover:text-white transition-colors">
+                        <button
+                            onClick={() => setShowImageModal(false)}
+                            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/50 hover:bg-black/70 text-gray-300 hover:text-white transition-colors"
+                        >
                             <X className="w-5 h-5" />
                         </button>
                         <img src={task.image} alt={task.title} className="w-full h-auto object-cover" />
