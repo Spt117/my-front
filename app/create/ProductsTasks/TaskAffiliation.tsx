@@ -68,7 +68,7 @@ export default function TaskAffiliation() {
     const handleRegisterPublication = async () => {
         setLoading(true);
         try {
-            const res = await registerShopifyPublication(task.asin, task.marketplace, task.website as TPublicDomainsShopify);
+            const res = await registerShopifyPublication(task.asin, task.marketplace.toLowerCase(), task.website as TPublicDomainsShopify);
             if (res.error) toast.error(res.error);
             if (res.message) {
                 toast.success(res.message);
