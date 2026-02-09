@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { CardAction } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { pokemonProducts } from "@/params/paramsCreateAffiliation";
 import { boutiqueFromPublicDomain, TPublicDomainsShopify } from "@/params/paramsShopify";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { createProductTask } from "../serverTasksAffiliation";
 import useAffiliationStore from "../storeTasksAffiliation";
 import { ICreateAffiliationProduct } from "../util";
 import useCreateStore from "./storeCreate";
-import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 
 export default function AddProduct() {
     const { selectedNiche, selectedProduct, payloadPeluche, asin } = useCreateStore();
@@ -67,7 +67,7 @@ export default function AddProduct() {
                     Ajouter
                 </Button>
             )}
-            {loading && <Spinner size={24} className="mx-auto" />}
+            {loading && <Spinner size={24} className="mx-auto text-white" />}
         </CardAction>
     );
 }

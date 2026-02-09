@@ -192,7 +192,7 @@ export default function TaskAffiliation() {
                 <div className="border-t border-white/5 px-4 py-3">
                     {loading ? (
                         <div className="flex justify-center">
-                            <Spinner />
+                            <Spinner className="text-white" />
                         </div>
                     ) : isMyBooster ? (
                         <div className="flex items-center gap-2">
