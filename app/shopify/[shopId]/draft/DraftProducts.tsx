@@ -26,6 +26,8 @@ export default function DraftProducts({ products, error }: { products: ProductGE
     const [publishing, setPublishing] = useState(false);
     const { searchTerm, setSearchTerm } = useShopifyStore();
 
+    console.log("[DraftProducts] products prop:", products.length, "| displayProducts:", displayProducts.length, "| searchTerm:", searchTerm);
+
     // Effet pour synchroniser et fusionner les produits lors des rafraîchissements
     useEffect(() => {
         if (!products || products.length === 0) return;
