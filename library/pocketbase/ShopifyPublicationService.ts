@@ -10,6 +10,7 @@ export interface IShopifyPublicationRecord {
     marketplace: string;
     produit: ProductType;
     status: PublicationStatus;
+    error: string;
 }
 
 export interface IShopifyPublicationRecordFull extends IShopifyPublicationRecord, RecordModel {}
@@ -99,7 +100,11 @@ class ShopifyPublicationService {
     }
 
     async updateStatus(id: string, status: PublicationStatus): Promise<IShopifyPublicationRecordFull> {
-        return this.update(id, { status });
+        return this.update(id, { status, error: "" });
+    }
+
+    async updateStatusWithError(id: string, status: PublicationStatus, error: string): Promise<IShopifyPublicationRecordFull> {
+        return this.update(id, { status, error });
     }
 
     async delete(id: string): Promise<boolean> {

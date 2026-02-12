@@ -35,6 +35,7 @@ export async function registerShopifyPublication(asin: string, marketplace: stri
         shop: boutique.domain,
         produit: 'my-booster',
         status: 'pending',
+        error: '',
     });
     await tasksAffiliationController.archiveTask(asin, website);
     return { message: 'Publication enregistrée et tâche archivée avec succès' };
