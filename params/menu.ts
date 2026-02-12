@@ -9,6 +9,7 @@ export const menuItems: MenuProps[] = [
     { path: "/pokemon", label: "Pokémon" },
     { path: "/wordpress", label: "WordPress" },
     { path: "/server", label: "Serveur" },
+    { path: "/amazon", label: "Amazon" },
 ];
 
 export const menuShopify = (id?: number): MenuProps[] => {
