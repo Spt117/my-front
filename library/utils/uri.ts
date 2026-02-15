@@ -12,6 +12,8 @@ else if (!process.env.ENCRYPTION_KEY_AMAZON) throw new Error("ENCRYPTION_KEY_AMA
 else if (!process.env.POCKETBASE_URI) throw new Error("POCKETBASE_URI is not defined");
 else if (!process.env.POCKETBASE_PASSWORD) throw new Error("POCKETBASE_PASSWORD is not defined");
 else if (!process.env.KEEPA_KEY) throw new Error("KEEPA_KEY is not defined");
+else if (!process.env.NEXT_PUBLIC_SUPABASE_URL) throw new Error("NEXT_PUBLIC_SUPABASE_URL is not defined");
+else if (!process.env.SUPABASE_SECRET_KEY) throw new Error("SUPABASE_SECRET_KEY is not defined");
 else if (!process.env.POKE_API_URL) throw new Error("POKE_API_URL is not defined");
 else console.log("All environment variables are defined on " + process.env.NODE_ENV);
 
@@ -24,6 +26,9 @@ const uriServerAcces: string = process.env.URI_SERVER_ACCES;
 
 export const PB_URL: string = process.env.POCKETBASE_URI;
 export const PB_PASSWORD: string = process.env.POCKETBASE_PASSWORD;
+
+export const supabaseUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL;
+export const supabaseKey: string = process.env.SUPABASE_SECRET_KEY;
 
 const encryptedKeyAmazon: string = process.env.ENCRYPTION_KEY_AMAZON;
 const keepaKey: string = process.env.KEEPA_KEY;
