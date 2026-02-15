@@ -12,6 +12,7 @@ const categories = [
             { name: "x_products", label: "Produits", description: "Catalogue principal des produits", icon: <IconBuildingStore className="w-5 h-5" />, color: "bg-blue-500/10 text-blue-400 border-blue-500/30" },
             { name: "x_combos", label: "Combos", description: "Combinaisons de pièces", icon: <IconSword className="w-5 h-5" />, color: "bg-purple-500/10 text-purple-400 border-purple-500/30" },
             { name: "asins", label: "ASINs", description: "Liaisons Amazon et prix", icon: <IconDatabase className="w-5 h-5" />, color: "bg-amber-500/10 text-amber-400 border-amber-500/30" },
+            { name: "user_profiles", label: "Utilisateurs", description: "Gestion des comptes utilisateurs", icon: <IconShield className="w-5 h-5" />, color: "bg-rose-500/10 text-rose-400 border-rose-500/30" },
         ],
     },
     {

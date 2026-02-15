@@ -296,8 +296,17 @@ export default function BeycommunityTableEditor({ tableName, initialRows, initia
                                                                             <IconBrackets className="w-3 h-3" />
                                                                             {Array.isArray(value) ? `${value.length} items` : `${Object.keys(value).length} keys`}
                                                                         </div>
+                                                                    ) : isId ? (
+                                                                        <Link
+                                                                            href={`/beycommunity/tables/${tableName}/${value}`}
+                                                                            className="text-blue-400 hover:text-blue-300 font-mono text-[10px] underline decoration-blue-500/30 hover:decoration-blue-400 transition-all flex items-center gap-1 group/id"
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                        >
+                                                                            {String(value)}
+                                                                            <IconChevronRight className="w-2.5 h-2.5 opacity-0 group-hover/id:opacity-100 transition-opacity" />
+                                                                        </Link>
                                                                     ) : (
-                                                                        <span className={`text-sm truncate block ${isId ? "text-slate-400 font-mono text-[10px]" : "text-slate-100"}`}>{value === null ? <span className="text-slate-500">null</span> : String(value)}</span>
+                                                                        <span className="text-sm truncate block text-slate-100">{value === null ? <span className="text-slate-500">null</span> : String(value)}</span>
                                                                     )}
                                                                 </div>
                                                             </div>
