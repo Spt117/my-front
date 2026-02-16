@@ -1,4 +1,5 @@
-import { fetchTableData } from "../../../supabase/actions";
+import ErrorPage from "@/components/layout/ErrorPage";
+import { fetchTableData } from "../../supabase/actions";
 import BeycommunityTableEditor from "./BeycommunityTableEditor";
 
 type Props = {
@@ -7,11 +8,17 @@ type Props = {
 
 export default async function BeycommunityTablePage({ params }: Props) {
     const { table: tableName } = await params;
-    const { data, error } = await fetchTableData(tableName);
+
+    let data, error;
+    try {
+        ({ data, error } = await fetchTableData(tableName));
+    } catch (e) {
+        console.error("Erreur chargement table:", e);
+        return <ErrorPage message={`Impossible de charger la table "${tableName}". Vérifiez la connexion à Supabase.`} />;
+    }
 
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100">
-            {/* Animated background highlights */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[120px] animate-pulse" />
                 <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-600/5 rounded-full blur-[120px] animate-pulse delay-700" />

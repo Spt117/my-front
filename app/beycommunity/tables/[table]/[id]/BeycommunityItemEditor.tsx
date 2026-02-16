@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { ColumnInfo, updateTableRows } from "../../../../supabase/actions";
+import { ColumnInfo, updateTableRows } from "../../../supabase/actions";
 
 type Props = {
     tableName: string;

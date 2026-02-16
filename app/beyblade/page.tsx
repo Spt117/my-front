@@ -1,9 +1,16 @@
+import ErrorPage from "@/components/layout/ErrorPage";
 import { IconSword, IconTrendingUp } from "@tabler/icons-react";
 import { beybladeService } from "../beycommunity/supabase/beyblade-service";
 import { DevProductCreator } from "./components/DevProductCreator";
 
 export default async function BeybladePage() {
-    const products = await beybladeService.getFullList();
+    let products;
+    try {
+        products = await beybladeService.getFullList();
+    } catch (e) {
+        console.error("Erreur chargement produits Beyblade:", e);
+        return <ErrorPage message="Impossible de charger le catalogue Beyblade. Vérifiez la connexion à Supabase." />;
+    }
 
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100 p-8">

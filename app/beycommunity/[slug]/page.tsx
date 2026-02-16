@@ -1,3 +1,4 @@
+import ErrorPage from '@/components/layout/ErrorPage';
 import { CountryFlag } from '@/app/components/CountryFlag';
 import { AMAZON_MARKETPLACES, CountryCode } from '@/library/utils/amazon';
 import Link from 'next/link';
@@ -9,12 +10,18 @@ import { beybladeService } from '../supabase/beyblade-service';
 export default async function BeybladeProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
 
-    // Try to get by ID first
-    let product = await beybladeService.getOne(slug);
+    let product;
+    try {
+        // Try to get by ID first
+        product = await beybladeService.getOne(slug);
 
-    if (!product) {
-        // Fallback: get by slug if not found by ID
-        product = await beybladeService.getOneBySlug(slug);
+        if (!product) {
+            // Fallback: get by slug if not found by ID
+            product = await beybladeService.getOneBySlug(slug);
+        }
+    } catch (e) {
+        console.error("Erreur chargement produit Beyblade:", e);
+        return <ErrorPage message="Impossible de charger le produit. Vérifiez la connexion à Supabase." />;
     }
 
     if (!product) {

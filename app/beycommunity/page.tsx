@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/library/supabase/client";
 import { IconBolt, IconBuildingStore, IconDatabase, IconPackage, IconSettings, IconShield, IconSword, IconTools } from "@tabler/icons-react";
 import Link from "next/link";
 
@@ -51,7 +52,28 @@ const categories = [
     },
 ];
 
-export default function BeycommunityPage() {
+async function getTableCounts(): Promise<Record<string, number>> {
+    const allTableNames = categories.flatMap((c) => c.tables.map((t) => t.name));
+    const counts: Record<string, number> = {};
+
+    await Promise.all(
+        allTableNames.map(async (tableName) => {
+            const { count, error } = await supabase.from(tableName).select("*", { count: "exact", head: true });
+            counts[tableName] = error ? 0 : (count ?? 0);
+        })
+    );
+
+    return counts;
+}
+
+export default async function BeycommunityPage() {
+    let counts: Record<string, number> = {};
+    try {
+        counts = await getTableCounts();
+    } catch (e) {
+        console.error("Erreur chargement compteurs:", e);
+    }
+
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100 p-8">
             <div className="max-w-7xl mx-auto">
@@ -93,7 +115,10 @@ export default function BeycommunityPage() {
                                                 <CardTitle className="text-lg group-hover:text-blue-400 transition-colors text-white">{table.label}</CardTitle>
                                                 <CardDescription className="text-slate-400 text-xs">{table.description}</CardDescription>
                                             </CardHeader>
-                                            <CardContent className="text-right pb-4">
+                                            <CardContent className="flex items-center justify-between pb-4">
+                                                <span className="text-sm font-semibold text-slate-300">
+                                                    {counts[table.name] ?? 0} <span className="text-xs font-normal text-slate-500">éléments</span>
+                                                </span>
                                                 <span className="text-xs text-slate-500 group-hover:text-slate-300 transition-colors">Gérer →</span>
                                             </CardContent>
                                         </Card>

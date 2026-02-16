@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { ColumnInfo, deleteTableRow, fetchTableData, updateTableRows } from "../../../supabase/actions";
+import { ColumnInfo, deleteTableRow, fetchTableData, updateTableRows } from "../../supabase/actions";
 
 type TableRow = Record<string, unknown>;
 
