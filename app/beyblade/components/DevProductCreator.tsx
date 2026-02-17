@@ -9,7 +9,7 @@ import { AMAZON_MARKETPLACES, CountryCode } from "@/library/utils/amazon";
 
 const PRODUCT_TYPES = ["", "Starter", "Booster", "Triple Booster", "Customize Set", "Deck Set", "Random Booster", "Launcher", "Grip", "Battle Set", "Entry Set", "Stadium", "Accessory"];
 
-const RELEASE_TYPES = ["regular", "Corocoro", "Lottery", "Tournament", "Limited", "Collaboration"];
+const RELEASE_TYPES = ["Regular", "Corocoro", "Lottery", "Tournament", "Limited", "Collaboration"];
 
 const SERIES = ["Basic Line", "Unique Line", "Custom Line", "X Over Project"];
 
@@ -36,7 +36,7 @@ export function DevProductCreator() {
         slug: "",
         brand: "Takara Tomy",
         product: "",
-        releaseType: "regular",
+        releaseType: "Regular",
         series: "Basic Line",
     });
 
@@ -107,7 +107,7 @@ export function DevProductCreator() {
                     slug: "",
                     brand: "Takara Tomy",
                     product: "",
-                    releaseType: "regular",
+                    releaseType: "Regular",
                     series: "Basic Line",
                 });
                 setAsins([]);

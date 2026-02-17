@@ -8,6 +8,7 @@ export type BeybladeProductType =
     | 'Deck Set'
     | 'Random Booster'
     | 'Launcher'
+    | 'Grip'
     | 'Battle Set'
     | 'Entry Set'
     | 'Stadium'
@@ -16,26 +17,25 @@ export type BeybladeProductType =
 
 export type BeybladeBrand = 'Hasbro' | 'Takara Tomy';
 
-export type BeybladeReleaseType = 'regular' | 'Corocoro' | 'Lottery' | 'Tournament';
+export type BeybladeReleaseType = 'Regular' | 'Corocoro' | 'Lottery' | 'Tournament' | 'Limited' | 'Collaboration';
 
 export type BeybladeSeries = 'Basic Line' | 'Unique Line' | 'Custom Line' | 'X Over Project';
 
 export interface BeybladeProduct {
     id?: string;
-    product?: BeybladeProductType; // Select
-    title: string; // Text
-    sku: string; // Text
-    brand: BeybladeBrand; // Select
-    images?: { alt: string; url: string }[]; // Json (Array of {alt, url})
-    releaseDate?: string; // Date
-    releaseType: BeybladeReleaseType; // Select
-    series: BeybladeSeries; // Select
-    slug: string; // Text
-    marketplaces?: Partial<Record<CountryCode, MarketplaceData>>; // Json
-
-    // PocketBase System fields
-    collectionId?: string;
-    collectionName?: string;
-    created?: string;
-    updated?: string;
+    product?: BeybladeProductType;
+    title: string;
+    sku: string;
+    brand: BeybladeBrand;
+    images?: { alt: string; url: string }[];
+    releaseDate?: string;
+    releaseType: BeybladeReleaseType;
+    series: BeybladeSeries;
+    slug: string;
+    notes?: string;
+    // Supabase system fields
+    created_at?: string;
+    updated_at?: string;
+    // Legacy JSON column (not in x_products schema of beycommunity — kept for UI compatibility)
+    marketplaces?: Partial<Record<CountryCode, MarketplaceData>>;
 }

@@ -27,7 +27,7 @@ export async function updateBeybladeProduct(id: string, data: Partial<BeybladePr
 
 export async function createBeybladeProduct(data: Partial<BeybladeProduct>, asins?: AsinInput[]) {
     try {
-        const { id, created, updated, collectionId, collectionName, ...insertData } = data as any;
+        const { id, created_at, updated_at, ...insertData } = data as any;
 
         // S'assurer que les champs obligatoires sont présents
         if (!insertData.slug) {
