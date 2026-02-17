@@ -37,7 +37,7 @@ export async function createBeybladeProduct(data: Partial<BeybladeProduct>, asin
                 .replace(/[^\w-]+/g, "");
         }
 
-        const { data: newRecord, error } = await supabase.from("x_products").insert(insertData).select().single();
+        const { data: newRecord, error } = await supabase.from("x_products").insert({ id: crypto.randomUUID(), ...insertData }).select().single();
 
         if (error) throw error;
 
