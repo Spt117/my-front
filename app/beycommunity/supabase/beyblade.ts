@@ -24,7 +24,7 @@ export interface BeybladeProduct {
     id?: string;
     product?: BeybladeProductType; // Select
     title: string; // Text
-    productCode: string; // Text
+    sku: string; // Text
     brand: BeybladeBrand; // Select
     images?: { alt: string; url: string }[]; // Json (Array of {alt, url})
     releaseDate?: string; // Date

@@ -32,7 +32,7 @@ export function DevProductCreator() {
 
     const [form, setForm] = useState({
         title: "",
-        productCode: "",
+        sku: "",
         slug: "",
         brand: "Takara Tomy",
         product: "",
@@ -74,8 +74,8 @@ export function DevProductCreator() {
     };
 
     const handleCreate = () => {
-        if (!form.title || !form.productCode || !form.slug) {
-            setError("Titre, Code Produit et Slug sont requis");
+        if (!form.title || !form.sku || !form.slug) {
+            setError("Titre, SKU et Slug sont requis");
             toast.error("Veuillez remplir les champs obligatoires");
             return;
         }
@@ -103,7 +103,7 @@ export function DevProductCreator() {
                 toast.success("Produit créé avec succès !");
                 setForm({
                     title: "",
-                    productCode: "",
+                    sku: "",
                     slug: "",
                     brand: "Takara Tomy",
                     product: "",
@@ -159,14 +159,14 @@ export function DevProductCreator() {
                     />
                 </div>
 
-                {/* productCode */}
+                {/* SKU */}
                 <div className="space-y-2">
-                    <label className="text-[10px] font-black text-blue-400 uppercase tracking-widest pl-1">Code Produit (SKU)</label>
+                    <label className="text-[10px] font-black text-blue-400 uppercase tracking-widest pl-1">SKU</label>
                     <input
                         type="text"
                         placeholder="Ex: BX-01"
-                        value={form.productCode}
-                        onChange={(e) => setForm({ ...form, productCode: e.target.value })}
+                        value={form.sku}
+                        onChange={(e) => setForm({ ...form, sku: e.target.value })}
                         className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors font-mono placeholder:text-slate-600"
                     />
                 </div>

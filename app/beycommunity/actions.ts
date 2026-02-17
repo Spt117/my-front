@@ -59,7 +59,7 @@ export async function createBeybladeProduct(data: Partial<BeybladeProduct>, asin
 
         // Vérification et mise en file d'attente sur les boutiques beyblade (fire-and-forget)
         postServer(`${pokeUriServer}/shopify/queue-beyblade-product`, {
-            productCode: insertData.productCode,
+            productCode: insertData.sku,
             asins: asins?.map((a) => ({ marketplace: a.marketplace, asin: a.asin })) ?? [],
         }).then((result) => {
             if (result.error) console.error("Failed to queue beyblade product on shops:", result.error);

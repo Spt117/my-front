@@ -102,7 +102,7 @@ function ProductRow({
                     <div className="flex flex-wrap gap-2 text-xs">
                         <span className="px-1.5 py-0.5 bg-blue-500/10 text-blue-300 rounded border border-blue-500/20">{product.series}</span>
                         <span className="px-1.5 py-0.5 bg-purple-500/10 text-purple-300 rounded border border-purple-500/20">{product.brand}</span>
-                        <span className="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-300 rounded border border-emerald-500/20">{product.productCode}</span>
+                        <span className="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-300 rounded border border-emerald-500/20">{product.sku}</span>
                     </div>
                 </div>
 

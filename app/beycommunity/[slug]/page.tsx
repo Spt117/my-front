@@ -106,7 +106,7 @@ export default async function BeybladeProductPage({ params }: { params: Promise<
                             <div className="flex items-center gap-3 mb-2">
                                 <span className="text-blue-400 font-bold tracking-wider uppercase text-sm">{product.brand}</span>
                                 <span className="text-gray-600">•</span>
-                                <span className="text-emerald-400 font-mono text-sm">{product.productCode}</span>
+                                <span className="text-emerald-400 font-mono text-sm">{product.sku}</span>
                             </div>
                             <ProductTitle title={product.title} />
                             <div className="flex gap-4 text-sm text-gray-400">
