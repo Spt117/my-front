@@ -1,10 +1,11 @@
 "use client";
 
-import { IconLoader2, IconPackage, IconPlus, IconX } from "@tabler/icons-react";
+import { IconLoader2, IconPackage, IconPlus, IconTrash, IconX } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { createBeybladeProduct } from "../../beycommunity/actions";
+import { AMAZON_MARKETPLACES, CountryCode } from "@/library/utils/amazon";
 
 const PRODUCT_TYPES = ["", "Starter", "Booster", "Triple Booster", "Customize Set", "Deck Set", "Random Booster", "Launcher", "Grip", "Battle Set", "Entry Set", "Stadium", "Accessory"];
 
@@ -14,11 +15,20 @@ const SERIES = ["Basic Line", "Unique Line", "Custom Line", "X Over Project"];
 
 const BRANDS = ["Takara Tomy", "Hasbro"];
 
+const ALL_MARKETPLACES = Object.keys(AMAZON_MARKETPLACES) as CountryCode[];
+
+interface AsinRow {
+    marketplace: CountryCode;
+    asin: string;
+    price: string;
+}
+
 export function DevProductCreator() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [isOpen, setIsOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [asins, setAsins] = useState<AsinRow[]>([]);
 
     const [form, setForm] = useState({
         title: "",
@@ -55,6 +65,14 @@ export function DevProductCreator() {
         });
     };
 
+    const addAsin = () => setAsins([...asins, { marketplace: "US", asin: "", price: "" }]);
+
+    const removeAsin = (index: number) => setAsins(asins.filter((_, i) => i !== index));
+
+    const updateAsin = (index: number, field: keyof AsinRow, value: string) => {
+        setAsins(asins.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
+    };
+
     const handleCreate = () => {
         if (!form.title || !form.productCode || !form.slug) {
             setError("Titre, Code Produit et Slug sont requis");
@@ -62,9 +80,24 @@ export function DevProductCreator() {
             return;
         }
 
+        const invalidAsin = asins.find((a) => !a.asin.trim());
+        if (invalidAsin) {
+            setError("Tous les ASINs doivent être renseignés");
+            toast.error("Veuillez remplir tous les champs ASIN");
+            return;
+        }
+
         setError(null);
         startTransition(async () => {
-            const result = await createBeybladeProduct(form as any);
+            const asinPayload = asins
+                .filter((a) => a.asin.trim())
+                .map((a) => ({
+                    marketplace: a.marketplace,
+                    asin: a.asin.trim().toUpperCase(),
+                    price: a.price ? parseFloat(a.price) : 0,
+                }));
+
+            const result = await createBeybladeProduct(form as any, asinPayload);
 
             if (result.success) {
                 toast.success("Produit créé avec succès !");
@@ -77,6 +110,7 @@ export function DevProductCreator() {
                     releaseType: "regular",
                     series: "Basic Line",
                 });
+                setAsins([]);
                 setIsOpen(false);
                 router.refresh();
             } else {
@@ -200,6 +234,65 @@ export function DevProductCreator() {
                         ))}
                     </select>
                 </div>
+            </div>
+
+            {/* ASINs */}
+            <div className="mt-8">
+                <div className="flex items-center justify-between mb-3">
+                    <label className="text-[10px] font-black text-blue-400 uppercase tracking-widest pl-1">ASINs Amazon</label>
+                    <button
+                        type="button"
+                        onClick={addAsin}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
+                    >
+                        <IconPlus size={13} />
+                        Ajouter un ASIN
+                    </button>
+                </div>
+
+                {asins.length > 0 && (
+                    <div className="space-y-2">
+                        {asins.map((row, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                                <select
+                                    value={row.marketplace}
+                                    onChange={(e) => updateAsin(index, "marketplace", e.target.value)}
+                                    className="bg-slate-950/50 border border-slate-800 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors appearance-none cursor-pointer w-24 shrink-0"
+                                >
+                                    {ALL_MARKETPLACES.map((code) => (
+                                        <option key={code} value={code} className="bg-slate-900">
+                                            {code}
+                                        </option>
+                                    ))}
+                                </select>
+                                <input
+                                    type="text"
+                                    placeholder="ASIN (ex: B0CXXXXXXXXX)"
+                                    value={row.asin}
+                                    maxLength={10}
+                                    onChange={(e) => updateAsin(index, "asin", e.target.value)}
+                                    className="flex-1 bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-sm font-mono focus:outline-none focus:border-blue-500 transition-colors placeholder:text-slate-600"
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Prix"
+                                    value={row.price}
+                                    min={0}
+                                    step={0.01}
+                                    onChange={(e) => updateAsin(index, "price", e.target.value)}
+                                    className="w-28 shrink-0 bg-slate-950/50 border border-slate-800 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors placeholder:text-slate-600"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => removeAsin(index)}
+                                    className="p-2 hover:bg-rose-500/10 rounded-lg text-slate-500 hover:text-rose-400 transition-all cursor-pointer shrink-0"
+                                >
+                                    <IconTrash size={16} />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {error && <div className="mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold animate-in shake duration-300">{error}</div>}

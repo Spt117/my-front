@@ -1,7 +1,7 @@
 import { RecordModel } from "pocketbase";
 import { pocketBaseManager } from "./Manager";
 
-export type ProductType = "carte" | "my-booster";
+export type ProductType = "carte" | "my-booster" | "beyblade";
 export type PublicationStatus = "pending" | "processing" | "done" | "error";
 
 export interface IShopifyPublicationRecord {
