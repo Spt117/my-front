@@ -1,6 +1,6 @@
 "use client";
 
-import { IconLoader2, IconPackage, IconPlus, IconTrash, IconX } from "@tabler/icons-react";
+import { IconLoader2, IconPackage, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -26,7 +26,6 @@ interface AsinRow {
 export function DevProductCreator() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
-    const [isOpen, setIsOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [asins, setAsins] = useState<AsinRow[]>([]);
 
@@ -111,7 +110,6 @@ export function DevProductCreator() {
                     series: "Basic Line",
                 });
                 setAsins([]);
-                setIsOpen(false);
                 router.refresh();
             } else {
                 setError(result.error || "Erreur lors de la création");
@@ -120,30 +118,16 @@ export function DevProductCreator() {
         });
     };
 
-    if (!isOpen) {
-        return (
-            <button onClick={() => setIsOpen(true)} className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-900/40 active:scale-95 border border-blue-400/30 group cursor-pointer">
-                <IconPlus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
-                Créer un Produit
-            </button>
-        );
-    }
-
     return (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 mb-8 animate-in fade-in slide-in-from-top-4 duration-300 backdrop-blur-sm shadow-xl">
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center border border-blue-500/30 text-blue-400">
-                        <IconPackage size={22} />
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-black text-white uppercase tracking-tight italic">Nouveau Produit</h3>
-                        <p className="text-slate-400 text-xs">Ajouter une référence à Beyblade X</p>
-                    </div>
+        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 mb-8 backdrop-blur-sm shadow-xl">
+            <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center border border-blue-500/30 text-blue-400">
+                    <IconPackage size={22} />
                 </div>
-                <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-slate-800 rounded-lg text-slate-500 hover:text-white transition-all">
-                    <IconX size={20} />
-                </button>
+                <div>
+                    <h3 className="text-xl font-black text-white uppercase tracking-tight italic">Nouveau Produit</h3>
+                    <p className="text-slate-400 text-xs">Ajouter une référence à Beyblade X</p>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

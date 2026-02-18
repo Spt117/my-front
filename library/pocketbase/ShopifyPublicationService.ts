@@ -118,6 +118,20 @@ class ShopifyPublicationService {
         }
     }
 
+    async getByProduct(produit: ProductType): Promise<IShopifyPublicationRecordFull[]> {
+        await this.ensureConnection();
+        try {
+            const records = await this.collection.getFullList<IShopifyPublicationRecordFull>({
+                filter: `produit = "${produit}"`,
+                sort: "-created",
+            });
+            return records;
+        } catch (error) {
+            console.error(`Erreur recuperation taches pour produit "${produit}":`, error);
+            throw error;
+        }
+    }
+
     async exists(asin: string, shop: string, marketplace: string): Promise<boolean> {
         await this.ensureConnection();
         try {

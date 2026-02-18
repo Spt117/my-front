@@ -16,7 +16,11 @@
       "Bash(find:*)",
       "Bash(node -e:*)",
       "Bash(curl:*)",
-      "Bash(printf:*)"
+      "Bash(printf:*)",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__list_projects",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__apply_migration"
     ]
   }
 }

@@ -2,6 +2,7 @@ import ErrorPage from "@/components/layout/ErrorPage";
 import { IconSword, IconTrendingUp } from "@tabler/icons-react";
 import { beybladeService } from "../beycommunity/supabase/beyblade-service";
 import { DevProductCreator } from "./components/DevProductCreator";
+import { ShopifyPublicationsList } from "./components/ShopifyPublicationsList";
 
 export default async function BeybladePage() {
     let products;
@@ -42,6 +43,11 @@ export default async function BeybladePage() {
                 {/* Section Création */}
                 <div className="mb-12">
                     <DevProductCreator />
+                </div>
+
+                {/* Publications Shopify */}
+                <div className="mb-12">
+                    <ShopifyPublicationsList />
                 </div>
 
                 {/* Liste des Produits */}

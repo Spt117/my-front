@@ -7,11 +7,26 @@ import { postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 import { BeybladeProduct } from "./supabase/beyblade";
 import { beybladeService } from "./supabase/beyblade-service";
+import { shopifyPublicationService, IShopifyPublicationRecordFull } from "@/library/pocketbase/ShopifyPublicationService";
 
 interface AsinInput {
     marketplace: CountryCode;
     asin: string;
     price: number;
+}
+
+export async function getBeybladePublications(): Promise<IShopifyPublicationRecordFull[]> {
+    try {
+        const all = await shopifyPublicationService.getAll();
+        if (all.length > 0) {
+            console.log("PB shopify_publications fields:", Object.keys(all[0]));
+            console.log("PB sample record:", JSON.stringify(all[0], null, 2));
+        }
+        return all.filter((p) => p.produit === "beyblade");
+    } catch (error) {
+        console.error("Failed to fetch beyblade publications:", error);
+        return [];
+    }
 }
 
 export async function updateBeybladeProduct(id: string, data: Partial<BeybladeProduct>) {
