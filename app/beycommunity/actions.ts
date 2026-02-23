@@ -29,6 +29,12 @@ export async function getBeybladePublications(): Promise<IShopifyPublicationReco
     }
 }
 
+export async function checkSkuExists(sku: string): Promise<boolean> {
+    const { data, error } = await supabase.from("x_products").select("id").eq("sku", sku.trim()).maybeSingle();
+    if (error) return false;
+    return !!data;
+}
+
 export async function updateBeybladeProduct(id: string, data: Partial<BeybladeProduct>) {
     try {
         await beybladeService.update(id, data);

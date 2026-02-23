@@ -1,10 +1,10 @@
 "use client";
 
-import { IconLoader2, IconPackage, IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconCheck, IconLoader2, IconPackage, IconPlus, IconTrash, IconX } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { createBeybladeProduct } from "../../beycommunity/actions";
+import { checkSkuExists, createBeybladeProduct } from "../../beycommunity/actions";
 import { AMAZON_MARKETPLACES, CountryCode } from "@/library/utils/amazon";
 
 const PRODUCT_TYPES = ["", "Starter", "Booster", "Triple Booster", "Customize Set", "Deck Set", "Random Booster", "Launcher", "Grip", "Battle Set", "Entry Set", "Stadium", "Accessory"];
@@ -23,11 +23,15 @@ interface AsinRow {
     price: string;
 }
 
+type SkuStatus = "idle" | "checking" | "available" | "exists";
+
 export function DevProductCreator() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
     const [asins, setAsins] = useState<AsinRow[]>([]);
+    const [skuStatus, setSkuStatus] = useState<SkuStatus>("idle");
+    const skuDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const [form, setForm] = useState({
         title: "",
@@ -38,6 +42,26 @@ export function DevProductCreator() {
         releaseType: "Regular",
         series: "Basic Line",
     });
+
+    useEffect(() => {
+        if (skuDebounceRef.current) clearTimeout(skuDebounceRef.current);
+
+        const sku = form.sku.trim();
+        if (!sku) {
+            setSkuStatus("idle");
+            return;
+        }
+
+        setSkuStatus("checking");
+        skuDebounceRef.current = setTimeout(async () => {
+            const exists = await checkSkuExists(sku);
+            setSkuStatus(exists ? "exists" : "available");
+        }, 500);
+
+        return () => {
+            if (skuDebounceRef.current) clearTimeout(skuDebounceRef.current);
+        };
+    }, [form.sku]);
 
     // Génère automatiquement le slug à partir du type de produit + titre
     const generateSlug = (productType: string, title: string) => {
@@ -72,10 +96,18 @@ export function DevProductCreator() {
         setAsins(asins.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
     };
 
+    const isFormValid = !!form.title.trim() && !!form.sku.trim() && !!form.slug.trim() && skuStatus === "available";
+
     const handleCreate = () => {
         if (!form.title || !form.sku || !form.slug) {
             setError("Titre, SKU et Slug sont requis");
             toast.error("Veuillez remplir les champs obligatoires");
+            return;
+        }
+
+        if (skuStatus === "exists") {
+            setError("Ce SKU existe déjà dans la base de données");
+            toast.error("SKU déjà utilisé");
             return;
         }
 
@@ -110,6 +142,7 @@ export function DevProductCreator() {
                     series: "Basic Line",
                 });
                 setAsins([]);
+                setSkuStatus("idle");
                 router.refresh();
             } else {
                 setError(result.error || "Erreur lors de la création");
@@ -146,13 +179,28 @@ export function DevProductCreator() {
                 {/* SKU */}
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-blue-400 uppercase tracking-widest pl-1">SKU</label>
-                    <input
-                        type="text"
-                        placeholder="Ex: BX-01"
-                        value={form.sku}
-                        onChange={(e) => setForm({ ...form, sku: e.target.value })}
-                        className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors font-mono placeholder:text-slate-600"
-                    />
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Ex: BX-01"
+                            value={form.sku}
+                            onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                            className={`w-full bg-slate-950/50 border rounded-xl px-4 py-3 pr-10 text-white focus:outline-none transition-colors font-mono placeholder:text-slate-600 ${
+                                skuStatus === "exists"
+                                    ? "border-rose-500 focus:border-rose-500"
+                                    : skuStatus === "available"
+                                      ? "border-emerald-500 focus:border-emerald-500"
+                                      : "border-slate-800 focus:border-blue-500"
+                            }`}
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {skuStatus === "checking" && <IconLoader2 size={16} className="animate-spin text-slate-400" />}
+                            {skuStatus === "available" && <IconCheck size={16} className="text-emerald-400" />}
+                            {skuStatus === "exists" && <IconX size={16} className="text-rose-400" />}
+                        </div>
+                    </div>
+                    {skuStatus === "exists" && <p className="text-[10px] font-bold text-rose-400 pl-1">Ce SKU existe déjà dans la base de données</p>}
+                    {skuStatus === "available" && <p className="text-[10px] font-bold text-emerald-400 pl-1">SKU disponible</p>}
                 </div>
 
                 {/* Slug */}
@@ -284,7 +332,7 @@ export function DevProductCreator() {
             <div className="mt-8 flex justify-end">
                 <button
                     onClick={handleCreate}
-                    disabled={isPending}
+                    disabled={isPending || !isFormValid}
                     className="flex items-center gap-2 px-8 py-3 bg-white text-black font-black uppercase tracking-tighter rounded-xl hover:bg-blue-600 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer group shadow-lg shadow-white/5 active:scale-95"
                 >
                     {isPending ? <IconLoader2 size={18} className="animate-spin" /> : <IconPlus size={18} className="group-hover:rotate-90 transition-transform duration-300" />}
