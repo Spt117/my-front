@@ -13,7 +13,9 @@ export interface IShopifyPublicationRecord {
     sku: string;
 }
 
-export interface IShopifyPublicationRecordFull extends IShopifyPublicationRecord {}
+export interface IShopifyPublicationRecordFull extends IShopifyPublicationRecord {
+    id: string;
+}
 
 class ShopifyPublicationService {
     private readonly collectionName = "shopify_publications";
