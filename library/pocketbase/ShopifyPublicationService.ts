@@ -1,4 +1,3 @@
-import { RecordModel } from "pocketbase";
 import { pocketBaseManager } from "./Manager";
 
 export type ProductType = "carte" | "my-booster" | "beyblade";
@@ -11,9 +10,10 @@ export interface IShopifyPublicationRecord {
     produit: ProductType;
     status: PublicationStatus;
     error: string;
+    sku: string;
 }
 
-export interface IShopifyPublicationRecordFull extends IShopifyPublicationRecord, RecordModel {}
+export interface IShopifyPublicationRecordFull extends IShopifyPublicationRecord {}
 
 class ShopifyPublicationService {
     private readonly collectionName = "shopify_publications";
@@ -135,9 +135,7 @@ class ShopifyPublicationService {
     async exists(asin: string, shop: string, marketplace: string): Promise<boolean> {
         await this.ensureConnection();
         try {
-            await this.collection.getFirstListItem<IShopifyPublicationRecordFull>(
-                `asin = "${asin}" && shop = "${shop}" && marketplace = "${marketplace}"`
-            );
+            await this.collection.getFirstListItem<IShopifyPublicationRecordFull>(`asin = "${asin}" && shop = "${shop}" && marketplace = "${marketplace}"`);
             return true;
         } catch {
             return false;

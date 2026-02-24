@@ -1,9 +1,9 @@
 "use client";
 
-import { IconShoppingCart, IconClock, IconLoader2, IconCheck, IconAlertTriangle } from "@tabler/icons-react";
+import { IconShoppingCart, IconClock, IconLoader2, IconCheck, IconAlertTriangle, IconDatabase, IconDatabaseOff } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import { IShopifyPublicationRecordFull, PublicationStatus } from "@/library/pocketbase/ShopifyPublicationService";
-import { getBeybladePublications } from "@/app/beycommunity/actions";
+import { PublicationStatus } from "@/library/pocketbase/ShopifyPublicationService";
+import { getBeybladePublications, ShopifyPublicationWithContent } from "@/app/beycommunity/actions";
 
 const STATUS_CONFIG: Record<PublicationStatus, { label: string; color: string; icon: React.ReactNode }> = {
     pending: { label: "En attente", color: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20", icon: <IconClock size={14} /> },
@@ -13,7 +13,7 @@ const STATUS_CONFIG: Record<PublicationStatus, { label: string; color: string; i
 };
 
 export function ShopifyPublicationsList() {
-    const [publications, setPublications] = useState<IShopifyPublicationRecordFull[]>([]);
+    const [publications, setPublications] = useState<ShopifyPublicationWithContent[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -67,9 +67,7 @@ export function ShopifyPublicationsList() {
                         <p className="text-slate-400 text-xs">File d'attente des publications Beyblade</p>
                     </div>
                 </div>
-                <span className="px-3 py-1 bg-slate-800 border border-slate-700 rounded-lg text-xs font-bold text-slate-300">
-                    {publications.length}
-                </span>
+                <span className="px-3 py-1 bg-slate-800 border border-slate-700 rounded-lg text-xs font-bold text-slate-300">{publications.length}</span>
             </div>
 
             <div className="overflow-x-auto">
@@ -81,13 +79,14 @@ export function ShopifyPublicationsList() {
                             <th className="pb-3">Shop</th>
                             <th className="pb-3">Statut</th>
                             <th className="pb-3">Erreur</th>
+                            <th className="pb-3">Contenu</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/50">
-                        {publications.map((pub) => {
+                        {publications.map((pub, index) => {
                             const status = STATUS_CONFIG[pub.status];
                             return (
-                                <tr key={pub.id} className="hover:bg-slate-800/30 transition-colors">
+                                <tr key={index} className="hover:bg-slate-800/30 transition-colors">
                                     <td className="py-3 pl-1 font-mono text-white">{pub.asin}</td>
                                     <td className="py-3 text-slate-300 uppercase">{pub.marketplace}</td>
                                     <td className="py-3 text-slate-400 truncate max-w-[200px]">{pub.shop}</td>
@@ -98,6 +97,19 @@ export function ShopifyPublicationsList() {
                                         </span>
                                     </td>
                                     <td className="py-3 text-rose-400/70 text-xs truncate max-w-[250px]">{pub.error || "—"}</td>
+                                    <td className="py-3">
+                                        {pub.hasContent ? (
+                                            <span className="inline-flex items-center gap-1 text-emerald-400">
+                                                <IconDatabase size={14} />
+                                                <span className="text-xs font-bold">Oui</span>
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 text-slate-500">
+                                                <IconDatabaseOff size={14} />
+                                                <span className="text-xs">Non</span>
+                                            </span>
+                                        )}
+                                    </td>
                                 </tr>
                             );
                         })}

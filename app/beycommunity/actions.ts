@@ -15,14 +15,34 @@ interface AsinInput {
     price: number;
 }
 
-export async function getBeybladePublications(): Promise<IShopifyPublicationRecordFull[]> {
+export type ShopifyPublicationWithContent = IShopifyPublicationRecordFull & { hasContent: boolean };
+
+export async function getBeybladePublications(): Promise<ShopifyPublicationWithContent[]> {
     try {
         const all = await shopifyPublicationService.getAll();
-        if (all.length > 0) {
-            console.log("PB shopify_publications fields:", Object.keys(all[0]));
-            console.log("PB sample record:", JSON.stringify(all[0], null, 2));
+        const beyblade = all.filter((p) => p.produit === "beyblade");
+
+        if (beyblade.length === 0) return [];
+
+        // Vérifier quels SKUs ont du contenu dans product_content
+        const uniqueSkus = [...new Set(beyblade.map((p) => p.sku).filter(Boolean))];
+        const skusWithContent = new Set<string>();
+
+        if (uniqueSkus.length > 0) {
+            const { data: contentRows } = await supabase
+                .from("product_content")
+                .select("product_code")
+                .in("product_code", uniqueSkus);
+
+            for (const row of contentRows || []) {
+                if (row.product_code) skusWithContent.add(row.product_code);
+            }
         }
-        return all.filter((p) => p.produit === "beyblade");
+
+        return beyblade.map((pub) => ({
+            ...pub,
+            hasContent: skusWithContent.has(pub.sku),
+        }));
     } catch (error) {
         console.error("Failed to fetch beyblade publications:", error);
         return [];
