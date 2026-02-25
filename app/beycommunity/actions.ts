@@ -175,6 +175,46 @@ export async function getBeybladePublications(): Promise<ShopifyPublicationWithC
     }
 }
 
+export async function updateAsinPrice(asinId: number, price: number): Promise<{ success: boolean; error?: string }> {
+    try {
+        const { error } = await supabase
+            .from("asins")
+            .update({ price, updated_at: new Date().toISOString() })
+            .eq("id", asinId);
+        if (error) throw error;
+
+        // Récupérer le slug du produit pour revalider la page beycommunity.com
+        const { data: asinRow } = await supabase
+            .from("asins")
+            .select("product_id")
+            .eq("id", asinId)
+            .single();
+
+        if (asinRow?.product_id) {
+            const { data: product } = await supabase
+                .from("x_products")
+                .select("slug")
+                .eq("id", asinRow.product_id)
+                .single();
+
+            if (product?.slug) {
+                const beycommunityUrl = process.env.BEYCOMMUNITY_URL ?? "https://beycommunity.com";
+                const token = process.env.BEYCOMMUNITY_REVALIDATE_TOKEN ?? "";
+                await fetch(`${beycommunityUrl}/api/revalidate?secret=${token}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ table: "asins", slug: product.slug }),
+                }).catch((err) => console.error("Failed to revalidate beycommunity:", err));
+            }
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to update ASIN price:", error);
+        return { success: false, error: JSON.stringify(error) };
+    }
+}
+
 export async function checkSkuExists(sku: string): Promise<boolean> {
     const { data, error } = await supabase.from("x_products").select("id").eq("sku", sku.trim()).maybeSingle();
     if (error) return false;

@@ -1,6 +1,6 @@
 "use client";
 
-import { createBeybladeOnShop, getAmazonAffiliationPrice, getBeybladePublications, AsinRecord, ShopifyPublicationWithContent } from "@/app/beycommunity/actions";
+import { createBeybladeOnShop, getAmazonAffiliationPrice, getBeybladePublications, updateAsinPrice, AsinRecord, ShopifyPublicationWithContent } from "@/app/beycommunity/actions";
 import { boutiques } from "@/params/paramsShopify";
 import { PublicationStatus } from "@/library/pocketbase/ShopifyPublicationService";
 import { IconAlertTriangle, IconBrandAmazon, IconCheck, IconClock, IconDatabase, IconDatabaseOff, IconLoader2, IconPlus, IconShoppingCart, IconX } from "@tabler/icons-react";
@@ -140,6 +140,7 @@ export function ShopifyPublicationsList() {
 
         if (result.price !== null) {
             setPrices((prev) => ({ ...prev, [pub.id]: result.price!.toFixed(2) }));
+            updateAsinPrice(matchedAsin.id, result.price);
         } else {
             setAffiliationErrors((prev) => ({ ...prev, [pub.id]: result.error ?? "Prix indisponible" }));
             setAffiliations((prev) => ({ ...prev, [pub.id]: false }));
@@ -226,6 +227,7 @@ export function ShopifyPublicationsList() {
                     <thead>
                         <tr className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
                             <th className="pb-3 pl-1">ASINs</th>
+                            <th className="pb-3">SKU</th>
                             <th className="pb-3">Shop</th>
                             <th className="pb-3">Statut</th>
                             <th className="pb-3">Erreur</th>
@@ -267,6 +269,7 @@ export function ShopifyPublicationsList() {
                                             return <span className="text-slate-600 text-xs">—</span>;
                                         })()}
                                     </td>
+                                    <td className="py-3 font-mono text-slate-300 text-xs">{pub.sku || "—"}</td>
                                     <td className="py-3 text-slate-400 truncate max-w-[200px]">{pub.shop}</td>
                                     <td className="py-3">
                                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-bold ${status.color}`}>
