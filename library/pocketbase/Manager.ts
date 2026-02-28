@@ -8,6 +8,7 @@ class PocketBaseManager {
 
     private constructor(url: string = PB_URL) {
         this._pb = new PocketBase(url);
+        this._pb.autoCancellation(false);
     }
 
     static get instance(): PocketBaseManager {

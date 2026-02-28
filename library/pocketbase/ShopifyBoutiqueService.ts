@@ -63,7 +63,7 @@ export const shopifyBoutiqueService = new ShopifyBoutiqueService();
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-const languesTraductions = ['français', 'anglais', 'espagnol', 'allemand'] as const;
+const languesTraductions = ["français", "anglais", "espagnol", "allemand"] as const;
 export type TLangueTraduction = (typeof languesTraductions)[number];
 
 export interface IShopifyBase {
@@ -79,9 +79,9 @@ export interface IShopifyBase {
     id: number;
 }
 
-export const apiVersion = '2024-01';
+export const apiVersion = "2024-01";
 
-const paramsDataShop = ['tags', 'productTypes', 'collections', 'salesChannels', 'productsMissingChannels', 'collectionGid'] as const;
+const paramsDataShop = ["tags", "productTypes", "collections", "salesChannels", "productsMissingChannels", "collectionGid"] as const;
 export type TParamsDataShop = (typeof paramsDataShop)[number];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -107,6 +107,7 @@ export async function getBoutiques(): Promise<IShopifyBase[]> {
 }
 
 export async function boutiqueFromId(id: number | string): Promise<IShopifyBase> {
+    console.log("id", id);
     const record = await shopifyBoutiqueService.getByShopId(Number(id));
     if (!record) throw new Error(`Boutique non trouvée pour l'id: ${id}`);
     return toBoutiqueBase(record);
@@ -134,5 +135,5 @@ export async function boutiqueFromLocation(locationHome: number): Promise<IShopi
 
 export async function getDomainsBeyblade(): Promise<string[]> {
     const records = await shopifyBoutiqueService.getAll();
-    return records.filter((r) => r.vendor.includes('Beyblade')).map((r) => r.domain);
+    return records.filter((r) => r.vendor.includes("Beyblade")).map((r) => r.domain);
 }
