@@ -1,24 +1,25 @@
-'use client';
-import { updateCanauxVente, updateProduct } from '@/app/shopify/[shopId]/products/[productId]/serverAction';
-import { ProductGET } from '@/library/types/graph';
-import { ExternalLink, Eye, Loader2, Zap } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import useShopifyStore from '../../shopify/shopifyStore';
+"use client";
+import { deleteMetafield, updateCanauxVente, updateProduct } from "@/app/shopify/[shopId]/products/[productId]/serverAction";
+import { ProductGET } from "@/library/types/graph";
+import { ExternalLink, Eye, Loader2, X, Zap } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import useShopifyStore from "../../shopify/shopifyStore";
 
 export default function ProductList({ product, compact }: { product: ProductGET; compact?: boolean }) {
     const { shopifyBoutique, setIsSearchOpen, setProduct, canauxBoutique } = useShopifyStore();
     const [isHovered, setIsHovered] = useState(false);
     const [publishing, setPublishing] = useState(false);
+    const [deletingPreco, setDeletingPreco] = useState(false);
     const router = useRouter();
 
     // Return conditionnel APRÈS tous les hooks
     if (!shopifyBoutique) return null;
 
-    const id = product.id.split('/').pop();
+    const id = product.id.split("/").pop();
     const url = `/shopify/${shopifyBoutique.id}/products/${id}`;
     const productUrl = `https://${shopifyBoutique.publicDomain}/products/${product.handle}`;
     const adminUrl = `https://${shopifyBoutique.domain}/admin/products/${id}`;
@@ -26,7 +27,7 @@ export default function ProductList({ product, compact }: { product: ProductGET;
     const handleExternalClick = (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
-        window.open(compact ? adminUrl : productUrl, '_blank', 'noopener,noreferrer');
+        window.open(compact ? adminUrl : productUrl, "_blank", "noopener,noreferrer");
     };
 
     const handleQuickPublish = async (e: React.MouseEvent) => {
@@ -34,7 +35,7 @@ export default function ProductList({ product, compact }: { product: ProductGET;
         e.stopPropagation();
         setPublishing(true);
         try {
-            const res = await updateProduct(shopifyBoutique.domain as string, product.id, 'Statut', 'ACTIVE');
+            const res = await updateProduct(shopifyBoutique.domain as string, product.id, "Statut", "ACTIVE");
             if (res.error) toast.error(res.error);
             if (res.message) toast.success(res.message);
 
@@ -46,13 +47,32 @@ export default function ProductList({ product, compact }: { product: ProductGET;
             router.refresh();
         } catch (err) {
             console.error(err);
-            toast.error('Erreur lors de la publication rapide');
+            toast.error("Erreur lors de la publication rapide");
         } finally {
             setPublishing(false);
         }
     };
 
     const canaux = product.resourcePublicationsV2.nodes.length;
+    const precommandeMeta = product.metafields?.nodes.find((mf) => mf.key === "precommande");
+
+    const handleDeletePrecommande = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDeletingPreco(true);
+        try {
+            const res = await deleteMetafield(shopifyBoutique.domain as string, product.id, "precommande");
+            if (res.error) toast.error(res.error);
+            if (res.message) {
+                toast.success("Date de précommande supprimée");
+                router.refresh();
+            }
+        } catch (error) {
+            toast.error("Erreur lors de la suppression de la date de précommande.");
+        } finally {
+            setDeletingPreco(false);
+        }
+    };
 
     return (
         <Link
@@ -62,54 +82,46 @@ export default function ProductList({ product, compact }: { product: ProductGET;
                 setProduct(null); // Vide le produit actuel immédiatement
             }}
             className="flex items-center hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm pr-2 relative cursor-pointer"
-
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             {/* Bouton de lien externe */}
-            <div
-                onClick={handleExternalClick}
-                className="p-1 hover:bg-gray-200 rounded-md absolute right-3 z-10 cursor-pointer"
-                title={compact ? "Ouvrir dans l'admin Shopify" : "Afficher sur votre boutique"}
-            >
-                <span className="text-slate-400 hover:text-slate-600 transition-colors">
-                    {compact
-                        ? <ExternalLink size={18} color={isHovered ? 'currentColor' : 'transparent'} />
-                        : <Eye size={20} color={isHovered ? 'currentColor' : 'transparent'} />
-                    }
-                </span>
+            <div onClick={handleExternalClick} className="p-1 hover:bg-gray-200 rounded-md absolute right-3 z-10 cursor-pointer" title={compact ? "Ouvrir dans l'admin Shopify" : "Afficher sur votre boutique"}>
+                <span className="text-slate-400 hover:text-slate-600 transition-colors">{compact ? <ExternalLink size={18} color={isHovered ? "currentColor" : "transparent"} /> : <Eye size={20} color={isHovered ? "currentColor" : "transparent"} />}</span>
             </div>
 
             {/* Contenu du produit */}
             <div className="w-full flex items-center py-3 px-4 justify-start gap-3">
                 <div className="relative w-12 h-12 flex-shrink-0">
-                    <Image
-                        src={product.media?.nodes[0]?.image?.url || '/no_image.png'}
-                        alt={product.title}
-                        fill
-                        className="object-cover rounded-md"
-                        sizes="48px"
-                        priority={false}
-                    />
+                    <Image src={product.media?.nodes[0]?.image?.url || "/no_image.png"} alt={product.title} fill className="object-cover rounded-md" sizes="48px" priority={false} />
                 </div>
-                <h3 className={`${compact ? 'flex-1' : 'w-1/5'} text-sm font-medium text-foreground line-clamp-1`}>{product.title}</h3>
-                {compact && (
-                    <span className="text-xs text-gray-400 truncate max-w-[250px]">
-                        /{product.handle}
-                    </span>
-                )}
+                <h3 className={`${compact ? "flex-1" : "w-1/5"} text-sm font-medium text-foreground line-clamp-1`}>{product.title}</h3>
+                {compact && <span className="text-xs text-gray-400 truncate max-w-[250px]">/{product.handle}</span>}
                 {!compact && <div className="w-[10%] text-sm text-primary">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>}
                 {!compact && <div className="w-[8%] text-sm text-primary">Stock: {product.variants?.nodes[0]?.inventoryQuantity}</div>}
                 {!compact && (
-                    <div className="w-[12%] text-sm text-gray-500 font-mono truncate" title={product.variants?.nodes[0]?.sku || ''}>
-                        {product.variants?.nodes[0]?.sku || '-'}
+                    <div className="w-[12%] text-sm text-gray-500 font-mono truncate" title={product.variants?.nodes[0]?.sku || ""}>
+                        {product.variants?.nodes[0]?.sku || "-"}
                     </div>
                 )}
                 {!compact && <div className="w-[10%] text-sm text-primary">{`${product.productType} `}</div>}
                 {!compact && <div className="w-[8%] text-sm text-primary">{`${product.status} `}</div>}
                 {!compact && (
                     <div className="w-[12%] text-sm text-primary">
-                        Publié sur {canaux} {canaux > 1 ? 'canaux' : 'canal'}
+                        Publié sur {canaux} {canaux > 1 ? "canaux" : "canal"}
+                    </div>
+                )}
+                {!compact && (
+                    <div className="w-[10%] text-sm text-orange-600 flex items-center pr-10 group/preco">
+                        {precommandeMeta?.value && (
+                            <>
+                                <span className="truncate">{new Date(precommandeMeta.value).toLocaleDateString("fr-FR")}</span>
+                                <button onClick={handleDeletePrecommande} disabled={deletingPreco} className="opacity-0 group-hover/preco:opacity-100 hover:text-red-600 p-1 ml-1 cursor-pointer" title="Supprimer la précommande">
+                                    {" "}
+                                    {deletingPreco ? <Loader2 size={14} className="animate-spin" /> : <X size={14} />}
+                                </button>
+                            </>
+                        )}
                     </div>
                 )}
                 {compact && (
