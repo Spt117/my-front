@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { useCopy } from "@/library/hooks/useCopy";
 import { myEvents } from "@/library/hooks/useEvent/classEvent";
 import { GroupedShopifyOrder } from "@/library/shopify/orders";
-import { boutiqueFromDomain } from "@/params/paramsShopify";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import * as Flags from "country-flag-icons/react/3x2";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
@@ -29,7 +29,8 @@ interface OrderCompactProps {
 
 export default function OrderCompact({ order, hiddenPreorderCount = 0 }: OrderCompactProps) {
     const { handleCopy } = useCopy();
-    const boutique = boutiqueFromDomain(order.shop);
+    const { allBoutiques } = useShopifyStore();
+    const boutique = (allBoutiques ?? []).find((b) => b.domain === order.shop);
     const totalProducts = order.lineItems.edges.reduce((acc, { node }) => acc + node.quantity, 0);
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -67,6 +68,8 @@ export default function OrderCompact({ order, hiddenPreorderCount = 0 }: OrderCo
 
     const pathname = usePathname();
     const isClientPage = pathname.includes("/clients/");
+
+    if (!boutique) return null;
 
     return (
         <div className="container mx-auto px-4 py-0.5">

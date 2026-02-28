@@ -6,7 +6,7 @@ import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import { ProductGET } from "@/library/types/graph";
 import { getServer, postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
-import { TDomainsShopify, TParamsDataShop, boutiqueFromDomain, boutiques } from "@/params/paramsShopify";
+import { TDomainsShopify, TParamsDataShop, boutiqueFromDomain, getBoutiques } from "@/params/paramsShopify";
 import { IGetProduct, IMetafieldRequest, ITagRequest, ResponseServer } from "./typesShopify";
 
 export async function getDataBoutique(
@@ -60,8 +60,9 @@ export interface CanauxPublication {
 }
 
 export async function getIdsVariants(domain: TDomainsShopify, sku: string) {
-    const boutique = boutiqueFromDomain(domain);
-    const boutiquesTiFetch = boutiques.filter((b) => b.niche === boutique.niche);
+    const boutique = await boutiqueFromDomain(domain);
+    const allBoutiques = await getBoutiques();
+    const boutiquesTiFetch = allBoutiques.filter((b) => b.niche === boutique.niche);
     const idsVariants: { shop: TDomainsShopify; idVariant: string; idProduct: string }[] = [];
     for (const b of boutiquesTiFetch) {
         const variant = await variantController(b.domain).getVariantBySku(sku);

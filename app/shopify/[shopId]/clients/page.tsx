@@ -3,7 +3,7 @@ import { boutiqueFromId } from '@/params/paramsShopify';
 
 export default async function ClientsPage({ params }: { params: Promise<{ shopId: string }> }) {
     const { shopId } = await params;
-    const boutique = boutiqueFromId(shopId);
+    const boutique = await boutiqueFromId(shopId);
 
     if (!boutique) {
         return <div>Boutique introuvable</div>;

@@ -1,6 +1,6 @@
 "use server";
 
-import { TDomainsShopify } from "@/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { TVariant } from "../variantShopify/Variant";
 import { variantController } from "../variantShopify/variantController";
 

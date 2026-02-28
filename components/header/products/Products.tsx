@@ -1,6 +1,6 @@
 'use client';
 import { updateCanauxVente, updateProduct } from '@/app/shopify/[shopId]/products/[productId]/serverAction';
-import { TDomainsShopify } from '@/params/paramsShopify';
+import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import { ProductGET } from '@/library/types/graph';
 import { ExternalLink, Eye, Loader2, Zap } from 'lucide-react';
 import Image from 'next/image';

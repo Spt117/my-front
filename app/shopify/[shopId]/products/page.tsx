@@ -6,7 +6,7 @@ import { boutiqueFromId } from "@/params/paramsShopify";
 
 export default async function Page({ params }: { params: Promise<{ shopId: string }> }) {
     const { shopId } = await params;
-    const boutique = boutiqueFromId(Number(shopId));
+    const boutique = await boutiqueFromId(Number(shopId));
 
     try {
         const [productsResponse, countResponse] = await Promise.all([

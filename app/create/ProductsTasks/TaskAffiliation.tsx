@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
 import { TPokemonProducts } from "@/params/paramsCreateAffiliation";
-import { boutiqueFromPublicDomain, TPublicDomainsShopify } from "@/params/paramsShopify";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { IconCategoryFilled } from "@tabler/icons-react";
 import { Archive, Globe, Package, Plus, SquarePlus, X } from "lucide-react";
 import Link from "next/link";
@@ -28,6 +28,7 @@ export default function TaskAffiliation() {
     const { size, setSize, setNamePokemon, namePokemon } = useAffiliationTask();
 
     const router = useRouter();
+    const { allBoutiques } = useShopifyStore();
 
     const handleArchive = async () => {
         setLoading(true);
@@ -52,8 +53,8 @@ export default function TaskAffiliation() {
             if (res.message) toast.success(res.message);
             if (res.response?.id) {
                 const id = res.response.id;
-                const boutique = boutiqueFromPublicDomain(task.website as TPublicDomainsShopify);
-                const url = `/shopify/${boutique.id}/products/${id.replace("gid://shopify/Product/", "")}`;
+                const boutique = allBoutiques?.find((b) => b.publicDomain === task.website);
+                const url = `/shopify/${boutique?.id}/products/${id.replace("gid://shopify/Product/", "")}`;
                 window.open(url, "_blank");
             }
             router.refresh();
@@ -68,7 +69,7 @@ export default function TaskAffiliation() {
     const handleRegisterPublication = async () => {
         setLoading(true);
         try {
-            const res = await registerShopifyPublication(task.asin, task.marketplace.toLowerCase(), task.website as TPublicDomainsShopify);
+            const res = await registerShopifyPublication(task.asin, task.marketplace.toLowerCase(), task.website);
             if (res.error) toast.error(res.error);
             if (res.message) {
                 toast.success(res.message);

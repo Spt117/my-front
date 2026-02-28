@@ -3,7 +3,7 @@
 import { ShopifyCustomerResponse, FullShopifyCustomer, ShopifyCustomer } from '@/library/shopify/clients';
 import { getServer, postServer, IResponseFetch } from '@/library/utils/fetchServer';
 import { pokeUriServer } from '@/library/utils/uri';
-import { TDomainsShopify } from '@/params/paramsShopify';
+import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 
 export async function getClients(domain: TDomainsShopify, after?: string): Promise<IResponseFetch<ShopifyCustomerResponse>> {
     const url = `${pokeUriServer}/shopify/get-clients?domain=${domain}${after ? `&after=${after}` : ''}`;

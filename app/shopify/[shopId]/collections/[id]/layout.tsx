@@ -7,7 +7,7 @@ import CollectionLayoutClient from "./CollectionLayoutClient";
 
 export default async function CollectionLayout({ children, params }: LayoutPropsShopify) {
     const { id, shopId } = await params;
-    const boutique = boutiqueFromId(Number(shopId));
+    const boutique = await boutiqueFromId(Number(shopId));
 
     let error = null;
 

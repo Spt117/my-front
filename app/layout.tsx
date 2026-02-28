@@ -2,6 +2,7 @@ import BodyDialogue from "@/components/layout/dialogues/BodyDialogue";
 import MySpinner from "@/components/layout/my-spinner";
 import BackendProvider from "@/components/layout/providers/BackendProvider";
 import Providers from "@/components/layout/providers/Providers";
+import { getBoutiques } from "@/params/paramsShopify";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
@@ -22,15 +23,17 @@ export const metadata: Metadata = {
     title: "Digiblock Application",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const boutiques = await getBoutiques();
+
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-                <Providers>
+                <Providers boutiques={boutiques}>
                     <MySpinner />
                     <BodyDialogue />
                     <Toaster position="top-center" richColors />

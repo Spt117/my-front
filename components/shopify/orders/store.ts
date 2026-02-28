@@ -1,5 +1,5 @@
 import { GroupedShopifyOrder, ShopifyOrder } from "@/library/shopify/orders";
-import { TDomainsShopify } from "@/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { create } from "zustand";
 
 interface StoreState {

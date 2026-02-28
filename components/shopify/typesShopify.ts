@@ -1,4 +1,4 @@
-import { TDomainsShopify } from "@/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 
 export interface IGetProduct {
     productId: string;

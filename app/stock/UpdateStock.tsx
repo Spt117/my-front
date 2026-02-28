@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { TDomainsShopify } from "@/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { useState } from "react";
 import { toast } from "sonner";
 import { updateVariantStock } from "../shopify/[shopId]/products/[productId]/serverAction";

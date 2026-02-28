@@ -1,7 +1,7 @@
 import { CanauxPublication, getDataBoutique } from "@/components/shopify/serverActions";
 import { ResponseServer } from "@/components/shopify/typesShopify";
 import { SegmentParams } from "@/library/types/utils";
-import { boutiqueFromId, TDomainsShopify } from "@/params/paramsShopify";
+import { boutiqueFromId } from "@/params/paramsShopify";
 import { ShopifyCollection } from "./collections/utils";
 import ShopLayoutClient from "./ShopLayoutClient";
 import { getShippingTranslation, getShopSettings, ShippingTranslation } from "./boutique/serverAction";
@@ -13,7 +13,7 @@ interface ShopLayoutProps {
 
 export default async function ShopLayout({ children, params }: ShopLayoutProps) {
     const { shopId } = await params;
-    const boutique = boutiqueFromId(Number(shopId));
+    const boutique = await boutiqueFromId(Number(shopId));
 
     // ✅ Chargement côté serveur
     let canauxPublication: CanauxPublication[] = [];
@@ -26,8 +26,8 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
         const [canauxData, collectionsData, settingsData, shippingTranslationData] = await Promise.all([
             getDataBoutique(boutique.domain, "salesChannels"),
             getDataBoutique(boutique.domain, "collections") as Promise<ResponseServer<ShopifyCollection[]>>,
-            getShopSettings(boutique.domain as TDomainsShopify),
-            getShippingTranslation(boutique.domain as TDomainsShopify),
+            getShopSettings(boutique.domain),
+            getShippingTranslation(boutique.domain),
         ]);
 
         if (canauxData.response) canauxPublication = canauxData.response as CanauxPublication[];

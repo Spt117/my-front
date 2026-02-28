@@ -2,7 +2,7 @@
 
 import { getServer, postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
-import { IShopify, TDomainsShopify } from "@/params/paramsShopify";
+import { IShopify, TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { revalidatePath } from "next/cache";
 
 export async function updateCollection(domain: TDomainsShopify, collectionGid: string, input: any) {

@@ -6,7 +6,7 @@ import { getOrderById } from '@/components/shopify/orders/serverAction';
 import useOrdersStore from '@/components/shopify/orders/store';
 import UsefullLinks from '@/components/shopify/orders/UsefullLinks';
 import { Card } from '@/components/ui/card';
-import { boutiqueFromDomain } from '@/params/paramsShopify';
+import useShopifyStore from '@/components/shopify/shopifyStore';
 import * as Flags from 'country-flag-icons/react/3x2';
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
@@ -23,6 +23,7 @@ export default function OrderDetailPage() {
     const params = useParams();
     const shopId = params.shopId as string;
     const { orders, setOrders } = useOrdersStore();
+    const { allBoutiques } = useShopifyStore();
 
     // Les données sont déjà chargées par le layout
     const order = orders[0];
@@ -41,7 +42,8 @@ export default function OrderDetailPage() {
         return null; // Le layout gère déjà le cas où il n'y a pas de commande
     }
 
-    const boutique = boutiqueFromDomain(order.shop);
+    const boutique = (allBoutiques ?? []).find((b) => b.domain === order.shop);
+    if (!boutique) return null;
     const totalProducts = order.lineItems.edges.reduce((acc, { node }) => acc + node.quantity, 0);
 
     return (

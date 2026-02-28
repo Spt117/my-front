@@ -1,5 +1,5 @@
 import { IMarketplace } from "@/library/pocketbase/AmazonService";
-import { TPublicDomainsShopify } from "@/params/paramsShopify";
+import { TPublicDomainsShopify } from "@/params/paramsShopifyTypes";
 import { TDomainWordpress } from "@/params/paramsWordpress";
 import { Schema } from "mongoose";
 

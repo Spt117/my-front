@@ -3,7 +3,7 @@
 import { Card } from '@/components/ui/card';
 import { useCopy } from '@/library/hooks/useCopy';
 import { ShopifyCustomer } from '@/library/shopify/clients';
-import { boutiqueFromDomain } from '@/params/paramsShopify';
+import useShopifyStore from '@/components/shopify/shopifyStore';
 import * as Flags from 'country-flag-icons/react/3x2';
 import countries from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
@@ -16,8 +16,10 @@ countries.registerLocale(enLocale);
 
 export default function ClientCompact({ client }: { client: ShopifyCustomer }) {
     const { handleCopy } = useCopy();
+    const { allBoutiques } = useShopifyStore();
     if (!client.shop) return null;
-    const boutique = boutiqueFromDomain(client.shop);
+    const boutique = (allBoutiques ?? []).find((b) => b.domain === client.shop);
+    if (!boutique) return null;
     const clientUrl = `/shopify/${boutique.id}/clients/${client.id?.split('/').pop() || ''}`;
 
     const handleEmailClick = (e: React.MouseEvent) => {

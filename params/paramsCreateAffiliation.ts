@@ -1,4 +1,4 @@
-import { boutiques } from './paramsShopify';
+import { getBoutiques } from './paramsShopify';
 import { sitesWordpress } from './paramsWordpress';
 
 export const niches = ['Pokémon', 'Beyblade'] as const;
@@ -17,4 +17,7 @@ export const allProducts = {
     Beyblade: beybladeProducts,
 };
 
-export const websites = [...sitesWordpress.map((site) => site.domain), ...boutiques.map((shop) => shop.publicDomain)].sort();
+export async function getWebsites(): Promise<string[]> {
+    const shops = await getBoutiques();
+    return [...sitesWordpress.map((site) => site.domain), ...shops.map((shop) => shop.publicDomain)].sort();
+}

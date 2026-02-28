@@ -3,7 +3,7 @@
 import { ProductGET } from "@/library/types/graph";
 import { postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
-import { TDomainsShopify } from "@/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 
 export const search = async (query: string, domain: TDomainsShopify): Promise<ProductGET[]> => {
     const uri = `${pokeUriServer}/shopify/search`;

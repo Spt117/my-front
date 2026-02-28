@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { addWebsiteToVeille } from "@/library/models/veille/middlewareVeille";
 import { TVeille } from "@/library/models/veille/veilleType";
-import { boutiques } from "@/params/paramsShopify";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { sitesWordpress } from "@/params/paramsWordpress";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -15,8 +15,9 @@ import { Separator } from "@/components/ui/separator";
 export default function VeilleCollection({ collection }: { collection: TVeille }) {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [isSaving, setIsSaving] = useState(false);
+    const { allBoutiques } = useShopifyStore();
 
-    const domainsShopify = boutiques.map((b) => b.publicDomain);
+    const domainsShopify = (allBoutiques ?? []).map((b) => b.publicDomain);
     const domainsWordpress = sitesWordpress.map((s) => s.domain);
     const allDomains = [...domainsShopify, ...domainsWordpress];
 

@@ -1,4 +1,3 @@
-import { boutiques, TDomainsShopify } from '@/params/paramsShopify';
 
 export type PeriodType = 'today' | 'yesterday' | 'week' | 'month' | 'currentMonth' | 'currentYear' | 'year' | 'lastYear' | 'custom';
 
@@ -84,9 +83,4 @@ export function formatDate(date: Date): string {
 export function extractProductId(productId: string) {
     const parts = productId.split('/');
     return parts[parts.length - 1];
-}
-
-export function getShopIdFromDomain(domain: TDomainsShopify) {
-    const boutique = boutiques.find((b) => b.domain === domain);
-    return boutique?.id;
 }

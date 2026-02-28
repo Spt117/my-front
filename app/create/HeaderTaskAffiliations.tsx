@@ -5,15 +5,14 @@ import Selecteur from '@/components/selecteur';
 import useShopifyStore from '@/components/shopify/shopifyStore';
 import { Input } from '@/components/ui/input';
 import useKeyboardShortcuts from '@/library/hooks/useKyboardShortcuts';
-import { boutiqueFromPublicDomain, boutiques, TPublicDomainsShopify } from '@/params/paramsShopify';
 import { X } from 'lucide-react';
 import { useEffect } from 'react';
 
 export default function SelectAffiliationSite() {
     const { websiteFilter, setWebsiteFilter, setTypesProducts, typesProducts, arrayTypesProducts, arraySites } = useAffiliationStore();
-    const { shopifyBoutique, setShopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
+    const { shopifyBoutique, setShopifyBoutique, searchTerm, setSearchTerm, allBoutiques } = useShopifyStore();
 
-    const optionWebsite = boutiques.map((website) => ({
+    const optionWebsite = (allBoutiques ?? []).map((website) => ({
         label: website.publicDomain,
         value: website.publicDomain,
     }));
@@ -36,8 +35,8 @@ export default function SelectAffiliationSite() {
     }, [shopifyBoutique]);
 
     const handleChangeWebsite = (value: string) => {
-        const boutique = boutiqueFromPublicDomain(value as TPublicDomainsShopify);
-        setShopifyBoutique(boutique);
+        const boutique = (allBoutiques ?? []).find((b) => b.publicDomain === value);
+        if (boutique) setShopifyBoutique(boutique);
     };
 
     const hasActiveFilters = websiteFilter || typesProducts || searchTerm;

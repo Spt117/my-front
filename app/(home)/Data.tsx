@@ -5,18 +5,18 @@ import { ShopAnalyticsView } from '@/components/analytics/ShopAnalyticsView';
 import { AnalyticsPeriodSelector } from '@/components/analytics/AnalyticsPeriodSelector';
 import { PeriodType } from '@/components/analytics/AnalyticsUtils';
 import useShopifyStore from '@/components/shopify/shopifyStore';
-import { boutiques, IShopify } from '@/params/paramsShopify';
+import { IShopifyBase } from '@/params/paramsShopifyTypes';
 import { ExternalLink, LayoutGrid, Store } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ShopifyDashboard() {
-    const { shopifyBoutique, setShopifyBoutique } = useShopifyStore();
+    const { shopifyBoutique, setShopifyBoutique, allBoutiques } = useShopifyStore();
     const [viewMode, setViewMode] = useState<'global' | 'shop'>('global');
     const [period, setPeriod] = useState<PeriodType>('today');
     const [customStart, setCustomStart] = useState<Date>(new Date());
     const [customEnd, setCustomEnd] = useState<Date>(new Date());
 
-    const handleShopSelect = (boutique: IShopify) => {
+    const handleShopSelect = (boutique: IShopifyBase) => {
         setShopifyBoutique(boutique);
         setViewMode('shop');
     };
@@ -76,7 +76,7 @@ export default function ShopifyDashboard() {
                             
                             {/* Dropdown for shops */}
                             <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 opacity-0 invisible group-hover/shops:opacity-100 group-hover/shops:visible transition-all duration-200 z-[100]">
-                                {boutiques.map((b) => (
+                                {(allBoutiques ?? []).map((b) => (
                                     <div key={b.domain} className="group/item flex items-center gap-1">
                                         <button
                                             onClick={() => handleShopSelect(b)}

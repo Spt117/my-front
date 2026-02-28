@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { CardAction } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { pokemonProducts } from "@/params/paramsCreateAffiliation";
-import { boutiqueFromPublicDomain, TPublicDomainsShopify } from "@/params/paramsShopify";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ import useCreateStore from "./storeCreate";
 export default function AddProduct() {
     const { selectedNiche, selectedProduct, payloadPeluche, asin } = useCreateStore();
     const { websiteFilter } = useAffiliationStore();
+    const { allBoutiques } = useShopifyStore();
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const disableAdd = selectedProduct === "peluche pokémon" && (!payloadPeluche.namePokemon || !payloadPeluche.size || !asin);
@@ -47,7 +48,8 @@ export default function AddProduct() {
             if (res.message) toast.success(res.message);
             const id = res.response;
             if (id) {
-                const boutique = boutiqueFromPublicDomain(data.website as TPublicDomainsShopify);
+                const boutique = (allBoutiques ?? []).find((b) => b.publicDomain === data.website);
+                if (!boutique) { toast.error("Boutique introuvable"); return; }
                 const url = `/shopify/${boutique.id}/products/${id.replace("gid://shopify/Product/", "")}`;
                 window.open(url, "_blank");
                 router.refresh();

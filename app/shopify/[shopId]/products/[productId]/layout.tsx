@@ -7,7 +7,7 @@ import { getTasks } from "./serverAction";
 
 export default async function ProductLayout({ children, params }: LayoutPropsShopify) {
     const { productId, shopId } = await params;
-    const boutique = boutiqueFromId(Number(shopId));
+    const boutique = await boutiqueFromId(Number(shopId));
 
     // ✅ Chargement parallèle côté serveur
     let product = null;

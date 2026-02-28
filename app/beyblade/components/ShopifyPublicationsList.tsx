@@ -1,7 +1,8 @@
 "use client";
 
 import { createBeybladeOnShop, getAmazonAffiliationPrice, getBeybladePublications, updateAsinPrice, AsinRecord, ShopifyPublicationWithContent } from "@/app/beycommunity/actions";
-import { boutiques } from "@/params/paramsShopify";
+import useShopifyStore from "@/components/shopify/shopifyStore";
+import { IShopifyBase } from "@/params/paramsShopifyTypes";
 import { PublicationStatus } from "@/library/pocketbase/ShopifyPublicationService";
 import { IconAlertTriangle, IconBrandAmazon, IconCheck, IconClock, IconDatabase, IconDatabaseOff, IconLoader2, IconPlus, IconShoppingCart, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
@@ -21,24 +22,20 @@ function amazonDomainToMarketplace(amazonDomain: string): string {
     return tld.toUpperCase();
 }
 
-function shopToMarketplace(shop: string): string | null {
-    const boutique = (boutiques as readonly { domain: string; marketplaceAmazon: string }[]).find((b) => b.domain === shop);
+function shopToMarketplace(shop: string, boutiques: IShopifyBase[]): string | null {
+    const boutique = boutiques.find((b) => b.domain === shop);
     if (!boutique) return null;
     return amazonDomainToMarketplace(boutique.marketplaceAmazon);
 }
 
-function asinUrl(marketplace: string, asin: string): string {
-    const boutique = (boutiques as readonly { marketplaceAmazon: string; devise: string }[]).find(
-        (b) => amazonDomainToMarketplace(b.marketplaceAmazon) === marketplace
-    );
+function asinUrl(marketplace: string, asin: string, boutiques: IShopifyBase[]): string {
+    const boutique = boutiques.find((b) => amazonDomainToMarketplace(b.marketplaceAmazon) === marketplace);
     const domain = boutique?.marketplaceAmazon ?? "amazon.com";
     return `https://www.${domain}/dp/${asin}`;
 }
 
-function marketplaceDevise(marketplace: string): string {
-    const boutique = (boutiques as readonly { marketplaceAmazon: string; devise: string }[]).find(
-        (b) => amazonDomainToMarketplace(b.marketplaceAmazon) === marketplace
-    );
+function marketplaceDevise(marketplace: string, boutiques: IShopifyBase[]): string {
+    const boutique = boutiques.find((b) => amazonDomainToMarketplace(b.marketplaceAmazon) === marketplace);
     return boutique?.devise ?? "€";
 }
 
@@ -90,6 +87,8 @@ function TagsEditor({ tags, onChange }: { tags: string[]; onChange: (tags: strin
 }
 
 export function ShopifyPublicationsList() {
+    const { allBoutiques } = useShopifyStore();
+    const boutiques = allBoutiques ?? [];
     const [publications, setPublications] = useState<ShopifyPublicationWithContent[]>([]);
     const [loading, setLoading] = useState(true);
     const [prices, setPrices] = useState<Record<string, string>>({});
@@ -119,7 +118,7 @@ export function ShopifyPublicationsList() {
 
         if (!checked) return;
 
-        const market = shopToMarketplace(pub.shop);
+        const market = shopToMarketplace(pub.shop, boutiques);
         const matchedAsin = market ? pub.supabaseAsins.find((a) => a.marketplace === market) ?? null : null;
 
         if (!matchedAsin) return;
@@ -131,7 +130,7 @@ export function ShopifyPublicationsList() {
         }
 
         // Pas de prix → on fetch sur Amazon
-        const boutique = (boutiques as readonly { domain: string; marketplaceAmazon: string }[]).find((b) => b.domain === pub.shop);
+        const boutique = boutiques.find((b) => b.domain === pub.shop);
         const amazonMarketplace = boutique?.marketplaceAmazon ?? pub.marketplace;
 
         setAffiliationLoading((prev) => ({ ...prev, [pub.id]: true }));
@@ -241,7 +240,7 @@ export function ShopifyPublicationsList() {
                             const canCreate = pub.hasContent && pub.status !== "done";
                             const isCreating = creating[pub.id] ?? false;
                             const createResult = createResults[pub.id];
-                            const market = shopToMarketplace(pub.shop);
+                            const market = shopToMarketplace(pub.shop, boutiques);
                             const matchedAsin = market ? pub.supabaseAsins.find((a) => a.marketplace === market) ?? null : null;
                             const hasAsin = matchedAsin !== null;
 
@@ -249,7 +248,7 @@ export function ShopifyPublicationsList() {
                                 <tr key={pub.id} className="hover:bg-slate-800/30 transition-colors align-top">
                                     <td className="py-3 pl-1 max-w-[260px]">
                                         {(() => {
-                                            const market = shopToMarketplace(pub.shop);
+                                            const market = shopToMarketplace(pub.shop, boutiques);
                                             const matched = market
                                                 ? pub.supabaseAsins.find((a: AsinRecord) => a.marketplace === market)
                                                 : null;
@@ -257,11 +256,11 @@ export function ShopifyPublicationsList() {
                                                 return (
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-[10px] font-bold text-slate-500 uppercase w-8 shrink-0">{matched.marketplace}</span>
-                                                        <a href={asinUrl(matched.marketplace, matched.asin)} target="_blank" rel="noreferrer" className="font-mono text-blue-400 hover:text-blue-300 text-xs underline underline-offset-2 transition-colors">
+                                                        <a href={asinUrl(matched.marketplace, matched.asin, boutiques)} target="_blank" rel="noreferrer" className="font-mono text-blue-400 hover:text-blue-300 text-xs underline underline-offset-2 transition-colors">
                                                             {matched.asin}
                                                         </a>
                                                         {matched.price != null && (
-                                                            <span className="text-slate-400 text-[10px]">{matched.price}{marketplaceDevise(matched.marketplace)}</span>
+                                                            <span className="text-slate-400 text-[10px]">{matched.price}{marketplaceDevise(matched.marketplace, boutiques)}</span>
                                                         )}
                                                     </div>
                                                 );

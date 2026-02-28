@@ -1,6 +1,6 @@
 import { TAffiliationTask } from "@/library/models/tasksAffiliation/tasksAffiliation";
 import { pokemonProducts, TPokemonProducts } from "@/params/paramsCreateAffiliation";
-import { boutiqueFromPublicDomain, TPublicDomainsShopify } from "@/params/paramsShopify";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ const AffiliationTaskContext = createContext<AffiliationTaskContextType | undefi
 export function AffiliationTaskProvider({ children, task }: { children: ReactNode; task: TAffiliationTask }) {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const { allBoutiques } = useShopifyStore();
     const [productType, setProductType] = useState<TPokemonProducts>(task.productType);
     const [size, setSize] = useState<number | null>(null);
     const [namePokemon, setNamePokemon] = useState<string>("");
@@ -56,8 +57,8 @@ export function AffiliationTaskProvider({ children, task }: { children: ReactNod
             if (res.message) toast.success(res.message);
             const id = res.response;
             if (id) {
-                const boutique = boutiqueFromPublicDomain(task.website as TPublicDomainsShopify);
-                const url = `/shopify/${boutique.id}/products/${id.replace("gid://shopify/Product/", "")}`;
+                const boutique = allBoutiques?.find((b) => b.publicDomain === task.website);
+                const url = `/shopify/${boutique?.id}/products/${id.replace("gid://shopify/Product/", "")}`;
                 window.open(url, "_blank");
                 router.refresh();
             } else toast.error("Erreur lors de la création du produit: ID manquant");

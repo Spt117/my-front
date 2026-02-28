@@ -1,15 +1,18 @@
+"use client";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { LineItemNode } from "@/library/shopify/orders";
-import { boutiqueFromDomain, TDomainsShopify } from "@/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { AlertTriangle, ArrowUpRight, Box, Calendar, Tag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function ProductSection({ node, domain }: { node: LineItemNode; domain: TDomainsShopify }) {
+    const { allBoutiques } = useShopifyStore();
     const idProduct = node.variant?.product.id.split("/").pop();
-    const boutique = boutiqueFromDomain(domain);
-    const url = `/shopify/${boutique.id}/products/${idProduct}`;
+    const boutique = (allBoutiques ?? []).find((b) => b.domain === domain);
+    const url = boutique ? `/shopify/${boutique.id}/products/${idProduct}` : "#";
 
-    if (!node.variant) return null;
+    if (!node.variant || !boutique) return null;
 
     const precommandeDate = node.variant?.product.precommande?.value;
     // Priorité à l'image de la variante, sinon image du produit

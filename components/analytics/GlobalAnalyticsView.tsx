@@ -2,7 +2,8 @@
 
 import { AnalyticsData, getAllAnalytics } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { boutiques, IShopify } from "@/params/paramsShopify";
+import { IShopifyBase } from "@/params/paramsShopifyTypes";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { DollarSign, ExternalLink, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -17,14 +18,21 @@ interface GlobalAnalyticsViewProps {
 }
 
 interface BoutiqueStats {
-    boutique: IShopify;
+    boutique: IShopifyBase;
     data: AnalyticsData | null;
     loading: boolean;
     error: string | null;
 }
 
 export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAnalyticsViewProps) {
-    const [stats, setStats] = useState<BoutiqueStats[]>(boutiques.map((b) => ({ boutique: b, data: null, loading: true, error: null })));
+    const { allBoutiques } = useShopifyStore();
+    const [stats, setStats] = useState<BoutiqueStats[]>([]);
+
+    useEffect(() => {
+        if (allBoutiques) {
+            setStats(allBoutiques.map((b) => ({ boutique: b, data: null, loading: true, error: null })));
+        }
+    }, [allBoutiques]);
 
     const fetchAllAnalytics = useCallback(async () => {
         const { start, end } = getDateRange(period, customStart, customEnd);

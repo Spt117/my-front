@@ -1,10 +1,11 @@
 'use client';
 
-import { TDomainsShopify } from '@/params/paramsShopify';
+import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import { ChevronDown, Package } from 'lucide-react';
 import { useState } from 'react';
 import { OrderedProduct } from '@/app/(home)/serverAction';
-import { extractProductId, formatCurrency, getShopIdFromDomain } from './AnalyticsUtils';
+import { extractProductId, formatCurrency } from './AnalyticsUtils';
+import useShopifyStore from '@/components/shopify/shopifyStore';
 
 interface ProductsTableProps {
     products: OrderedProduct[];
@@ -14,8 +15,9 @@ interface ProductsTableProps {
 export function AnalyticsProductsTable({ products, shopDomain }: ProductsTableProps) {
     const [showAll, setShowAll] = useState(false);
     const [sortConfig, setSortConfig] = useState<{ key: 'title' | 'sku' | 'quantity' | 'revenue'; direction: 'asc' | 'desc' } | null>(null);
+    const { allBoutiques } = useShopifyStore();
 
-    const shopId = shopDomain ? getShopIdFromDomain(shopDomain) : null;
+    const shopId = shopDomain ? (allBoutiques?.find((b) => b.domain === shopDomain)?.id ?? null) : null;
 
     const sortedProducts = [...products].sort((a, b) => {
         if (!sortConfig) return 0;

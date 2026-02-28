@@ -26,7 +26,7 @@ export async function createCarte(asin: string): Promise<IResponseFetch<ProductG
 }
 
 export async function registerShopifyPublication(asin: string, marketplace: string, website: TPublicDomainsShopify) {
-    const boutique = boutiqueFromPublicDomain(website);
+    const boutique = await boutiqueFromPublicDomain(website);
     const exists = await shopifyPublicationService.exists(asin, boutique.domain, marketplace);
     if (exists) return { error: "Cette publication existe déjà" };
     await shopifyPublicationService.create({

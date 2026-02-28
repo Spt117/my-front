@@ -1,5 +1,5 @@
 'use client';
-import { TDomainsShopify } from '@/params/paramsShopify';
+import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import { Search, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import useShopifyStore from '../shopifyStore';

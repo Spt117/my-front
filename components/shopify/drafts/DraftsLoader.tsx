@@ -1,7 +1,7 @@
 'use client';
 
 import { useEventListener } from '@/library/hooks/useEvent/useEvents';
-import { TDomainsShopify } from '@/params/paramsShopify';
+import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import { useCallback, useEffect, useRef } from 'react';
 import useShopifyStore from '../shopifyStore';
 import { getDraftCounts } from './serverAction';

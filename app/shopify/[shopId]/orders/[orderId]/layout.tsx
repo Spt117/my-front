@@ -9,7 +9,7 @@ import OrderLayoutClient from './OrderLayoutClient';
 
 export default async function OrderLayout({ children, params }: LayoutPropsShopify) {
     const { orderId, shopId } = await params;
-    const boutique = boutiqueFromId(Number(shopId));
+    const boutique = await boutiqueFromId(Number(shopId));
 
     let error = null;
 

@@ -5,15 +5,17 @@ import { ShopifyCustomer } from '@/library/shopify/clients';
 import { ShopifyOrder } from '@/library/shopify/orders';
 import { ProductGET } from '@/library/types/graph';
 import { TSearchMode } from '@/params/menu';
-import { IShopify, TDomainsShopify } from '@/params/paramsShopify';
+import { IShopifyBase, TDomainsShopify } from '@/params/paramsShopifyTypes';
 import { create } from 'zustand';
 import { TBrand, TProductType } from './ProductType';
 
 interface StoreState {
     searchTerm: string;
     setSearchTerm: (term: string) => void;
-    shopifyBoutique: IShopify | null;
-    setShopifyBoutique: (boutique: IShopify | null) => void;
+    shopifyBoutique: IShopifyBase | null;
+    setShopifyBoutique: (boutique: IShopifyBase | null) => void;
+    allBoutiques: IShopifyBase[] | null;
+    setAllBoutiques: (boutiques: IShopifyBase[]) => void;
     productsSearch: ProductGET[];
     setProductsSearch: (products: ProductGET[]) => void;
     ordersSearch: ShopifyOrder[];
@@ -59,6 +61,8 @@ const useShopifyStore = create<StoreState>((set) => ({
     setSearchTerm: (term) => set({ searchTerm: term }),
     shopifyBoutique: null,
     setShopifyBoutique: (boutique) => set({ shopifyBoutique: boutique }),
+    allBoutiques: null,
+    setAllBoutiques: (boutiques) => set({ allBoutiques: boutiques }),
     productsSearch: [],
     setProductsSearch: (products) => set({ productsSearch: products }),
     ordersSearch: [],

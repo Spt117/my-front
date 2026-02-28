@@ -1,7 +1,8 @@
 "use client";
 
 import { LineItemNode } from "@/library/shopify/orders";
-import { boutiqueFromDomain, TDomainsShopify } from "@/params/paramsShopify";
+import useShopifyStore from "@/components/shopify/shopifyStore";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { Check, CheckCircle2, ExternalLink, Loader2, Package, RotateCcw, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,7 +37,8 @@ interface FulfilledItem {
 
 export default function FulfillProductSection({ lineItems, domain, orderIds, onOrderUpdated }: FulfillProductSectionProps) {
     const router = useRouter();
-    const boutique = boutiqueFromDomain(domain);
+    const { allBoutiques } = useShopifyStore();
+    const boutique = (allBoutiques ?? []).find((b) => b.domain === domain);
     const [loading, setLoading] = useState(true);
     const [fulfilling, setFulfilling] = useState(false);
     const [canceling, setCanceling] = useState<string | null>(null);
@@ -320,7 +322,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                         text: "✅ Tous les produits traités ! Commande archivée.",
                     });
                     setTimeout(() => {
-                        router.push(`/shopify/${boutique.id}/orders`);
+                        router.push(`/shopify/${boutique?.id}/orders`);
                         router.refresh();
                     }, 2000);
                 } else {
@@ -512,7 +514,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
 
                                 <div className="relative w-16 h-16 min-m-w-[4rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50 group/image">
                                     <Link
-                                        href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
+                                        href={`/shopify/${boutique?.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
                                         className="block w-full h-full"
                                         onClick={(e) => e.stopPropagation()}
                                     >
@@ -532,7 +534,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                 <div className="flex-1 min-w-0 pr-8">
                                     <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">
                                         <Link
-                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
+                                            href={`/shopify/${boutique?.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
                                             className="hover:text-blue-600 transition-colors"
                                             onClick={(e) => e.stopPropagation()}
                                         >
@@ -544,7 +546,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                     )}
                                     <div className="flex items-center gap-2 mt-1">
                                         <Link
-                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
+                                            href={`/shopify/${boutique?.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
                                             className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600 hover:bg-gray-200 hover:text-blue-600 transition-all cursor-pointer"
                                             onClick={(e) => e.stopPropagation()}
                                         >
@@ -580,7 +582,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
 
                                 <div className="relative w-16 h-16 min-w-[4rem] rounded-lg overflow-hidden border border-gray-100 bg-gray-50 group/image">
                                     <Link
-                                        href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
+                                        href={`/shopify/${boutique?.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
                                         className="block w-full h-full"
                                         onClick={(e) => e.stopPropagation()}
                                     >
@@ -600,7 +602,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                 <div className="flex-1 min-w-0 pr-20">
                                     <h4 className="text-sm font-semibold text-gray-800 line-clamp-2">
                                         <Link
-                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
+                                            href={`/shopify/${boutique?.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
                                             className="hover:text-blue-600 transition-colors"
                                             onClick={(e) => e.stopPropagation()}
                                         >
@@ -612,7 +614,7 @@ export default function FulfillProductSection({ lineItems, domain, orderIds, onO
                                     )}
                                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                                         <Link
-                                            href={`/shopify/${boutique.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
+                                            href={`/shopify/${boutique?.id}/products/${item.node.variant?.product?.id?.split("/").pop()}`}
                                             className="px-2 py-0.5 rounded-md bg-gray-100 text-xs font-bold text-gray-600 hover:bg-gray-200 hover:text-blue-600 transition-all cursor-pointer"
                                             onClick={(e) => e.stopPropagation()}
                                         >

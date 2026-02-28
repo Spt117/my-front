@@ -2,7 +2,7 @@
 
 import useCollectionStore from '@/app/shopify/[shopId]/collections/storeCollections';
 import Selecteur from '@/components/selecteur';
-import { boutiqueFromDomain, boutiques, TDomainsShopify } from '@/params/paramsShopify';
+import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import useOrdersStore from '../shopify/orders/store';
@@ -11,7 +11,7 @@ import SelectFull from './SelectFull';
 
 export default function ShopifySelect() {
     const { ordersByShop } = useOrdersStore();
-    const { shopifyBoutique, setShopifyBoutique, setProduct, product, draftCountByShop } = useShopifyStore();
+    const { shopifyBoutique, setShopifyBoutique, setProduct, product, draftCountByShop, allBoutiques } = useShopifyStore();
     const { cleanCollections } = useCollectionStore();
     const path = usePathname();
     const router = useRouter();
@@ -44,7 +44,7 @@ export default function ShopifySelect() {
         return { orderCount, preorderCount };
     };
 
-    const option2 = boutiques.map((boutique) => {
+    const option2 = (allBoutiques ?? []).map((boutique) => {
         const { orderCount, preorderCount } = getOrderCounts(boutique.domain);
         const draftCount = draftCountByShop[boutique.domain] || 0;
         return {
@@ -79,7 +79,8 @@ export default function ShopifySelect() {
     }
 
     const handleSelectOrigin = (domain: string) => {
-        const boutique = boutiqueFromDomain(domain as TDomainsShopify);
+        const boutique = (allBoutiques ?? []).find((b) => b.domain === domain);
+        if (!boutique) return;
         setShopifyBoutique(boutique);
         cleanCollections();
         if (product) setProduct(null);

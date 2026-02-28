@@ -4,7 +4,6 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { useEvent } from "@/library/hooks/useEvent/useEvents";
 import useUserStore from "@/library/stores/storeUser";
 import { uriServerSocket } from "@/library/utils/utils";
-import { boutiqueFromDomain } from "@/params/paramsShopify";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
@@ -13,7 +12,7 @@ import { toast } from "sonner";
 import { TTopics } from "./utilSocket";
 
 export default function SocketProvider({ children }: { children: React.ReactNode }) {
-    const { shopifyBoutique } = useShopifyStore();
+    const { shopifyBoutique, allBoutiques } = useShopifyStore();
     const { setSocket } = useUserStore();
     const { emit } = useEvent();
     const { data: session } = useSession();
@@ -58,7 +57,9 @@ export default function SocketProvider({ children }: { children: React.ReactNode
 
                 switch (data.topic as TTopics) {
                     case "orders/paid": {
-                        const boutique = boutiqueFromDomain(data.domain);
+                        const boutique = (allBoutiques ?? []).find((b) => b.domain === data.domain);
+                        emit("orders/paid", { shop: data.domain });
+                        if (!boutique) break;
                         const msg = (
                             <p className="flex items-center gap-1 whitespace-nowrap">
                                 Nouvelle commande reçue sur {boutique.vendor}
@@ -72,7 +73,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                             </p>
                         );
                         toast.success(msg);
-                        emit("orders/paid", { shop: data.domain });
                         break;
                     }
                     case "orders/fulfilled":
@@ -88,7 +88,14 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                         });
                         break;
                     case "products/create": {
-                        const boutiquePc = boutiqueFromDomain(data.domain);
+                        const boutiquePc = (allBoutiques ?? []).find((b) => b.domain === data.domain);
+                        emit("products/create", {
+                            domain: data.domain,
+                            sku: data.body.variants?.[0]?.sku,
+                            productId: data.body.id,
+                            data: data.body,
+                        });
+                        if (!boutiquePc) break;
                         const msgPc = (
                             <p className="flex items-center gap-1 whitespace-nowrap">
                                 Nouveau produit créé sur {boutiquePc.vendor}
@@ -102,12 +109,6 @@ export default function SocketProvider({ children }: { children: React.ReactNode
                             </p>
                         );
                         toast.success(msgPc);
-                        emit("products/create", {
-                            domain: data.domain,
-                            sku: data.body.variants?.[0]?.sku,
-                            productId: data.body.id,
-                            data: data.body,
-                        });
                         break;
                     }
                     default:

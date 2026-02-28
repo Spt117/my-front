@@ -1,7 +1,6 @@
 'use client';
 import EditeurHtml from '@/components/editeurHtml/Editeur';
 import useShopifyStore from '@/components/shopify/shopifyStore';
-import { boutiques } from '@/params/paramsShopify';
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -61,15 +60,15 @@ import MetafieldToClean from './Metafields/MetafieldToClean';
  * └───────────────────────────┴─────────────────────────────┘
  */
 export default function Page() {
-    const { setMySpinner, shopifyBoutique, product, setShopifyBoutique } = useShopifyStore();
+    const { setMySpinner, shopifyBoutique, product, setShopifyBoutique, allBoutiques } = useShopifyStore();
     const query = useSearchParams();
 
     // Initialisation de la boutique par défaut si nécessaire
     useEffect(() => {
-        if (!shopifyBoutique && query.size === 0) {
-            setShopifyBoutique(boutiques[0]);
+        if (!shopifyBoutique && query.size === 0 && allBoutiques?.[0]) {
+            setShopifyBoutique(allBoutiques[0]);
         }
-    }, [shopifyBoutique, setShopifyBoutique, query.size]);
+    }, [shopifyBoutique, setShopifyBoutique, query.size, allBoutiques]);
 
     // Désactiver le spinner une fois le produit chargé
     useEffect(() => {

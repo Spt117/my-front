@@ -1,6 +1,7 @@
 "use client";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { boutiques, TDomainsShopify } from "@/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { ProductGET } from "@/library/types/graph";
 import Image from "next/image";
 import { useState } from "react";
@@ -11,12 +12,13 @@ interface DataShops {
 }
 
 export default function ShopifyTab() {
+    const { allBoutiques } = useShopifyStore();
     const [selectedShop, setSelectedShop] = useState<TDomainsShopify>("toupies-beyblade.myshopify.com");
 
     return (
         <Tabs value={selectedShop} onValueChange={(value) => setSelectedShop(value as TDomainsShopify)} className="w-full">
             <TabsList className="grid w-full grid-cols-4 mb-6">
-                {boutiques.map((boutique) => {
+                {(allBoutiques ?? []).map((boutique) => {
                     const shop = boutique.domain;
                     return (
                         <TabsTrigger key={shop} value={shop} className="text-xs cursor-pointer">

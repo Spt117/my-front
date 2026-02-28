@@ -6,7 +6,7 @@ import DraftProducts from "./DraftProducts";
 
 export default async function Page({ params }: { params: Promise<{ shopId: string }> }) {
     const { shopId } = await params;
-    const boutique = boutiqueFromId(Number(shopId));
+    const boutique = await boutiqueFromId(Number(shopId));
 
     try {
         const url = `${pokeUriServer}/shopify/draft-products?domain=${boutique?.domain}`;

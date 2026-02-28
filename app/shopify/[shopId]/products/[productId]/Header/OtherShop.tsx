@@ -1,7 +1,6 @@
 import { brandTypes, getProductTypeKey, TProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { boutiqueFromDomain, boutiques } from "@/params/paramsShopify";
 import { IconPoint } from "@tabler/icons-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -12,7 +11,8 @@ import useProductStore from "../storeProduct";
 export default function OtherShop() {
     const { idsOtherShop, setIdsOtherShop } = useProductStore();
     const [loading, setLoading] = useState(false);
-    const { openDialog, shopifyBoutique, setSelectedType, setSelectedBrand, product } = useShopifyStore();
+    const { openDialog, shopifyBoutique, setSelectedType, setSelectedBrand, product, allBoutiques } = useShopifyStore();
+    const boutiques = allBoutiques ?? [];
 
     useEffect(() => {
         const brand = brandTypes.find((b) => product?.tags.includes(b));
@@ -45,7 +45,8 @@ export default function OtherShop() {
             {loading && <Spinner />}
             {!loading &&
                 idsOtherShop.map((id) => {
-                    const boutique = boutiqueFromDomain(id.domain);
+                    const boutique = boutiques.find((b) => b.domain === id.domain);
+                    if (!boutique) return null;
                     const productId = id.productId.replace("gid://shopify/Product/", "");
                     const url = `/shopify/${boutique.id}/products/${productId}`;
                     return (
@@ -64,10 +65,9 @@ export default function OtherShop() {
                 })}
             {!loading &&
                 otherShop.length > 0 &&
-                otherShop.map((b) => {
-                    const boutique = boutiqueFromDomain(b.domain);
+                otherShop.map((boutique) => {
                     return (
-                        <span key={b.domain} className="text-sm cursor-pointer relative" onClick={() => openDialog(4)}>
+                        <span key={boutique.domain} className="text-sm cursor-pointer relative" onClick={() => openDialog(4)}>
                             <IconPoint className="absolute bottom-0 right-0 text-white bg-red-600 rounded-full" size={10} />
                             <img title={boutique.publicDomain} src={boutique.flag} alt={boutique.langue} width={20} height={20} />
                         </span>

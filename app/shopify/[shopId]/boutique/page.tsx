@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { boutiques, TDomainsShopify } from "@/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { Check, Copy, Copyright, Globe, RotateCcw, Save, ShoppingBag, Store, Truck } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,8 +14,7 @@ import { updateShippingTranslation, updateShopSettings } from "./serverAction";
 export default function ShopPage() {
     const { shopId } = useParams() as { shopId: string };
     const router = useRouter();
-    const { shopSettings, shippingTranslation } = useShopifyStore();
-    const boutique = boutiques.find((b) => b.id.toString() === shopId);
+    const { shopSettings, shippingTranslation, shopifyBoutique: boutique } = useShopifyStore();
 
     const [amazonPartnerId, setAmazonPartnerId] = useState<string>("");
     const [amazonDomain, setAmazonDomain] = useState<string>("");

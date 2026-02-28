@@ -1,6 +1,7 @@
 'use client';
 
-import { boutiques, TDomainsShopify } from '@/params/paramsShopify';
+import { TDomainsShopify } from '@/params/paramsShopifyTypes';
+import useShopifyStore from '@/components/shopify/shopifyStore';
 import { useEffect, useRef } from 'react';
 import { getOrders } from './serverAction';
 import useOrdersStore from './store';
@@ -11,10 +12,11 @@ import useOrdersStore from './store';
  */
 export default function OrdersLoader() {
     const { setOrdersForShop } = useOrdersStore();
+    const { allBoutiques } = useShopifyStore();
     const loadedRef = useRef(false);
 
     useEffect(() => {
-        if (loadedRef.current) return;
+        if (loadedRef.current || !allBoutiques) return;
         loadedRef.current = true;
 
         const loadAllOrders = async () => {
@@ -22,7 +24,7 @@ export default function OrdersLoader() {
                 const data = await getOrders();
                 if (!data) return;
 
-                for (const boutique of boutiques) {
+                for (const boutique of allBoutiques) {
                     const shopOrders = data.orders.filter((order) => order.shop === boutique.domain);
                     setOrdersForShop(boutique.domain as TDomainsShopify, shopOrders);
                 }
@@ -32,7 +34,7 @@ export default function OrdersLoader() {
         };
 
         loadAllOrders();
-    }, [setOrdersForShop]);
+    }, [setOrdersForShop, allBoutiques]);
 
     return null;
 }

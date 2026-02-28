@@ -7,7 +7,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ s
     const { shopId, clientId } = await params;
     let boutique;
     try {
-        boutique = boutiqueFromId(shopId);
+        boutique = await boutiqueFromId(shopId);
     } catch (error) {
         return <ErrorPage title="Boutique introuvable" message="L'identifiant de boutique est invalide." />;
     }

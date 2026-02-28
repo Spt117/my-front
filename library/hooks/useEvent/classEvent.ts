@@ -1,4 +1,4 @@
-import { TDomainsShopify } from "@/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 
 // eventBus.ts
 export type EventCallback<T = any> = (data: T) => void;

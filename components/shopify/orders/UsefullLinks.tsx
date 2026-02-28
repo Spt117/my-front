@@ -1,4 +1,4 @@
-import { TDomainsShopify } from '@/params/paramsShopify';
+import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import * as Flags from 'country-flag-icons/react/3x2';
 import countries from 'i18n-iso-countries';
 import Image from 'next/image';

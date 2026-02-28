@@ -3,7 +3,7 @@ import { ProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { TDomainsShopify, boutiqueFromDomain, boutiques } from "@/params/paramsShopify";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { ArrowBigLeft, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,12 +12,12 @@ import { toast } from "sonner";
 import { serverActionDuplicateOtherShop } from "./serverActionDialog";
 
 export default function DuplicateOtherShop() {
-    const { closeDialog, openDialog, shopifyBoutique, product, selectedType, selectedBrand } = useShopifyStore();
+    const { closeDialog, openDialog, shopifyBoutique, product, selectedType, selectedBrand, allBoutiques } = useShopifyStore();
     const { idsOtherShop } = useProductStore();
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
 
-    const options = boutiques.filter((b) => b.domain !== shopifyBoutique?.domain && b.niche === shopifyBoutique?.niche && !idsOtherShop.find((id) => b.domain === id.domain));
+    const options = (allBoutiques ?? []).filter((b) => b.domain !== shopifyBoutique?.domain && b.niche === shopifyBoutique?.niche && !idsOtherShop.find((id) => b.domain === id.domain));
 
     const handleValidate = async (domainDest: TDomainsShopify) => {
         setLoading(true);
@@ -39,7 +39,8 @@ export default function DuplicateOtherShop() {
         if (res.message) toast.success(res.message);
         console.log(res.response);
         if (res.response?.id) {
-            const newShop = boutiqueFromDomain(domainDest);
+            const newShop = (allBoutiques ?? []).find((b) => b.domain === domainDest);
+            if (!newShop) return;
             const id = res.response.id.replace("gid://shopify/Product/", "");
             const url = `/shopify/${newShop.id}/products/${id}`;
             router.push(url);

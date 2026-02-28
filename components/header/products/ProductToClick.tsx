@@ -1,12 +1,15 @@
-import Image from "next/image";
-import { boutiqueFromDomain } from "@/params/paramsShopify";
+"use client";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { ProductGET } from "@/library/types/graph";
+import Image from "next/image";
 
 export default function ProductToClick({ product }: { product: ProductGET }) {
+    const { allBoutiques } = useShopifyStore();
     const classFlag = "w-[50px] h-[50px] relative cursor-pointer flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm text-sm text-blue-600";
     if (!product.domain) return null;
-    const boutique = boutiqueFromDomain(product.domain);
-    const shopifyUrl = `https://${boutique?.domain}/admin/products/${product.id.split("/").pop()}`;
+    const boutique = (allBoutiques ?? []).find((b) => b.domain === product.domain);
+    if (!boutique) return null;
+    const shopifyUrl = `https://${boutique.domain}/admin/products/${product.id.split("/").pop()}`;
     return (
         <a href={shopifyUrl} target="_blank" rel="noopener noreferrer">
             <div className={classFlag}>

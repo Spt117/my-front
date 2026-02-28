@@ -3,16 +3,19 @@
 import { AnalyticsPeriodSelector } from "@/components/analytics/AnalyticsPeriodSelector";
 import { PeriodType } from "@/components/analytics/AnalyticsUtils";
 import { ShopAnalyticsView } from "@/components/analytics/ShopAnalyticsView";
-import { boutiqueFromId } from "@/params/paramsShopify";
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { use, useState } from "react";
 
 export default function Page({ params }: { params: Promise<{ shopId: string }> }) {
     const { shopId } = use(params);
-    const boutique = boutiqueFromId(shopId);
+    const { allBoutiques } = useShopifyStore();
+    const boutique = allBoutiques?.find((b) => b.id === Number(shopId));
 
     const [period, setPeriod] = useState<PeriodType>('today');
     const [customStart, setCustomStart] = useState<Date>(new Date());
     const [customEnd, setCustomEnd] = useState<Date>(new Date());
+
+    if (!boutique) return null;
 
     return (
         <div className="space-y-6 p-4">

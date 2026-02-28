@@ -1,5 +1,5 @@
 import { TAffiliationTask } from "@/library/models/tasksAffiliation/tasksAffiliation";
-import { TDomainsShopify, TPublicDomainsShopify } from "@/params/paramsShopify";
+import { TDomainsShopify, TPublicDomainsShopify } from "@/params/paramsShopifyTypes";
 import { create } from "zustand";
 
 interface StoreState {

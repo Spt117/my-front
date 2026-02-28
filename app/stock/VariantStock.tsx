@@ -2,7 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { toggleBought, toggleRebuy, toggleRebuyLater } from "@/library/models/variantShopify/middlewareVariants";
 import { TVariant } from "@/library/models/variantShopify/Variant";
-import { boutiqueFromDomain, TDomainsShopify } from "@/params/paramsShopify";
+import useShopifyStore from "@/components/shopify/shopifyStore";
+import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cssCard } from "../shopify/[shopId]/products/[productId]/util";
@@ -10,6 +11,7 @@ import UpdateStock from "./UpdateStock";
 
 export function VariantStock({ domain, variant, action }: { domain: TDomainsShopify; variant: TVariant; action: () => void }) {
     const path = usePathname();
+    const { allBoutiques } = useShopifyStore();
 
     const handleRebuyChange = async () => {
         const data = await toggleRebuy(domain, variant.sku, !variant.rebuy);
@@ -25,8 +27,9 @@ export function VariantStock({ domain, variant, action }: { domain: TDomainsShop
         if (data) action();
     };
 
-    const boutique = boutiqueFromDomain(domain);
+    const boutique = (allBoutiques ?? []).find((b) => b.domain === domain);
     const idProduct = variant.idProduct.replace("gid://shopify/Product/", "");
+    if (!boutique) return null;
     const urlProduct = `/shopify/${boutique.id}/products/${idProduct}`;
 
     return (

@@ -2,8 +2,9 @@
 
 import { Package, PlusCircle, ChevronDown, CheckCircle2, Clock, Archive } from 'lucide-react';
 import { useState } from 'react';
-import { getShopIdFromDomain, extractProductId } from './AnalyticsUtils';
-import { TDomainsShopify } from '@/params/paramsShopify';
+import { extractProductId } from './AnalyticsUtils';
+import { TDomainsShopify } from '@/params/paramsShopifyTypes';
+import useShopifyStore from '@/components/shopify/shopifyStore';
 
 interface CreatedProductsTableProps {
     products: any[];
@@ -12,7 +13,8 @@ interface CreatedProductsTableProps {
 
 export function CreatedProductsTable({ products, shopDomain }: CreatedProductsTableProps) {
     const [showAll, setShowAll] = useState(false);
-    
+    const { allBoutiques } = useShopifyStore();
+
     if (products.length === 0) {
         return (
             <div className="text-center py-12 text-slate-500 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
@@ -22,7 +24,7 @@ export function CreatedProductsTable({ products, shopDomain }: CreatedProductsTa
         );
     }
 
-    const shopId = shopDomain ? getShopIdFromDomain(shopDomain) : null;
+    const shopId = shopDomain ? (allBoutiques?.find((b) => b.domain === shopDomain)?.id ?? null) : null;
     const sortedProducts = [...products].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const displayedProducts = showAll ? sortedProducts : sortedProducts.slice(0, 10);
 

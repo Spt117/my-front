@@ -2,13 +2,14 @@
 
 import { getServer } from '@/library/utils/fetchServer';
 import { pokeUriServer } from '@/library/utils/uri';
-import { boutiques } from '@/params/paramsShopify';
+import { getBoutiques } from '@/params/paramsShopify';
 
 export async function getDraftCounts(): Promise<Record<string, number>> {
     const counts: Record<string, number> = {};
 
+    const allBoutiques = await getBoutiques();
     const results = await Promise.allSettled(
-        boutiques.map(async (boutique) => {
+        allBoutiques.map(async (boutique) => {
             const url = `${pokeUriServer}/shopify/draft-products?domain=${boutique.domain}`;
             const response = await getServer(url);
             const products = response.response?.products;

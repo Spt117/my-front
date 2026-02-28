@@ -1,117 +1,68 @@
-const languesTraductions = ['français', 'anglais', 'espagnol', 'allemand'] as const;
-export type TLangueTraduction = (typeof languesTraductions)[number];
+import { IShopifyBoutiquePublic, shopifyBoutiqueService } from "@/library/pocketbase/ShopifyBoutiqueService";
 
-// 1. Définir d'abord l'interface de base sans contrainte sur domain
-export interface IShopifyBase {
-    vendor: string;
-    domain: string;
-    publicDomain: string;
-    locationHome: number;
-    langue: TLangueTraduction;
-    flag: string;
-    devise: string;
-    marketplaceAmazon: string;
-    niche: string;
-    id: number;
+// Re-export all types from the types-only file so server-side imports still work
+export type {
+    TLangueTraduction,
+    IShopifyBase,
+    TDomainsShopify,
+    TPublicDomainsShopify,
+    TVendorsShopify,
+    TLocationHome,
+    TMarketplaceAmazonBoutique,
+    IShopify,
+    TParamsDataShop,
+} from "./paramsShopifyTypes";
+export { apiVersion } from "./paramsShopifyTypes";
+
+import type { IShopifyBase, TLangueTraduction } from "./paramsShopifyTypes";
+
+function toBoutiqueBase(pb: IShopifyBoutiquePublic): IShopifyBase {
+    return {
+        vendor: pb.vendor,
+        domain: pb.domain,
+        publicDomain: pb.publicDomain,
+        locationHome: pb.locationHome,
+        langue: pb.langue as TLangueTraduction,
+        flag: pb.flag,
+        devise: pb.devise,
+        marketplaceAmazon: pb.amazonApiKey,
+        niche: pb.niche,
+        id: pb.shopId,
+    };
 }
 
-// 2. Définir le tableau des boutiques avec l'interface de base
-export const boutiques = [
-    {
-        vendor: 'Beyblade Shop',
-        domain: 'bayblade-shops.myshopify.com',
-        publicDomain: 'beyblade-shop.com',
-        locationHome: 32727892040,
-        langue: 'français',
-        flag: '/flags/fr.png',
-        devise: '€',
-        marketplaceAmazon: 'amazon.fr',
-        niche: 'beyblade',
-        id: 25754107976,
-    },
-    {
-        vendor: 'Beyblade Shop',
-        domain: 'beyblade-shopde.myshopify.com',
-        publicDomain: 'beyblade-shop.de',
-        locationHome: 63287656610,
-        langue: 'allemand',
-        flag: '/flags/de.png',
-        devise: '€',
-        marketplaceAmazon: 'amazon.de',
-        niche: 'beyblade',
-        id: 57623052450,
-    },
-    {
-        vendor: 'Beyblade Toys',
-        domain: 'beyblade-toyss.myshopify.com',
-        publicDomain: 'beyblade-toys.com',
-        langue: 'anglais',
-        locationHome: 87601742141,
-        flag: '/flags/us.png',
-        devise: '$',
-        marketplaceAmazon: 'amazon.com',
-        niche: 'beyblade',
-        id: 79087436093,
-    },
-    {
-        vendor: 'Cartes Pokémon',
-        domain: 'toupies-beyblade.myshopify.com',
-        publicDomain: 'cartes-pokemon.com',
-        locationHome: 34463252529,
-        langue: 'français',
-        flag: '/flags/fr.png',
-        devise: '€',
-        marketplaceAmazon: 'amazon.fr',
-        niche: 'pokemon',
-        id: 24795250737,
-    },
-] as const satisfies readonly IShopifyBase[];
-
-// 3. Dériver les types après la définition du tableau
-export type TBoutiques = typeof boutiques;
-export type TDomainsShopify = TBoutiques[number]['domain'];
-export type TPublicDomainsShopify = TBoutiques[number]['publicDomain'];
-export type TVendorsShopify = TBoutiques[number]['vendor'];
-export type TLocationHome = TBoutiques[number]['locationHome'];
-export type TMarketplaceAmazonBoutique = TBoutiques[number]['marketplaceAmazon'];
-
-// 4. Maintenant définir l'interface finale avec le type strict pour domain
-export interface IShopify {
-    vendor: TVendorsShopify;
-    domain: TDomainsShopify;
-    locationHome: TLocationHome;
-    langue: TLangueTraduction;
-    publicDomain: TPublicDomainsShopify;
-    marketplaceAmazon: TMarketplaceAmazonBoutique;
-    flag: string;
-    devise: string;
-    niche: TBoutiques[number]['niche'];
-    id: TBoutiques[number]['id'];
+export async function getBoutiques(): Promise<IShopifyBase[]> {
+    const records = await shopifyBoutiqueService.getAll();
+    return records.map(toBoutiqueBase);
 }
 
-export const domainsBeyblade = boutiques.filter((b) => b.vendor.includes('Beyblade')).map((b) => b.domain);
+export async function boutiqueFromId(id: number | string): Promise<IShopifyBase> {
+    const record = await shopifyBoutiqueService.getByShopId(Number(id));
+    if (!record) throw new Error(`Boutique non trouvée pour l'id: ${id}`);
+    return toBoutiqueBase(record);
+}
 
-export const boutiqueFromLocation = (locationHome: TLocationHome) => {
-    const b = boutiques.find((b) => b.locationHome === Number(locationHome));
-    if (!b) throw new Error(`Boutique non trouvée pour la locationHome: ${locationHome}`);
-    return b;
-};
-export const boutiqueFromDomain: (domain: TDomainsShopify) => IShopify = (domain: TDomainsShopify) => {
-    const b = boutiques.find((b) => b.domain === domain);
-    if (!b) throw new Error(`Boutique non trouvée pour le domaine: ${domain}`);
-    return b;
-};
-export const boutiqueFromPublicDomain: (domain: TPublicDomainsShopify) => IShopify = (domain: TPublicDomainsShopify) => {
-    const b = boutiques.find((b) => b.publicDomain === domain);
-    if (!b) throw new Error(`Boutique non trouvée pour le domaine public: ${domain}`);
-    return b;
-};
-export const boutiqueFromId: (id: number | string) => IShopify = (id: number | string) => {
-    const b = boutiques.find((b) => b.id === Number(id));
-    if (!b) throw new Error(`Boutique non trouvée pour l'id: ${id}`);
-    return b;
-};
-export const apiVersion = '2024-01';
+export async function boutiqueFromDomain(domain: string): Promise<IShopifyBase> {
+    const record = await shopifyBoutiqueService.getByDomain(domain);
+    if (!record) throw new Error(`Boutique non trouvée pour le domaine: ${domain}`);
+    return toBoutiqueBase(record);
+}
 
-const paramsDataShop = ['tags', 'productTypes', 'collections', 'salesChannels', 'productsMissingChannels', 'collectionGid'] as const;
-export type TParamsDataShop = (typeof paramsDataShop)[number];
+export async function boutiqueFromPublicDomain(domain: string): Promise<IShopifyBase> {
+    const records = await shopifyBoutiqueService.getAll();
+    const found = records.find((r) => r.publicDomain === domain);
+    if (!found) throw new Error(`Boutique non trouvée pour le domaine public: ${domain}`);
+    return toBoutiqueBase(found);
+}
+
+export async function boutiqueFromLocation(locationHome: number): Promise<IShopifyBase> {
+    const records = await shopifyBoutiqueService.getAll();
+    const found = records.find((r) => r.locationHome === locationHome);
+    if (!found) throw new Error(`Boutique non trouvée pour la locationHome: ${locationHome}`);
+    return toBoutiqueBase(found);
+}
+
+export async function getDomainsBeyblade(): Promise<string[]> {
+    const records = await shopifyBoutiqueService.getAll();
+    return records.filter((r) => r.vendor.includes('Beyblade')).map((r) => r.domain);
+}

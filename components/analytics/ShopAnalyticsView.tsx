@@ -2,7 +2,7 @@
 
 import { AnalyticsData, getAnalytics } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { IShopify } from "@/params/paramsShopify";
+import { IShopify } from "@/params/paramsShopifyTypes";
 import { DollarSign, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
