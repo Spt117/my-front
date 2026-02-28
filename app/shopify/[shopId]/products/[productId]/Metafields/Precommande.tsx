@@ -8,6 +8,7 @@ import { useDataProduct } from "@/library/hooks/useDataProduct";
 import { CalendarDays, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { deleteMetafield } from "../serverAction";
 
 export default function Precommande() {
     const { product, shopifyBoutique } = useShopifyStore();
@@ -64,13 +65,7 @@ export default function Precommande() {
     const handleDelete = async () => {
         setLoading(true);
         try {
-            const res = await updateMetafield({
-                domain: shopifyBoutique.domain,
-                productGid: product.id,
-                key: "precommande",
-                namespace: "custom",
-                value: "",
-            });
+            const res = await deleteMetafield(shopifyBoutique.domain, product.id, "precommande");
 
             if (res?.error) {
                 toast.error(res.error);
@@ -115,9 +110,7 @@ export default function Precommande() {
                 )}
             </div>
 
-            {!precommandeMeta?.value && (
-                <p className="text-sm text-muted-foreground">Aucune date de précommande définie. Sélectionnez une date pour activer le mode précommande.</p>
-            )}
+            {!precommandeMeta?.value && <p className="text-sm text-muted-foreground">Aucune date de précommande définie. Sélectionnez une date pour activer le mode précommande.</p>}
         </div>
     );
 }
