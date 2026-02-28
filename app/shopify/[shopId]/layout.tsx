@@ -1,7 +1,7 @@
 import { CanauxPublication, getDataBoutique } from "@/components/shopify/serverActions";
 import { ResponseServer } from "@/components/shopify/typesShopify";
 import { SegmentParams } from "@/library/types/utils";
-import { boutiqueFromId } from "@/params/paramsShopify";
+import { boutiqueFromId } from "@/library/pocketbase/ShopifyBoutiqueService";
 import { ShopifyCollection } from "./collections/utils";
 import ShopLayoutClient from "./ShopLayoutClient";
 import { getShippingTranslation, getShopSettings, ShippingTranslation } from "./boutique/serverAction";

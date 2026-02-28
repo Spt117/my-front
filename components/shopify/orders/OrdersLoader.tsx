@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
-import { TDomainsShopify } from '@/params/paramsShopifyTypes';
-import useShopifyStore from '@/components/shopify/shopifyStore';
-import { useEffect, useRef } from 'react';
-import { getOrders } from './serverAction';
-import useOrdersStore from './store';
+import useShopifyStore from "@/components/shopify/shopifyStore";
+import { useEffect, useRef } from "react";
+import { getOrders } from "./serverAction";
+import useOrdersStore from "./store";
 
 /**
  * Component that loads orders for all shops in the background
@@ -26,10 +25,10 @@ export default function OrdersLoader() {
 
                 for (const boutique of allBoutiques) {
                     const shopOrders = data.orders.filter((order) => order.shop === boutique.domain);
-                    setOrdersForShop(boutique.domain as TDomainsShopify, shopOrders);
+                    setOrdersForShop(boutique.domain as string, shopOrders);
                 }
             } catch (error) {
-                console.error('Error loading orders:', error);
+                console.error("Error loading orders:", error);
             }
         };
 

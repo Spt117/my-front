@@ -1,4 +1,3 @@
-import { TDomainsShopify, TVendorsShopify } from '../../params/paramsShopify';
 
 type GID = `gid://shopify/${string}`;
 
@@ -106,7 +105,7 @@ export interface ProductGET {
     handle: string;
     title: string;
     status: ProductStatus;
-    vendor: TVendorsShopify;
+    vendor: string;
     productType: string;
     seo: {
         title: string;
@@ -125,14 +124,14 @@ export interface ProductGET {
     variants?: Connection<ProductVariantNodeGET>;
     metafields: Connection<TMetafield>;
     resourcePublicationsV2: ResourcePublicationsV2Connection;
-    domain?: TDomainsShopify;
+    domain?: string;
 }
 
 export interface ProductPOST {
     handle: string;
     title: string;
     status: ProductStatus;
-    vendor: TVendorsShopify;
+    vendor: string;
     productType: string;
     category?: string;
     tags: string[];

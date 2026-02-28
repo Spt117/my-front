@@ -1,4 +1,3 @@
-import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { ProductStatus } from "@/library/types/graph";
 import { create } from "zustand";
 import { TCanal } from "./util";
@@ -30,8 +29,8 @@ interface StoreState {
     setStatut: (statut: ProductStatus) => void;
     canauxProduct: TCanal[];
     setCanauxProduct: (canaux: TCanal[]) => void;
-    idsOtherShop: { domain: TDomainsShopify; variantId: string; productId: string }[];
-    setIdsOtherShop: (ids: { domain: TDomainsShopify; variantId: string; productId: string }[]) => void;
+    idsOtherShop: { domain: string; variantId: string; productId: string }[];
+    setIdsOtherShop: (ids: { domain: string; variantId: string; productId: string }[]) => void;
     setTypeProduct: (type: string) => void;
     typeProduct: string;
 }

@@ -2,7 +2,7 @@
 
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { useEventListener } from "@/library/hooks/useEvent/useEvents";
-import { IShopifyBase } from "@/params/paramsShopifyTypes";
+import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 

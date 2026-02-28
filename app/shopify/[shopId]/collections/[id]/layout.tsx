@@ -1,7 +1,7 @@
 import { getDataBoutique } from "@/components/shopify/serverActions";
 import { ResponseServer } from "@/components/shopify/typesShopify";
 import { LayoutPropsShopify } from "@/components/shopify/utils";
-import { boutiqueFromId } from "@/params/paramsShopify";
+import { boutiqueFromId } from "@/library/pocketbase/ShopifyBoutiqueService";
 import { ShopifyCollectionWithProducts } from "../utils";
 import CollectionLayoutClient from "./CollectionLayoutClient";
 

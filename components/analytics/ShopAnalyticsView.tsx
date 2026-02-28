@@ -2,7 +2,7 @@
 
 import { AnalyticsData, getAnalytics } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { IShopify } from "@/params/paramsShopifyTypes";
+import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
 import { DollarSign, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -11,7 +11,7 @@ import { formatCurrency, getDateRange, PeriodType } from "./AnalyticsUtils";
 import { KPICard } from "./KPICard";
 
 interface ShopAnalyticsViewProps {
-    boutique: IShopify;
+    boutique: IShopifyBase;
     period: PeriodType;
     customStart: Date;
     customEnd: Date;

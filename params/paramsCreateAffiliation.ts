@@ -1,4 +1,4 @@
-import { getBoutiques } from './paramsShopify';
+import { getBoutiques } from '@/library/pocketbase/ShopifyBoutiqueService';
 import { sitesWordpress } from './paramsWordpress';
 
 export const niches = ['Pokémon', 'Beyblade'] as const;

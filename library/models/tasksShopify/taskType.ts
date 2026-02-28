@@ -1,5 +1,4 @@
 import { Schema } from "mongoose";
-import { TDomainsShopify } from "../../../params/paramsShopify";
 
 const taskStatus = ["scheduled", "done", "error", "canceled", "processing"] as const;
 export type TStatusTask = (typeof taskStatus)[number];
@@ -14,7 +13,7 @@ export type TTaskShopifyProducts = {
     stockActivation: number;
     productId: string;
     variantId: string;
-    boutique: TDomainsShopify;
+    boutique: string;
     priceUpdate: number;
     compareAtPrice: number;
 };

@@ -3,14 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { updateVariantStock } from "../serverAction";
 
 interface StockAdjustProps {
-    domain: TDomainsShopify;
+    domain: string;
     variantGid: string;
     quantity: number;
 }

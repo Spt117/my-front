@@ -2,7 +2,6 @@
 
 import useCollectionStore from '@/app/shopify/[shopId]/collections/storeCollections';
 import Selecteur from '@/components/selecteur';
-import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import useOrdersStore from '../shopify/orders/store';
@@ -16,7 +15,7 @@ export default function ShopifySelect() {
     const path = usePathname();
     const router = useRouter();
 
-    const getOrderCounts = (domain: TDomainsShopify) => {
+    const getOrderCounts = (domain: string) => {
         const groupedOrders = ordersByShop[domain] || [];
         let orderCount = 0;
         let preorderCount = 0;

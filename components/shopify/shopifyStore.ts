@@ -1,13 +1,13 @@
-import { TCanal } from '@/app/shopify/[shopId]/products/[productId]/util';
-import { ShippingTranslation } from '@/app/shopify/[shopId]/boutique/serverAction';
-import { TVariant } from '@/library/models/variantShopify/Variant';
-import { ShopifyCustomer } from '@/library/shopify/clients';
-import { ShopifyOrder } from '@/library/shopify/orders';
-import { ProductGET } from '@/library/types/graph';
-import { TSearchMode } from '@/params/menu';
-import { IShopifyBase, TDomainsShopify } from '@/params/paramsShopifyTypes';
-import { create } from 'zustand';
-import { TBrand, TProductType } from './ProductType';
+import { ShippingTranslation } from "@/app/shopify/[shopId]/boutique/serverAction";
+import { TCanal } from "@/app/shopify/[shopId]/products/[productId]/util";
+import { TVariant } from "@/library/models/variantShopify/Variant";
+import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
+import { ShopifyCustomer } from "@/library/shopify/clients";
+import { ShopifyOrder } from "@/library/shopify/orders";
+import { ProductGET } from "@/library/types/graph";
+import { TSearchMode } from "@/params/menu";
+import { create } from "zustand";
+import { TBrand, TProductType } from "./ProductType";
 
 interface StoreState {
     searchTerm: string;
@@ -48,7 +48,7 @@ interface StoreState {
     shippingTranslation: ShippingTranslation | null;
     setShippingTranslation: (t: ShippingTranslation | null) => void;
     draftCountByShop: Record<string, number>;
-    setDraftCountForShop: (shop: TDomainsShopify, count: number) => void;
+    setDraftCountForShop: (shop: string, count: number) => void;
 }
 
 const useShopifyStore = create<StoreState>((set) => ({
@@ -57,7 +57,7 @@ const useShopifyStore = create<StoreState>((set) => ({
     loading: false,
 
     setLoading: (loading) => set({ loading }),
-    searchTerm: '',
+    searchTerm: "",
     setSearchTerm: (term) => set({ searchTerm: term }),
     shopifyBoutique: null,
     setShopifyBoutique: (boutique) => set({ shopifyBoutique: boutique }),
@@ -84,16 +84,17 @@ const useShopifyStore = create<StoreState>((set) => ({
     closeDialog: () => set({ dialogOpen: 0 }),
     canauxBoutique: [],
     setCanauxBoutique: (canauxBoutique) => set({ canauxBoutique }),
-    searchMode: 'standard',
+    searchMode: "standard",
     setSearchMode: (mode) => set({ searchMode: mode }),
     shopSettings: null,
     setShopSettings: (settings) => set({ shopSettings: settings }),
     shippingTranslation: null,
     setShippingTranslation: (t) => set({ shippingTranslation: t }),
     draftCountByShop: {},
-    setDraftCountForShop: (shop, count) => set((state) => ({
-        draftCountByShop: { ...state.draftCountByShop, [shop]: count },
-    })),
+    setDraftCountForShop: (shop, count) =>
+        set((state) => ({
+            draftCountByShop: { ...state.draftCountByShop, [shop]: count },
+        })),
 }));
 
 export default useShopifyStore;

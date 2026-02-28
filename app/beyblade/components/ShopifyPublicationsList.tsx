@@ -2,7 +2,7 @@
 
 import { createBeybladeOnShop, getAmazonAffiliationPrice, getBeybladePublications, updateAsinPrice, AsinRecord, ShopifyPublicationWithContent } from "@/app/beycommunity/actions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { IShopifyBase } from "@/params/paramsShopifyTypes";
+import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
 import { PublicationStatus } from "@/library/pocketbase/ShopifyPublicationService";
 import { IconAlertTriangle, IconBrandAmazon, IconCheck, IconClock, IconDatabase, IconDatabaseOff, IconLoader2, IconPlus, IconShoppingCart, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";

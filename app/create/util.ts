@@ -1,11 +1,10 @@
 import { TAffiliationTask } from '@/library/models/tasksAffiliation/tasksAffiliation';
 import { TBeybladeProducts, TPokemonProducts } from '@/params/paramsCreateAffiliation';
-import { TPublicDomainsShopify } from '@/params/paramsShopifyTypes';
 import { TDomainWordpress } from '@/params/paramsWordpress';
 
 export interface ICreateAffiliationProduct<T> {
     idTask?: string;
-    website: TDomainWordpress | TPublicDomainsShopify;
+    website: TDomainWordpress | string;
     marketplace: string;
     product: TPokemonProducts | TBeybladeProducts;
     asin: string;

@@ -2,7 +2,7 @@
 
 import { getServer } from '@/library/utils/fetchServer';
 import { pokeUriServer } from '@/library/utils/uri';
-import { getBoutiques } from '@/params/paramsShopify';
+import { getBoutiques } from '@/library/pocketbase/ShopifyBoutiqueService';
 
 export async function getDraftCounts(): Promise<Record<string, number>> {
     const counts: Record<string, number> = {};

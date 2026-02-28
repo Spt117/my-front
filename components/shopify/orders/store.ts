@@ -1,5 +1,4 @@
 import { GroupedShopifyOrder, ShopifyOrder } from "@/library/shopify/orders";
-import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { create } from "zustand";
 
 interface StoreState {
@@ -8,9 +7,9 @@ interface StoreState {
     orders: GroupedShopifyOrder[];
     setOrders: (orders: GroupedShopifyOrder[]) => void;
     // Store orders by shop domain
-    ordersByShop: Record<TDomainsShopify, GroupedShopifyOrder[]>;
-    setOrdersForShop: (shop: TDomainsShopify, orders: GroupedShopifyOrder[]) => void;
-    getOrderCountByShop: (shop: TDomainsShopify) => number;
+    ordersByShop: Record<string, GroupedShopifyOrder[]>;
+    setOrdersForShop: (shop: string, orders: GroupedShopifyOrder[]) => void;
+    getOrderCountByShop: (shop: string) => number;
     filterOrders: GroupedShopifyOrder[];
     setFilterOrders: (orders: GroupedShopifyOrder[]) => void;
     mode: "orders" | "products";
@@ -27,13 +26,14 @@ const useOrdersStore = create<StoreState>((set, get) => ({
     orders: [],
     setOrders: (orders) => set({ orders }),
     // Orders by shop - preserves orders for all shops
-    ordersByShop: {} as Record<TDomainsShopify, GroupedShopifyOrder[]>,
-    setOrdersForShop: (shop, orders) => set((state) => ({
-        ordersByShop: {
-            ...state.ordersByShop,
-            [shop]: orders,
-        },
-    })),
+    ordersByShop: {} as Record<string, GroupedShopifyOrder[]>,
+    setOrdersForShop: (shop, orders) =>
+        set((state) => ({
+            ordersByShop: {
+                ...state.ordersByShop,
+                [shop]: orders,
+            },
+        })),
     getOrderCountByShop: (shop) => {
         const state = get();
         return state.ordersByShop[shop]?.length || 0;
@@ -48,7 +48,6 @@ const useOrdersStore = create<StoreState>((set, get) => ({
     setHidePreorders: (hide) => set({ hidePreorders: hide }),
 }));
 
-
 export default useOrdersStore;
 
 export interface ProductInOrder {
@@ -60,4 +59,3 @@ export interface ProductInOrder {
     sku: string;
     fulfillmentStatus: "unfulfilled" | "fulfilled";
 }
-

@@ -1,5 +1,5 @@
 import MappingClients from '@/components/shopify/clients/MappingClients';
-import { boutiqueFromId } from '@/params/paramsShopify';
+import { boutiqueFromId } from '@/library/pocketbase/ShopifyBoutiqueService';
 
 export default async function ClientsPage({ params }: { params: Promise<{ shopId: string }> }) {
     const { shopId } = await params;

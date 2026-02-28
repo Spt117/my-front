@@ -1,7 +1,7 @@
 import ClientDetail from '@/components/shopify/clients/ClientDetail';
 import { getFullClient } from '@/components/shopify/clients/serverAction';
 import ErrorPage from '@/components/layout/ErrorPage';
-import { boutiqueFromId } from '@/params/paramsShopify';
+import { boutiqueFromId } from '@/library/pocketbase/ShopifyBoutiqueService';
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ shopId: string; clientId: string }> }) {
     const { shopId, clientId } = await params;

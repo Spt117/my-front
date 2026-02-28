@@ -1,9 +1,8 @@
-import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import * as Flags from 'country-flag-icons/react/3x2';
 import countries from 'i18n-iso-countries';
 import Image from 'next/image';
 
-export default function UsefullLinks({ domain, orderId, country }: { domain: TDomainsShopify; orderId: string; country: string }) {
+export default function UsefullLinks({ domain, orderId, country }: { domain: string; orderId: string; country: string }) {
     const colissimoUrl = `https://${domain}/admin/apps/colissimo-officiel/home?id=${orderId.split('/').pop()}`;
     const invoiceUrl = `https://${domain}/admin/apps/simple-invoice-1/orders/invoice/quick-edit?id=${orderId.split('/').pop()}`;
     const orderUrl = `https://${domain}/admin/orders/${orderId.split('/').pop()}`;

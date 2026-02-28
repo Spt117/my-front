@@ -1,7 +1,7 @@
 'use client';
 
 import useShopifyStore from '@/components/shopify/shopifyStore';
-import { IShopifyBase } from '@/params/paramsShopifyTypes';
+import { IShopifyBase } from '@/library/pocketbase/ShopifyBoutiqueService';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 

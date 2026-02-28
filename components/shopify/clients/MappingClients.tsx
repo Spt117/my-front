@@ -1,5 +1,4 @@
 'use client';
-import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import { Search, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import useShopifyStore from '../shopifyStore';
@@ -9,7 +8,7 @@ import useClientsStore from './store';
 
 import { toast } from 'sonner';
 
-export default function MappingClients({ shopId, domain }: { shopId: string; domain: TDomainsShopify }) {
+export default function MappingClients({ shopId, domain }: { shopId: string; domain: string }) {
     const { clients, setClients, filterClients, setFilterClients, isLoading, setIsLoading } = useClientsStore();
     const { searchTerm, clientsSearch } = useShopifyStore();
     const [searchQuery, setSearchQuery] = useState('');

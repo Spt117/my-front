@@ -1,4 +1,3 @@
-import { TDomainsShopify } from '../../params/paramsShopify';
 import { GroupedShopifyOrder } from './orders';
 
 export interface ShopMoney {
@@ -29,7 +28,7 @@ export interface ShopifyCustomer {
     updatedAt: string;
     note?: string;
     tags: string[];
-    shop?: TDomainsShopify;
+    shop?: string;
 }
 
 export interface FullShopifyCustomer extends ShopifyCustomer {

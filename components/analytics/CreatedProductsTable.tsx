@@ -3,12 +3,11 @@
 import { Package, PlusCircle, ChevronDown, CheckCircle2, Clock, Archive } from 'lucide-react';
 import { useState } from 'react';
 import { extractProductId } from './AnalyticsUtils';
-import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import useShopifyStore from '@/components/shopify/shopifyStore';
 
 interface CreatedProductsTableProps {
     products: any[];
-    shopDomain?: TDomainsShopify;
+    shopDomain?: string;
 }
 
 export function CreatedProductsTable({ products, shopDomain }: CreatedProductsTableProps) {

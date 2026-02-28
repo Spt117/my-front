@@ -1,8 +1,7 @@
-import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 
 export interface IGetProduct {
     productId: string;
-    domain: TDomainsShopify;
+    domain: string;
 }
 
 export interface ITagRequest extends IGetProduct {
@@ -21,7 +20,7 @@ export interface ResponseServer<T> {
 
 export interface IBulkProductsAction<T extends string = string> {
     productsId: string[];
-    domain: TDomainsShopify;
+    domain: string;
     actionType: T;
 }
 

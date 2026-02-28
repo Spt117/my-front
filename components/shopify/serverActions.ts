@@ -2,18 +2,14 @@
 
 import { ShopifyCollection, ShopifyCollectionWithProducts } from "@/app/shopify/[shopId]/collections/utils";
 import { variantController } from "@/library/models/variantShopify/variantController";
+import { TParamsDataShop, boutiqueFromDomain, getBoutiques } from "@/library/pocketbase/ShopifyBoutiqueService";
 import { GroupedShopifyOrder } from "@/library/shopify/orders";
 import { ProductGET } from "@/library/types/graph";
 import { getServer, postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
-import { TDomainsShopify, TParamsDataShop, boutiqueFromDomain, getBoutiques } from "@/params/paramsShopify";
 import { IGetProduct, IMetafieldRequest, ITagRequest, ResponseServer } from "./typesShopify";
 
-export async function getDataBoutique(
-    domain: TDomainsShopify,
-    param: TParamsDataShop,
-    id?: string,
-): Promise<ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[] | ProductGET[] | ShopifyCollectionWithProducts | null>> {
+export async function getDataBoutique(domain: string, param: TParamsDataShop, id?: string): Promise<ResponseServer<string[] | CanauxPublication[] | ShopifyCollection[] | ProductGET[] | ShopifyCollectionWithProducts | null>> {
     const url = `${pokeUriServer}/shopify/data-shop?domain=${domain}&param=${param}${id ? `&id=${id}` : ""}`;
     const response = await getServer(url);
     return response;
@@ -25,7 +21,7 @@ export async function getProduct(data: IGetProduct): Promise<ResponseServer<Prod
     return response;
 }
 
-export async function getOrderById(domain: TDomainsShopify, orderId: string): Promise<ResponseServer<GroupedShopifyOrder> | null> {
+export async function getOrderById(domain: string, orderId: string): Promise<ResponseServer<GroupedShopifyOrder> | null> {
     const url = `${pokeUriServer}/shopify/get-order-by-id`;
     const response = await postServer(url, { domain, orderId });
     return response;
@@ -59,11 +55,11 @@ export interface CanauxPublication {
     name: string;
 }
 
-export async function getIdsVariants(domain: TDomainsShopify, sku: string) {
+export async function getIdsVariants(domain: string, sku: string) {
     const boutique = await boutiqueFromDomain(domain);
     const allBoutiques = await getBoutiques();
     const boutiquesTiFetch = allBoutiques.filter((b) => b.niche === boutique.niche);
-    const idsVariants: { shop: TDomainsShopify; idVariant: string; idProduct: string }[] = [];
+    const idsVariants: { shop: string; idVariant: string; idProduct: string }[] = [];
     for (const b of boutiquesTiFetch) {
         const variant = await variantController(b.domain).getVariantBySku(sku);
         if (variant) {
@@ -72,7 +68,7 @@ export async function getIdsVariants(domain: TDomainsShopify, sku: string) {
     }
     return idsVariants;
 }
-export async function deleteLooxReview(domain: TDomainsShopify, productGid: string, reviewIndex: number): Promise<ResponseServer<boolean> | null> {
+export async function deleteLooxReview(domain: string, productGid: string, reviewIndex: number): Promise<ResponseServer<boolean> | null> {
     const url = `${pokeUriServer}/shopify/delete-loox-review`;
     const response = await postServer(url, { domain, productGid, reviewIndex });
     return response;

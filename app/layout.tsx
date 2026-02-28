@@ -2,7 +2,7 @@ import BodyDialogue from "@/components/layout/dialogues/BodyDialogue";
 import MySpinner from "@/components/layout/my-spinner";
 import BackendProvider from "@/components/layout/providers/BackendProvider";
 import Providers from "@/components/layout/providers/Providers";
-import { getBoutiques } from "@/params/paramsShopify";
+import { getBoutiques } from "@/library/pocketbase/ShopifyBoutiqueService";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";

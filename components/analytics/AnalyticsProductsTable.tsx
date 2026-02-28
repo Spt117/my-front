@@ -1,6 +1,5 @@
 'use client';
 
-import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import { ChevronDown, Package } from 'lucide-react';
 import { useState } from 'react';
 import { OrderedProduct } from '@/app/(home)/serverAction';
@@ -9,7 +8,7 @@ import useShopifyStore from '@/components/shopify/shopifyStore';
 
 interface ProductsTableProps {
     products: OrderedProduct[];
-    shopDomain?: TDomainsShopify;
+    shopDomain?: string;
 }
 
 export function AnalyticsProductsTable({ products, shopDomain }: ProductsTableProps) {

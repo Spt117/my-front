@@ -1,12 +1,11 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { LineItemNode } from "@/library/shopify/orders";
-import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { AlertTriangle, ArrowUpRight, Box, Calendar, Tag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function ProductSection({ node, domain }: { node: LineItemNode; domain: TDomainsShopify }) {
+export default function ProductSection({ node, domain }: { node: LineItemNode; domain: string }) {
     const { allBoutiques } = useShopifyStore();
     const idProduct = node.variant?.product.id.split("/").pop();
     const boutique = (allBoutiques ?? []).find((b) => b.domain === domain);

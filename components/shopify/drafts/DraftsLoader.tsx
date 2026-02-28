@@ -1,7 +1,6 @@
 'use client';
 
 import { useEventListener } from '@/library/hooks/useEvent/useEvents';
-import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import { useCallback, useEffect, useRef } from 'react';
 import useShopifyStore from '../shopifyStore';
 import { getDraftCounts } from './serverAction';
@@ -14,7 +13,7 @@ export default function DraftsLoader() {
         try {
             const counts = await getDraftCounts();
             for (const [domain, count] of Object.entries(counts)) {
-                setDraftCountForShop(domain as TDomainsShopify, count);
+                setDraftCountForShop(domain as string, count);
             }
         } catch (error) {
             console.error('Error loading draft counts:', error);

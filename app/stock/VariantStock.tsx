@@ -3,13 +3,12 @@ import { Switch } from "@/components/ui/switch";
 import { toggleBought, toggleRebuy, toggleRebuyLater } from "@/library/models/variantShopify/middlewareVariants";
 import { TVariant } from "@/library/models/variantShopify/Variant";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cssCard } from "../shopify/[shopId]/products/[productId]/util";
 import UpdateStock from "./UpdateStock";
 
-export function VariantStock({ domain, variant, action }: { domain: TDomainsShopify; variant: TVariant; action: () => void }) {
+export function VariantStock({ domain, variant, action }: { domain: string; variant: TVariant; action: () => void }) {
     const path = usePathname();
     const { allBoutiques } = useShopifyStore();
 

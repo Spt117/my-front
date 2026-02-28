@@ -1,5 +1,5 @@
 "use client";
-import { IShopifyBase } from "@/params/paramsShopifyTypes";
+import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
 import { SessionProvider } from "next-auth/react";
 import SearchProvider from "./SearchProvider";
 import ShortCutProvider from "./ShortCutProvider";

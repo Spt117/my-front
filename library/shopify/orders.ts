@@ -1,6 +1,5 @@
 // Types pour l'objet commande Shopify
 
-import { TDomainsShopify } from "../../params/paramsShopify";
 
 interface ShopMoney {
     amount: string;
@@ -110,7 +109,7 @@ export interface ShopifyOrder {
     customer: Customer;
     shippingAddress: ShippingAddress;
     lineItems: LineItems;
-    shop: TDomainsShopify;
+    shop: string;
 }
 
 export interface IShopifyOrderResponse {
@@ -143,5 +142,5 @@ export interface GroupedShopifyOrder {
     customer: Customer;
     shippingAddress: ShippingAddress;
     lineItems: LineItems;
-    shop: TDomainsShopify;
+    shop: string;
 }

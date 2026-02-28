@@ -1,5 +1,4 @@
 import { Schema } from "mongoose";
-import { TDomainsShopify } from "../../../params/paramsShopify";
 
 export type TVariant = {
     title: string;

@@ -2,7 +2,6 @@
 
 import { LineItemNode } from "@/library/shopify/orders";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { Check, CheckCircle2, ExternalLink, Loader2, Package, RotateCcw, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +12,7 @@ import { cancelFulfillment, fulfillLineItems, Fulfillment, FulfillmentOrder, get
 
 interface FulfillProductSectionProps {
     lineItems: Array<{ node: LineItemNode }>;
-    domain: TDomainsShopify;
+    domain: string;
     orderIds: string[];
     onOrderUpdated?: () => void;
 }

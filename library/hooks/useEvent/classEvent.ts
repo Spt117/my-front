@@ -1,4 +1,3 @@
-import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 
 // eventBus.ts
 export type EventCallback<T = any> = (data: T) => void;
@@ -56,8 +55,8 @@ class CEvent<T extends EventMap = EventMap> {
 export interface AppEvents {
     "orders/paid": { shop: string };
     "orders/fulfilled": { name: string };
-    "inventory_levels/update": { domain: TDomainsShopify };
-    "products/update": { domain: TDomainsShopify; sku: string; productId: string; data?: any };
-    "products/create": { domain: TDomainsShopify; sku: string; productId: string; data?: any };
+    "inventory_levels/update": { domain: string };
+    "products/update": { domain: string; sku: string; productId: string; data?: any };
+    "products/create": { domain: string; sku: string; productId: string; data?: any };
 }
 export const myEvents = new CEvent<AppEvents>();

@@ -7,17 +7,16 @@ import { variantController } from "@/library/models/variantShopify/variantContro
 import { ProductGET, TMetafieldKeys } from "@/library/types/graph";
 import { getServer, postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
-import { TDomainsShopify } from "@/params/paramsShopify";
 import { TFieldProduct, TFieldVariant } from "./util";
 
-export async function updateVariant(domain: TDomainsShopify, productGid: string, variantGid: string, field: TFieldVariant, value: number | string | boolean, extra?: any) {
+export async function updateVariant(domain: string, productGid: string, variantGid: string, field: TFieldVariant, value: number | string | boolean, extra?: any) {
     const url = `${pokeUriServer}/shopify/update-variant`;
     const data = { domain, productGid, variantGid, field, value, extra };
     const response = await postServer(url, data);
     return response;
 }
 
-export const updateVariantStock = async (domain: TDomainsShopify, variantGid: string, quantity: number) => {
+export const updateVariantStock = async (domain: string, variantGid: string, quantity: number) => {
     const url = `${pokeUriServer}/shopify/update-stock`;
     console.log(url);
 
@@ -27,72 +26,72 @@ export const updateVariantStock = async (domain: TDomainsShopify, variantGid: st
 };
 
 // Mise à jour SKU locale (MongoDB uniquement)
-export async function updateSkuLocal(domain: TDomainsShopify, id: string, sku: string) {
+export async function updateSkuLocal(domain: string, id: string, sku: string) {
     const res = await variantController(domain).updateSkuById(id, sku);
     return res;
 }
 
-export async function updateProduct(domain: TDomainsShopify, productGid: string, field: TFieldProduct, value: string) {
+export async function updateProduct(domain: string, productGid: string, field: TFieldProduct, value: string) {
     const url = `${pokeUriServer}/shopify/update-product`;
     const data = { domain, productGid, field, value };
     const response = await postServer(url, data);
     return response;
 }
 
-export async function createProductFromTitle(domain: TDomainsShopify, title: string, asin?: string) {
+export async function createProductFromTitle(domain: string, title: string, asin?: string) {
     const url = `${pokeUriServer}/shopify/create-product-title`;
     const data = { domain, title, asin };
     const response = await postServer(url, data);
     return response;
 }
 
-export async function updateCanauxVente(domain: TDomainsShopify, productId: string, items: { id: string; isPublished: boolean }[]) {
+export async function updateCanauxVente(domain: string, productId: string, items: { id: string; isPublished: boolean }[]) {
     const url = `${pokeUriServer}/shopify/update-canaux-vente`;
     const data = { domain, productId, items };
     const response = await postServer(url, data);
     return response;
 }
 
-export async function bulkUpdateCanauxVente(domain: TDomainsShopify, data: IDataUpdate[]) {
+export async function bulkUpdateCanauxVente(domain: string, data: IDataUpdate[]) {
     const url = `${pokeUriServer}/shopify/update-canaux-vente-bulk`;
     const requestData = { domain, data };
     const response = await postServer(url, requestData);
     return response;
 }
 
-export async function updateMetafieldGid(domain: TDomainsShopify, productGid: string, metafieldGid: string, value: string) {
+export async function updateMetafieldGid(domain: string, productGid: string, metafieldGid: string, value: string) {
     const url = `${pokeUriServer}/shopify/update-metafield`;
     const data = { domain, productGid, metafieldGid, value };
     const response = await postServer(url, data);
     return response;
 }
-export async function updateMetafieldKey(domain: TDomainsShopify, productGid: string, key: TMetafieldKeys, value: string, namespace?: string) {
+export async function updateMetafieldKey(domain: string, productGid: string, key: TMetafieldKeys, value: string, namespace?: string) {
     const url = `${pokeUriServer}/shopify/update-metafield`;
     const data = { domain, productGid, key, value, namespace };
     const response = await postServer(url, data);
     return response;
 }
 
-export async function deleteMetafield(domain: TDomainsShopify, productGid: string, key: string) {
+export async function deleteMetafield(domain: string, productGid: string, key: string) {
     const url = `${pokeUriServer}/shopify/delete-metafield`;
     const data = { domain, productGid, key };
     const response = await postServer(url, data);
     return response;
 }
-export async function duplicateProductSameShop(domain: TDomainsShopify, productGid: string, newTitle: string, published: boolean) {
+export async function duplicateProductSameShop(domain: string, productGid: string, newTitle: string, published: boolean) {
     const url = `${pokeUriServer}/shopify/duplicate-product-same-shop`;
     const data = { domain, productGid, newTitle, published };
     const response = await postServer(url, data);
     return response;
 }
 
-export async function fetchIdsFromSku(domain: TDomainsShopify, sku: string) {
+export async function fetchIdsFromSku(domain: string, sku: string) {
     const url = `${pokeUriServer}/shopify/get-ids-from-sku?domain=${domain}&sku=${encodeURIComponent(sku)}`;
     const response = await getServer(url);
     return response;
 }
 
-export async function fetchVariant(product: ProductGET, domain: TDomainsShopify) {
+export async function fetchVariant(product: ProductGET, domain: string) {
     const sku = product.variants?.nodes[0].sku;
 
     let variant = null;
@@ -127,7 +126,7 @@ export async function getTasks(productId: string) {
     return tasks;
 }
 
-export async function addImagesFromAsin(domain: TDomainsShopify, productId: string, asin: string) {
+export async function addImagesFromAsin(domain: string, productId: string, asin: string) {
     const url = `${pokeUriServer}/shopify/add-images-from-asin`;
     const data = { domain, productId, asin };
     const response = await postServer(url, data);

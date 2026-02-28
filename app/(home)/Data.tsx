@@ -5,7 +5,7 @@ import { ShopAnalyticsView } from '@/components/analytics/ShopAnalyticsView';
 import { AnalyticsPeriodSelector } from '@/components/analytics/AnalyticsPeriodSelector';
 import { PeriodType } from '@/components/analytics/AnalyticsUtils';
 import useShopifyStore from '@/components/shopify/shopifyStore';
-import { IShopifyBase } from '@/params/paramsShopifyTypes';
+import { IShopifyBase } from '@/library/pocketbase/ShopifyBoutiqueService';
 import { ExternalLink, LayoutGrid, Store } from 'lucide-react';
 import { useState } from 'react';
 

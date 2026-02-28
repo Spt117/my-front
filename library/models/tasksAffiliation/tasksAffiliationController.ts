@@ -1,5 +1,4 @@
 import { getMongoConnectionManager } from '@/library/auth/connector';
-import { TPublicDomainsShopify } from '@/params/paramsShopifyTypes';
 import { TDomainWordpress } from '@/params/paramsWordpress';
 import { Connection, Model } from 'mongoose';
 import { createAffiliationTaskSchema, TAffiliationTask } from './tasksAffiliation';
@@ -43,7 +42,7 @@ class CTasksAffiliationController {
         }
     }
 
-    async archiveTask(asin: string, website: TDomainWordpress | TPublicDomainsShopify) {
+    async archiveTask(asin: string, website: TDomainWordpress | string) {
         console.log('Archiving task for ASIN:', asin, 'on website:', website);
 
         const model = await this.getModel();

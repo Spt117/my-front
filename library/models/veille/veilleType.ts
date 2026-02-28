@@ -1,5 +1,4 @@
 import { IMarketplace } from "@/library/pocketbase/AmazonService";
-import { TPublicDomainsShopify } from "@/params/paramsShopifyTypes";
 import { TDomainWordpress } from "@/params/paramsWordpress";
 import { Schema } from "mongoose";
 
@@ -13,7 +12,7 @@ export type TVeille = {
     count?: number;
     createdAt?: Date;
     updatedAt?: Date;
-    website: (TPublicDomainsShopify | TDomainWordpress)[];
+    website: (string | TDomainWordpress)[];
 };
 
 export const createVeilleSchema = (collectionName: string) => {

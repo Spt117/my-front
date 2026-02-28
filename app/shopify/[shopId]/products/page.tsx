@@ -2,7 +2,7 @@ import ResultSearch from "@/app/shopify/[shopId]/products/ResultSearch";
 import ErrorPage from "@/components/layout/ErrorPage";
 import { getServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
-import { boutiqueFromId } from "@/params/paramsShopify";
+import { boutiqueFromId } from "@/library/pocketbase/ShopifyBoutiqueService";
 
 export default async function Page({ params }: { params: Promise<{ shopId: string }> }) {
     const { shopId } = await params;

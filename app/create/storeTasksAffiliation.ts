@@ -1,5 +1,4 @@
 import { TAffiliationTask } from "@/library/models/tasksAffiliation/tasksAffiliation";
-import { TDomainsShopify, TPublicDomainsShopify } from "@/params/paramsShopifyTypes";
 import { create } from "zustand";
 
 interface StoreState {
@@ -7,8 +6,8 @@ interface StoreState {
     setTasksAffil: (tasks: TAffiliationTask[]) => void;
     arraySites: string[];
     setArraySites: (sites: string[]) => void;
-    websiteFilter: TPublicDomainsShopify | "";
-    setWebsiteFilter: (website: TPublicDomainsShopify | "") => void;
+    websiteFilter: string | "";
+    setWebsiteFilter: (website: string | "") => void;
     typesProducts: string;
     setTypesProducts: (type: string) => void;
     arrayTypesProducts: string[];

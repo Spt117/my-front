@@ -2,7 +2,6 @@
 
 import { postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
-import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 
 // ============ Types pour les analytics ============
 export interface OrderedProduct {
@@ -25,7 +24,7 @@ export interface AnalyticsData {
 }
 
 export interface AnalyticsRequest {
-    domain: TDomainsShopify;
+    domain: string;
     startDate: string;
     endDate: string;
 }

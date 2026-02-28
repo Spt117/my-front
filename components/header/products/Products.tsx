@@ -1,6 +1,5 @@
 'use client';
 import { updateCanauxVente, updateProduct } from '@/app/shopify/[shopId]/products/[productId]/serverAction';
-import { TDomainsShopify } from '@/params/paramsShopifyTypes';
 import { ProductGET } from '@/library/types/graph';
 import { ExternalLink, Eye, Loader2, Zap } from 'lucide-react';
 import Image from 'next/image';
@@ -35,12 +34,12 @@ export default function ProductList({ product, compact }: { product: ProductGET;
         e.stopPropagation();
         setPublishing(true);
         try {
-            const res = await updateProduct(shopifyBoutique.domain as TDomainsShopify, product.id, 'Statut', 'ACTIVE');
+            const res = await updateProduct(shopifyBoutique.domain as string, product.id, 'Statut', 'ACTIVE');
             if (res.error) toast.error(res.error);
             if (res.message) toast.success(res.message);
 
             const itemsToPublish = canauxBoutique.map((c) => ({ id: c.id, isPublished: true }));
-            const resCan = await updateCanauxVente(shopifyBoutique.domain as TDomainsShopify, product.id, itemsToPublish);
+            const resCan = await updateCanauxVente(shopifyBoutique.domain as string, product.id, itemsToPublish);
             if (resCan.error) toast.error(resCan.error);
             if (resCan.message) toast.success(resCan.message);
 

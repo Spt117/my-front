@@ -1,7 +1,7 @@
 import { getProduct } from "@/components/shopify/serverActions";
 import { LayoutPropsShopify } from "@/components/shopify/utils";
 import { TTaskShopifyProducts } from "@/library/models/tasksShopify/taskType";
-import { boutiqueFromId } from "@/params/paramsShopify";
+import { boutiqueFromId } from "@/library/pocketbase/ShopifyBoutiqueService";
 import ProductLayoutClient from "./ProductLayoutClient";
 import { getTasks } from "./serverAction";
 

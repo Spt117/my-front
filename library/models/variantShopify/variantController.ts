@@ -1,12 +1,11 @@
 import { getMongoConnectionManager } from "@/library/auth/connector";
 import { Model } from "mongoose";
-import { TDomainsShopify } from "../../../params/paramsShopify";
 import { TVariant, VariantSchema } from "./Variant";
 
 class ControllerVariant {
-    domain: TDomainsShopify;
+    domain: string;
 
-    constructor(domain: TDomainsShopify) {
+    constructor(domain: string) {
         this.domain = domain;
     }
 
@@ -169,4 +168,4 @@ class ControllerVariant {
     }
 }
 
-export const variantController = (domain: TDomainsShopify) => new ControllerVariant(domain);
+export const variantController = (domain: string) => new ControllerVariant(domain);

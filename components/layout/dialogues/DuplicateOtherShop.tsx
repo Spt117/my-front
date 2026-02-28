@@ -3,7 +3,6 @@ import { ProductType } from "@/components/shopify/ProductType";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import { TDomainsShopify } from "@/params/paramsShopifyTypes";
 import { ArrowBigLeft, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -19,7 +18,7 @@ export default function DuplicateOtherShop() {
 
     const options = (allBoutiques ?? []).filter((b) => b.domain !== shopifyBoutique?.domain && b.niche === shopifyBoutique?.niche && !idsOtherShop.find((id) => b.domain === id.domain));
 
-    const handleValidate = async (domainDest: TDomainsShopify) => {
+    const handleValidate = async (domainDest: string) => {
         setLoading(true);
         if (!shopifyBoutique || !product || !selectedType || !selectedBrand) {
             console.log("Missing required fields");
@@ -29,7 +28,7 @@ export default function DuplicateOtherShop() {
             domainsDest: domainDest,
             productId: product.id,
             tags: product.tags,
-            domainOrigin: shopifyBoutique.domain as TDomainsShopify,
+            domainOrigin: shopifyBoutique.domain as string,
             productType: selectedType,
             productBrand: selectedBrand,
         };
