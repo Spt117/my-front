@@ -8,6 +8,7 @@ import useCollectionStore from "./collections/storeCollections";
 import { CanauxPublication } from "@/components/shopify/serverActions";
 import { ShopifyCollection } from "./collections/utils";
 import { TCanal } from "./products/[productId]/util";
+import { ShippingTranslation } from "./boutique/serverAction";
 
 interface ShopLayoutClientProps {
     children: React.ReactNode;
@@ -16,10 +17,11 @@ interface ShopLayoutClientProps {
     collections: ShopifyCollection[];
     shopId: string;
     settings: { amazonPartnerId: string; amazonDomain: string };
+    shippingTranslation: ShippingTranslation | null;
 }
 
-export default function ShopLayoutClient({ children, boutique, canauxPublication, collections, shopId, settings }: ShopLayoutClientProps) {
-    const { setShopifyBoutique, setCanauxBoutique, setShopSettings } = useShopifyStore();
+export default function ShopLayoutClient({ children, boutique, canauxPublication, collections, shopId, settings, shippingTranslation }: ShopLayoutClientProps) {
+    const { setShopifyBoutique, setCanauxBoutique, setShopSettings, setShippingTranslation } = useShopifyStore();
     const { socket } = useUserStore();
     const { setFilterOrders, orders } = useOrdersStore();
     const { setFilteredCollections, setCollections } = useCollectionStore();
@@ -29,6 +31,7 @@ export default function ShopLayoutClient({ children, boutique, canauxPublication
         if (boutique) {
             setShopifyBoutique(boutique);
             setShopSettings(settings);
+            setShippingTranslation(shippingTranslation);
             // Transformer les canaux
             const canauxProduits: TCanal[] = canauxPublication.map((c) => ({
                 ...c,
@@ -40,7 +43,7 @@ export default function ShopLayoutClient({ children, boutique, canauxPublication
             setCollections(collections);
             setFilteredCollections(collections);
         }
-    }, [shopId, collections, canauxPublication, settings]);
+    }, [shopId, collections, canauxPublication, settings, shippingTranslation]);
 
     // Filtrage des orders
     useEffect(() => {

@@ -4,7 +4,7 @@ import { SegmentParams } from "@/library/types/utils";
 import { boutiqueFromId, TDomainsShopify } from "@/params/paramsShopify";
 import { ShopifyCollection } from "./collections/utils";
 import ShopLayoutClient from "./ShopLayoutClient";
-import { getShopSettings } from "./boutique/serverAction";
+import { getShippingTranslation, getShopSettings, ShippingTranslation } from "./boutique/serverAction";
 
 interface ShopLayoutProps {
     children: React.ReactNode;
@@ -19,22 +19,25 @@ export default async function ShopLayout({ children, params }: ShopLayoutProps) 
     let canauxPublication: CanauxPublication[] = [];
     let collections: ShopifyCollection[] = [];
     let settings = { amazonPartnerId: "", amazonDomain: "" };
+    let shippingTranslation: ShippingTranslation | null = null;
 
     if (boutique) {
         // Chargement parallèle des données
-        const [canauxData, collectionsData, settingsData] = await Promise.all([
+        const [canauxData, collectionsData, settingsData, shippingTranslationData] = await Promise.all([
             getDataBoutique(boutique.domain, "salesChannels"),
             getDataBoutique(boutique.domain, "collections") as Promise<ResponseServer<ShopifyCollection[]>>,
             getShopSettings(boutique.domain as TDomainsShopify),
+            getShippingTranslation(boutique.domain as TDomainsShopify),
         ]);
 
         if (canauxData.response) canauxPublication = canauxData.response as CanauxPublication[];
         if (collectionsData.response) collections = collectionsData.response as ShopifyCollection[];
         if (settingsData) settings = settingsData;
+        shippingTranslation = shippingTranslationData;
     }
 
     return (
-        <ShopLayoutClient boutique={boutique} canauxPublication={canauxPublication} collections={collections} shopId={shopId} settings={settings}>
+        <ShopLayoutClient boutique={boutique} canauxPublication={canauxPublication} collections={collections} shopId={shopId} settings={settings} shippingTranslation={shippingTranslation}>
             {children}
         </ShopLayoutClient>
     );

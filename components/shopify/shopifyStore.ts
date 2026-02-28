@@ -1,4 +1,5 @@
 import { TCanal } from '@/app/shopify/[shopId]/products/[productId]/util';
+import { ShippingTranslation } from '@/app/shopify/[shopId]/boutique/serverAction';
 import { TVariant } from '@/library/models/variantShopify/Variant';
 import { ShopifyCustomer } from '@/library/shopify/clients';
 import { ShopifyOrder } from '@/library/shopify/orders';
@@ -42,6 +43,8 @@ interface StoreState {
     setIsSearchOpen: (open: boolean) => void;
     shopSettings: { amazonPartnerId: string; amazonDomain: string } | null;
     setShopSettings: (settings: { amazonPartnerId: string; amazonDomain: string } | null) => void;
+    shippingTranslation: ShippingTranslation | null;
+    setShippingTranslation: (t: ShippingTranslation | null) => void;
     draftCountByShop: Record<string, number>;
     setDraftCountForShop: (shop: TDomainsShopify, count: number) => void;
 }
@@ -81,6 +84,8 @@ const useShopifyStore = create<StoreState>((set) => ({
     setSearchMode: (mode) => set({ searchMode: mode }),
     shopSettings: null,
     setShopSettings: (settings) => set({ shopSettings: settings }),
+    shippingTranslation: null,
+    setShippingTranslation: (t) => set({ shippingTranslation: t }),
     draftCountByShop: {},
     setDraftCountForShop: (shop, count) => set((state) => ({
         draftCountByShop: { ...state.draftCountByShop, [shop]: count },

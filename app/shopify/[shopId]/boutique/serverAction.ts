@@ -4,6 +4,14 @@ import { postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 import { TDomainsShopify } from "@/params/paramsShopify";
 
+export interface ShippingTranslation {
+    resourceId: string;
+    key: string;
+    value: string;
+    digest: string;
+    locale: string;
+}
+
 export async function getShopSettings(domain: TDomainsShopify) {
     const url = `${pokeUriServer}/shopify/get-shop-settings`;
     const res = await postServer(url, { domain });
@@ -13,5 +21,20 @@ export async function getShopSettings(domain: TDomainsShopify) {
 export async function updateShopSettings(domain: TDomainsShopify, settings: { amazonPartnerId?: string; amazonDomain?: string }) {
     const url = `${pokeUriServer}/shopify/update-shop-settings`;
     const res = await postServer(url, { domain, settings });
+    return res.response;
+}
+
+export async function getShippingTranslation(domain: TDomainsShopify) {
+    const url = `${pokeUriServer}/shopify/get-shipping-translation`;
+    const res = await postServer(url, { domain });
+    return res.response as ShippingTranslation | null;
+}
+
+export async function updateShippingTranslation(
+    domain: TDomainsShopify,
+    data: { resourceId: string; locale: string; key: string; value: string; digest: string },
+) {
+    const url = `${pokeUriServer}/shopify/update-shipping-translation`;
+    const res = await postServer(url, { domain, ...data });
     return res.response;
 }
