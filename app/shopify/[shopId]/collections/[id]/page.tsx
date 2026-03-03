@@ -9,17 +9,42 @@ import Canaux from './Canaux';
 import HeaderCollection from './header/HeaderCollection';
 import MetaSeo from './MetaSeo';
 import ProductCollection from './Product';
+import { CollectionProduct } from '../utils';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import { deleteCollectionImage, uploadCollectionImage } from '../server';
+
+type SortKey = 'default' | 'stock-asc' | 'stock-desc' | 'name-asc' | 'name-desc' | 'date-asc' | 'date-desc';
+
+function sortProducts(products: CollectionProduct[], sort: SortKey): CollectionProduct[] {
+    if (sort === 'default') return products;
+    return [...products].sort((a, b) => {
+        if (sort === 'stock-asc' || sort === 'stock-desc') {
+            const qa = a.variants.nodes[0]?.inventoryQuantity ?? 0;
+            const qb = b.variants.nodes[0]?.inventoryQuantity ?? 0;
+            return sort === 'stock-asc' ? qa - qb : qb - qa;
+        }
+        if (sort === 'name-asc' || sort === 'name-desc') {
+            const cmp = a.title.localeCompare(b.title, 'fr');
+            return sort === 'name-asc' ? cmp : -cmp;
+        }
+        if (sort === 'date-asc' || sort === 'date-desc') {
+            const idA = parseInt(a.id.replace('gid://shopify/Product/', ''), 10);
+            const idB = parseInt(b.id.replace('gid://shopify/Product/', ''), 10);
+            return sort === 'date-asc' ? idA - idB : idB - idA;
+        }
+        return 0;
+    });
+}
 
 export default function Page() {
     const { dataCollection, setCollectionTitle, setCollectionDescriptionHtml, collectionTitle, collectionDescriptionHtml } = useCollectionStore();
     const { shopifyBoutique, openDialog } = useShopifyStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
+    const [sort, setSort] = useState<SortKey>('default');
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -61,6 +86,11 @@ export default function Page() {
             setCollectionDescriptionHtml(dataCollection.descriptionHtml);
         }
     }, [dataCollection, setCollectionTitle, setCollectionDescriptionHtml]);
+
+    const sortedProducts = useMemo(
+        () => (dataCollection ? sortProducts(dataCollection.products, sort) : []),
+        [dataCollection, sort]
+    );
 
     if (!dataCollection || !shopifyBoutique) return null;
 
@@ -113,22 +143,43 @@ export default function Page() {
 
                     {/* Products List */}
                     <Card className="border-slate-200 shadow-sm overflow-hidden">
-                        <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between">
+                        <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
                                 <h3 className="font-bold text-slate-800">Produits</h3>
                                 <Badge variant="secondary" className="bg-slate-100 text-slate-600 border-none rounded-full">
                                     {products.length}
                                 </Badge>
                             </div>
-                            {!ruleSet && (
-                                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg gap-2" onClick={() => openDialog(8)}>
-                                    Ajouter des produits
-                                </Button>
-                            )}
+                            <div className="flex items-center gap-3">
+                                <select
+                                    value={sort}
+                                    onChange={(e) => setSort(e.target.value as SortKey)}
+                                    className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 cursor-pointer"
+                                >
+                                    <option value="default">Ordre par défaut</option>
+                                    <optgroup label="Stock">
+                                        <option value="stock-desc">Stock décroissant</option>
+                                        <option value="stock-asc">Stock croissant</option>
+                                    </optgroup>
+                                    <optgroup label="Nom">
+                                        <option value="name-asc">Nom A → Z</option>
+                                        <option value="name-desc">Nom Z → A</option>
+                                    </optgroup>
+                                    <optgroup label="Date de création">
+                                        <option value="date-desc">Plus récent en premier</option>
+                                        <option value="date-asc">Plus ancien en premier</option>
+                                    </optgroup>
+                                </select>
+                                {!ruleSet && (
+                                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg gap-2" onClick={() => openDialog(8)}>
+                                        Ajouter des produits
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                         <CardContent className="p-0">
                             <div className="divide-y divide-slate-100">
-                                {products.map((product) => (
+                                {sortedProducts.map((product) => (
                                     <ProductCollection key={product.id} product={product} />
                                 ))}
                             </div>
