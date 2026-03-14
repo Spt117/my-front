@@ -21,7 +21,9 @@ export default function MappingClients({ shopId, domain }: { shopId: string; dom
                 if (data.error) toast.error(data.error);
                 
                 if (data && data.response?.customers) {
-                    const clientsWithShop = data.response.customers.map((c: any) => ({ ...c, shop: domain }));
+                    const clientsWithShop = data.response.customers
+                        .map((c: any) => ({ ...c, shop: domain }))
+                        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
                     setClients(clientsWithShop);
                     if (!searchTerm) {
                         setFilterClients(clientsWithShop);

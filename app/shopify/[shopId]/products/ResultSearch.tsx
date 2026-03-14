@@ -22,7 +22,8 @@ export default function ResultSearch({ products, error, totalProducts, boutiqueN
         if (error) toast.error(error);
     }, [error]);
 
-    const displayedProducts = productsSearch.length > 0 ? productsSearch : products;
+    const displayedProducts = (productsSearch.length > 0 ? productsSearch : products)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     return (
         <div className="w-full">

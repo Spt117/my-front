@@ -113,10 +113,12 @@ export default function OrderCompact({ order, hiddenPreorderCount = 0 }: OrderCo
                                 </div>
                                 <div className="flex items-center gap-2 overflow-hidden">
                                     <span className="text-xs text-gray-500 whitespace-nowrap">
-                                        {new Date(order.createdAt).toLocaleDateString("fr-FR", {
+                                        {new Date(order.createdAt).toLocaleString("fr-FR", {
                                             day: "numeric",
                                             month: "short",
-                                        })}
+                                            hour: "2-digit",
+                                            minute: "2-digit"
+                                        }).replace(':', 'h')}
                                     </span>
                                     <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0"></span>
                                     {!isClientPage && (
