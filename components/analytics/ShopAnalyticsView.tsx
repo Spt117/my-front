@@ -128,7 +128,7 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
                 />
                 <KPICard
                     title="Produits Publiés"
-                    value={analytics.productsCreated?.filter((p: any) => p.status === 'ACTIVE').length || 0}
+                    value={analytics.productsPublishedCount}
                     icon={CheckCircle2}
                     gradient="bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600"
                     subtitle="publiés et actifs"

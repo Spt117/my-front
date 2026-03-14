@@ -72,7 +72,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     const totalProducts = stats.reduce((sum, s) => sum + (s.data?.orderedProducts.reduce((pSum, p) => pSum + p.quantity, 0) || 0), 0);
     const totalCreated = stats.reduce((sum, s) => sum + (s.data?.productsCreatedCount || 0), 0);
     const totalDrafts = stats.reduce((sum, s) => sum + (s.data?.draftProductsCount || 0), 0);
-    const totalPublished = stats.reduce((sum, s) => sum + (s.data?.productsCreated?.filter((p: any) => p.status === 'ACTIVE').length || 0), 0);
+    const totalPublished = stats.reduce((sum, s) => sum + (s.data?.productsPublishedCount || 0), 0);
     const allLoading = stats.some((s) => s.loading);
 
     const chartData = stats
