@@ -3,7 +3,7 @@
 import { AnalyticsData, getAnalytics } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
-import { DollarSign, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, TrendingUp } from "lucide-react";
+import { CheckCircle2, DollarSign, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AnalyticsProductsTable } from "./AnalyticsProductsTable";
@@ -90,7 +90,7 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
 
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4">
                 <KPICard
                     title="Commandes"
                     value={analytics.ordersCount}
@@ -125,6 +125,13 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
                     icon={PackagePlus}
                     gradient="bg-gradient-to-br from-pink-500 via-rose-500 to-pink-600"
                     subtitle="nouveaux produits"
+                />
+                <KPICard
+                    title="Produits Publiés"
+                    value={analytics.productsCreated?.filter((p: any) => p.status === 'ACTIVE').length || 0}
+                    icon={CheckCircle2}
+                    gradient="bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600"
+                    subtitle="publiés et actifs"
                 />
                 <KPICard
                     title="Brouillons"

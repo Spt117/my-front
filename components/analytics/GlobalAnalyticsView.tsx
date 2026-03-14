@@ -4,7 +4,7 @@ import { AnalyticsData, getAllAnalytics } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { DollarSign, ExternalLink, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from "lucide-react";
+import { CheckCircle2, DollarSign, ExternalLink, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AnalyticsProductsTable } from "./AnalyticsProductsTable";
@@ -72,6 +72,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     const totalProducts = stats.reduce((sum, s) => sum + (s.data?.orderedProducts.reduce((pSum, p) => pSum + p.quantity, 0) || 0), 0);
     const totalCreated = stats.reduce((sum, s) => sum + (s.data?.productsCreatedCount || 0), 0);
     const totalDrafts = stats.reduce((sum, s) => sum + (s.data?.draftProductsCount || 0), 0);
+    const totalPublished = stats.reduce((sum, s) => sum + (s.data?.productsCreated?.filter((p: any) => p.status === 'ACTIVE').length || 0), 0);
     const allLoading = stats.some((s) => s.loading);
 
     const chartData = stats
@@ -86,7 +87,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     return (
         <div className="space-y-6">
             {/* Global KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4">
                 <KPICard
                     title="CA Total Global"
                     value={formatCurrency(totalRevenue)}
@@ -121,6 +122,13 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                     icon={PackagePlus}
                     gradient="bg-gradient-to-br from-pink-600 via-rose-600 to-pink-700"
                     subtitle="Nouveaux produits ajoutés"
+                />
+                <KPICard
+                    title="Produits Publiés"
+                    value={totalPublished}
+                    icon={CheckCircle2}
+                    gradient="bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600"
+                    subtitle="Publiés et actifs"
                 />
                 <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-slate-600 via-gray-600 to-slate-700">
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
