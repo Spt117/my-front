@@ -28,16 +28,12 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     const { allBoutiques } = useShopifyStore();
     const [stats, setStats] = useState<BoutiqueStats[]>([]);
 
-    useEffect(() => {
-        if (allBoutiques) {
-            setStats(allBoutiques.map((b) => ({ boutique: b, data: null, loading: true, error: null })));
-        }
-    }, [allBoutiques]);
-
     const fetchAllAnalytics = useCallback(async () => {
+        if (!allBoutiques || allBoutiques.length === 0) return;
+
         const { start, end } = getDateRange(period, customStart, customEnd);
 
-        setStats((prev) => prev.map((s) => ({ ...s, loading: true, error: null })));
+        setStats(allBoutiques.map((b) => ({ boutique: b, data: null, loading: true, error: null })));
 
         try {
             const res = await getAllAnalytics({
@@ -60,7 +56,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
         } catch (err) {
             setStats((prev) => prev.map((s) => ({ ...s, loading: false, error: "Erreur" })));
         }
-    }, [period, customStart, customEnd]);
+    }, [period, customStart, customEnd, allBoutiques]);
 
     useEffect(() => {
         fetchAllAnalytics();

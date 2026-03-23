@@ -102,7 +102,7 @@ function toBoutiqueBase(pb: IShopifyBoutiquePublic): IShopifyBase {
 }
 
 export async function getBoutiques(): Promise<IShopifyBase[]> {
-    const records = await shopifyBoutiqueService.getAll();
+    const records = await shopifyBoutiqueService.getActive();
     return records.map(toBoutiqueBase);
 }
 
