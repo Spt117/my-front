@@ -1,12 +1,12 @@
-import { Card } from '@/components/ui/card';
-import { Trash2 } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { deleteBeybladeById } from '../../oldBeyblade/model/product/middlewareProduct';
-import { IBeybladeProduct } from '../../oldBeyblade/model/typesBeyblade';
-import useBeybladeStore from '../beybladeStore';
-import useReviewStore from './storeReview';
+import { Card } from "@/components/ui/card";
+import { Trash2 } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import useBeybladeStore from "../beybladeStore";
+import { deleteBeybladeById } from "../model/product/middlewareProduct";
+import { IBeybladeProduct } from "../model/typesBeyblade";
+import useReviewStore from "./storeReview";
 
 export default function ProductBeyblade({ product }: { product: IBeybladeProduct }) {
     const { generation } = useBeybladeStore();
@@ -16,7 +16,7 @@ export default function ProductBeyblade({ product }: { product: IBeybladeProduct
     const handleDelete = async (e: any) => {
         e.stopPropagation();
         const res = await deleteBeybladeById(product._id!, generation);
-        if (res.success) toast.success(res.message || 'Beyblade deleted');
+        if (res.success) toast.success(res.message || "Beyblade deleted");
         if (res.error) toast.error(res.error);
         router.refresh();
     };

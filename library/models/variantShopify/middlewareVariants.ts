@@ -1,7 +1,7 @@
 "use server";
 
-import { TVariant } from "../variantShopify/Variant";
-import { variantController } from "../variantShopify/variantController";
+import { TVariant } from "./Variant";
+import { variantController } from "./variantController";
 
 export async function getStockVariant(domain: string) {
     const data = await variantController(domain).getVariantRebuy();

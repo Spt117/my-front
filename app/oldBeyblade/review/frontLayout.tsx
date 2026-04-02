@@ -1,7 +1,7 @@
-'use client';
-import { useEffect } from 'react';
-import { IBeybladeProduct } from '../../oldBeyblade/model/typesBeyblade';
-import useReviewStore from './storeReview';
+"use client";
+import { useEffect } from "react";
+import { IBeybladeProduct } from "../model/typesBeyblade";
+import useReviewStore from "./storeReview";
 
 interface FrontLayoutProps {
     children: React.ReactNode;

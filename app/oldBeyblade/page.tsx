@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Package } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { createProductBeyblade } from '../oldBeyblade/model/product/middlewareProduct';
-import { IBeybladeProduct } from '../oldBeyblade/model/typesBeyblade';
-import ImageManager from './ImageManager';
-import useBeybladeStore from './beybladeStore';
-import ProductData from './productInformation/ProductData';
+import { Button } from "@/components/ui/button";
+import { Package } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import ImageManager from "./ImageManager";
+import useBeybladeStore from "./beybladeStore";
+import { createProductBeyblade } from "./model/product/middlewareProduct";
+import { IBeybladeProduct } from "./model/typesBeyblade";
+import ProductData from "./productInformation/ProductData";
 
 export default function BeybladeProductForm() {
     const { beybladeProduct, resetBeybladeProduct, initializeNewProduct, generation, addImage, removeImage } = useBeybladeStore();
 
-    const [currentTab, setCurrentTab] = useState('basic');
+    const [currentTab, setCurrentTab] = useState("basic");
 
     // Initialiser le produit si null
     useState(() => {
@@ -23,18 +23,18 @@ export default function BeybladeProductForm() {
     });
 
     const handleSubmit = async () => {
-        console.log('Product to save:', beybladeProduct);
+        console.log("Product to save:", beybladeProduct);
 
         if (beybladeProduct?.productCode && beybladeProduct?.releaseDate && beybladeProduct.brand && beybladeProduct.product) {
             // Assure TypeScript que product est bien défini
             const res = await createProductBeyblade(generation, beybladeProduct as IBeybladeProduct);
-            console.log('Product created:', res);
+            console.log("Product created:", res);
             if (res.message) toast.success(res.message);
             if (res.error) toast.error(res.error);
         } else {
-            const msg = `Product creation failed: ${beybladeProduct?.productCode ? '' : 'Product code is missing.'} ${
-                beybladeProduct?.releaseDate ? '' : 'Release date is missing.'
-            } ${beybladeProduct?.brand ? '' : 'Brand is missing.'} ${beybladeProduct?.product ? '' : 'Product name is missing.'}`;
+            const msg = `Product creation failed: ${beybladeProduct?.productCode ? "" : "Product code is missing."} ${
+                beybladeProduct?.releaseDate ? "" : "Release date is missing."
+            } ${beybladeProduct?.brand ? "" : "Brand is missing."} ${beybladeProduct?.product ? "" : "Product name is missing."}`;
             toast.error(msg);
         }
     };
