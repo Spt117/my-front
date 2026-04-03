@@ -38,12 +38,20 @@ async function resolveYoutubeChannel(input: string): Promise<{ channelId: string
         return { channelId: directMatch[1], channelName: "" };
     }
 
-    // URL with @handle or any YouTube URL -> fetch page to extract channel ID + name
-    const urlMatch = trimmed.match(/youtube\.com\/@[\w.-]+/) || trimmed.match(/youtube\.com\//);
-    if (urlMatch) {
+    // Normalize input: "ledevultime" or "@ledevultime" -> full YouTube URL
+    let targetUrl: string | null = null;
+
+    if (trimmed.includes("youtube.com/")) {
+        targetUrl = trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
+    } else {
+        // Handle bare handle: "ledevultime" or "@ledevultime"
+        const handle = trimmed.startsWith("@") ? trimmed : `@${trimmed}`;
+        targetUrl = `https://www.youtube.com/${handle}`;
+    }
+
+    if (targetUrl) {
         try {
-            const url = trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
-            const res = await fetch(url, {
+            const res = await fetch(targetUrl, {
                 headers: { "Accept-Language": "fr-FR,fr;q=0.9" },
                 redirect: "follow",
             });
@@ -70,7 +78,7 @@ async function resolveYoutubeChannel(input: string): Promise<{ channelId: string
         }
     }
 
-    return null;
+    return null; // unreachable but satisfies TS
 }
 
 export async function addYoutubeChannel(urlOrId: string, channelNameOverride?: string): Promise<{ success: boolean; error?: string }> {

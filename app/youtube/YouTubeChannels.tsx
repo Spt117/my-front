@@ -84,7 +84,7 @@ export default function YouTubeChannels({ initialChannels }: Props) {
                     <h2 className="text-lg font-semibold">Ajouter une chaine</h2>
                     <div className="flex flex-col gap-3 sm:flex-row">
                         <Input
-                            placeholder="https://www.youtube.com/@NomDeLaChaine"
+                            placeholder="URL, @handle ou nom (ex: ledevultime)"
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                             className="flex-1"
