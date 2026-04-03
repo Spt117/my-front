@@ -43,6 +43,7 @@ const email = {
 export { authSecret, email, encryptedKeyAmazon, googleId, googleSecret, keepaKey, uriMongodb, uriServerAcces, userEmail };
 
 export const pokeUriServer: string = process.env.POKE_API_URL;
+export const deployUriServer: string = "https://api.digiblock.fr";
 export const telegram = {
     api: `${pokeUriServer}/msgtelegram`,
     dev: "1063455465",
