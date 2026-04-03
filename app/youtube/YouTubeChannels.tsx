@@ -15,35 +15,24 @@ interface Props {
 
 export default function YouTubeChannels({ initialChannels }: Props) {
     const [channels, setChannels] = useState(initialChannels);
-    const [channelId, setChannelId] = useState("");
+    const [url, setUrl] = useState("");
     const [channelName, setChannelName] = useState("");
     const [isPending, startTransition] = useTransition();
 
     const handleAdd = () => {
-        if (!channelId.trim() || !channelName.trim()) {
-            toast.error("Channel ID et nom requis");
+        if (!url.trim()) {
+            toast.error("URL YouTube requise");
             return;
         }
 
         startTransition(async () => {
-            const res = await addYoutubeChannel(channelId, channelName);
+            const res = await addYoutubeChannel(url, channelName || undefined);
             if (res.success) {
                 toast.success("Chaine ajoutee");
-                setChannelId("");
+                setUrl("");
                 setChannelName("");
-                // Refresh: re-fetch would be ideal, but we optimistically update
-                const newChannel: IYoutubeChannel = {
-                    id: Date.now().toString(), // temporary ID until page refresh
-                    channel_id: channelId.trim(),
-                    channel_name: channelName.trim(),
-                    is_active: true,
-                    lease_expires_at: "",
-                    last_video_id: "",
-                    last_notified_at: "",
-                    created: new Date().toISOString(),
-                    updated: new Date().toISOString(),
-                };
-                setChannels((prev) => [newChannel, ...prev]);
+                // Force page reload to get fresh data from PocketBase
+                window.location.reload();
             } else {
                 toast.error(res.error || "Erreur");
             }
@@ -95,13 +84,13 @@ export default function YouTubeChannels({ initialChannels }: Props) {
                     <h2 className="text-lg font-semibold">Ajouter une chaine</h2>
                     <div className="flex flex-col gap-3 sm:flex-row">
                         <Input
-                            placeholder="Channel ID (UC...) ou URL YouTube"
-                            value={channelId}
-                            onChange={(e) => setChannelId(e.target.value)}
+                            placeholder="https://www.youtube.com/@NomDeLaChaine"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
                             className="flex-1"
                         />
                         <Input
-                            placeholder="Nom de la chaine"
+                            placeholder="Nom (optionnel, auto-detecte)"
                             value={channelName}
                             onChange={(e) => setChannelName(e.target.value)}
                             className="flex-1"
@@ -111,8 +100,7 @@ export default function YouTubeChannels({ initialChannels }: Props) {
                         </Button>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                        Le Channel ID commence par UC et se trouve dans l&apos;URL de la chaine :
-                        youtube.com/channel/UC...
+                        Collez l&apos;URL de la chaine YouTube (ex: youtube.com/@BeybladeAcademy). Le nom et le Channel ID sont detectes automatiquement.
                     </p>
                 </CardContent>
             </Card>

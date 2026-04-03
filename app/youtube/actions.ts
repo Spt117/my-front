@@ -24,26 +24,67 @@ export async function getYoutubeChannels(): Promise<IYoutubeChannel[]> {
     return records as unknown as IYoutubeChannel[];
 }
 
-function extractChannelId(input: string): string {
+async function resolveYoutubeChannel(input: string): Promise<{ channelId: string; channelName: string } | null> {
     const trimmed = input.trim();
 
     // Already a channel ID (UC...)
-    if (/^UC[\w-]{22}$/.test(trimmed)) return trimmed;
+    if (/^UC[\w-]{22}$/.test(trimmed)) {
+        return { channelId: trimmed, channelName: "" };
+    }
 
-    // URL: https://www.youtube.com/channel/UC...
-    const channelMatch = trimmed.match(/youtube\.com\/channel\/(UC[\w-]{22})/);
-    if (channelMatch) return channelMatch[1];
+    // URL with channel ID: youtube.com/channel/UC...
+    const directMatch = trimmed.match(/youtube\.com\/channel\/(UC[\w-]{22})/);
+    if (directMatch) {
+        return { channelId: directMatch[1], channelName: "" };
+    }
 
-    // URL: https://www.youtube.com/@handle -> not a channel ID, return as-is for user to correct
-    // For simplicity, return trimmed and let user provide channel ID
-    return trimmed;
+    // URL with @handle or any YouTube URL -> fetch page to extract channel ID + name
+    const urlMatch = trimmed.match(/youtube\.com\/@[\w.-]+/) || trimmed.match(/youtube\.com\//);
+    if (urlMatch) {
+        try {
+            const url = trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
+            const res = await fetch(url, {
+                headers: { "Accept-Language": "fr-FR,fr;q=0.9" },
+                redirect: "follow",
+            });
+            const html = await res.text();
+
+            // Extract channel ID from meta tag or page source
+            const cidMatch = html.match(/"channelId":"(UC[\w-]{22})"/) ||
+                html.match(/<meta\s+itemprop="channelId"\s+content="(UC[\w-]{22})"/) ||
+                html.match(/"externalId":"(UC[\w-]{22})"/);
+
+            // Extract channel name
+            const nameMatch = html.match(/"author":"([^"]+)"/) ||
+                html.match(/<meta\s+property="og:title"\s+content="([^"]+)"/) ||
+                html.match(/<link\s+itemprop="name"\s+content="([^"]+)"/);
+
+            if (cidMatch) {
+                return {
+                    channelId: cidMatch[1],
+                    channelName: nameMatch ? nameMatch[1] : "",
+                };
+            }
+        } catch (err) {
+            console.error("[YouTube] Error resolving channel URL:", err);
+        }
+    }
+
+    return null;
 }
 
-export async function addYoutubeChannel(channelIdOrUrl: string, channelName: string): Promise<{ success: boolean; error?: string }> {
-    const channelId = extractChannelId(channelIdOrUrl);
+export async function addYoutubeChannel(urlOrId: string, channelNameOverride?: string): Promise<{ success: boolean; error?: string }> {
+    const resolved = await resolveYoutubeChannel(urlOrId);
 
-    if (!channelId || !channelName.trim()) {
-        return { success: false, error: "Channel ID et nom requis" };
+    if (!resolved) {
+        return { success: false, error: "Impossible de trouver le Channel ID. Verifiez l'URL." };
+    }
+
+    const { channelId, channelName: resolvedName } = resolved;
+    const channelName = channelNameOverride?.trim() || resolvedName;
+
+    if (!channelName) {
+        return { success: false, error: "Nom de la chaine introuvable. Ajoutez-le manuellement." };
     }
 
     try {
