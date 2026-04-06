@@ -52,15 +52,20 @@ async function resolveYoutubeChannel(input: string): Promise<{ channelId: string
     if (targetUrl) {
         try {
             const res = await fetch(targetUrl, {
-                headers: { "Accept-Language": "fr-FR,fr;q=0.9" },
+                headers: {
+                    "Accept-Language": "fr-FR,fr;q=0.9",
+                    Cookie: "SOCS=CAESEwgDEgk2ODE4MTAyNjQaAmZyIAEaBgiA_LyaBg; CONSENT=PENDING+987",
+                },
                 redirect: "follow",
             });
             const html = await res.text();
 
-            // Extract channel ID from meta tag or page source
-            const cidMatch = html.match(/"channelId":"(UC[\w-]{22})"/) ||
+            // Extract channel ID from page source
+            // Prioritize externalId (used by Atom feed / WebSub) over channelId (internal page ID)
+            // Some channels have different values for these two fields
+            const cidMatch = html.match(/"externalId":"(UC[\w-]{22})"/) ||
                 html.match(/<meta\s+itemprop="channelId"\s+content="(UC[\w-]{22})"/) ||
-                html.match(/"externalId":"(UC[\w-]{22})"/);
+                html.match(/"channelId":"(UC[\w-]{22})"/);;
 
             // Extract channel name
             const nameMatch = html.match(/"author":"([^"]+)"/) ||
