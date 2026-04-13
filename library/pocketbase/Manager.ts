@@ -1,5 +1,5 @@
 import PocketBase from "pocketbase";
-import { PB_PASSWORD, PB_URL, userEmail } from "../utils/uri";
+import { PB_PASSWORD, PB_URL, PB_USER_EMAIL } from "../utils/uri";
 
 class PocketBaseManager {
     private static _instance: PocketBaseManager;
@@ -32,7 +32,7 @@ class PocketBaseManager {
         }
 
         try {
-            await this._pb.collection("_superusers").authWithPassword(userEmail, PB_PASSWORD);
+            await this._pb.collection("_superusers").authWithPassword(PB_USER_EMAIL, PB_PASSWORD);
             this.isAdminConnected = true;
         } catch (error: any) {
             this.isAdminConnected = false;

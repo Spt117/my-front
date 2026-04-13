@@ -15,6 +15,7 @@ else if (!process.env.KEEPA_KEY) throw new Error("KEEPA_KEY is not defined");
 else if (!process.env.NEXT_PUBLIC_SUPABASE_URL) throw new Error("NEXT_PUBLIC_SUPABASE_URL is not defined");
 else if (!process.env.SUPABASE_ANON_KEY) throw new Error("SUPABASE_ANON_KEY is not defined");
 else if (!process.env.POKE_API_URL) throw new Error("POKE_API_URL is not defined");
+else if (!process.env.PB_ADMIN_EMAIL) throw new Error("PB_ADMIN_EMAIL is not defined");
 else console.log("All environment variables are defined on " + process.env.NODE_ENV);
 
 const uriMongodb: string = process.env.URI_MONGODB;
@@ -24,6 +25,7 @@ const googleSecret: string = process.env.GOOGLE_SECRET;
 const userEmail: string = process.env.USER_EMAIL;
 const uriServerAcces: string = process.env.URI_SERVER_ACCES;
 
+export const PB_USER_EMAIL: string = process.env.PB_ADMIN_EMAIL;
 export const PB_URL: string = process.env.POCKETBASE_URI;
 export const PB_PASSWORD: string = process.env.POCKETBASE_PASSWORD;
 
