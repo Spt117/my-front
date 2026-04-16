@@ -14,10 +14,10 @@ export interface ShippingTranslation {
 export async function getShopSettings(domain: string) {
     const url = `${pokeUriServer}/shopify/get-shop-settings`;
     const res = await postServer(url, { domain });
-    return res.response as { amazonPartnerId: string; amazonDomain: string };
+    return res.response as { amazonPartnerId: string; amazonDomain: string; googleMapsApiKey?: string };
 }
 
-export async function updateShopSettings(domain: string, settings: { amazonPartnerId?: string; amazonDomain?: string }) {
+export async function updateShopSettings(domain: string, settings: { amazonPartnerId?: string; amazonDomain?: string; googleMapsApiKey?: string }) {
     const url = `${pokeUriServer}/shopify/update-shop-settings`;
     const res = await postServer(url, { domain, settings });
     return res.response;

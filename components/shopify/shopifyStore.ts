@@ -43,8 +43,8 @@ interface StoreState {
     setSearchMode: (mode: TSearchMode) => void;
     isSearchOpen: boolean;
     setIsSearchOpen: (open: boolean) => void;
-    shopSettings: { amazonPartnerId: string; amazonDomain: string } | null;
-    setShopSettings: (settings: { amazonPartnerId: string; amazonDomain: string } | null) => void;
+    shopSettings: { amazonPartnerId: string; amazonDomain: string; googleMapsApiKey?: string } | null;
+    setShopSettings: (settings: { amazonPartnerId: string; amazonDomain: string; googleMapsApiKey?: string } | null) => void;
     shippingTranslation: ShippingTranslation | null;
     setShippingTranslation: (t: ShippingTranslation | null) => void;
     draftCountByShop: Record<string, number>;

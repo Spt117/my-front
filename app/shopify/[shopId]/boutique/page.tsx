@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Check, Copy, Copyright, Globe, RotateCcw, Save, ShoppingBag, Store, Truck } from "lucide-react";
+import { Check, Copy, Copyright, Globe, RotateCcw, Save, ShoppingBag, Store, Truck, MapPin } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ export default function ShopPage() {
 
     const [amazonPartnerId, setAmazonPartnerId] = useState<string>("");
     const [amazonDomain, setAmazonDomain] = useState<string>("");
+    const [googleMapsApiKey, setGoogleMapsApiKey] = useState<string>("");
     const [isSaving, setIsSaving] = useState(false);
     const [copied, setCopied] = useState(false);
 
@@ -28,6 +29,7 @@ export default function ShopPage() {
         if (shopSettings) {
             setAmazonPartnerId(shopSettings.amazonPartnerId || "");
             setAmazonDomain(shopSettings.amazonDomain || "");
+            setGoogleMapsApiKey(shopSettings.googleMapsApiKey || "");
         }
     }, [shopSettings]);
 
@@ -51,6 +53,7 @@ export default function ShopPage() {
             await updateShopSettings(boutique.domain, {
                 amazonPartnerId,
                 amazonDomain,
+                googleMapsApiKey,
             });
             toast.success("Paramètres mis à jour avec succès");
             router.refresh(); // ✅ Rafraîchir les données serveur
@@ -106,7 +109,7 @@ export default function ShopPage() {
 
     if (!boutique) return <div>Boutique non trouvée</div>;
 
-    const hasChanges = amazonPartnerId !== (shopSettings?.amazonPartnerId || "") || amazonDomain !== (shopSettings?.amazonDomain || "");
+    const hasChanges = amazonPartnerId !== (shopSettings?.amazonPartnerId || "") || amazonDomain !== (shopSettings?.amazonDomain || "") || googleMapsApiKey !== (shopSettings?.googleMapsApiKey || "");
     const hasShippingChanges = shippingTitle !== (shippingTranslation?.value || "");
 
     return (
@@ -192,6 +195,49 @@ export default function ShopPage() {
                         {hasChanges && <p className="text-[10px] text-amber-600 font-medium animate-pulse text-center">Modifications non enregistrées</p>}
 
                         <Button onClick={handleSave} disabled={isSaving || !hasChanges} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300 gap-2">
+                            {isSaving ? (
+                                <span className="flex items-center gap-2 italic">
+                                    <Save className="w-4 h-4 animate-spin" />
+                                    Enregistrement...
+                                </span>
+                            ) : (
+                                <>
+                                    <Save className="w-4 h-4" />
+                                    Enregistrer les réglages
+                                </>
+                            )}
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {/* Colissimo Settings Card */}
+                <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm relative overflow-hidden">
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <MapPin className="w-5 h-5 text-red-500" />
+                            Colissimo Paramètres
+                        </CardTitle>
+                        <CardDescription>Clé API pour Google Maps (Points Relais)</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                    Google Maps API Key
+                                </label>
+                                <Input
+                                    value={googleMapsApiKey}
+                                    onChange={(e) => setGoogleMapsApiKey(e.target.value)}
+                                    placeholder="Ex: AIzaSyD..."
+                                    className={`bg-white border-slate-200 focus:ring-red-500 transition-all ${googleMapsApiKey !== (shopSettings?.googleMapsApiKey || "") ? "border-amber-300 ring-1 ring-amber-100" : ""}`}
+                                />
+                            </div>
+                        </div>
+
+                        {googleMapsApiKey !== (shopSettings?.googleMapsApiKey || "") && <p className="text-[10px] text-amber-600 font-medium animate-pulse text-center">Modifications non enregistrées</p>}
+
+                        <Button onClick={handleSave} disabled={isSaving || !hasChanges} className="w-full bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white shadow-md hover:shadow-lg transition-all duration-300 gap-2">
                             {isSaving ? (
                                 <span className="flex items-center gap-2 italic">
                                     <Save className="w-4 h-4 animate-spin" />
