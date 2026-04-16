@@ -39,10 +39,10 @@ export default function ShopPage() {
         }
     }, [shippingTranslation]);
 
-    const handleCopy = (text: string) => {
+    const handleCopy = (text: string, message: string = "Contenu copié !") => {
         navigator.clipboard.writeText(text);
         setCopied(true);
-        toast.success("ID interne copié !");
+        toast.success(message);
         setTimeout(() => setCopied(false), 2000);
     };
 
@@ -139,7 +139,7 @@ export default function ShopPage() {
                         </div>
                         <div className="flex flex-col gap-1">
                             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Identifiant Interne</span>
-                            <div onClick={() => handleCopy(boutique.domain)} className="group flex items-center gap-2 cursor-pointer hover:bg-slate-100 p-2 -m-2 rounded-lg transition-colors">
+                            <div onClick={() => handleCopy(boutique.domain, "ID interne copié !")} className="group flex items-center gap-2 cursor-pointer hover:bg-slate-100 p-2 -m-2 rounded-lg transition-colors">
                                 <span className="text-sm font-medium text-slate-500 font-mono">{boutique.domain}</span>
                                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-slate-300 group-hover:text-purple-500 transition-colors" />}
                             </div>
@@ -170,12 +170,17 @@ export default function ShopPage() {
                                     <Copyright className="w-3.5 h-3.5 text-slate-400" />
                                     Amazon Partner ID (Tag)
                                 </label>
-                                <Input
-                                    value={amazonPartnerId}
-                                    onChange={(e) => setAmazonPartnerId(e.target.value)}
-                                    placeholder="Ex: beyblade-21"
-                                    className={`bg-white border-slate-200 focus:ring-purple-500 transition-all ${amazonPartnerId !== (shopSettings?.amazonPartnerId || "") ? "border-amber-300 ring-1 ring-amber-100" : ""}`}
-                                />
+                                <div className="flex w-full gap-2">
+                                    <Input
+                                        value={amazonPartnerId}
+                                        onChange={(e) => setAmazonPartnerId(e.target.value)}
+                                        placeholder="Ex: beyblade-21"
+                                        className={`flex-1 bg-white border-slate-200 focus:ring-purple-500 transition-all ${amazonPartnerId !== (shopSettings?.amazonPartnerId || "") ? "border-amber-300 ring-1 ring-amber-100" : ""}`}
+                                    />
+                                    <Button type="button" variant="outline" size="icon" onClick={() => handleCopy(amazonPartnerId, "Amazon Partner ID copié !")} title="Copier" className="shrink-0">
+                                        <Copy className="w-4 h-4 text-slate-500" />
+                                    </Button>
+                                </div>
                             </div>
 
                             <div className="space-y-2">
@@ -183,12 +188,17 @@ export default function ShopPage() {
                                     <Globe className="w-3.5 h-3.5 text-slate-400" />
                                     Domaine Amazon
                                 </label>
-                                <Input
-                                    value={amazonDomain}
-                                    onChange={(e) => setAmazonDomain(e.target.value)}
-                                    placeholder="Ex: amazon.fr"
-                                    className={`bg-white border-slate-200 focus:ring-purple-500 transition-all ${amazonDomain !== (shopSettings?.amazonDomain || "") ? "border-amber-300 ring-1 ring-amber-100" : ""}`}
-                                />
+                                <div className="flex w-full gap-2">
+                                    <Input
+                                        value={amazonDomain}
+                                        onChange={(e) => setAmazonDomain(e.target.value)}
+                                        placeholder="Ex: amazon.fr"
+                                        className={`flex-1 bg-white border-slate-200 focus:ring-purple-500 transition-all ${amazonDomain !== (shopSettings?.amazonDomain || "") ? "border-amber-300 ring-1 ring-amber-100" : ""}`}
+                                    />
+                                    <Button type="button" variant="outline" size="icon" onClick={() => handleCopy(amazonDomain, "Domaine Amazon copié !")} title="Copier" className="shrink-0">
+                                        <Copy className="w-4 h-4 text-slate-500" />
+                                    </Button>
+                                </div>
                             </div>
                         </div>
 
@@ -226,12 +236,17 @@ export default function ShopPage() {
                                     <MapPin className="w-3.5 h-3.5 text-slate-400" />
                                     Google Maps API Key
                                 </label>
-                                <Input
-                                    value={googleMapsApiKey}
-                                    onChange={(e) => setGoogleMapsApiKey(e.target.value)}
-                                    placeholder="Ex: AIzaSyD..."
-                                    className={`bg-white border-slate-200 focus:ring-red-500 transition-all ${googleMapsApiKey !== (shopSettings?.googleMapsApiKey || "") ? "border-amber-300 ring-1 ring-amber-100" : ""}`}
-                                />
+                                <div className="flex w-full gap-2">
+                                    <Input
+                                        value={googleMapsApiKey}
+                                        onChange={(e) => setGoogleMapsApiKey(e.target.value)}
+                                        placeholder="Ex: AIzaSyD..."
+                                        className={`flex-1 bg-white border-slate-200 focus:ring-red-500 transition-all ${googleMapsApiKey !== (shopSettings?.googleMapsApiKey || "") ? "border-amber-300 ring-1 ring-amber-100" : ""}`}
+                                    />
+                                    <Button type="button" variant="outline" size="icon" onClick={() => handleCopy(googleMapsApiKey, "Clé API copiée !")} title="Copier" className="shrink-0">
+                                        <Copy className="w-4 h-4 text-slate-500" />
+                                    </Button>
+                                </div>
                             </div>
                         </div>
 
