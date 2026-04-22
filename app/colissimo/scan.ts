@@ -122,8 +122,11 @@ function normalizeEmail(raw: string): string {
 function normalizePhone(raw: string): string | null {
     const trimmed = raw.trim();
     const hasPlus = trimmed.startsWith("+");
-    const digits = trimmed.replace(/\D/g, "");
+    let digits = trimmed.replace(/\D/g, "");
     if (digits.length < 8 || digits.length > 15) return null;
+
+    // Gère la notation "+33 (0) X XX XX XX XX" : 0 parasite après l'indicatif.
+    if (/^330\d{9}$/.test(digits)) digits = "33" + digits.slice(3);
 
     if (hasPlus) {
         // +33<9 chiffres> → 0<9 chiffres> (forme FR canonique)
@@ -340,8 +343,8 @@ function extractPhones(html: string, text: string, url: string, jsonLd: IJsonLdF
         });
     }
 
-    // 3) International +XX …
-    for (const m of text.matchAll(/\+\d{1,3}[\s.\-]?\d(?:[\s.\-]?\d{1,4}){2,6}/g)) {
+    // 3) International +XX … (accepte parenthèses "(0)", points, slashes entre groupes)
+    for (const m of text.matchAll(/\+\d{1,3}[\s.\-()/]{0,3}\d(?:[\s.\-()/]{0,3}\d{1,4}){2,6}/g)) {
         const n = normalizePhone(m[0]);
         if (!n) continue;
         const start = m.index ?? 0;
