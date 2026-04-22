@@ -71,6 +71,18 @@ export default function ContactScanner({
 
     const nothingFound = result && !loading && result.emails.length === 0 && result.phones.length === 0;
 
+    const selectedEmailsLower = new Set(selectedEmails.map((s) => s.toLowerCase()));
+    const selectedPhonesLower = new Set(selectedPhones.map((s) => s.toLowerCase()));
+    const missingEmails = result?.emails.filter((c) => !selectedEmailsLower.has(c.value.toLowerCase())) ?? [];
+    const missingPhones = result?.phones.filter((c) => !selectedPhonesLower.has(c.display.toLowerCase())) ?? [];
+    const totalMissing = missingEmails.length + missingPhones.length;
+    const showBulkAll = !!result && totalMissing >= 2;
+
+    const handleAddAll = () => {
+        if (missingEmails.length > 0) onAddAllEmails(missingEmails.map((c) => c.value));
+        if (missingPhones.length > 0) onAddAllPhones(missingPhones.map((c) => c.display));
+    };
+
     return (
         <div className="rounded-lg border border-violet-200 bg-gradient-to-br from-violet-50 to-white p-4 flex flex-col gap-3">
             <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -91,15 +103,28 @@ export default function ContactScanner({
                         )}
                     </div>
                 </div>
-                <Button size="sm" variant="outline" onClick={runScan} disabled={loading} className="h-7 text-xs">
-                    {loading ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                        <>
-                            <RefreshCw className="h-3.5 w-3.5 mr-1" /> Re-scanner
-                        </>
+                <div className="flex items-center gap-2">
+                    {showBulkAll && (
+                        <button
+                            type="button"
+                            onClick={handleAddAll}
+                            className="inline-flex items-center gap-1 rounded-full bg-violet-600 px-3 py-1 text-xs font-medium text-white hover:bg-violet-700 transition"
+                            title={`Ajouter ${missingEmails.length} email(s) et ${missingPhones.length} téléphone(s)`}
+                        >
+                            <Plus className="h-3.5 w-3.5" />
+                            Tout ajouter ({totalMissing})
+                        </button>
                     )}
-                </Button>
+                    <Button size="sm" variant="outline" onClick={runScan} disabled={loading} className="h-7 text-xs">
+                        {loading ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                            <>
+                                <RefreshCw className="h-3.5 w-3.5 mr-1" /> Re-scanner
+                            </>
+                        )}
+                    </Button>
+                </div>
             </div>
 
             {loading && !result && (
@@ -129,7 +154,6 @@ export default function ContactScanner({
                     contacts={result.emails}
                     selected={selectedEmails.map((s) => s.toLowerCase())}
                     onToggle={onToggleEmail}
-                    onAddAll={() => onAddAllEmails(result.emails.map((c) => c.value))}
                 />
             )}
 
@@ -140,7 +164,6 @@ export default function ContactScanner({
                     contacts={result.phones}
                     selected={selectedPhones.map((s) => s.toLowerCase())}
                     onToggle={onTogglePhone}
-                    onAddAll={() => onAddAllPhones(result.phones.map((c) => c.display))}
                     compareAsDisplay
                 />
             )}
@@ -154,7 +177,6 @@ function ContactSection({
     contacts,
     selected,
     onToggle,
-    onAddAll,
     compareAsDisplay = false,
 }: {
     title: string;
@@ -162,32 +184,12 @@ function ContactSection({
     contacts: IScanContact[];
     selected: string[];
     onToggle: (v: string) => void;
-    onAddAll: () => void;
     compareAsDisplay?: boolean;
 }) {
-    const missingCount = contacts.reduce((n, c) => {
-        const key = (compareAsDisplay ? c.display : c.value).toLowerCase();
-        return selected.includes(key) ? n : n + 1;
-    }, 0);
-    const showBulk = contacts.length >= 2 && missingCount > 0;
-
     return (
         <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                    <Icon className="h-3 w-3" /> {title}
-                </div>
-                {showBulk && (
-                    <button
-                        type="button"
-                        onClick={onAddAll}
-                        className="inline-flex items-center gap-1 rounded-full bg-violet-600 px-2.5 py-0.5 text-[11px] font-medium text-white hover:bg-violet-700 transition"
-                        title={`Ajouter les ${missingCount} restant(s)`}
-                    >
-                        <Plus className="h-3 w-3" />
-                        Tout ajouter ({missingCount})
-                    </button>
-                )}
+            <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                <Icon className="h-3 w-3" /> {title}
             </div>
             <div className="flex flex-col gap-1.5">
                 {contacts.map((c) => {
