@@ -117,12 +117,25 @@ function normalizeEmail(raw: string): string {
     return raw.trim().toLowerCase();
 }
 
+// Normalise un téléphone en forme canonique pour déduplication.
+// +33X → 0X (FR), sinon +<digits> si préfixé, sinon <digits>.
 function normalizePhone(raw: string): string | null {
     const trimmed = raw.trim();
     const hasPlus = trimmed.startsWith("+");
     const digits = trimmed.replace(/\D/g, "");
     if (digits.length < 8 || digits.length > 15) return null;
-    return hasPlus ? `+${digits}` : digits;
+
+    if (hasPlus) {
+        // +33<9 chiffres> → 0<9 chiffres> (forme FR canonique)
+        if (/^33\d{9}$/.test(digits)) return "0" + digits.slice(2);
+        // +1<10 chiffres> (US/CA), garde tel quel
+        return `+${digits}`;
+    }
+    // Numéro FR 10 chiffres commençant par 0
+    if (/^0\d{9}$/.test(digits)) return digits;
+    // 33<9 chiffres> sans + → normalise en 0<9 chiffres>
+    if (/^33\d{9}$/.test(digits) && digits.length === 11) return "0" + digits.slice(2);
+    return digits;
 }
 
 function formatPhoneFR(normalized: string): string {
