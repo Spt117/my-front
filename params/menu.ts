@@ -11,6 +11,7 @@ export const menuItems: MenuProps[] = [
     { path: "/server", label: "Serveur" },
     { path: "/amazon", label: "Amazon" },
     { path: "/youtube", label: "YouTube" },
+    { path: "/colissimo", label: "Colissimo" },
 ];
 
 export const menuShopify = (id?: number): MenuProps[] => {
