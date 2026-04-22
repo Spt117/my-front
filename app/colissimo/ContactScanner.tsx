@@ -24,6 +24,8 @@ interface Props {
     selectedPhones: string[];
     onToggleEmail: (email: string) => void;
     onTogglePhone: (phone: string) => void;
+    onAddAllEmails: (emails: string[]) => void;
+    onAddAllPhones: (phones: string[]) => void;
     autoScan?: boolean;
 }
 
@@ -33,6 +35,8 @@ export default function ContactScanner({
     selectedPhones,
     onToggleEmail,
     onTogglePhone,
+    onAddAllEmails,
+    onAddAllPhones,
     autoScan = true,
 }: Props) {
     const [result, setResult] = useState<IScanResult | null>(null);
@@ -125,6 +129,7 @@ export default function ContactScanner({
                     contacts={result.emails}
                     selected={selectedEmails.map((s) => s.toLowerCase())}
                     onToggle={onToggleEmail}
+                    onAddAll={() => onAddAllEmails(result.emails.map((c) => c.value))}
                 />
             )}
 
@@ -135,6 +140,7 @@ export default function ContactScanner({
                     contacts={result.phones}
                     selected={selectedPhones.map((s) => s.toLowerCase())}
                     onToggle={onTogglePhone}
+                    onAddAll={() => onAddAllPhones(result.phones.map((c) => c.display))}
                     compareAsDisplay
                 />
             )}
@@ -148,6 +154,7 @@ function ContactSection({
     contacts,
     selected,
     onToggle,
+    onAddAll,
     compareAsDisplay = false,
 }: {
     title: string;
@@ -155,12 +162,32 @@ function ContactSection({
     contacts: IScanContact[];
     selected: string[];
     onToggle: (v: string) => void;
+    onAddAll: () => void;
     compareAsDisplay?: boolean;
 }) {
+    const missingCount = contacts.reduce((n, c) => {
+        const key = (compareAsDisplay ? c.display : c.value).toLowerCase();
+        return selected.includes(key) ? n : n + 1;
+    }, 0);
+    const showBulk = contacts.length >= 2 && missingCount > 0;
+
     return (
         <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                <Icon className="h-3 w-3" /> {title}
+            <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <Icon className="h-3 w-3" /> {title}
+                </div>
+                {showBulk && (
+                    <button
+                        type="button"
+                        onClick={onAddAll}
+                        className="inline-flex items-center gap-1 rounded-full bg-violet-600 px-2.5 py-0.5 text-[11px] font-medium text-white hover:bg-violet-700 transition"
+                        title={`Ajouter les ${missingCount} restant(s)`}
+                    >
+                        <Plus className="h-3 w-3" />
+                        Tout ajouter ({missingCount})
+                    </button>
+                )}
             </div>
             <div className="flex flex-col gap-1.5">
                 {contacts.map((c) => {

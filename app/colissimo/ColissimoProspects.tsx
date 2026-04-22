@@ -121,6 +121,20 @@ function toggleIn(list: string[], value: string): string[] {
     return [...list, value];
 }
 
+// Merge des valeurs dans la liste sans doublons (insensible à la casse)
+function mergeIn(list: string[], values: string[]): string[] {
+    const lowers = new Set(list.map((v) => v.toLowerCase()));
+    const next = list.slice();
+    for (const v of values) {
+        const k = v.toLowerCase();
+        if (!lowers.has(k)) {
+            next.push(v);
+            lowers.add(k);
+        }
+    }
+    return next;
+}
+
 export default function ColissimoProspects({ initialProspects }: Props) {
     const [prospects, setProspects] = useState(initialProspects);
 
@@ -404,6 +418,8 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                                 selectedPhones={newPhones}
                                 onToggleEmail={(v) => setNewEmails((prev) => toggleIn(prev, v))}
                                 onTogglePhone={(v) => setNewPhones((prev) => toggleIn(prev, v))}
+                                onAddAllEmails={(list) => setNewEmails((prev) => mergeIn(prev, list))}
+                                onAddAllPhones={(list) => setNewPhones((prev) => mergeIn(prev, list))}
                             />
                             <div className="flex flex-col gap-3">
                                 <div>

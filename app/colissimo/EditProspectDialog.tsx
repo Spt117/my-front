@@ -59,6 +59,19 @@ function toggleIn(list: string[], value: string): string[] {
     return [...list, value];
 }
 
+function mergeIn(list: string[], values: string[]): string[] {
+    const lowers = new Set(list.map((v) => v.toLowerCase()));
+    const next = list.slice();
+    for (const v of values) {
+        const k = v.toLowerCase();
+        if (!lowers.has(k)) {
+            next.push(v);
+            lowers.add(k);
+        }
+    }
+    return next;
+}
+
 export default function EditProspectDialog({ prospect, open, onOpenChange, onSaved }: Props) {
     const [emails, setEmails] = useState<string[]>([]);
     const [phones, setPhones] = useState<string[]>([]);
@@ -124,6 +137,8 @@ export default function EditProspectDialog({ prospect, open, onOpenChange, onSav
                             selectedPhones={phones}
                             onToggleEmail={(v) => setEmails((prev) => toggleIn(prev, v))}
                             onTogglePhone={(v) => setPhones((prev) => toggleIn(prev, v))}
+                            onAddAllEmails={(list) => setEmails((prev) => mergeIn(prev, list))}
+                            onAddAllPhones={(list) => setPhones((prev) => mergeIn(prev, list))}
                         />
                     )}
                     <Field label="Emails" icon={Mail} hint={`${emails.length} dans la liste`}>
