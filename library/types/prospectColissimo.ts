@@ -10,8 +10,8 @@ export const PROSPECT_STATUS_LABEL: Record<TProspectStatus, string> = {
 export interface IProspectColissimo {
     id: string;
     domain: string;
-    email: string;
-    phone: string;
+    emails: string[];
+    phones: string[];
     status: TProspectStatus;
     notes: string;
     created: string;
@@ -20,8 +20,8 @@ export interface IProspectColissimo {
 
 export interface IProspectColissimoInput {
     domain: string;
-    email?: string;
-    phone?: string;
+    emails?: string[];
+    phones?: string[];
     status?: TProspectStatus;
     notes?: string;
 }

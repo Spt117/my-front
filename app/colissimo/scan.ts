@@ -27,35 +27,38 @@ export interface IScanResult {
 const USER_AGENT =
     "Mozilla/5.0 (compatible; DigiblockProspector/1.0; +https://digiblock.fr)";
 const FETCH_TIMEOUT_MS = 6000;
-const MAX_PAGES = 14;
+const MAX_PAGES = 28;
 const CONTEXT_RADIUS = 60;
 
 // Optimisé pour boutiques Shopify
+// ORDRE IMPORTANT : les pages à plus fort signal sont en premier.
+// finalUrls est tronqué à MAX_PAGES — les dernières entrées peuvent être coupées.
 const CANDIDATE_PATHS = [
     "/",
-    // Pages "classiques" Shopify
+    // Policies Shopify (les plus fiables pour les infos légales)
+    "/policies/legal-notice",
+    "/policies/contact-information",
+    "/policies/terms-of-sale",
+    "/policies/terms-of-service",
+    "/policies/privacy-policy",
+    "/policies/shipping-policy",
+    "/policies/refund-policy",
+    // Pages Shopify classiques
     "/pages/contact",
     "/pages/contact-us",
     "/pages/nous-contacter",
     "/pages/contactez-nous",
     "/pages/service-client",
     "/pages/mentions-legales",
+    "/pages/cgv",
+    "/pages/cgu",
     "/pages/a-propos",
     "/pages/about-us",
     "/pages/qui-sommes-nous",
-    "/pages/cgv",
-    "/pages/cgu",
     "/pages/boutiques",
     "/pages/nos-boutiques",
     "/pages/stores",
-    // Politiques Shopify (toujours /policies/*)
-    "/policies/legal-notice",
-    "/policies/privacy-policy",
-    "/policies/terms-of-service",
-    "/policies/shipping-policy",
-    "/policies/refund-policy",
-    "/policies/contact-information",
-    // Variantes non-Shopify mais utiles
+    // Variantes non-Shopify mais utiles (fallback)
     "/contact",
     "/mentions-legales",
     "/cgv",
@@ -100,6 +103,7 @@ function pageKind(url: string): { label: string | null; weight: number } {
         return { label: "Shopify contact", weight: 40 };
     if (/\/policies\/legal-notice|mentions[-_]?legales/.test(p))
         return { label: "mentions légales", weight: 35 };
+    if (/\/policies\/terms-of-sale/.test(p)) return { label: "CGV Shopify", weight: 30 };
     if (/\/policies\//.test(p)) return { label: "policy Shopify", weight: 25 };
     if (/\/contact|nous[-_]?contacter|contactez/.test(p)) return { label: "page contact", weight: 25 };
     if (/about|qui[-_]?sommes|a[-_]?propos|apropos/.test(p)) return { label: "à propos", weight: 10 };

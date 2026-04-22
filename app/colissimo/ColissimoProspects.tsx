@@ -21,13 +21,8 @@ import {
     ChevronRight,
     Clock,
     ExternalLink,
-    Globe,
-    Link as LinkIcon,
-    Loader2,
-    Mail,
     MessageSquare,
     Pencil,
-    Phone,
     Plus,
     Search,
     Sparkles,
@@ -46,6 +41,7 @@ import {
 import ContactScanner from "./ContactScanner";
 import { cleanDomainFromInput } from "./domain";
 import EditProspectDialog from "./EditProspectDialog";
+import TagListInput, { validateEmail } from "./TagListInput";
 
 interface Props {
     initialProspects: IProspectColissimo[];
@@ -54,29 +50,25 @@ interface Props {
 const STATUS_OPTIONS = PROSPECT_STATUSES.map((s) => ({ value: s, label: PROSPECT_STATUS_LABEL[s] }));
 const STATUS_FILTER_OPTIONS = [{ value: "all", label: "Tous les statuts" }, ...STATUS_OPTIONS];
 
-// Couleurs / icônes par statut
-const STATUS_META: Record<TProspectStatus, { color: string; pill: string; dot: string; icon: React.ElementType }> = {
+const STATUS_META: Record<TProspectStatus, { pill: string; dot: string; icon: React.ElementType }> = {
     a_prospecter: {
-        color: "text-emerald-700",
         pill: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200",
         dot: "bg-emerald-500",
         icon: Sparkles,
     },
     en_attente: {
-        color: "text-amber-700",
         pill: "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
         dot: "bg-amber-500",
         icon: Clock,
     },
     archive: {
-        color: "text-zinc-600",
         pill: "bg-zinc-100 text-zinc-600 ring-1 ring-inset ring-zinc-200",
         dot: "bg-zinc-400",
         icon: Archive,
     },
 };
 
-type SortKey = "domain" | "email" | "status" | "updated" | "created";
+type SortKey = "domain" | "status" | "updated" | "created";
 type SortDir = "asc" | "desc";
 const PAGE_SIZE = 20;
 
@@ -117,29 +109,38 @@ function KpiCard({
     );
 }
 
+// Toggle add/remove dans une liste (insensible à la casse)
+function toggleIn(list: string[], value: string): string[] {
+    const lower = value.toLowerCase();
+    const idx = list.findIndex((v) => v.toLowerCase() === lower);
+    if (idx >= 0) {
+        const next = list.slice();
+        next.splice(idx, 1);
+        return next;
+    }
+    return [...list, value];
+}
+
 export default function ColissimoProspects({ initialProspects }: Props) {
     const [prospects, setProspects] = useState(initialProspects);
 
-    // --- Zone recherche / ajout ---
     const [rawInput, setRawInput] = useState("");
     const [extractedDomain, setExtractedDomain] = useState<string | null>(null);
     const [lookup, setLookup] = useState<{ state: "idle" | "searching" | "found" | "missing"; prospect: IProspectColissimo | null }>({
         state: "idle",
         prospect: null,
     });
-    const [newEmail, setNewEmail] = useState("");
-    const [newPhone, setNewPhone] = useState("");
+    const [newEmails, setNewEmails] = useState<string[]>([]);
+    const [newPhones, setNewPhones] = useState<string[]>([]);
     const [newStatus, setNewStatus] = useState<TProspectStatus>("a_prospecter");
     const [newNotes, setNewNotes] = useState("");
 
-    // --- Filtres table ---
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState<TProspectStatus | "all">("all");
     const [sortKey, setSortKey] = useState<SortKey>("updated");
     const [sortDir, setSortDir] = useState<SortDir>("desc");
     const [page, setPage] = useState(1);
 
-    // --- Édition ---
     const [editing, setEditing] = useState<IProspectColissimo | null>(null);
     const [editOpen, setEditOpen] = useState(false);
 
@@ -161,8 +162,8 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                 setLookup({ state: "found", prospect: res.prospect });
             } else {
                 setLookup({ state: "missing", prospect: null });
-                setNewEmail("");
-                setNewPhone("");
+                setNewEmails([]);
+                setNewPhones([]);
                 setNewStatus("a_prospecter");
                 setNewNotes("");
             }
@@ -176,8 +177,8 @@ export default function ColissimoProspects({ initialProspects }: Props) {
         setRawInput("");
         setExtractedDomain(null);
         setLookup({ state: "idle", prospect: null });
-        setNewEmail("");
-        setNewPhone("");
+        setNewEmails([]);
+        setNewPhones([]);
         setNewStatus("a_prospecter");
         setNewNotes("");
     };
@@ -187,8 +188,8 @@ export default function ColissimoProspects({ initialProspects }: Props) {
         startTransition(async () => {
             const res = await createProspect({
                 domain: extractedDomain,
-                email: newEmail.trim(),
-                phone: newPhone.trim(),
+                emails: newEmails,
+                phones: newPhones,
                 status: newStatus,
                 notes: newNotes.trim(),
             });
@@ -254,8 +255,8 @@ export default function ColissimoProspects({ initialProspects }: Props) {
             if (!q) return true;
             return (
                 p.domain.toLowerCase().includes(q) ||
-                (p.email ?? "").toLowerCase().includes(q) ||
-                (p.phone ?? "").toLowerCase().includes(q) ||
+                p.emails.some((e) => e.toLowerCase().includes(q)) ||
+                p.phones.some((ph) => ph.toLowerCase().includes(q)) ||
                 (p.notes ?? "").toLowerCase().includes(q)
             );
         });
@@ -296,7 +297,6 @@ export default function ColissimoProspects({ initialProspects }: Props) {
 
     return (
         <div className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto w-full">
-            {/* ─── Header ─── */}
             <header className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-indigo-600 text-white shadow-sm">
@@ -309,43 +309,28 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                 </p>
             </header>
 
-            {/* ─── KPIs ─── */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <KpiCard icon={Users} label="Total" value={prospects.length} accent="bg-sky-50 text-sky-600" />
-                <KpiCard
-                    icon={Sparkles}
-                    label="À prospecter"
-                    value={counts.a_prospecter}
-                    accent="bg-emerald-50 text-emerald-600"
-                />
+                <KpiCard icon={Sparkles} label="À prospecter" value={counts.a_prospecter} accent="bg-emerald-50 text-emerald-600" />
                 <KpiCard icon={Clock} label="En attente" value={counts.en_attente} accent="bg-amber-50 text-amber-600" />
                 <KpiCard icon={Archive} label="Archivés" value={counts.archive} accent="bg-zinc-100 text-zinc-600" />
             </div>
 
-            {/* ─── Recherche / Ajout ─── */}
+            {/* Recherche / Ajout */}
             <section className="rounded-2xl border bg-card shadow-sm overflow-hidden">
                 <div className="border-b bg-gradient-to-r from-sky-50 via-white to-indigo-50 px-5 py-4">
-                    <div className="flex items-center gap-2">
-                        <LinkIcon className="h-4 w-4 text-sky-600" />
-                        <h2 className="text-sm font-semibold tracking-wide">Rechercher ou ajouter un domaine</h2>
-                    </div>
+                    <h2 className="text-sm font-semibold tracking-wide">Rechercher ou ajouter un domaine</h2>
                     <p className="text-xs text-muted-foreground mt-0.5">
                         Collez une URL, un domaine ou un texte — le domaine est détecté automatiquement.
                     </p>
                 </div>
                 <div className="p-5 flex flex-col gap-4">
-                    <div className="relative">
-                        <Globe className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="https://www.exemple.fr/contact"
-                            value={rawInput}
-                            onChange={(e) => setRawInput(e.target.value)}
-                            className="w-full pl-9 h-11 text-base"
-                        />
-                        {lookup.state === "searching" && (
-                            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
-                        )}
-                    </div>
+                    <Input
+                        placeholder="https://www.exemple.fr/contact"
+                        value={rawInput}
+                        onChange={(e) => setRawInput(e.target.value)}
+                        className="w-full h-11 text-base"
+                    />
 
                     {rawInput && !extractedDomain && (
                         <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
@@ -356,7 +341,15 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                     {extractedDomain && (
                         <div className="flex items-center gap-2 text-xs">
                             <span className="text-muted-foreground">Domaine détecté :</span>
-                            <span className="font-mono font-semibold bg-muted px-2 py-0.5 rounded">{extractedDomain}</span>
+                            <a
+                                href={`https://${extractedDomain}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 font-mono font-semibold bg-muted px-2 py-0.5 rounded hover:bg-sky-100 hover:text-sky-800"
+                            >
+                                {extractedDomain}
+                                <ExternalLink className="h-3 w-3 opacity-60" />
+                            </a>
                         </div>
                     )}
 
@@ -376,7 +369,6 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-1 font-mono text-lg font-semibold text-emerald-900 hover:underline"
-                                            title="Ouvrir le site"
                                         >
                                             {lookup.prospect.domain}
                                             <ExternalLink className="h-4 w-4 opacity-70" />
@@ -388,24 +380,7 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                                     <Pencil className="h-3.5 w-3.5 mr-1.5" /> Éditer
                                 </Button>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                                <div className="flex items-center gap-2">
-                                    <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
-                                    <span>
-                                        {lookup.prospect.email || (
-                                            <em className="text-muted-foreground">non renseigné</em>
-                                        )}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
-                                    <span>
-                                        {lookup.prospect.phone || (
-                                            <em className="text-muted-foreground">non renseigné</em>
-                                        )}
-                                    </span>
-                                </div>
-                            </div>
+                            <ContactLists emails={lookup.prospect.emails} phones={lookup.prospect.phones} />
                             {lookup.prospect.notes && (
                                 <div className="flex items-start gap-2 text-sm rounded-lg bg-white/60 p-3 border border-emerald-100">
                                     <StickyNote className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
@@ -422,53 +397,50 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                                 <span className="text-xs font-semibold text-sky-700 uppercase tracking-wider">
                                     Nouveau prospect
                                 </span>
-                                <span className="text-sm text-muted-foreground">—</span>
-                                <a
-                                    href={`https://${extractedDomain}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 font-mono font-semibold text-sky-900 hover:underline"
-                                    title="Ouvrir le site"
-                                >
-                                    {extractedDomain}
-                                    <ExternalLink className="h-3.5 w-3.5 opacity-70" />
-                                </a>
                             </div>
                             <ContactScanner
                                 domain={extractedDomain}
-                                currentEmail={newEmail}
-                                currentPhone={newPhone}
-                                onPickEmail={setNewEmail}
-                                onPickPhone={setNewPhone}
+                                selectedEmails={newEmails}
+                                selectedPhones={newPhones}
+                                onToggleEmail={(v) => setNewEmails((prev) => toggleIn(prev, v))}
+                                onTogglePhone={(v) => setNewPhones((prev) => toggleIn(prev, v))}
                             />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div className="relative">
-                                    <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        placeholder="Email"
+                            <div className="flex flex-col gap-3">
+                                <div>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 block">
+                                        Emails ({newEmails.length})
+                                    </label>
+                                    <TagListInput
+                                        values={newEmails}
+                                        onChange={setNewEmails}
+                                        placeholder="contact@exemple.fr"
                                         type="email"
-                                        value={newEmail}
-                                        onChange={(e) => setNewEmail(e.target.value)}
-                                        className="w-full pl-9"
+                                        validate={validateEmail}
                                     />
                                 </div>
-                                <div className="relative">
-                                    <Phone className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        placeholder="Téléphone"
-                                        value={newPhone}
-                                        onChange={(e) => setNewPhone(e.target.value)}
-                                        className="w-full pl-9"
+                                <div>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 block">
+                                        Téléphones ({newPhones.length})
+                                    </label>
+                                    <TagListInput
+                                        values={newPhones}
+                                        onChange={setNewPhones}
+                                        placeholder="+33 6 00 00 00 00"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5 block">
+                                        Statut
+                                    </label>
+                                    <Selecteur
+                                        value={newStatus}
+                                        onChange={(v) => setNewStatus(v as TProspectStatus)}
+                                        array={STATUS_OPTIONS}
+                                        placeholder="Statut"
+                                        className="w-full"
                                     />
                                 </div>
                             </div>
-                            <Selecteur
-                                value={newStatus}
-                                onChange={(v) => setNewStatus(v as TProspectStatus)}
-                                array={STATUS_OPTIONS}
-                                placeholder="Statut"
-                                className="w-full"
-                            />
                             <Textarea
                                 placeholder="Notes (optionnel)"
                                 value={newNotes}
@@ -480,13 +452,7 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                                     Annuler
                                 </Button>
                                 <Button onClick={handleCreate} disabled={isPending}>
-                                    {isPending ? (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <>
-                                            <Plus className="h-4 w-4 mr-1.5" /> Ajouter à la base
-                                        </>
-                                    )}
+                                    <Plus className="h-4 w-4 mr-1.5" /> Ajouter à la base
                                 </Button>
                             </div>
                         </div>
@@ -494,7 +460,7 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                 </div>
             </section>
 
-            {/* ─── Liste ─── */}
+            {/* Liste */}
             <section className="rounded-2xl border bg-card shadow-sm overflow-hidden">
                 <div className="border-b px-5 py-4 flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-2">
@@ -506,7 +472,6 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                     </span>
                 </div>
 
-                {/* Filtres */}
                 <div className="px-5 py-4 border-b bg-muted/30 flex flex-col md:flex-row gap-3 md:items-center">
                     <div className="relative flex-1">
                         <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -526,7 +491,6 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                     />
                 </div>
 
-                {/* Table */}
                 <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
@@ -537,13 +501,8 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                                 >
                                     Domaine {sortIcon("domain")}
                                 </TableHead>
-                                <TableHead
-                                    onClick={() => toggleSort("email")}
-                                    className="cursor-pointer select-none text-xs uppercase tracking-wider"
-                                >
-                                    Email {sortIcon("email")}
-                                </TableHead>
-                                <TableHead className="text-xs uppercase tracking-wider">Téléphone</TableHead>
+                                <TableHead className="text-xs uppercase tracking-wider">Emails</TableHead>
+                                <TableHead className="text-xs uppercase tracking-wider">Téléphones</TableHead>
                                 <TableHead
                                     onClick={() => toggleSort("status")}
                                     className="cursor-pointer select-none text-xs uppercase tracking-wider"
@@ -591,25 +550,10 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-sm">
-                                            {p.email ? (
-                                                <a
-                                                    href={`mailto:${p.email}`}
-                                                    className="text-sky-700 hover:underline"
-                                                >
-                                                    {p.email}
-                                                </a>
-                                            ) : (
-                                                <span className="text-muted-foreground">—</span>
-                                            )}
+                                            <ContactListCell items={p.emails} kind="email" />
                                         </TableCell>
                                         <TableCell className="text-sm">
-                                            {p.phone ? (
-                                                <a href={`tel:${p.phone}`} className="text-sky-700 hover:underline">
-                                                    {p.phone}
-                                                </a>
-                                            ) : (
-                                                <span className="text-muted-foreground">—</span>
-                                            )}
+                                            <ContactListCell items={p.phones} kind="phone" />
                                         </TableCell>
                                         <TableCell>
                                             <Selecteur
@@ -630,7 +574,7 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                                             {formatDate(p.updated)}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <div className="flex justify-end gap-1 opacity-60 transition group-hover:opacity-100">
+                                            <div className="flex justify-end gap-1">
                                                 <Button
                                                     size="icon"
                                                     variant="ghost"
@@ -666,20 +610,10 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                             Page <span className="font-semibold">{safePage}</span> sur {totalPages}
                         </div>
                         <div className="flex gap-1">
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                disabled={safePage <= 1}
-                                onClick={() => setPage(safePage - 1)}
-                            >
+                            <Button size="sm" variant="outline" disabled={safePage <= 1} onClick={() => setPage(safePage - 1)}>
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                disabled={safePage >= totalPages}
-                                onClick={() => setPage(safePage + 1)}
-                            >
+                            <Button size="sm" variant="outline" disabled={safePage >= totalPages} onClick={() => setPage(safePage + 1)}>
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
                         </div>
@@ -687,12 +621,73 @@ export default function ColissimoProspects({ initialProspects }: Props) {
                 )}
             </section>
 
-            <EditProspectDialog
-                prospect={editing}
-                open={editOpen}
-                onOpenChange={setEditOpen}
-                onSaved={handleSaved}
-            />
+            <EditProspectDialog prospect={editing} open={editOpen} onOpenChange={setEditOpen} onSaved={handleSaved} />
+        </div>
+    );
+}
+
+// Affichage compact dans une cellule de table : montre jusqu'à 2 items + compteur
+function ContactListCell({ items, kind }: { items: string[]; kind: "email" | "phone" }) {
+    if (!items || items.length === 0) return <span className="text-muted-foreground">—</span>;
+    const prefix = kind === "email" ? "mailto:" : "tel:";
+    const toShow = items.slice(0, 2);
+    const more = items.length - toShow.length;
+    return (
+        <div className="flex flex-col gap-0.5" title={items.join("\n")}>
+            {toShow.map((v, i) => (
+                <a
+                    key={`${v}-${i}`}
+                    href={`${prefix}${v}`}
+                    className="text-sky-700 hover:underline font-mono text-xs truncate max-w-[220px]"
+                >
+                    {v}
+                </a>
+            ))}
+            {more > 0 && <span className="text-[11px] text-muted-foreground">+ {more} autre{more > 1 ? "s" : ""}</span>}
+        </div>
+    );
+}
+
+// Affichage complet dans la carte "Déjà en base"
+function ContactLists({ emails, phones }: { emails: string[]; phones: string[] }) {
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                    Emails ({emails.length})
+                </span>
+                {emails.length === 0 ? (
+                    <em className="text-muted-foreground text-xs">aucun</em>
+                ) : (
+                    <ul className="flex flex-col gap-1">
+                        {emails.map((e, i) => (
+                            <li key={`${e}-${i}`}>
+                                <a href={`mailto:${e}`} className="font-mono text-xs text-sky-700 hover:underline">
+                                    {e}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                    Téléphones ({phones.length})
+                </span>
+                {phones.length === 0 ? (
+                    <em className="text-muted-foreground text-xs">aucun</em>
+                ) : (
+                    <ul className="flex flex-col gap-1">
+                        {phones.map((ph, i) => (
+                            <li key={`${ph}-${i}`}>
+                                <a href={`tel:${ph}`} className="font-mono text-xs text-sky-700 hover:underline">
+                                    {ph}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
         </div>
     );
 }

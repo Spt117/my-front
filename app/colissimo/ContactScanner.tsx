@@ -10,6 +10,7 @@ import {
     Loader2,
     Mail,
     Phone,
+    Plus,
     RefreshCw,
     Search,
     X,
@@ -19,19 +20,19 @@ import { IScanContact, IScanResult, scanDomainContacts } from "./scan";
 
 interface Props {
     domain: string | null;
-    currentEmail: string;
-    currentPhone: string;
-    onPickEmail: (email: string) => void;
-    onPickPhone: (phone: string) => void;
+    selectedEmails: string[];
+    selectedPhones: string[];
+    onToggleEmail: (email: string) => void;
+    onTogglePhone: (phone: string) => void;
     autoScan?: boolean;
 }
 
 export default function ContactScanner({
     domain,
-    currentEmail,
-    currentPhone,
-    onPickEmail,
-    onPickPhone,
+    selectedEmails,
+    selectedPhones,
+    onToggleEmail,
+    onTogglePhone,
     autoScan = true,
 }: Props) {
     const [result, setResult] = useState<IScanResult | null>(null);
@@ -122,8 +123,8 @@ export default function ContactScanner({
                     title="Emails détectés"
                     icon={Mail}
                     contacts={result.emails}
-                    currentValue={currentEmail}
-                    onPick={onPickEmail}
+                    selected={selectedEmails.map((s) => s.toLowerCase())}
+                    onToggle={onToggleEmail}
                 />
             )}
 
@@ -132,8 +133,8 @@ export default function ContactScanner({
                     title="Téléphones détectés"
                     icon={Phone}
                     contacts={result.phones}
-                    currentValue={currentPhone}
-                    onPick={onPickPhone}
+                    selected={selectedPhones.map((s) => s.toLowerCase())}
+                    onToggle={onTogglePhone}
                     compareAsDisplay
                 />
             )}
@@ -145,15 +146,15 @@ function ContactSection({
     title,
     icon: Icon,
     contacts,
-    currentValue,
-    onPick,
+    selected,
+    onToggle,
     compareAsDisplay = false,
 }: {
     title: string;
     icon: React.ElementType;
     contacts: IScanContact[];
-    currentValue: string;
-    onPick: (v: string) => void;
+    selected: string[];
+    onToggle: (v: string) => void;
     compareAsDisplay?: boolean;
 }) {
     return (
@@ -162,16 +163,18 @@ function ContactSection({
                 <Icon className="h-3 w-3" /> {title}
             </div>
             <div className="flex flex-col gap-1.5">
-                {contacts.map((c) => (
-                    <ContactRow
-                        key={c.value}
-                        contact={c}
-                        selected={
-                            compareAsDisplay ? currentValue === c.display : currentValue === c.value
-                        }
-                        onPick={() => onPick(compareAsDisplay ? c.display : c.value)}
-                    />
-                ))}
+                {contacts.map((c) => {
+                    const key = (compareAsDisplay ? c.display : c.value).toLowerCase();
+                    const isSelected = selected.includes(key);
+                    return (
+                        <ContactRow
+                            key={c.value}
+                            contact={c}
+                            selected={isSelected}
+                            onToggle={() => onToggle(compareAsDisplay ? c.display : c.value)}
+                        />
+                    );
+                })}
             </div>
         </div>
     );
@@ -196,11 +199,11 @@ function shortenUrl(u: string): string {
 function ContactRow({
     contact,
     selected,
-    onPick,
+    onToggle,
 }: {
     contact: IScanContact;
     selected: boolean;
-    onPick: () => void;
+    onToggle: () => void;
 }) {
     const [open, setOpen] = useState(false);
     const conf = confidenceMeta(contact.confidence);
@@ -217,15 +220,13 @@ function ContactRow({
             <div className="flex items-center gap-2 px-2.5 py-1.5">
                 <button
                     type="button"
-                    onClick={onPick}
+                    onClick={onToggle}
                     className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium transition ${
-                        selected
-                            ? "bg-violet-600 text-white"
-                            : "text-violet-700 hover:bg-violet-100"
+                        selected ? "bg-violet-600 text-white" : "text-violet-700 hover:bg-violet-100"
                     }`}
-                    title="Utiliser cette valeur"
+                    title={selected ? "Retirer de la liste" : "Ajouter à la liste"}
                 >
-                    {selected ? <Check className="h-3 w-3" /> : null}
+                    {selected ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
                     <span className="font-mono">{contact.display}</span>
                 </button>
 
@@ -237,10 +238,7 @@ function ContactRow({
                 </span>
 
                 {contact.tags.slice(0, 2).map((t) => (
-                    <span
-                        key={t}
-                        className="text-[10px] text-muted-foreground bg-muted/50 rounded px-1.5 py-0.5"
-                    >
+                    <span key={t} className="text-[10px] text-muted-foreground bg-muted/50 rounded px-1.5 py-0.5">
                         {t}
                     </span>
                 ))}
@@ -266,9 +264,7 @@ function ContactRow({
                                 className="inline-flex items-center gap-1 text-[11px] text-sky-700 hover:underline"
                             >
                                 <LinkIcon className="h-3 w-3" />
-                                <span className="font-mono truncate max-w-[360px]">
-                                    {shortenUrl(o.url)}
-                                </span>
+                                <span className="font-mono truncate max-w-[360px]">{shortenUrl(o.url)}</span>
                                 <ExternalLink className="h-3 w-3 opacity-60" />
                                 <span className="text-muted-foreground">· via {o.via}</span>
                             </a>
@@ -283,11 +279,9 @@ function ContactRow({
     );
 }
 
-// Met en gras la valeur dans l'extrait de contexte
 function highlightValue(context: string, value: string) {
     if (!value) return context;
     const digitsOnly = value.replace(/\D/g, "");
-    // pour les téléphones : cherche la séquence de chiffres ignorant séparateurs
     const re = new RegExp(
         digitsOnly && digitsOnly.length >= 8
             ? digitsOnly.split("").join("[\\s.\\-]?")
@@ -302,9 +296,7 @@ function highlightValue(context: string, value: string) {
     return (
         <>
             {before}
-            <mark className="bg-violet-200 text-violet-900 rounded px-0.5 not-italic font-medium">
-                {match}
-            </mark>
+            <mark className="bg-violet-200 text-violet-900 rounded px-0.5 not-italic font-medium">{match}</mark>
             {after}
         </>
     );

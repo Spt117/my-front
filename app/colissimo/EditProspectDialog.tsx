@@ -3,7 +3,6 @@
 import Selecteur from "@/components/selecteur";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
     IProspectColissimo,
@@ -16,6 +15,7 @@ import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { updateProspect } from "./actions";
 import ContactScanner from "./ContactScanner";
+import TagListInput, { validateEmail } from "./TagListInput";
 
 const STATUS_OPTIONS = PROSPECT_STATUSES.map((s) => ({ value: s, label: PROSPECT_STATUS_LABEL[s] }));
 
@@ -29,33 +29,47 @@ interface Props {
 function Field({
     label,
     icon: Icon,
+    hint,
     children,
 }: {
     label: string;
     icon: React.ElementType;
+    hint?: string;
     children: React.ReactNode;
 }) {
     return (
         <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 <Icon className="h-3.5 w-3.5" /> {label}
+                {hint && <span className="text-[10px] text-muted-foreground/70 normal-case font-normal">· {hint}</span>}
             </label>
             {children}
         </div>
     );
 }
 
+function toggleIn(list: string[], value: string): string[] {
+    const lower = value.toLowerCase();
+    const idx = list.findIndex((v) => v.toLowerCase() === lower);
+    if (idx >= 0) {
+        const next = list.slice();
+        next.splice(idx, 1);
+        return next;
+    }
+    return [...list, value];
+}
+
 export default function EditProspectDialog({ prospect, open, onOpenChange, onSaved }: Props) {
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
+    const [emails, setEmails] = useState<string[]>([]);
+    const [phones, setPhones] = useState<string[]>([]);
     const [status, setStatus] = useState<TProspectStatus>("a_prospecter");
     const [notes, setNotes] = useState("");
     const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
         if (prospect) {
-            setEmail(prospect.email ?? "");
-            setPhone(prospect.phone ?? "");
+            setEmails(prospect.emails ?? []);
+            setPhones(prospect.phones ?? []);
             setStatus(prospect.status);
             setNotes(prospect.notes ?? "");
         }
@@ -65,8 +79,8 @@ export default function EditProspectDialog({ prospect, open, onOpenChange, onSav
         if (!prospect) return;
         startTransition(async () => {
             const res = await updateProspect(prospect.id, {
-                email: email.trim(),
-                phone: phone.trim(),
+                emails,
+                phones,
                 status,
                 notes: notes.trim(),
             });
@@ -82,7 +96,7 @@ export default function EditProspectDialog({ prospect, open, onOpenChange, onSav
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-indigo-600 text-white">
@@ -106,28 +120,23 @@ export default function EditProspectDialog({ prospect, open, onOpenChange, onSav
                     {prospect && (
                         <ContactScanner
                             domain={prospect.domain}
-                            currentEmail={email}
-                            currentPhone={phone}
-                            onPickEmail={setEmail}
-                            onPickPhone={setPhone}
+                            selectedEmails={emails}
+                            selectedPhones={phones}
+                            onToggleEmail={(v) => setEmails((prev) => toggleIn(prev, v))}
+                            onTogglePhone={(v) => setPhones((prev) => toggleIn(prev, v))}
                         />
                     )}
-                    <Field label="Email" icon={Mail}>
-                        <Input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full"
+                    <Field label="Emails" icon={Mail} hint={`${emails.length} dans la liste`}>
+                        <TagListInput
+                            values={emails}
+                            onChange={setEmails}
                             placeholder="contact@exemple.fr"
+                            type="email"
+                            validate={validateEmail}
                         />
                     </Field>
-                    <Field label="Téléphone" icon={Phone}>
-                        <Input
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            className="w-full"
-                            placeholder="+33 6 00 00 00 00"
-                        />
+                    <Field label="Téléphones" icon={Phone} hint={`${phones.length} dans la liste`}>
+                        <TagListInput values={phones} onChange={setPhones} placeholder="+33 6 00 00 00 00" />
                     </Field>
                     <Field label="Statut" icon={Globe}>
                         <Selecteur
