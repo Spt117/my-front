@@ -20,7 +20,8 @@
       "mcp__supabase__list_tables",
       "mcp__supabase__list_projects",
       "mcp__supabase__execute_sql",
-      "mcp__supabase__apply_migration"
+      "mcp__supabase__apply_migration",
+      "Bash(mv \"H:\\\\Code\\\\Debian\\\\app-digiblock\\\\my-front\\\\pb_migrations\\\\1745000000_create_prospects_colissimo.js\" \"H:\\\\Code\\\\Debian\\\\app-digiblock\\\\my-front\\\\library\\\\migrations\\\\1745000000_create_prospects_colissimo.js\")"
     ]
   }
 }
