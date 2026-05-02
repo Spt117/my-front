@@ -97,6 +97,7 @@ export default function ProductList({ product, compact }: { product: ProductGET;
                 </div>
                 <h3 className={`${compact ? "flex-1" : "w-1/5"} text-sm font-medium text-foreground line-clamp-1`}>{product.title}</h3>
                 {compact && <span className="text-xs text-gray-400 truncate max-w-[250px]">/{product.handle}</span>}
+                {compact && <span className="text-sm text-primary shrink-0">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</span>}
                 {!compact && <div className="w-[10%] text-sm text-primary">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>}
                 {!compact && <div className="w-[8%] text-sm text-primary">Stock: {product.variants?.nodes[0]?.inventoryQuantity}</div>}
                 {!compact && (
