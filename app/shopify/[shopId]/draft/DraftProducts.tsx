@@ -1,14 +1,16 @@
 "use client";
 import { actionBulk } from "@/app/shopify/[shopId]/bulk/server";
+import { updateProduct } from "@/app/shopify/[shopId]/products/[productId]/serverAction";
 import ProductList from "@/components/header/products/Products";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { BulkAction } from "@/components/shopify/typesShopify";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ProductGET } from "@/library/types/graph";
-import { ArrowDownAZ, ArrowDownUp, ArrowUpAZ, Check, CheckCircle2, FileEdit, Loader2, RefreshCw, Rocket, Search, XCircle } from "lucide-react";
+import { ArrowDownAZ, ArrowDownUp, ArrowUpAZ, Check, CheckCircle2, FileEdit, Loader2, RefreshCw, Rocket, Search, Trash2, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -26,6 +28,8 @@ export default function DraftProducts({ products, error }: { products: ProductGE
     const [displayProducts, setDisplayProducts] = useState<ProductGET[]>(products);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [publishing, setPublishing] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
     const [sortBy, setSortBy] = useState<SortOption>("default");
     const { searchTerm, setSearchTerm } = useShopifyStore();
 
@@ -105,6 +109,37 @@ export default function DraftProducts({ products, error }: { products: ProductGE
             setSelectedIds(new Set());
         } else {
             setSelectedIds(new Set(filteredProducts.map((p) => p.id)));
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        if (!shopifyBoutique?.domain || selectedIds.size === 0) return;
+        setDeleting(true);
+        const ids = Array.from(selectedIds);
+        try {
+            const results = await Promise.allSettled(ids.map((id) => updateProduct(shopifyBoutique.domain as string, id, "Delete", " ")));
+            const succeeded: string[] = [];
+            const failed: string[] = [];
+            results.forEach((r, i) => {
+                const id = ids[i];
+                if (r.status === "fulfilled" && !r.value?.error) succeeded.push(id);
+                else failed.push(id);
+            });
+            if (succeeded.length > 0) {
+                setDisplayProducts((prev) => prev.filter((p) => !succeeded.includes(p.id)));
+                toast.success(`${succeeded.length} produit${succeeded.length > 1 ? "s supprimés" : " supprimé"}`);
+            }
+            if (failed.length > 0) {
+                toast.error(`Échec de la suppression de ${failed.length} produit${failed.length > 1 ? "s" : ""}`);
+            }
+            setSelectedIds(new Set(failed));
+            setConfirmDeleteOpen(false);
+            router.refresh();
+        } catch (err) {
+            console.error(err);
+            toast.error("Erreur lors de la suppression en masse");
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -231,7 +266,7 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                         <strong>{selectedIds.size}</strong> produit{selectedIds.size > 1 ? "s" : ""} sélectionné{selectedIds.size > 1 ? "s" : ""}
                     </span>
                     <div className="w-px h-6 bg-gray-600" />
-                    <Button size="sm" variant="secondary" onClick={handleBulkPublish} disabled={publishing}>
+                    <Button size="sm" variant="secondary" onClick={handleBulkPublish} disabled={publishing || deleting}>
                         {publishing ? (
                             <>
                                 <Loader2 size={16} className="mr-2 animate-spin" />
@@ -244,12 +279,54 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                             </>
                         )}
                     </Button>
+                    <Button size="sm" variant="destructive" onClick={() => setConfirmDeleteOpen(true)} disabled={publishing || deleting}>
+                        {deleting ? (
+                            <>
+                                <Loader2 size={16} className="mr-2 animate-spin" />
+                                Suppression...
+                            </>
+                        ) : (
+                            <>
+                                <Trash2 size={16} className="mr-2" />
+                                Supprimer la sélection
+                            </>
+                        )}
+                    </Button>
                     <Button size="sm" variant="outline" onClick={() => setSelectedIds(new Set())} className="bg-transparent border-gray-500 hover:bg-gray-800">
                         <XCircle size={16} className="mr-2" />
                         Annuler
                     </Button>
                 </div>
             )}
+
+            <Dialog open={confirmDeleteOpen} onOpenChange={(open) => !deleting && setConfirmDeleteOpen(open)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Supprimer la sélection</DialogTitle>
+                        <DialogDescription>
+                            Vous êtes sur le point de supprimer définitivement <strong>{selectedIds.size}</strong> produit{selectedIds.size > 1 ? "s" : ""} en brouillon. Cette action est irréversible.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setConfirmDeleteOpen(false)} disabled={deleting}>
+                            Annuler
+                        </Button>
+                        <Button variant="destructive" onClick={handleBulkDelete} disabled={deleting}>
+                            {deleting ? (
+                                <>
+                                    <Loader2 size={16} className="mr-2 animate-spin" />
+                                    Suppression...
+                                </>
+                            ) : (
+                                <>
+                                    <Trash2 size={16} className="mr-2" />
+                                    Confirmer la suppression
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
