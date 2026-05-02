@@ -3,16 +3,50 @@ import { getDataBoutique } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Input } from "@/components/ui/input";
 import useKeyboardShortcuts from "@/library/hooks/useKyboardShortcuts";
+import useUserStore from "@/library/stores/storeUser";
 import { ProductGET } from "@/library/types/graph";
 import { modes } from "@/params/menu";
+import { Search, Tag } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { search } from "../../../../components/header/serverSearch";
 import { SearchByTag } from "./server";
+import TagAutocomplete from "./TagAutocomplete";
 
 export default function BulkHeader() {
     const { setProductsSearch, setSearchMode, searchMode, shopifyBoutique, searchTerm, setSearchTerm } = useShopifyStore();
+    const { socket } = useUserStore();
     const [loading, setLoading] = useState(false);
+    const [tagSuggestions, setTagSuggestions] = useState<string[]>([]);
+
+    // Reset des suggestions au changement de mode/boutique
+    useEffect(() => {
+        setTagSuggestions([]);
+    }, [searchMode, shopifyBoutique?.domain]);
+
+    // Listener socket pour les suggestions de tags (réutilise le canal existant des fiches produit)
+    useEffect(() => {
+        if (!socket) return;
+        const handler = (tags: string[]) => setTagSuggestions(tags || []);
+        socket.on("tagSuggestions", handler);
+        return () => {
+            socket.off("tagSuggestions", handler);
+        };
+    }, [socket]);
+
+    // Demande de suggestions debounced quand on tape en mode tags
+    useEffect(() => {
+        if (searchMode !== "tags" || !socket || !shopifyBoutique?.domain) return;
+        const q = searchTerm.trim();
+        if (!q) {
+            setTagSuggestions([]);
+            return;
+        }
+        const timer = setTimeout(() => {
+            socket.emit("searchTags", q, shopifyBoutique.domain);
+        }, 250);
+        return () => clearTimeout(timer);
+    }, [searchTerm, searchMode, socket, shopifyBoutique?.domain]);
 
     useEffect(() => {
         handleSearch();
@@ -72,6 +106,8 @@ export default function BulkHeader() {
 
     useKeyboardShortcuts("Enter", () => handleSearch());
 
+    const isTagsMode = searchMode === "tags";
+
     return (
         <div className="flex-1 flex gap-2">
             <Selecteur
@@ -83,18 +119,34 @@ export default function BulkHeader() {
                 placeholder="Mode de recheche"
                 value={searchMode}
             />
-            <div className="flex-1 relative flex gap-2">
-                <Input
-                    disabled={!shopifyBoutique}
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Produit Shopify"
-                    className="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
-                />
+            <div className="flex-1 relative">
+                {isTagsMode ? (
+                    <TagAutocomplete
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        onSelect={() => handleSearch()}
+                        suggestions={tagSuggestions}
+                        placeholder="Rechercher un tag de la boutique…"
+                        leftIcon={<Tag size={16} />}
+                        disabled={!shopifyBoutique}
+                        inputClassName="rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all"
+                    />
+                ) : (
+                    <div className="relative">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                        <Input
+                            disabled={!shopifyBoutique}
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Produit Shopify"
+                            className="w-full pl-10 rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all pr-10"
+                        />
+                    </div>
+                )}
 
                 {loading && (
-                    <div className="h-full absolute right-2 flex items-center">
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
                         <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
                     </div>
                 )}

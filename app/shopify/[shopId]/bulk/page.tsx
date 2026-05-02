@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import useUpdateEffect from "@/library/hooks/useUpdateEffect";
 import { ProductGET } from "@/library/types/graph";
-import { Check, CheckCircle2, Filter, Layers, Package, Search, Settings2, XCircle } from "lucide-react";
+import { ArrowUpRight, Check, CheckCircle2, Filter, Hash, Layers, Package, Search, Settings2, XCircle } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import ProductBulk from "./ProductBulk";
 import useBulkStore from "./storeBulk";
+import TagAutocomplete from "./TagAutocomplete";
 
 // ========================
 // Types
@@ -86,61 +87,64 @@ interface BulkHeaderProps {
     filterByTag: string;
     onFilterChange: (value: string) => void;
     onToggleSelectAll: () => void;
+    tagCandidates: string[];
 }
 
-const BulkHeader = memo(function BulkHeader({ total, selectedCount, filterByTag, onFilterChange, onToggleSelectAll }: BulkHeaderProps) {
+const BulkHeader = memo(function BulkHeader({ total, selectedCount, filterByTag, onFilterChange, onToggleSelectAll, tagCandidates }: BulkHeaderProps) {
     const allSelected = selectedCount === total && total > 0;
 
-    return (
-        <div className="sticky top-12 z-20 bg-white/95 backdrop-blur-sm border-b shadow-sm">
-            <div className="p-4">
-                {/* Titre et statistiques */}
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                            <Layers size={20} className="text-blue-600" />
-                        </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-gray-900">Édition en masse</h1>
-                            <p className="text-sm text-gray-500">
-                                {total} produit{total > 1 ? "s" : ""} trouvé{total > 1 ? "s" : ""}
-                                {selectedCount > 0 && (
-                                    <span className="ml-2 text-blue-600 font-medium">
-                                        • {selectedCount} sélectionné{selectedCount > 1 ? "s" : ""}
-                                    </span>
-                                )}
-                            </p>
-                        </div>
-                    </div>
+    // Suggestions calculées localement à partir des tags des produits déjà chargés.
+    const suggestions = useMemo(() => {
+        const q = filterByTag.trim().toLowerCase();
+        if (!q) return tagCandidates.slice(0, 12);
+        return tagCandidates.filter((t) => t.toLowerCase().includes(q)).slice(0, 12);
+    }, [tagCandidates, filterByTag]);
 
-                    {/* Bouton sélectionner tout */}
-                    <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={onToggleSelectAll} className="gap-2">
+    return (
+        <div className="sticky top-12 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200/80">
+            <div className="px-4 py-3 flex items-center gap-3 flex-wrap">
+                {/* Statistiques compactes */}
+                <div className="flex items-center gap-2 text-sm">
+                    <Layers size={16} className="text-blue-600" />
+                    <span className="font-semibold text-slate-800">{total}</span>
+                    <span className="text-slate-500">produit{total > 1 ? "s" : ""}</span>
+                    {selectedCount > 0 && (
+                        <>
+                            <span className="text-slate-300">•</span>
+                            <span className="font-semibold text-blue-600">{selectedCount}</span>
+                            <span className="text-blue-600">sélectionné{selectedCount > 1 ? "s" : ""}</span>
+                        </>
+                    )}
+                </div>
+
+                {/* Filtre local avec autocomplete */}
+                <div className="flex-1 min-w-[220px] max-w-md">
+                    <TagAutocomplete
+                        value={filterByTag}
+                        onChange={onFilterChange}
+                        suggestions={suggestions}
+                        placeholder={tagCandidates.length > 0 ? `Filtrer parmi ${tagCandidates.length} tag${tagCandidates.length > 1 ? "s" : ""}…` : "Filtrer par tag…"}
+                        leftIcon={<Filter size={15} />}
+                        disabled={tagCandidates.length === 0}
+                    />
+                </div>
+
+                {/* Sélection */}
+                {total > 0 && (
+                    <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={onToggleSelectAll} className="gap-2 ml-auto">
                         {allSelected ? (
                             <>
-                                <XCircle size={16} />
-                                Tout désélectionner
+                                <XCircle size={15} />
+                                Désélectionner
                             </>
                         ) : (
                             <>
-                                <Check size={16} />
+                                <Check size={15} />
                                 Tout sélectionner
                             </>
                         )}
                     </Button>
-                </div>
-
-                {/* Barre de filtres */}
-                <div className="flex items-center gap-3">
-                    <div className="relative flex-1 max-w-md">
-                        <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <Input className="pl-10" placeholder="Filtrer par tag..." value={filterByTag} onChange={(e) => onFilterChange(e.target.value)} />
-                        {filterByTag && (
-                            <button onClick={() => onFilterChange("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                                <XCircle size={16} />
-                            </button>
-                        )}
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     );
@@ -280,13 +284,36 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
 /**
  * Liste des produits
  */
-const ProductList = memo(function ProductList({ products }: { products: ProductGET[] }) {
+const ProductList = memo(function ProductList({ products, hasLoadedAny, hasFilter, onClearFilter }: { products: ProductGET[]; hasLoadedAny: boolean; hasFilter: boolean; onClearFilter: () => void }) {
     if (products.length === 0) {
+        // Cas 1 : aucune recherche n'a encore chargé de produits
+        if (!hasLoadedAny) {
+            return (
+                <div className="flex flex-col items-center justify-center py-24 px-4">
+                    <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-100/60 p-10 max-w-md text-center shadow-sm">
+                        <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-white border border-blue-100 shadow-sm flex items-center justify-center">
+                            <Search size={26} className="text-blue-500" />
+                        </div>
+                        <h3 className="text-base font-semibold text-slate-800 mb-1">Édition en masse</h3>
+                        <p className="text-sm text-slate-500 mb-4">Lance une recherche depuis la barre du haut (titre, tag, ou produits manquant un canal) pour afficher la liste à éditer.</p>
+                        <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
+                            <ArrowUpRight size={14} />
+                            <span>Sélectionne le mode dans le menu déroulant en haut</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        // Cas 2 : la recherche a chargé des produits, mais le filtre local n'en garde aucun
         return (
-            <div className="flex flex-col items-center justify-center py-16 text-gray-500">
-                <Search size={48} className="mb-4 text-gray-300" />
-                <p className="text-lg font-medium">Aucun produit trouvé</p>
-                <p className="text-sm">Effectuez une recherche pour afficher des produits</p>
+            <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+                <Hash size={40} className="mb-3 text-slate-300" />
+                <p className="text-sm font-medium text-slate-700">Aucun produit ne correspond à ce tag</p>
+                {hasFilter && (
+                    <Button variant="link" size="sm" className="mt-2" onClick={onClearFilter}>
+                        Effacer le filtre
+                    </Button>
+                )}
             </div>
         );
     }
@@ -321,6 +348,13 @@ export default function Page() {
         () => (filterByTag ? productsSearch.filter((p: ProductGET) => p.tags.some((tag) => tag.toLowerCase().includes(filterByTag.toLowerCase()))) : productsSearch),
         [productsSearch, filterByTag],
     );
+
+    // Tags distincts présents dans les produits chargés (pour l'autocomplete local)
+    const tagCandidates = useMemo<string[]>(() => {
+        const set = new Set<string>();
+        for (const p of productsSearch) for (const t of p.tags || []) if (t) set.add(t);
+        return Array.from(set).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }));
+    }, [productsSearch]);
 
     // Synchronise le store
     useEffect(() => {
@@ -370,10 +404,16 @@ export default function Page() {
                 filterByTag={filterByTag}
                 onFilterChange={setFilterByTag}
                 onToggleSelectAll={onSelectAll}
+                tagCandidates={tagCandidates}
             />
 
             {/* Liste des produits */}
-            <ProductList products={filteredProducts} />
+            <ProductList
+                products={filteredProducts}
+                hasLoadedAny={productsSearch.length > 0}
+                hasFilter={!!filterByTag}
+                onClearFilter={() => setFilterByTag("")}
+            />
 
             {/* Barre d'actions flottante */}
             <BulkActionsBar
