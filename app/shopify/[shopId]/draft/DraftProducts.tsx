@@ -138,6 +138,32 @@ export default function DraftProducts({ products, error }: { products: ProductGE
         product: null,
     });
 
+    // Produits non sélectionnables : collection extension manquante ou slug en doublon (suffixe -1).
+    const lockedIds = useMemo(() => {
+        const set = new Set<string>();
+        for (const p of displayProducts) {
+            if (missingExtensionByProductId.has(p.id) || p.handle.endsWith("-1")) {
+                set.add(p.id);
+            }
+        }
+        return set;
+    }, [displayProducts, missingExtensionByProductId]);
+
+    // Nettoie l'éventuelle sélection résiduelle si un produit devient verrouillé.
+    useEffect(() => {
+        setSelectedIds((prev) => {
+            let changed = false;
+            const next = new Set(prev);
+            for (const id of prev) {
+                if (lockedIds.has(id)) {
+                    next.delete(id);
+                    changed = true;
+                }
+            }
+            return changed ? next : prev;
+        });
+    }, [lockedIds]);
+
     const handleRefresh = () => {
         setIsRefreshing(true);
         router.refresh();
@@ -145,6 +171,7 @@ export default function DraftProducts({ products, error }: { products: ProductGE
     };
 
     const toggleSelect = (productId: string) => {
+        if (lockedIds.has(productId)) return;
         setSelectedIds((prev) => {
             const next = new Set(prev);
             if (next.has(productId)) {
@@ -156,11 +183,13 @@ export default function DraftProducts({ products, error }: { products: ProductGE
         });
     };
 
+    const selectableProducts = useMemo(() => filteredProducts.filter((p) => !lockedIds.has(p.id)), [filteredProducts, lockedIds]);
+
     const toggleSelectAll = () => {
-        if (selectedIds.size === filteredProducts.length && filteredProducts.length > 0) {
+        if (selectedIds.size === selectableProducts.length && selectableProducts.length > 0) {
             setSelectedIds(new Set());
         } else {
-            setSelectedIds(new Set(filteredProducts.map((p) => p.id)));
+            setSelectedIds(new Set(selectableProducts.map((p) => p.id)));
         }
     };
 
@@ -223,7 +252,7 @@ export default function DraftProducts({ products, error }: { products: ProductGE
         }
     };
 
-    const allSelected = selectedIds.size === filteredProducts.length && filteredProducts.length > 0;
+    const allSelected = selectedIds.size === selectableProducts.length && selectableProducts.length > 0;
 
     return (
         <div className="w-full">
@@ -253,7 +282,7 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                                 </SelectItem>
                             </SelectContent>
                         </Select>
-                        {filteredProducts.length > 0 && (
+                        {selectableProducts.length > 0 && (
                             <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={toggleSelectAll}>
                                 {allSelected ? (
                                     <>
@@ -299,6 +328,12 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                     <div className="space-y-2">
                         {filteredProducts.map((product) => {
                             const isSelected = selectedIds.has(product.id);
+                            const isLocked = lockedIds.has(product.id);
+                            const lockReason = isLocked
+                                ? missingExtensionByProductId.has(product.id)
+                                    ? "Sélection impossible : collection extension manquante"
+                                    : "Sélection impossible : slug en doublon (-1)"
+                                : null;
                             return (
                                 <div
                                     key={product.id}
@@ -307,19 +342,26 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                                     <div
                                         role="checkbox"
                                         aria-checked={isSelected}
-                                        aria-label={`${isSelected ? "Désélectionner" : "Sélectionner"} ${product.title}`}
-                                        tabIndex={0}
-                                        onClick={() => toggleSelect(product.id)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === " " || e.key === "Enter") {
-                                                e.preventDefault();
-                                                toggleSelect(product.id);
-                                            }
-                                        }}
-                                        title={isSelected ? "Désélectionner" : "Sélectionner"}
-                                        className="flex items-center justify-center self-stretch shrink-0 px-4 ml-1 cursor-pointer rounded-md hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                                        aria-disabled={isLocked}
+                                        aria-label={lockReason ?? `${isSelected ? "Désélectionner" : "Sélectionner"} ${product.title}`}
+                                        tabIndex={isLocked ? -1 : 0}
+                                        onClick={isLocked ? undefined : () => toggleSelect(product.id)}
+                                        onKeyDown={
+                                            isLocked
+                                                ? undefined
+                                                : (e) => {
+                                                      if (e.key === " " || e.key === "Enter") {
+                                                          e.preventDefault();
+                                                          toggleSelect(product.id);
+                                                      }
+                                                  }
+                                        }
+                                        title={lockReason ?? (isSelected ? "Désélectionner" : "Sélectionner")}
+                                        className={`flex items-center justify-center self-stretch shrink-0 px-4 ml-1 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                                            isLocked ? "cursor-not-allowed opacity-40" : "cursor-pointer hover:bg-slate-100"
+                                        }`}
                                     >
-                                        <Checkbox checked={isSelected} tabIndex={-1} className="pointer-events-none size-5" />
+                                        <Checkbox checked={isSelected} disabled={isLocked} tabIndex={-1} className="pointer-events-none size-5" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <ProductList
