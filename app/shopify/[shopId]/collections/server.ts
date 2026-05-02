@@ -17,6 +17,19 @@ export async function createCollection(title: string, domain: string) {
     return response;
 }
 
+export interface CreateExtensionInput {
+    title: string;
+    handle: string;
+    descriptionHtml?: string;
+    seo?: { title?: string; description?: string };
+}
+
+export async function createExtensionCollection(domain: string, input: CreateExtensionInput, publicationGids: string[]) {
+    const url = `${pokeUriServer}/shopify/create-extension-collection`;
+    const response = await postServer(url, { domain, input, publicationGids });
+    return response;
+}
+
 export async function deleteCollection(shop: IShopifyBase, collectionGid: string) {
     const url = `${pokeUriServer}/shopify/delete-collection?domain=${shop.domain}&collectionGid=${collectionGid}`;
     const response = await getServer(url);

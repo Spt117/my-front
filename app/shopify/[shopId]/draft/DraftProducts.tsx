@@ -15,19 +15,32 @@ import { ArrowDownAZ, ArrowDownUp, ArrowUpAZ, Check, CheckCircle2, FileEdit, Loa
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import MissingCollectionDialog from "./MissingCollectionDialog";
 
-// Renvoie le handle de collection ciblé par le dernier lien <a> du dernier <p>
+// Renvoie le handle de collection + le texte d'ancre du dernier lien <a> du dernier <p>
 // de la description HTML, ou null si introuvable.
-function extractExtensionHandle(html: string | undefined | null): string | null {
+function extractExtensionLink(html: string | undefined | null): { handle: string; text: string } | null {
     if (!html) return null;
     const pMatches = [...html.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)];
     if (pMatches.length === 0) return null;
     const lastP = pMatches[pMatches.length - 1][1];
-    const aMatches = [...lastP.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi)];
+    const aMatches = [...lastP.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)];
     if (aMatches.length === 0) return null;
-    const lastHref = aMatches[aMatches.length - 1][1];
-    const collMatch = lastHref.match(/\/collections\/([^/?#]+)/);
-    return collMatch ? decodeURIComponent(collMatch[1]) : null;
+    const last = aMatches[aMatches.length - 1];
+    const href = last[1];
+    const text = last[2].replace(/<[^>]+>/g, "").trim();
+    const collMatch = href.match(/\/collections\/([^/?#]+)/);
+    if (!collMatch) return null;
+    return { handle: decodeURIComponent(collMatch[1]), text };
+}
+
+// Fallback : title-case d'un handle ("clash-des-rebelles" -> "Clash des Rebelles").
+const FRENCH_LOWER = new Set(["de", "des", "du", "le", "la", "les", "et", "à", "au", "aux", "en", "un", "une"]);
+function handleToTitle(handle: string): string {
+    return handle
+        .split("-")
+        .map((w, i) => (i > 0 && FRENCH_LOWER.has(w) ? w : w.charAt(0).toUpperCase() + w.slice(1)))
+        .join(" ");
 }
 
 export default function DraftProducts({ products, error }: { products: ProductGET[]; error?: string | null }) {
@@ -102,18 +115,28 @@ export default function DraftProducts({ products, error }: { products: ProductGE
         return sorted;
     }, [displayProducts, searchTerm, sortBy]);
 
-    // Map productId -> handle de la collection référencée dans la description
-    // mais introuvable dans la boutique. Vide tant que les collections ne sont pas chargées.
+    // Map productId -> { handle, suggestedTitle } pour les collections référencées
+    // dans la description mais introuvables dans la boutique.
     const missingExtensionByProductId = useMemo(() => {
-        const map = new Map<string, string>();
+        const map = new Map<string, { handle: string; suggestedTitle: string }>();
         if (!collections || collections.length === 0) return map;
         const knownHandles = new Set(collections.map((c) => c.handle));
         for (const p of displayProducts) {
-            const handle = extractExtensionHandle(p.descriptionHtml);
-            if (handle && !knownHandles.has(handle)) map.set(p.id, handle);
+            const link = extractExtensionLink(p.descriptionHtml);
+            if (!link) continue;
+            if (knownHandles.has(link.handle)) continue;
+            const suggestedTitle = link.text || handleToTitle(link.handle);
+            map.set(p.id, { handle: link.handle, suggestedTitle });
         }
         return map;
     }, [collections, displayProducts]);
+
+    const [missingDialog, setMissingDialog] = useState<{ open: boolean; handle: string; suggestedTitle: string; product: ProductGET | null }>({
+        open: false,
+        handle: "",
+        suggestedTitle: "",
+        product: null,
+    });
 
     const handleRefresh = () => {
         setIsRefreshing(true);
@@ -278,7 +301,16 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                             <div key={product.id} className="flex items-center gap-2 group">
                                 <Checkbox checked={selectedIds.has(product.id)} onCheckedChange={() => toggleSelect(product.id)} className="ml-2 shrink-0" />
                                 <div className="flex-1 min-w-0">
-                                    <ProductList product={product} compact missingExtensionHandle={missingExtensionByProductId.get(product.id) ?? null} />
+                                    <ProductList
+                                        product={product}
+                                        compact
+                                        missingExtensionHandle={missingExtensionByProductId.get(product.id)?.handle ?? null}
+                                        onMissingExtensionClick={() => {
+                                            const m = missingExtensionByProductId.get(product.id);
+                                            if (!m) return;
+                                            setMissingDialog({ open: true, handle: m.handle, suggestedTitle: m.suggestedTitle, product });
+                                        }}
+                                    />
                                 </div>
                             </div>
                         ))}
@@ -356,6 +388,14 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            <MissingCollectionDialog
+                open={missingDialog.open}
+                onOpenChange={(open) => setMissingDialog((prev) => ({ ...prev, open }))}
+                handle={missingDialog.handle}
+                suggestedTitle={missingDialog.suggestedTitle}
+                product={missingDialog.product}
+            />
         </div>
     );
 }
