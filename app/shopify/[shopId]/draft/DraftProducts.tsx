@@ -59,7 +59,7 @@ export default function DraftProducts({ products, error }: { products: ProductGE
     const [publishing, setPublishing] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-    const [sortBy, setSortBy] = useState<SortOption>("default");
+    const [sortBy, setSortBy] = useState<SortOption>("price_asc");
     const { searchTerm, setSearchTerm } = useShopifyStore();
 
     console.log("[DraftProducts] products prop:", products.length, "| displayProducts:", displayProducts.length, "| searchTerm:", searchTerm);
