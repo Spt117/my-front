@@ -1,7 +1,7 @@
 "use client";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { ProductGET } from "@/library/types/graph";
-import { Check, ExternalLink, Package } from "lucide-react";
+import { ArrowUpRight, Check, ExternalLink, Package } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import useBulkStore from "./storeBulk";
@@ -115,19 +115,28 @@ export default function ProductBulk({ product }: { product: ProductGET }) {
                             <p className="text-xs text-gray-500 mt-0.5">{product.vendor}</p>
                         </div>
 
-                        {/* Prix */}
-                        <div className="flex-shrink-0 text-right">
-                            <p className="text-sm font-bold text-gray-900">
-                                {variant?.price}
-                                <span className="text-xs font-normal text-gray-500 ml-1">
-                                    {shopifyBoutique?.devise}
-                                </span>
-                            </p>
-                            {variant?.compareAtPrice && (
-                                <p className="text-xs text-gray-400 line-through">
-                                    {variant.compareAtPrice}
+                        <div className="flex items-start gap-2 flex-shrink-0">
+                            {/* Prix */}
+                            <div className="text-right">
+                                <p className="text-sm font-bold text-gray-900">
+                                    {variant?.price}
+                                    <span className="text-xs font-normal text-gray-500 ml-1">{shopifyBoutique?.devise}</span>
                                 </p>
-                            )}
+                                {variant?.compareAtPrice && <p className="text-xs text-gray-400 line-through">{variant.compareAtPrice}</p>}
+                            </div>
+
+                            {/* Ouvrir la fiche produit dans un nouvel onglet (préserve la sélection) */}
+                            <Link
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="p-1.5 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                title="Ouvrir la fiche produit dans un nouvel onglet"
+                                aria-label="Ouvrir la fiche produit dans un nouvel onglet"
+                            >
+                                <ArrowUpRight size={16} />
+                            </Link>
                         </div>
                     </div>
 
