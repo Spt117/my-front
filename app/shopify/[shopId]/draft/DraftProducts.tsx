@@ -297,24 +297,46 @@ export default function DraftProducts({ products, error }: { products: ProductGE
             ) : (
                 <>
                     <div className="space-y-2">
-                        {filteredProducts.map((product) => (
-                            <div key={product.id} className="flex items-center gap-2 group">
-                                <Checkbox checked={selectedIds.has(product.id)} onCheckedChange={() => toggleSelect(product.id)} className="ml-2 shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                    <ProductList
-                                        product={product}
-                                        compact
-                                        highlightDuplicateHandle
-                                        missingExtensionHandle={missingExtensionByProductId.get(product.id)?.handle ?? null}
-                                        onMissingExtensionClick={() => {
-                                            const m = missingExtensionByProductId.get(product.id);
-                                            if (!m) return;
-                                            setMissingDialog({ open: true, handle: m.handle, suggestedTitle: m.suggestedTitle, product });
+                        {filteredProducts.map((product) => {
+                            const isSelected = selectedIds.has(product.id);
+                            return (
+                                <div
+                                    key={product.id}
+                                    className={`flex items-stretch gap-1 group rounded-md transition-colors ${isSelected ? "bg-amber-50/60 ring-1 ring-amber-200" : ""}`}
+                                >
+                                    <div
+                                        role="checkbox"
+                                        aria-checked={isSelected}
+                                        aria-label={`${isSelected ? "Désélectionner" : "Sélectionner"} ${product.title}`}
+                                        tabIndex={0}
+                                        onClick={() => toggleSelect(product.id)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === " " || e.key === "Enter") {
+                                                e.preventDefault();
+                                                toggleSelect(product.id);
+                                            }
                                         }}
-                                    />
+                                        title={isSelected ? "Désélectionner" : "Sélectionner"}
+                                        className="flex items-center justify-center self-stretch shrink-0 px-4 ml-1 cursor-pointer rounded-md hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                                    >
+                                        <Checkbox checked={isSelected} tabIndex={-1} className="pointer-events-none size-5" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <ProductList
+                                            product={product}
+                                            compact
+                                            highlightDuplicateHandle
+                                            missingExtensionHandle={missingExtensionByProductId.get(product.id)?.handle ?? null}
+                                            onMissingExtensionClick={() => {
+                                                const m = missingExtensionByProductId.get(product.id);
+                                                if (!m) return;
+                                                setMissingDialog({ open: true, handle: m.handle, suggestedTitle: m.suggestedTitle, product });
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                     <Separator className="my-4" />
                 </>
