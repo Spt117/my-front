@@ -155,7 +155,7 @@ export default function BulkActions() {
                         <strong className="text-slate-700">{selectedProducts.length}</strong> produit{selectedProducts.length > 1 ? "s" : ""} sélectionné{selectedProducts.length > 1 ? "s" : ""}
                     </p>
                 </div>
-                <button onClick={closeDialog} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors" aria-label="Fermer">
+                <button onClick={closeDialog} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer" aria-label="Fermer">
                     <X size={18} />
                 </button>
             </div>
@@ -170,7 +170,7 @@ export default function BulkActions() {
                             key={a.id}
                             type="button"
                             onClick={() => setAction(a.id)}
-                            className={`text-left rounded-xl border-2 p-3 transition-all ${isActive ? acc.cardSelected : `${acc.card} bg-white`}`}
+                            className={`text-left rounded-xl border-2 p-3 transition-all cursor-pointer ${isActive ? acc.cardSelected : `${acc.card} bg-white`}`}
                         >
                             <div className="flex items-start gap-2.5">
                                 <div className={`flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${acc.iconBg} ${acc.iconText}`}>{a.icon}</div>
@@ -237,7 +237,7 @@ export default function BulkActions() {
                                             key={t}
                                             type="button"
                                             onClick={() => setTag(t)}
-                                            className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors ${
+                                            className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors cursor-pointer ${
                                                 tag === t ? "bg-rose-100 border-rose-300 text-rose-700" : "bg-white border-slate-200 text-slate-600 hover:border-rose-200 hover:text-rose-600"
                                             }`}
                                         >
