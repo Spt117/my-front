@@ -90,9 +90,28 @@ interface BulkHeaderProps {
     tagCandidates: string[];
     zeroPriceCount: number;
     onSelectZeroPrice: () => void;
+    priceMin: string;
+    priceMax: string;
+    onPriceMinChange: (value: string) => void;
+    onPriceMaxChange: (value: string) => void;
+    devise?: string;
 }
 
-const BulkHeader = memo(function BulkHeader({ total, selectedCount, filterByTag, onFilterChange, onToggleSelectAll, tagCandidates, zeroPriceCount, onSelectZeroPrice }: BulkHeaderProps) {
+const BulkHeader = memo(function BulkHeader({
+    total,
+    selectedCount,
+    filterByTag,
+    onFilterChange,
+    onToggleSelectAll,
+    tagCandidates,
+    zeroPriceCount,
+    onSelectZeroPrice,
+    priceMin,
+    priceMax,
+    onPriceMinChange,
+    onPriceMaxChange,
+    devise,
+}: BulkHeaderProps) {
     const allSelected = selectedCount === total && total > 0;
 
     // Suggestions calculées localement à partir des tags des produits déjà chargés.
@@ -129,6 +148,49 @@ const BulkHeader = memo(function BulkHeader({ total, selectedCount, filterByTag,
                         leftIcon={<Filter size={15} />}
                         disabled={tagCandidates.length === 0}
                     />
+                </div>
+
+                {/* Filtre par prix (min / max) */}
+                <div className="flex items-center gap-1.5 text-sm">
+                    <CircleDollarSign size={15} className="text-slate-400" />
+                    <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        inputMode="decimal"
+                        value={priceMin}
+                        onChange={(e) => onPriceMinChange(e.target.value)}
+                        placeholder={`Min${devise ? ` (${devise})` : ""}`}
+                        className="h-8 w-24"
+                        aria-label="Prix minimum"
+                    />
+                    <span className="text-slate-400">–</span>
+                    <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        inputMode="decimal"
+                        value={priceMax}
+                        onChange={(e) => onPriceMaxChange(e.target.value)}
+                        placeholder={`Max${devise ? ` (${devise})` : ""}`}
+                        className="h-8 w-24"
+                        aria-label="Prix maximum"
+                    />
+                    {(priceMin || priceMax) && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                                onPriceMinChange("");
+                                onPriceMaxChange("");
+                            }}
+                            className="h-8 px-2 text-slate-400 hover:text-slate-700"
+                            aria-label="Effacer le filtre de prix"
+                            title="Effacer le filtre de prix"
+                        >
+                            <XCircle size={14} />
+                        </Button>
+                    )}
                 </div>
 
                 {/* Sélection */}
@@ -352,18 +414,36 @@ export default function Page() {
     const { setSelectedProducts, selectedProducts, setFilteredProducts, filterByTag, setFilterByTag, dataUpdate, setDataUpdate } = useBulkStore();
 
     const [showStockModal, setShowStockModal] = useState(false);
+    const [priceMin, setPriceMin] = useState<string>("");
+    const [priceMax, setPriceMax] = useState<string>("");
 
     // Reset quand la boutique change
     useUpdateEffect(() => {
         setProductsSearch([]);
         setSelectedProducts([]);
+        setPriceMin("");
+        setPriceMax("");
     }, [shopifyBoutique?.domain]);
 
-    // Produits filtrés
-    const filteredProducts = useMemo<ProductGET[]>(
-        () => (filterByTag ? productsSearch.filter((p: ProductGET) => p.tags.some((tag) => tag.toLowerCase().includes(filterByTag.toLowerCase()))) : productsSearch),
-        [productsSearch, filterByTag],
-    );
+    // Produits filtrés (tag + prix)
+    const filteredProducts = useMemo<ProductGET[]>(() => {
+        const min = priceMin.trim() === "" ? null : parseFloat(priceMin);
+        const max = priceMax.trim() === "" ? null : parseFloat(priceMax);
+        const minActive = min !== null && Number.isFinite(min);
+        const maxActive = max !== null && Number.isFinite(max);
+        const tagQuery = filterByTag.trim().toLowerCase();
+
+        return productsSearch.filter((p: ProductGET) => {
+            if (tagQuery && !p.tags.some((tag) => tag.toLowerCase().includes(tagQuery))) return false;
+            if (minActive || maxActive) {
+                const price = parseFloat(p.variants?.nodes?.[0]?.price ?? "");
+                if (!Number.isFinite(price)) return false;
+                if (minActive && price < (min as number)) return false;
+                if (maxActive && price > (max as number)) return false;
+            }
+            return true;
+        });
+    }, [productsSearch, filterByTag, priceMin, priceMax]);
 
     // Tags distincts présents dans les produits chargés (pour l'autocomplete local)
     const tagCandidates = useMemo<string[]>(() => {
@@ -436,6 +516,11 @@ export default function Page() {
                 tagCandidates={tagCandidates}
                 zeroPriceCount={zeroPriceProducts.length}
                 onSelectZeroPrice={onSelectZeroPrice}
+                priceMin={priceMin}
+                priceMax={priceMax}
+                onPriceMinChange={setPriceMin}
+                onPriceMaxChange={setPriceMax}
+                devise={shopifyBoutique?.devise}
             />
 
             {/* Liste des produits */}

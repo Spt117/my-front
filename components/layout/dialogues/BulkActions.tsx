@@ -3,24 +3,28 @@ import { actionBulk, addProductsToCollection } from "@/app/shopify/[shopId]/bulk
 import useBulkStore from "@/app/shopify/[shopId]/bulk/storeBulk";
 import TagAutocomplete from "@/app/shopify/[shopId]/bulk/TagAutocomplete";
 import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
+import { updateProduct } from "@/app/shopify/[shopId]/products/[productId]/serverAction";
 import Selecteur from "@/components/selecteur";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { BulkAction } from "@/components/shopify/typesShopify";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import useUserStore from "@/library/stores/storeUser";
-import { CheckCircle2, FolderPlus, Rocket, Tag, X } from "lucide-react";
+import { Archive, CheckCircle2, FolderPlus, Rocket, Tag, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-type ActionId = "quick_publish" | "add_to_collection" | "add_tag" | "remove_tag";
+type ActionId = "quick_publish" | "add_to_collection" | "add_tag" | "remove_tag" | "archive" | "delete";
 
 const ACTIONS: { id: ActionId; label: string; description: string; icon: React.ReactNode; accent: keyof typeof ACCENT }[] = [
     { id: "quick_publish", label: "Publication rapide", description: "Statut Actif + tous les canaux", icon: <Rocket size={18} />, accent: "emerald" },
     { id: "add_to_collection", label: "Ajouter à une collection", description: "Cible une collection manuelle", icon: <FolderPlus size={18} />, accent: "blue" },
     { id: "add_tag", label: "Ajouter un tag", description: "Sur tous les produits sélectionnés", icon: <Tag size={18} />, accent: "violet" },
     { id: "remove_tag", label: "Supprimer un tag", description: "Retire le tag s'il est présent", icon: <Tag size={18} />, accent: "rose" },
+    { id: "archive", label: "Archiver les produits", description: "Bascule la sélection en statut Archivé", icon: <Archive size={18} />, accent: "slate" },
+    { id: "delete", label: "Supprimer les produits", description: "Suppression définitive et irréversible", icon: <Trash2 size={18} />, accent: "red" },
 ];
 
 const ACCENT = {
@@ -28,12 +32,14 @@ const ACCENT = {
     blue: { card: "border-slate-200 hover:border-blue-300", cardSelected: "border-blue-500 bg-blue-50/60", panel: "border-blue-200 bg-blue-50/40", iconBg: "bg-blue-100", iconText: "text-blue-600" },
     violet: { card: "border-slate-200 hover:border-violet-300", cardSelected: "border-violet-500 bg-violet-50/60", panel: "border-violet-200 bg-violet-50/40", iconBg: "bg-violet-100", iconText: "text-violet-600" },
     rose: { card: "border-slate-200 hover:border-rose-300", cardSelected: "border-rose-500 bg-rose-50/60", panel: "border-rose-200 bg-rose-50/40", iconBg: "bg-rose-100", iconText: "text-rose-600" },
+    slate: { card: "border-slate-200 hover:border-slate-400", cardSelected: "border-slate-500 bg-slate-100/60", panel: "border-slate-300 bg-slate-100/60", iconBg: "bg-slate-200", iconText: "text-slate-700" },
+    red: { card: "border-slate-200 hover:border-red-300", cardSelected: "border-red-500 bg-red-50/60", panel: "border-red-300 bg-red-50/60", iconBg: "bg-red-100", iconText: "text-red-600" },
 };
 
 export default function BulkActions() {
-    const { closeDialog, shopifyBoutique, canauxBoutique } = useShopifyStore();
+    const { closeDialog, shopifyBoutique, canauxBoutique, productsSearch, setProductsSearch } = useShopifyStore();
     const { collections } = useCollectionStore();
-    const { selectedProducts } = useBulkStore();
+    const { selectedProducts, setSelectedProducts } = useBulkStore();
     const { socket } = useUserStore();
     const router = useRouter();
 
@@ -42,6 +48,7 @@ export default function BulkActions() {
     const [tag, setTag] = useState<string>("");
     const [serverSuggestions, setServerSuggestions] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [deleteAck, setDeleteAck] = useState<boolean>(false);
 
     const productIds = useMemo(() => selectedProducts.map((p) => p.id), [selectedProducts]);
     const collectionsOptions = useMemo(() => collections.filter((c) => !c.ruleSet).map((c) => ({ label: c.title, value: c.id })), [collections]);
@@ -57,6 +64,7 @@ export default function BulkActions() {
     useEffect(() => {
         setTag("");
         setServerSuggestions([]);
+        setDeleteAck(false);
     }, [action]);
 
     // Listener socket pour les suggestions server-side (add_tag)
@@ -92,6 +100,8 @@ export default function BulkActions() {
         if (action === "quick_publish") return true;
         if (action === "add_to_collection") return !!collectionId;
         if (action === "add_tag" || action === "remove_tag") return !!tag.trim();
+        if (action === "archive") return productIds.length > 0;
+        if (action === "delete") return productIds.length > 0 && deleteAck;
         return false;
     };
 
@@ -130,6 +140,46 @@ export default function BulkActions() {
                     if (res.error) toast.error(res.error);
                     if (res.message) toast.success(res.message);
                     closeDialog();
+                    break;
+                }
+                case "archive":
+                case "delete": {
+                    const isDelete = action === "delete";
+                    const results = await Promise.allSettled(
+                        productIds.map((id) =>
+                            isDelete
+                                ? updateProduct(shopifyBoutique.domain as string, id, "Delete", " ")
+                                : updateProduct(shopifyBoutique.domain as string, id, "Statut", "ARCHIVED"),
+                        ),
+                    );
+                    const succeeded: string[] = [];
+                    const failed: string[] = [];
+                    results.forEach((r, i) => {
+                        const id = productIds[i];
+                        if (r.status === "fulfilled" && !r.value?.error) succeeded.push(id);
+                        else failed.push(id);
+                    });
+                    if (succeeded.length > 0) {
+                        toast.success(
+                            isDelete
+                                ? `${succeeded.length} produit${succeeded.length > 1 ? "s supprimés" : " supprimé"}`
+                                : `${succeeded.length} produit${succeeded.length > 1 ? "s archivés" : " archivé"}`,
+                        );
+                        if (isDelete) {
+                            const succeededSet = new Set(succeeded);
+                            setProductsSearch(productsSearch.filter((p) => !succeededSet.has(p.id)));
+                            setSelectedProducts(selectedProducts.filter((p) => !succeededSet.has(p.id)));
+                        }
+                    }
+                    if (failed.length > 0) {
+                        toast.error(
+                            isDelete
+                                ? `Échec de la suppression de ${failed.length} produit${failed.length > 1 ? "s" : ""}`
+                                : `Échec de l'archivage de ${failed.length} produit${failed.length > 1 ? "s" : ""}`,
+                        );
+                    }
+                    closeDialog();
+                    router.refresh();
                     break;
                 }
             }
@@ -219,6 +269,32 @@ export default function BulkActions() {
                         </div>
                     )}
 
+                    {action === "archive" && (
+                        <div className="flex items-start gap-3 text-sm">
+                            <Archive size={18} className="text-slate-700 mt-0.5 flex-shrink-0" />
+                            <div className="text-slate-700">
+                                Les <strong>{selectedProducts.length}</strong> produit{selectedProducts.length > 1 ? "s" : ""} passeront en statut <strong className="text-slate-800">Archivé</strong>. Ils
+                                resteront accessibles depuis l'admin Shopify et pourront être réactivés à tout moment.
+                            </div>
+                        </div>
+                    )}
+
+                    {action === "delete" && (
+                        <div className="space-y-3">
+                            <div className="flex items-start gap-3 text-sm">
+                                <Trash2 size={18} className="text-red-600 mt-0.5 flex-shrink-0" />
+                                <div className="text-slate-700">
+                                    Vous êtes sur le point de supprimer définitivement <strong>{selectedProducts.length}</strong> produit{selectedProducts.length > 1 ? "s" : ""}. Cette action est{" "}
+                                    <strong className="text-red-700">irréversible</strong> côté Shopify.
+                                </div>
+                            </div>
+                            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none">
+                                <Checkbox checked={deleteAck} onCheckedChange={(v) => setDeleteAck(v === true)} />
+                                Je comprends que la suppression est définitive.
+                            </label>
+                        </div>
+                    )}
+
                     {action === "remove_tag" && (
                         <div>
                             <label className="block text-xs font-semibold uppercase tracking-wide text-slate-600 mb-1.5">Tag à supprimer</label>
@@ -257,7 +333,7 @@ export default function BulkActions() {
                 <Button type="button" size="sm" variant="outline" onClick={closeDialog} disabled={loading}>
                     Annuler
                 </Button>
-                <Button type="button" size="sm" disabled={loading || !canExecute()} onClick={handleAction}>
+                <Button type="button" size="sm" variant={action === "delete" ? "destructive" : "default"} disabled={loading || !canExecute()} onClick={handleAction}>
                     {loading ? (
                         <>
                             <Spinner className="mr-2" />
