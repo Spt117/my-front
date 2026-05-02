@@ -14,11 +14,13 @@ export default function ProductList({
     compact,
     missingExtensionHandle,
     onMissingExtensionClick,
+    highlightDuplicateHandle,
 }: {
     product: ProductGET;
     compact?: boolean;
     missingExtensionHandle?: string | null;
     onMissingExtensionClick?: () => void;
+    highlightDuplicateHandle?: boolean;
 }) {
     const { shopifyBoutique, setIsSearchOpen, setProduct, canauxBoutique } = useShopifyStore();
     const [isHovered, setIsHovered] = useState(false);
@@ -106,7 +108,11 @@ export default function ProductList({
                     <Image src={product.media?.nodes[0]?.image?.url || "/no_image.png"} alt={product.title} fill className="object-cover rounded-md" sizes="48px" priority={false} />
                 </div>
                 <h3 className={`${compact ? "flex-1" : "w-1/5"} text-sm font-medium text-foreground line-clamp-1`}>{product.title}</h3>
-                {compact && <span className="text-xs text-gray-400 truncate max-w-[250px]">/{product.handle}</span>}
+                {compact && (
+                    <span className={`text-xs truncate max-w-[250px] ${highlightDuplicateHandle && product.handle.endsWith("-1") ? "text-red-600 font-medium" : "text-gray-400"}`}>
+                        /{product.handle}
+                    </span>
+                )}
                 {compact && missingExtensionHandle && (
                     <button
                         type="button"

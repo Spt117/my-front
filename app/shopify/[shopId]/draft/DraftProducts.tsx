@@ -304,6 +304,7 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                                     <ProductList
                                         product={product}
                                         compact
+                                        highlightDuplicateHandle
                                         missingExtensionHandle={missingExtensionByProductId.get(product.id)?.handle ?? null}
                                         onMissingExtensionClick={() => {
                                             const m = missingExtensionByProductId.get(product.id);
