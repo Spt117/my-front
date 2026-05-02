@@ -5,9 +5,10 @@ import useShopifyStore from "@/components/shopify/shopifyStore";
 import { BulkAction } from "@/components/shopify/typesShopify";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ProductGET } from "@/library/types/graph";
-import { Check, CheckCircle2, FileEdit, Loader2, RefreshCw, Rocket, Search, XCircle } from "lucide-react";
+import { ArrowDownAZ, ArrowDownUp, ArrowUpAZ, Check, CheckCircle2, FileEdit, Loader2, RefreshCw, Rocket, Search, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -20,10 +21,12 @@ export default function DraftProducts({ products, error }: { products: ProductGE
         if (error) toast.error(error);
     }, [error]);
 
+    type SortOption = "default" | "price_asc" | "price_desc";
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [displayProducts, setDisplayProducts] = useState<ProductGET[]>(products);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [publishing, setPublishing] = useState(false);
+    const [sortBy, setSortBy] = useState<SortOption>("default");
     const { searchTerm, setSearchTerm } = useShopifyStore();
 
     console.log("[DraftProducts] products prop:", products.length, "| displayProducts:", displayProducts.length, "| searchTerm:", searchTerm);
@@ -52,17 +55,32 @@ export default function DraftProducts({ products, error }: { products: ProductGE
         });
     }, [products]);
 
-    // Filtrage des produits par titre ou SKU via le store global
+    // Filtrage des produits par titre ou SKU via le store global, puis tri éventuel par prix
     const filteredProducts = useMemo(() => {
-        if (!searchTerm.trim()) return displayProducts;
-        const query = searchTerm.toLowerCase();
-        return displayProducts.filter((product) => {
-            const hasMatchTitle = product.title.toLowerCase().includes(query);
-            const hasMatchHandle = product.handle.toLowerCase().includes(query);
-            const hasMatchSku = product.variants?.nodes?.some((v) => v.sku.toLowerCase().includes(query));
-            return hasMatchTitle || hasMatchHandle || hasMatchSku;
+        const base = !searchTerm.trim()
+            ? displayProducts
+            : displayProducts.filter((product) => {
+                  const query = searchTerm.toLowerCase();
+                  const hasMatchTitle = product.title.toLowerCase().includes(query);
+                  const hasMatchHandle = product.handle.toLowerCase().includes(query);
+                  const hasMatchSku = product.variants?.nodes?.some((v) => v.sku.toLowerCase().includes(query));
+                  return hasMatchTitle || hasMatchHandle || hasMatchSku;
+              });
+
+        if (sortBy === "default") return base;
+
+        const getPrice = (p: ProductGET) => {
+            const raw = p.variants?.nodes?.[0]?.price;
+            const parsed = parseFloat(raw ?? "");
+            return Number.isFinite(parsed) ? parsed : Number.POSITIVE_INFINITY;
+        };
+
+        const sorted = [...base].sort((a, b) => {
+            const diff = getPrice(a) - getPrice(b);
+            return sortBy === "price_asc" ? diff : -diff;
         });
-    }, [displayProducts, searchTerm]);
+        return sorted;
+    }, [displayProducts, searchTerm, sortBy]);
 
     const handleRefresh = () => {
         setIsRefreshing(true);
@@ -129,6 +147,25 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                         <h2 className="text-lg font-semibold">Produits en brouillon ({displayProducts.length})</h2>
                     </div>
                     <div className="flex items-center gap-2">
+                        <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+                            <SelectTrigger size="sm" className="w-[180px]" aria-label="Trier par prix">
+                                <SelectValue placeholder="Trier par" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="default">
+                                    <ArrowDownUp className="h-4 w-4 mr-2 inline" />
+                                    Ordre par défaut
+                                </SelectItem>
+                                <SelectItem value="price_asc">
+                                    <ArrowUpAZ className="h-4 w-4 mr-2 inline" />
+                                    Prix croissant
+                                </SelectItem>
+                                <SelectItem value="price_desc">
+                                    <ArrowDownAZ className="h-4 w-4 mr-2 inline" />
+                                    Prix décroissant
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
                         {filteredProducts.length > 0 && (
                             <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={toggleSelectAll}>
                                 {allSelected ? (
