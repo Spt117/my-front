@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ProductGET } from "@/library/types/graph";
-import { ArrowDownAZ, ArrowDownUp, ArrowUpAZ, Check, CheckCircle2, FileEdit, Loader2, RefreshCw, Rocket, Search, Trash2, XCircle } from "lucide-react";
+import { ArrowDownAZ, ArrowDownUp, ArrowUpAZ, Check, CheckCircle2, CircleDollarSign, FileEdit, Loader2, RefreshCw, Rocket, Search, Trash2, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -185,6 +185,18 @@ export default function DraftProducts({ products, error }: { products: ProductGE
 
     const selectableProducts = useMemo(() => filteredProducts.filter((p) => !lockedIds.has(p.id)), [filteredProducts, lockedIds]);
 
+    // Produits filtrés à 0 € (toutes variantes considérées via la première). Le
+    // bouton dédié bypasse les avertissements (collection manquante, slug -1).
+    const zeroPriceProducts = useMemo(
+        () => filteredProducts.filter((p) => parseFloat(p.variants?.nodes?.[0]?.price ?? "") === 0),
+        [filteredProducts],
+    );
+
+    const selectZeroPrice = () => {
+        if (zeroPriceProducts.length === 0) return;
+        setSelectedIds(new Set(zeroPriceProducts.map((p) => p.id)));
+    };
+
     const toggleSelectAll = () => {
         if (selectedIds.size === selectableProducts.length && selectableProducts.length > 0) {
             setSelectedIds(new Set());
@@ -282,6 +294,18 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                                 </SelectItem>
                             </SelectContent>
                         </Select>
+                        {zeroPriceProducts.length > 0 && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={selectZeroPrice}
+                                className="border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+                                title={`Sélectionner les ${zeroPriceProducts.length} brouillon${zeroPriceProducts.length > 1 ? "s" : ""} à 0 € (ignore les avertissements)`}
+                            >
+                                <CircleDollarSign className="h-4 w-4 mr-2" />
+                                {zeroPriceProducts.length} à 0&nbsp;€
+                            </Button>
+                        )}
                         {selectableProducts.length > 0 && (
                             <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={toggleSelectAll}>
                                 {allSelected ? (
