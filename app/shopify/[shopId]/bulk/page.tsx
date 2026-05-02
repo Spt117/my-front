@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import useUpdateEffect from "@/library/hooks/useUpdateEffect";
 import { ProductGET } from "@/library/types/graph";
-import { ArrowUpRight, Check, CheckCircle2, Filter, Hash, Layers, Package, Search, Settings2, XCircle } from "lucide-react";
+import { ArrowUpRight, Check, CheckCircle2, CircleDollarSign, Filter, Hash, Layers, Package, Search, Settings2, XCircle } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import ProductBulk from "./ProductBulk";
@@ -88,9 +88,11 @@ interface BulkHeaderProps {
     onFilterChange: (value: string) => void;
     onToggleSelectAll: () => void;
     tagCandidates: string[];
+    zeroPriceCount: number;
+    onSelectZeroPrice: () => void;
 }
 
-const BulkHeader = memo(function BulkHeader({ total, selectedCount, filterByTag, onFilterChange, onToggleSelectAll, tagCandidates }: BulkHeaderProps) {
+const BulkHeader = memo(function BulkHeader({ total, selectedCount, filterByTag, onFilterChange, onToggleSelectAll, tagCandidates, zeroPriceCount, onSelectZeroPrice }: BulkHeaderProps) {
     const allSelected = selectedCount === total && total > 0;
 
     // Suggestions calculées localement à partir des tags des produits déjà chargés.
@@ -130,21 +132,35 @@ const BulkHeader = memo(function BulkHeader({ total, selectedCount, filterByTag,
                 </div>
 
                 {/* Sélection */}
-                {total > 0 && (
-                    <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={onToggleSelectAll} className="gap-2 ml-auto">
-                        {allSelected ? (
-                            <>
-                                <XCircle size={15} />
-                                Désélectionner
-                            </>
-                        ) : (
-                            <>
-                                <Check size={15} />
-                                Tout sélectionner
-                            </>
-                        )}
-                    </Button>
-                )}
+                <div className="flex items-center gap-2 ml-auto">
+                    {zeroPriceCount > 0 && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={onSelectZeroPrice}
+                            className="gap-2 border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+                            title={`Sélectionner les ${zeroPriceCount} produit${zeroPriceCount > 1 ? "s" : ""} à 0 €`}
+                        >
+                            <CircleDollarSign size={15} />
+                            {zeroPriceCount} à 0&nbsp;€
+                        </Button>
+                    )}
+                    {total > 0 && (
+                        <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={onToggleSelectAll} className="gap-2">
+                            {allSelected ? (
+                                <>
+                                    <XCircle size={15} />
+                                    Désélectionner
+                                </>
+                            ) : (
+                                <>
+                                    <Check size={15} />
+                                    Tout sélectionner
+                                </>
+                            )}
+                        </Button>
+                    )}
+                </div>
             </div>
         </div>
     );
@@ -379,6 +395,19 @@ export default function Page() {
         }
     }, [selectedProducts.length, filteredProducts, setSelectedProducts, setDataUpdate, canauxBoutique]);
 
+    // Produits filtrés dont le prix de la première variante vaut 0
+    const zeroPriceProducts = useMemo<ProductGET[]>(
+        () => filteredProducts.filter((p) => parseFloat(p.variants?.nodes?.[0]?.price ?? "") === 0),
+        [filteredProducts],
+    );
+
+    const onSelectZeroPrice = useCallback(() => {
+        if (zeroPriceProducts.length === 0) return;
+        setSelectedProducts(zeroPriceProducts);
+        if (canauxBoutique?.length) setDataUpdate(buildDataUpdate(zeroPriceProducts, canauxBoutique));
+        else setDataUpdate([]);
+    }, [zeroPriceProducts, setSelectedProducts, setDataUpdate, canauxBoutique]);
+
     // Recalcule dataUpdate quand la sélection change
     useEffect(() => {
         if (!canauxBoutique?.length) return;
@@ -405,6 +434,8 @@ export default function Page() {
                 onFilterChange={setFilterByTag}
                 onToggleSelectAll={onSelectAll}
                 tagCandidates={tagCandidates}
+                zeroPriceCount={zeroPriceProducts.length}
+                onSelectZeroPrice={onSelectZeroPrice}
             />
 
             {/* Liste des produits */}
