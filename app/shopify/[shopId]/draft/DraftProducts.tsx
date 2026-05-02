@@ -256,8 +256,8 @@ export default function DraftProducts({ products, error }: { products: ProductGE
 
     return (
         <div className="w-full">
-            <div className="flex flex-col gap-4 mb-6">
-                <div className="flex items-center justify-between">
+            <div className="sticky top-[var(--header-height,3rem)] z-30 -mx-4 mb-4 border-b bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+                <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2">
                         <FileEdit className="h-5 w-5 text-amber-500" />
                         <h2 className="text-lg font-semibold">Produits en brouillon ({displayProducts.length})</h2>
