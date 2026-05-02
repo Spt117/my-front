@@ -1,5 +1,6 @@
 "use client";
 import { actionBulk } from "@/app/shopify/[shopId]/bulk/server";
+import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
 import { updateProduct } from "@/app/shopify/[shopId]/products/[productId]/serverAction";
 import ProductList from "@/components/header/products/Products";
 import useShopifyStore from "@/components/shopify/shopifyStore";
@@ -15,9 +16,24 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+// Renvoie le handle de collection ciblé par le dernier lien <a> du dernier <p>
+// de la description HTML, ou null si introuvable.
+function extractExtensionHandle(html: string | undefined | null): string | null {
+    if (!html) return null;
+    const pMatches = [...html.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)];
+    if (pMatches.length === 0) return null;
+    const lastP = pMatches[pMatches.length - 1][1];
+    const aMatches = [...lastP.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi)];
+    if (aMatches.length === 0) return null;
+    const lastHref = aMatches[aMatches.length - 1][1];
+    const collMatch = lastHref.match(/\/collections\/([^/?#]+)/);
+    return collMatch ? decodeURIComponent(collMatch[1]) : null;
+}
+
 export default function DraftProducts({ products, error }: { products: ProductGET[]; error?: string | null }) {
     const router = useRouter();
     const { shopifyBoutique, canauxBoutique } = useShopifyStore();
+    const { collections } = useCollectionStore();
 
     useEffect(() => {
         if (error) toast.error(error);
@@ -85,6 +101,19 @@ export default function DraftProducts({ products, error }: { products: ProductGE
         });
         return sorted;
     }, [displayProducts, searchTerm, sortBy]);
+
+    // Map productId -> handle de la collection référencée dans la description
+    // mais introuvable dans la boutique. Vide tant que les collections ne sont pas chargées.
+    const missingExtensionByProductId = useMemo(() => {
+        const map = new Map<string, string>();
+        if (!collections || collections.length === 0) return map;
+        const knownHandles = new Set(collections.map((c) => c.handle));
+        for (const p of displayProducts) {
+            const handle = extractExtensionHandle(p.descriptionHtml);
+            if (handle && !knownHandles.has(handle)) map.set(p.id, handle);
+        }
+        return map;
+    }, [collections, displayProducts]);
 
     const handleRefresh = () => {
         setIsRefreshing(true);
@@ -249,7 +278,7 @@ export default function DraftProducts({ products, error }: { products: ProductGE
                             <div key={product.id} className="flex items-center gap-2 group">
                                 <Checkbox checked={selectedIds.has(product.id)} onCheckedChange={() => toggleSelect(product.id)} className="ml-2 shrink-0" />
                                 <div className="flex-1 min-w-0">
-                                    <ProductList product={product} compact />
+                                    <ProductList product={product} compact missingExtensionHandle={missingExtensionByProductId.get(product.id) ?? null} />
                                 </div>
                             </div>
                         ))}

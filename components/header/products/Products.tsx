@@ -1,7 +1,7 @@
 "use client";
 import { deleteMetafield, updateCanauxVente, updateProduct } from "@/app/shopify/[shopId]/products/[productId]/serverAction";
 import { ProductGET } from "@/library/types/graph";
-import { ExternalLink, Eye, Loader2, X, Zap } from "lucide-react";
+import { AlertTriangle, ExternalLink, Eye, Loader2, X, Zap } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import useShopifyStore from "../../shopify/shopifyStore";
 
-export default function ProductList({ product, compact }: { product: ProductGET; compact?: boolean }) {
+export default function ProductList({ product, compact, missingExtensionHandle }: { product: ProductGET; compact?: boolean; missingExtensionHandle?: string | null }) {
     const { shopifyBoutique, setIsSearchOpen, setProduct, canauxBoutique } = useShopifyStore();
     const [isHovered, setIsHovered] = useState(false);
     const [publishing, setPublishing] = useState(false);
@@ -97,6 +97,12 @@ export default function ProductList({ product, compact }: { product: ProductGET;
                 </div>
                 <h3 className={`${compact ? "flex-1" : "w-1/5"} text-sm font-medium text-foreground line-clamp-1`}>{product.title}</h3>
                 {compact && <span className="text-xs text-gray-400 truncate max-w-[250px]">/{product.handle}</span>}
+                {compact && missingExtensionHandle && (
+                    <span title={`Collection « ${missingExtensionHandle} » introuvable dans la boutique`} className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-red-50 text-red-700 border border-red-200 text-xs font-medium shrink-0">
+                        <AlertTriangle size={12} />
+                        <span className="truncate max-w-[160px]">{missingExtensionHandle}</span>
+                    </span>
+                )}
                 {compact && <span className="text-sm text-primary shrink-0">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</span>}
                 {!compact && <div className="w-[10%] text-sm text-primary">{`${product.variants?.nodes[0]?.price} ${shopifyBoutique?.devise}`}</div>}
                 {!compact && <div className="w-[8%] text-sm text-primary">Stock: {product.variants?.nodes[0]?.inventoryQuantity}</div>}
