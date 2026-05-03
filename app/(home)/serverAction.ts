@@ -96,3 +96,24 @@ export async function getAllDrafts(): Promise<{ response: any[]; message: string
     const res = await fetch(url, { cache: "no-store" });
     return res.json();
 }
+
+export interface ProductsCountItem {
+    domain: string;
+    count: number | null;
+    error: string | null;
+}
+
+export interface ProductsCountResponse {
+    response: ProductsCountItem[] | null;
+    message?: string;
+    error?: string;
+}
+
+/**
+ * Récupère le nombre total de produits par boutique
+ */
+export async function getProductsCountAll(): Promise<ProductsCountResponse> {
+    const url = `${pokeUriServer}/shopify/products-count-all`;
+    const res = await fetch(url, { cache: "no-store" });
+    return res.json() as Promise<ProductsCountResponse>;
+}

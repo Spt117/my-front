@@ -1,10 +1,10 @@
 "use client";
 
-import { AnalyticsData, getAllAnalytics } from "@/app/(home)/serverAction";
+import { AnalyticsData, ProductsCountItem, getAllAnalytics, getProductsCountAll } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { CheckCircle2, DollarSign, ExternalLink, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from "lucide-react";
+import { Boxes, CheckCircle2, DollarSign, ExternalLink, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AnalyticsProductsTable } from "./AnalyticsProductsTable";
@@ -27,6 +27,8 @@ interface BoutiqueStats {
 export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAnalyticsViewProps) {
     const { allBoutiques } = useShopifyStore();
     const [stats, setStats] = useState<BoutiqueStats[]>([]);
+    const [productsCount, setProductsCount] = useState<ProductsCountItem[]>([]);
+    const [productsCountLoading, setProductsCountLoading] = useState<boolean>(true);
 
     const fetchAllAnalytics = useCallback(async () => {
         if (!allBoutiques || allBoutiques.length === 0) return;
@@ -62,6 +64,26 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
         fetchAllAnalytics();
     }, [fetchAllAnalytics]);
 
+    // Le total des produits ne dépend pas de la période → fetch une seule fois.
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const res = await getProductsCountAll();
+                if (cancelled) return;
+                setProductsCount(res.response || []);
+            } catch {
+                if (cancelled) return;
+                setProductsCount([]);
+            } finally {
+                if (!cancelled) setProductsCountLoading(false);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
     const totalRevenue = stats.reduce((sum, s) => sum + (s.data?.totalRevenue || 0), 0);
     const totalRefunds = stats.reduce((sum, s) => sum + (s.data?.totalRefunds || 0), 0);
     const totalOrders = stats.reduce((sum, s) => sum + (s.data?.ordersCount || 0), 0);
@@ -83,7 +105,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     return (
         <div className="space-y-6">
             {/* Global KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4">
                 <KPICard
                     title="CA Total Global"
                     value={formatCurrency(totalRevenue)}
@@ -155,6 +177,49 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                                         </span>
                                         <span className="flex items-center gap-1 font-semibold">
                                             {s.loading ? "..." : count}
+                                            <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </span>
+                                    </a>
+                                );
+                            })}
+                        </div>
+                    </CardContent>
+                    <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-2xl" />
+                </Card>
+
+                {/* Total des produits par boutique (toutes périodes confondues) */}
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-700">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                    <CardHeader className="pb-2 relative z-10">
+                        <CardTitle className="text-sm font-medium text-white/90 flex items-center gap-2">
+                            <div className="p-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                                <Boxes className="w-4 h-4 text-white" />
+                            </div>
+                            Produits Total
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="relative z-10">
+                        <div className="text-3xl font-bold text-white tracking-tight">
+                            {productsCountLoading ? "..." : productsCount.reduce((sum, item) => sum + (item.count ?? 0), 0).toLocaleString("fr-FR")}
+                        </div>
+                        <div className="mt-2 space-y-1">
+                            {(allBoutiques ?? []).map((b) => {
+                                const item = productsCount.find((p) => p.domain === b.domain);
+                                const adminUrl = `https://admin.shopify.com/store/${b.domain.replace(".myshopify.com", "")}/products`;
+                                return (
+                                    <a
+                                        key={b.domain}
+                                        href={adminUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-between text-xs text-white/80 hover:text-white transition-colors group"
+                                    >
+                                        <span className="flex items-center gap-1.5">
+                                            <img src={b.flag} alt="" className="w-3.5 h-3.5 object-contain" />
+                                            <span className="truncate">{b.publicDomain}</span>
+                                        </span>
+                                        <span className="flex items-center gap-1 font-semibold">
+                                            {productsCountLoading ? "..." : item?.error ? "—" : (item?.count ?? 0).toLocaleString("fr-FR")}
                                             <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </span>
                                     </a>
