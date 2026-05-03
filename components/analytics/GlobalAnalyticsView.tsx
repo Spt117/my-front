@@ -1,6 +1,6 @@
 "use client";
 
-import { AnalyticsData, ProductsCountItem, getAllAnalytics, getProductsCountAll } from "@/app/(home)/serverAction";
+import { AnalyticsData, getAllAnalytics } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
 import useShopifyStore from "@/components/shopify/shopifyStore";
@@ -27,8 +27,6 @@ interface BoutiqueStats {
 export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAnalyticsViewProps) {
     const { allBoutiques } = useShopifyStore();
     const [stats, setStats] = useState<BoutiqueStats[]>([]);
-    const [productsCount, setProductsCount] = useState<ProductsCountItem[]>([]);
-    const [productsCountLoading, setProductsCountLoading] = useState<boolean>(true);
 
     const fetchAllAnalytics = useCallback(async () => {
         if (!allBoutiques || allBoutiques.length === 0) return;
@@ -64,29 +62,6 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
         fetchAllAnalytics();
     }, [fetchAllAnalytics]);
 
-    // Le total des produits ne dépend pas de la période → fetch une seule fois.
-    useEffect(() => {
-        let cancelled = false;
-        (async () => {
-            try {
-                const res = await getProductsCountAll();
-                if (cancelled) return;
-                // Garde-fou : tant que la nouvelle route n'est pas déployée, le
-                // catch-all renvoie `{response: "Hello World"}`. Sans guard,
-                // productsCount.reduce/.find planterait au render.
-                setProductsCount(Array.isArray(res?.response) ? res.response : []);
-            } catch {
-                if (cancelled) return;
-                setProductsCount([]);
-            } finally {
-                if (!cancelled) setProductsCountLoading(false);
-            }
-        })();
-        return () => {
-            cancelled = true;
-        };
-    }, []);
-
     const totalRevenue = stats.reduce((sum, s) => sum + (s.data?.totalRevenue || 0), 0);
     const totalRefunds = stats.reduce((sum, s) => sum + (s.data?.totalRefunds || 0), 0);
     const totalOrders = stats.reduce((sum, s) => sum + (s.data?.ordersCount || 0), 0);
@@ -94,6 +69,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
     const totalCreated = stats.reduce((sum, s) => sum + (s.data?.productsCreatedCount || 0), 0);
     const totalDrafts = stats.reduce((sum, s) => sum + (s.data?.draftProductsCount || 0), 0);
     const totalPublished = stats.reduce((sum, s) => sum + (s.data?.productsPublishedCount || 0), 0);
+    const totalAll = stats.reduce((sum, s) => sum + (s.data?.totalProductsCount || 0), 0);
     const allLoading = stats.some((s) => s.loading);
 
     const chartData = stats
@@ -204,27 +180,25 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="relative z-10">
-                        <div className="text-3xl font-bold text-white tracking-tight">
-                            {productsCountLoading ? "…" : productsCount.reduce((sum, item) => sum + (item.count ?? 0), 0).toLocaleString("fr-FR")}
-                        </div>
+                        <div className="text-3xl font-bold text-white tracking-tight">{allLoading && totalAll === 0 ? "…" : totalAll.toLocaleString("fr-FR")}</div>
                         <div className="mt-3 space-y-1.5">
-                            {(allBoutiques ?? []).map((b) => {
-                                const item = productsCount.find((p) => p.domain === b.domain);
-                                const adminUrl = `https://admin.shopify.com/store/${b.domain.replace(".myshopify.com", "")}/products`;
+                            {stats.map((s) => {
+                                const count = s.data?.totalProductsCount ?? 0;
+                                const adminUrl = `https://admin.shopify.com/store/${s.boutique.domain.replace(".myshopify.com", "")}/products`;
                                 return (
                                     <a
-                                        key={b.domain}
+                                        key={s.boutique.domain}
                                         href={adminUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center justify-between text-xs text-white/80 hover:text-white transition-colors group"
                                     >
                                         <span className="flex items-center gap-1.5 min-w-0">
-                                            <img src={b.flag} alt="" className="w-3.5 h-3.5 object-contain shrink-0" />
-                                            <span className="truncate">{b.publicDomain}</span>
+                                            <img src={s.boutique.flag} alt="" className="w-3.5 h-3.5 object-contain shrink-0" />
+                                            <span className="truncate">{s.boutique.publicDomain}</span>
                                         </span>
                                         <span className="flex items-center gap-1 font-semibold shrink-0">
-                                            {productsCountLoading ? "…" : item?.error ? "—" : (item?.count ?? 0).toLocaleString("fr-FR")}
+                                            {s.loading ? "…" : count.toLocaleString("fr-FR")}
                                             <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </span>
                                     </a>

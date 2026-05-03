@@ -20,6 +20,7 @@ export interface AnalyticsData {
     productsCreatedCount: number;
     productsPublishedCount: number;
     draftProductsCount: number;
+    totalProductsCount: number;
     orderedProducts: OrderedProduct[];
     productsCreated: any[];
     productsPublished: any[];
