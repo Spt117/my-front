@@ -1,11 +1,11 @@
 "use client";
 
-import { AnalyticsData, getAllAnalytics } from "@/app/(home)/serverAction";
+import { AnalyticsData, SnapshotCountItem, getAllAnalytics, getSnapshotCounts } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Boxes, CheckCircle2, DollarSign, ExternalLink, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, Store, TrendingUp } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AnalyticsProductsTable } from "./AnalyticsProductsTable";
 import { formatCurrency, getDateRange, PeriodType } from "./AnalyticsUtils";
@@ -27,6 +27,8 @@ interface BoutiqueStats {
 export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAnalyticsViewProps) {
     const { allBoutiques } = useShopifyStore();
     const [stats, setStats] = useState<BoutiqueStats[]>([]);
+    const [snapshot, setSnapshot] = useState<SnapshotCountItem[]>([]);
+    const [snapshotLoading, setSnapshotLoading] = useState<boolean>(true);
 
     const fetchAllAnalytics = useCallback(async () => {
         if (!allBoutiques || allBoutiques.length === 0) return;
@@ -62,14 +64,42 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
         fetchAllAnalytics();
     }, [fetchAllAnalytics]);
 
+    // Snapshot total + drafts : indépendant de la période, fetché une seule
+    // fois au montage.
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const res = await getSnapshotCounts();
+                if (cancelled) return;
+                setSnapshot(Array.isArray(res?.response) ? res.response : []);
+            } catch {
+                if (cancelled) return;
+                setSnapshot([]);
+            } finally {
+                if (!cancelled) setSnapshotLoading(false);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    // Helpers pour lire le snapshot par boutique
+    const snapshotByDomain = useMemo(() => {
+        const m = new Map<string, SnapshotCountItem>();
+        for (const s of snapshot) m.set(s.domain, s);
+        return m;
+    }, [snapshot]);
+    const totalDraftsSnap = snapshot.reduce((sum, s) => sum + (s.draftProducts ?? 0), 0);
+    const totalAllSnap = snapshot.reduce((sum, s) => sum + (s.totalProducts ?? 0), 0);
+
     const totalRevenue = stats.reduce((sum, s) => sum + (s.data?.totalRevenue || 0), 0);
     const totalRefunds = stats.reduce((sum, s) => sum + (s.data?.totalRefunds || 0), 0);
     const totalOrders = stats.reduce((sum, s) => sum + (s.data?.ordersCount || 0), 0);
     const totalProducts = stats.reduce((sum, s) => sum + (s.data?.orderedProducts.reduce((pSum, p) => pSum + p.quantity, 0) || 0), 0);
     const totalCreated = stats.reduce((sum, s) => sum + (s.data?.productsCreatedCount || 0), 0);
-    const totalDrafts = stats.reduce((sum, s) => sum + (s.data?.draftProductsCount || 0), 0);
     const totalPublished = stats.reduce((sum, s) => sum + (s.data?.productsPublishedCount || 0), 0);
-    const totalAll = stats.reduce((sum, s) => sum + (s.data?.totalProductsCount || 0), 0);
     const allLoading = stats.some((s) => s.loading);
 
     const chartData = stats
@@ -142,22 +172,23 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="relative z-10">
-                        <div className="text-3xl font-bold text-white tracking-tight">{allLoading && totalDrafts === 0 ? "…" : totalDrafts.toLocaleString("fr-FR")}</div>
+                        <div className="text-3xl font-bold text-white tracking-tight">{snapshotLoading ? "…" : totalDraftsSnap.toLocaleString("fr-FR")}</div>
                         <div className="mt-3 space-y-1.5">
-                            {stats.map((s) => {
-                                const count = s.data?.draftProductsCount ?? 0;
+                            {(allBoutiques ?? []).map((b) => {
+                                const item = snapshotByDomain.get(b.domain);
+                                const count = item?.draftProducts ?? 0;
                                 return (
                                     <a
-                                        key={s.boutique.domain}
-                                        href={`/shopify/${s.boutique.id}/draft`}
+                                        key={b.domain}
+                                        href={`/shopify/${b.id}/draft`}
                                         className="flex items-center justify-between text-xs text-white/80 hover:text-white transition-colors group"
                                     >
                                         <span className="flex items-center gap-1.5 min-w-0">
-                                            <img src={s.boutique.flag} alt="" className="w-3.5 h-3.5 object-contain shrink-0" />
-                                            <span className="truncate">{s.boutique.publicDomain}</span>
+                                            <img src={b.flag} alt="" className="w-3.5 h-3.5 object-contain shrink-0" />
+                                            <span className="truncate">{b.publicDomain}</span>
                                         </span>
                                         <span className="flex items-center gap-1 font-semibold shrink-0">
-                                            {s.loading ? "…" : count.toLocaleString("fr-FR")}
+                                            {snapshotLoading ? "…" : item?.error ? "—" : count.toLocaleString("fr-FR")}
                                             <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </span>
                                     </a>
@@ -168,7 +199,7 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                     <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-2xl" />
                 </Card>
 
-                {/* Total des produits par boutique (toutes périodes confondues) */}
+                {/* Total des produits par boutique (snapshot, indépendant de la période) */}
                 <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-700">
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
                     <CardHeader className="pb-2 relative z-10">
@@ -180,25 +211,26 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="relative z-10">
-                        <div className="text-3xl font-bold text-white tracking-tight">{allLoading && totalAll === 0 ? "…" : totalAll.toLocaleString("fr-FR")}</div>
+                        <div className="text-3xl font-bold text-white tracking-tight">{snapshotLoading ? "…" : totalAllSnap.toLocaleString("fr-FR")}</div>
                         <div className="mt-3 space-y-1.5">
-                            {stats.map((s) => {
-                                const count = s.data?.totalProductsCount ?? 0;
-                                const adminUrl = `https://admin.shopify.com/store/${s.boutique.domain.replace(".myshopify.com", "")}/products`;
+                            {(allBoutiques ?? []).map((b) => {
+                                const item = snapshotByDomain.get(b.domain);
+                                const count = item?.totalProducts ?? 0;
+                                const adminUrl = `https://admin.shopify.com/store/${b.domain.replace(".myshopify.com", "")}/products`;
                                 return (
                                     <a
-                                        key={s.boutique.domain}
+                                        key={b.domain}
                                         href={adminUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center justify-between text-xs text-white/80 hover:text-white transition-colors group"
                                     >
                                         <span className="flex items-center gap-1.5 min-w-0">
-                                            <img src={s.boutique.flag} alt="" className="w-3.5 h-3.5 object-contain shrink-0" />
-                                            <span className="truncate">{s.boutique.publicDomain}</span>
+                                            <img src={b.flag} alt="" className="w-3.5 h-3.5 object-contain shrink-0" />
+                                            <span className="truncate">{b.publicDomain}</span>
                                         </span>
                                         <span className="flex items-center gap-1 font-semibold shrink-0">
-                                            {s.loading ? "…" : count.toLocaleString("fr-FR")}
+                                            {snapshotLoading ? "…" : item?.error ? "—" : count.toLocaleString("fr-FR")}
                                             <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </span>
                                     </a>

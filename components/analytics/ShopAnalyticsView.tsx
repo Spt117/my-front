@@ -1,6 +1,6 @@
 "use client";
 
-import { AnalyticsData, getAnalytics } from "@/app/(home)/serverAction";
+import { AnalyticsData, getAnalytics, getSnapshotCounts, SnapshotCountItem } from "@/app/(home)/serverAction";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { IShopifyBase } from "@/library/pocketbase/ShopifyBoutiqueService";
 import { CheckCircle2, DollarSign, FileEdit, Package, PackagePlus, RefreshCw, ShoppingCart, TrendingUp } from "lucide-react";
@@ -21,6 +21,26 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
     const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [snapshot, setSnapshot] = useState<SnapshotCountItem | null>(null);
+
+    // Snapshot indépendant de la période — fetché à chaque changement de boutique
+    // mais pas à chaque changement de période.
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const res = await getSnapshotCounts();
+                if (cancelled) return;
+                const item = Array.isArray(res?.response) ? res.response.find((s) => s.domain === boutique.domain) : undefined;
+                setSnapshot(item ?? null);
+            } catch {
+                if (!cancelled) setSnapshot(null);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [boutique.domain]);
 
     const fetchAnalytics = useCallback(async () => {
         setLoading(true);
@@ -135,7 +155,7 @@ export function ShopAnalyticsView({ boutique, period, customStart, customEnd }: 
                 />
                 <KPICard
                     title="Brouillons"
-                    value={analytics.draftProductsCount}
+                    value={snapshot?.draftProducts ?? "…"}
                     icon={FileEdit}
                     gradient="bg-gradient-to-br from-slate-500 via-gray-500 to-slate-600"
                     subtitle="en attente"

@@ -19,8 +19,6 @@ export interface AnalyticsData {
     totalRefunds: number;
     productsCreatedCount: number;
     productsPublishedCount: number;
-    draftProductsCount: number;
-    totalProductsCount: number;
     orderedProducts: OrderedProduct[];
     productsCreated: any[];
     productsPublished: any[];
@@ -98,23 +96,26 @@ export async function getAllDrafts(): Promise<{ response: any[]; message: string
     return res as { response: any[]; message: string };
 }
 
-export interface ProductsCountItem {
+export interface SnapshotCountItem {
     domain: string;
-    count: number | null;
+    totalProducts: number | null;
+    draftProducts: number | null;
     error: string | null;
 }
 
-export interface ProductsCountResponse {
-    response: ProductsCountItem[] | null;
+export interface SnapshotCountsResponse {
+    response: SnapshotCountItem[] | null;
     message?: string;
     error?: string;
 }
 
 /**
- * Récupère le nombre total de produits par boutique
+ * Compteurs indépendants de la période (total + drafts) par boutique. Utilisé
+ * pour les cartes "Brouillons" et "Total" du dashboard, qui n'ont pas à être
+ * re-fetchées à chaque changement de période.
  */
-export async function getProductsCountAll(): Promise<ProductsCountResponse> {
-    const url = `${pokeUriServer}/shopify/products-count-all`;
+export async function getSnapshotCounts(): Promise<SnapshotCountsResponse> {
+    const url = `${pokeUriServer}/shopify/snapshot-counts`;
     const res = await getServer(url);
-    return res as ProductsCountResponse;
+    return res as SnapshotCountsResponse;
 }
