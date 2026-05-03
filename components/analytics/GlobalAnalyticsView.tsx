@@ -107,8 +107,8 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
 
     return (
         <div className="space-y-6">
-            {/* Global KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4">
+            {/* Ligne 1 — Performance commerciale (4 KPI compacts) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <KPICard
                     title="CA Total Global"
                     value={formatCurrency(totalRevenue)}
@@ -137,6 +137,10 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                     gradient="bg-gradient-to-br from-orange-600 via-amber-600 to-orange-700"
                     subtitle="Nombre d'articles expédiés"
                 />
+            </div>
+
+            {/* Ligne 2 — Inventaire (4 cartes : 2 KPI compacts + 2 cartes avec ventilation par boutique) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <KPICard
                     title="Produits Créés"
                     value={totalCreated}
@@ -162,10 +166,8 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="relative z-10">
-                        <div className="text-3xl font-bold text-white tracking-tight">
-                            {allLoading && totalDrafts === 0 ? "..." : totalDrafts}
-                        </div>
-                        <div className="mt-2 space-y-1">
+                        <div className="text-3xl font-bold text-white tracking-tight">{allLoading && totalDrafts === 0 ? "…" : totalDrafts.toLocaleString("fr-FR")}</div>
+                        <div className="mt-3 space-y-1.5">
                             {stats.map((s) => {
                                 const count = s.data?.draftProductsCount ?? 0;
                                 return (
@@ -174,12 +176,12 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                                         href={`/shopify/${s.boutique.id}/draft`}
                                         className="flex items-center justify-between text-xs text-white/80 hover:text-white transition-colors group"
                                     >
-                                        <span className="flex items-center gap-1.5">
-                                            <img src={s.boutique.flag} alt="" className="w-3.5 h-3.5 object-contain" />
+                                        <span className="flex items-center gap-1.5 min-w-0">
+                                            <img src={s.boutique.flag} alt="" className="w-3.5 h-3.5 object-contain shrink-0" />
                                             <span className="truncate">{s.boutique.publicDomain}</span>
                                         </span>
-                                        <span className="flex items-center gap-1 font-semibold">
-                                            {s.loading ? "..." : count}
+                                        <span className="flex items-center gap-1 font-semibold shrink-0">
+                                            {s.loading ? "…" : count.toLocaleString("fr-FR")}
                                             <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </span>
                                     </a>
@@ -203,9 +205,9 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                     </CardHeader>
                     <CardContent className="relative z-10">
                         <div className="text-3xl font-bold text-white tracking-tight">
-                            {productsCountLoading ? "..." : productsCount.reduce((sum, item) => sum + (item.count ?? 0), 0).toLocaleString("fr-FR")}
+                            {productsCountLoading ? "…" : productsCount.reduce((sum, item) => sum + (item.count ?? 0), 0).toLocaleString("fr-FR")}
                         </div>
-                        <div className="mt-2 space-y-1">
+                        <div className="mt-3 space-y-1.5">
                             {(allBoutiques ?? []).map((b) => {
                                 const item = productsCount.find((p) => p.domain === b.domain);
                                 const adminUrl = `https://admin.shopify.com/store/${b.domain.replace(".myshopify.com", "")}/products`;
@@ -217,12 +219,12 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
                                         rel="noopener noreferrer"
                                         className="flex items-center justify-between text-xs text-white/80 hover:text-white transition-colors group"
                                     >
-                                        <span className="flex items-center gap-1.5">
-                                            <img src={b.flag} alt="" className="w-3.5 h-3.5 object-contain" />
+                                        <span className="flex items-center gap-1.5 min-w-0">
+                                            <img src={b.flag} alt="" className="w-3.5 h-3.5 object-contain shrink-0" />
                                             <span className="truncate">{b.publicDomain}</span>
                                         </span>
-                                        <span className="flex items-center gap-1 font-semibold">
-                                            {productsCountLoading ? "..." : item?.error ? "—" : (item?.count ?? 0).toLocaleString("fr-FR")}
+                                        <span className="flex items-center gap-1 font-semibold shrink-0">
+                                            {productsCountLoading ? "…" : item?.error ? "—" : (item?.count ?? 0).toLocaleString("fr-FR")}
                                             <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </span>
                                     </a>

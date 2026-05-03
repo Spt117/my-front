@@ -1,6 +1,6 @@
 "use server";
 
-import { postServer } from "@/library/utils/fetchServer";
+import { getServer, postServer } from "@/library/utils/fetchServer";
 import { pokeUriServer } from "@/library/utils/uri";
 
 // ============ Types pour les analytics ============
@@ -85,16 +85,16 @@ export interface DraftCountResponse {
  */
 export async function getDraftCount(): Promise<DraftCountResponse> {
     const url = `${pokeUriServer}/shopify/draft-count`;
-    const res = await fetch(url, { cache: "no-store" });
-    return res.json() as Promise<DraftCountResponse>;
+    const res = await getServer(url);
+    return res as DraftCountResponse;
 }
 /**
  * Récupère tous les produits en brouillon de toutes les boutiques
  */
 export async function getAllDrafts(): Promise<{ response: any[]; message: string }> {
     const url = `${pokeUriServer}/shopify/all-draft`;
-    const res = await fetch(url, { cache: "no-store" });
-    return res.json();
+    const res = await getServer(url);
+    return res as { response: any[]; message: string };
 }
 
 export interface ProductsCountItem {
@@ -114,6 +114,6 @@ export interface ProductsCountResponse {
  */
 export async function getProductsCountAll(): Promise<ProductsCountResponse> {
     const url = `${pokeUriServer}/shopify/products-count-all`;
-    const res = await fetch(url, { cache: "no-store" });
-    return res.json() as Promise<ProductsCountResponse>;
+    const res = await getServer(url);
+    return res as ProductsCountResponse;
 }
