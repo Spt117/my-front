@@ -71,7 +71,10 @@ export function GlobalAnalyticsView({ period, customStart, customEnd }: GlobalAn
             try {
                 const res = await getProductsCountAll();
                 if (cancelled) return;
-                setProductsCount(res.response || []);
+                // Garde-fou : tant que la nouvelle route n'est pas déployée, le
+                // catch-all renvoie `{response: "Hello World"}`. Sans guard,
+                // productsCount.reduce/.find planterait au render.
+                setProductsCount(Array.isArray(res?.response) ? res.response : []);
             } catch {
                 if (cancelled) return;
                 setProductsCount([]);
