@@ -7,31 +7,33 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowDown, ArrowUpDown } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import CollectionRow from './Collection';
 import useCollectionStore from './storeCollections';
 
 export default function Page() {
-    const params = useSearchParams();
-    const { shopifyBoutique, searchTerm } = useShopifyStore();
-    const { filteredCollections, setFilteredCollections, loadingCollection } = useCollectionStore();
+    const { searchTerm } = useShopifyStore();
+    const { collections, loadingCollection } = useCollectionStore();
 
     // État pour le tri
     const [sortBy, setSortBy] = useState<'title' | 'created_at' | 'updated_at'>('title');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-    useEffect(() => {
-        if (searchTerm) {
-            const filtered = filteredCollections.filter(
-                (collection) =>
-                    collection.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    collection.handle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    collection.id.toString().includes(searchTerm)
-            );
-            setFilteredCollections(filtered);
-        }
-    }, [searchTerm, shopifyBoutique, params]);
+    // Filtrage dérivé directement de la source de vérité `collections`. Ainsi
+    // chaque changement de searchTerm repart toujours du jeu complet — vider la
+    // recherche restaure les collections, et on évite l'effet « entonnoir »
+    // (filtrer le filtré) qui finissait par tout vider au bout de quelques
+    // requêtes successives.
+    const filteredCollections = useMemo(() => {
+        const q = searchTerm.trim().toLowerCase();
+        if (!q) return collections;
+        return collections.filter(
+            (c) =>
+                c.title.toLowerCase().includes(q) ||
+                c.handle.toLowerCase().includes(q) ||
+                c.id.toString().includes(q)
+        );
+    }, [collections, searchTerm]);
 
     // Tri des collections
     const sortedCollections = useMemo(() => {
