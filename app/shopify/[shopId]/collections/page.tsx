@@ -15,9 +15,9 @@ export default function Page() {
     const { searchTerm } = useShopifyStore();
     const { collections, loadingCollection } = useCollectionStore();
 
-    // État pour le tri
-    const [sortBy, setSortBy] = useState<'title' | 'created_at' | 'updated_at'>('title');
-    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+    // État pour le tri (par défaut : plus récente d'abord = created_at desc).
+    const [sortBy, setSortBy] = useState<'title' | 'created_at' | 'updated_at' | 'products_count'>('created_at');
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
     // Filtrage dérivé directement de la source de vérité `collections`. Ainsi
     // chaque changement de searchTerm repart toujours du jeu complet — vider la
@@ -52,6 +52,11 @@ export default function Page() {
                     aValue = new Date(a.updatedAt);
                     bValue = new Date(b.updatedAt);
                     break;
+                case 'products_count': {
+                    const ac = a.productsCount?.count ?? 0;
+                    const bc = b.productsCount?.count ?? 0;
+                    return sortDirection === 'asc' ? ac - bc : bc - ac;
+                }
                 default:
                     return 0;
             }
@@ -102,6 +107,9 @@ export default function Page() {
                                 <SelectItem value="updated_at" className="focus:bg-slate-50">
                                     Date de mise à jour
                                 </SelectItem>
+                                <SelectItem value="products_count" className="focus:bg-slate-50">
+                                    Nombre de produits
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -121,6 +129,7 @@ export default function Page() {
                             <TableHead className="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Titre</TableHead>
                             <TableHead className="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Status</TableHead>
                             <TableHead className="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Type</TableHead>
+                            <TableHead className="w-20 text-right text-slate-500 font-bold uppercase tracking-wider text-[10px]">Produits</TableHead>
                             <TableHead className="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Handle</TableHead>
                             <TableHead className="w-32 text-right text-slate-500 font-bold uppercase tracking-wider text-[10px]">ID</TableHead>
                         </TableRow>

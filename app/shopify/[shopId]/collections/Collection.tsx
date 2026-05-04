@@ -66,6 +66,7 @@ export default function CollectionRow({ collection }: { collection: ShopifyColle
                     {collection.ruleSet ? 'Automatique' : 'Manuelle'}
                 </Badge>
             </TableCell>
+            <TableCell className="text-right tabular-nums font-medium text-slate-700">{collection.productsCount?.count ?? 0}</TableCell>
             <TableCell className="text-slate-500 font-mono text-xs">{collection.handle}</TableCell>
             <TableCell>
                 <div className="flex items-center justify-end pr-4">
