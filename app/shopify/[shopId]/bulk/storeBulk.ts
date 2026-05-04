@@ -14,8 +14,6 @@ interface StoreState {
     setSelectedProducts: (products: ProductGET[]) => void;
     filteredProducts: ProductGET[];
     setFilteredProducts: (products: ProductGET[]) => void;
-    filterByTag: string;
-    setFilterByTag: (tag: string) => void;
     dataUpdate: IDataUpdate[];
     addDataUpdate: (data: IDataUpdate) => void;
     removeDataUpdate: (productId: string) => void;
@@ -43,8 +41,6 @@ const useBulkStore = create<StoreState>((set) => ({
     setSelectedProducts: (products) => set({ selectedProducts: products }),
     filteredProducts: [],
     setFilteredProducts: (products) => set({ filteredProducts: products }),
-    filterByTag: "",
-    setFilterByTag: (tag) => set({ filterByTag: tag }),
     dataUpdate: [],
     addDataUpdate: (data) =>
         set((state) => ({
