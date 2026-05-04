@@ -82,12 +82,17 @@ export default function MissingCollectionDialog({ open, onOpenChange, handle, su
         setSubmitting(true);
         try {
             const publicationGids = canauxBoutique.map((c) => c.id);
+            const cleanTitle = title.trim();
             const res = await createExtensionCollection(
                 shopifyBoutique.domain,
                 {
-                    title: title.trim(),
+                    title: cleanTitle,
                     handle: slug.trim(),
                     seo: { title: seoTitle.trim(), description: seoDescription.trim() },
+                    ruleSet: {
+                        appliedDisjunctively: false,
+                        rules: [{ column: "TAG", relation: "EQUALS", condition: cleanTitle }],
+                    },
                 },
                 publicationGids
             );
@@ -112,7 +117,7 @@ export default function MissingCollectionDialog({ open, onOpenChange, handle, su
                 <DialogHeader>
                     <DialogTitle>Créer la collection manquante</DialogTitle>
                     <DialogDescription>
-                        La description du produit pointe vers une collection inexistante. Crée-la ici (publiée automatiquement sur tous les canaux).
+                        La description du produit pointe vers une collection inexistante. Crée-la ici en collection automatisée (Balise = titre), publiée sur tous les canaux.
                     </DialogDescription>
                 </DialogHeader>
 
