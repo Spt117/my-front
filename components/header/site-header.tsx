@@ -1,6 +1,5 @@
 'use client';
 import HeaderPokemon from '@/app/pokemon/Header';
-import BulkHeader from '@/app/shopify/[shopId]/bulk/BulkHeader';
 import HeaderCollection from '@/app/shopify/[shopId]/collections/HeaderCollections';
 import DraftsLoader from '@/components/shopify/drafts/DraftsLoader';
 import OrdersLoader from '@/components/shopify/orders/OrdersLoader';
@@ -26,7 +25,6 @@ export function SiteHeader() {
                 {pathname === '/create' && <SelectAffiliationSite />}
                 {pathname === '/stock' && <HeaderStock />}
                 {pathname === '/pokemon' && <HeaderPokemon />}
-                {pathname.includes('bulk') && <BulkHeader />}
                 {pathname.includes('products') && <UnifiedSearchShopify type="products" />}
                 {pathname.includes('clients') && <UnifiedSearchShopify type="clients" />}
                 {pathname.includes('collections') && <HeaderCollection />}

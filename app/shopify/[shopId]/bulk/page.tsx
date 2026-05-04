@@ -1,22 +1,23 @@
 "use client";
-import { bulkUpdateStock } from "@/components/shopify/serverActions";
+import { bulkUpdateStock, getDataBoutique } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
-import useUpdateEffect from "@/library/hooks/useUpdateEffect";
 import { ProductGET } from "@/library/types/graph";
-import { ArrowUpRight, Check, CheckCircle2, CircleDollarSign, Filter, Hash, Layers, Package, Search, Settings2, XCircle } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { ArrowUpRight, CheckCircle2, Hash, Loader2, Package, Search, Settings2 } from "lucide-react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import BulkFilterBar from "./BulkFilterBar";
+import { buildShopifyQuery, hasActiveFilters } from "./bulkQuery";
 import ProductBulk from "./ProductBulk";
+import { searchProductsAdvanced } from "./server";
 import useBulkStore from "./storeBulk";
-import TagAutocomplete from "./TagAutocomplete";
+import useBulkFiltersSync from "./useBulkFiltersSync";
 
-// ========================
-// Types
-// ========================
+// ─── Types & helpers ────────────────────────────────────────────────────────
+
 type TCanal = { id: string; name: string };
 type TCanalWithState = TCanal & { isPublished: boolean };
 
@@ -25,9 +26,6 @@ type TDataUpdate = {
     canaux: TCanalWithState[];
 };
 
-// ========================
-// Helpers
-// ========================
 const buildCanauxForProduct = (product: ProductGET, canauxBoutique: TCanal[]): TCanalWithState[] => {
     return canauxBoutique.map((c) => {
         const found = product.resourcePublicationsV2.nodes.find((node) => node.publication.id === c.id);
@@ -42,13 +40,34 @@ const buildDataUpdate = (products: ProductGET[], canauxBoutique: TCanal[]): TDat
     }));
 };
 
-// ========================
-// Composants
-// ========================
+// Filtre client fin (variante 0). Shopify a déjà filtré largement côté serveur,
+// on raffine ici pour respecter "variante 0 uniquement".
+function applyClientFilters(
+    products: ProductGET[],
+    opts: { priceMin: number | null; priceMax: number | null; missingChannels: boolean; canauxCount: number },
+): ProductGET[] {
+    const { priceMin, priceMax, missingChannels, canauxCount } = opts;
+    const minActive = priceMin !== null;
+    const maxActive = priceMax !== null;
+    if (!minActive && !maxActive && !missingChannels) return products;
 
-/**
- * Barre d'actions pour les produits sélectionnés
- */
+    return products.filter((p) => {
+        if (minActive || maxActive) {
+            const price = parseFloat(p.variants?.nodes?.[0]?.price ?? "");
+            if (!Number.isFinite(price)) return false;
+            if (minActive && price < (priceMin as number)) return false;
+            if (maxActive && price > (priceMax as number)) return false;
+        }
+        if (missingChannels && canauxCount > 0) {
+            const publishedCount = p.resourcePublicationsV2?.nodes?.filter((n) => n.isPublished).length ?? 0;
+            if (publishedCount >= canauxCount) return false;
+        }
+        return true;
+    });
+}
+
+// ─── Composants annexes ─────────────────────────────────────────────────────
+
 interface BulkActionsBarProps {
     selectedCount: number;
     onOpenActions: () => void;
@@ -58,7 +77,6 @@ interface BulkActionsBarProps {
 
 const BulkActionsBar = memo(function BulkActionsBar({ selectedCount, onOpenActions, onUpdateStock, isDisabled }: BulkActionsBarProps) {
     if (selectedCount === 0) return null;
-
     return (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-4">
             <span className="flex items-center gap-2">
@@ -78,159 +96,6 @@ const BulkActionsBar = memo(function BulkActionsBar({ selectedCount, onOpenActio
     );
 });
 
-/**
- * Header de la page Bulk avec filtres et statistiques
- */
-interface BulkHeaderProps {
-    total: number;
-    selectedCount: number;
-    filterByTag: string;
-    onFilterChange: (value: string) => void;
-    onToggleSelectAll: () => void;
-    tagCandidates: string[];
-    zeroPriceCount: number;
-    onSelectZeroPrice: () => void;
-    priceMin: string;
-    priceMax: string;
-    onPriceMinChange: (value: string) => void;
-    onPriceMaxChange: (value: string) => void;
-    devise?: string;
-}
-
-const BulkHeader = memo(function BulkHeader({
-    total,
-    selectedCount,
-    filterByTag,
-    onFilterChange,
-    onToggleSelectAll,
-    tagCandidates,
-    zeroPriceCount,
-    onSelectZeroPrice,
-    priceMin,
-    priceMax,
-    onPriceMinChange,
-    onPriceMaxChange,
-    devise,
-}: BulkHeaderProps) {
-    const allSelected = selectedCount === total && total > 0;
-
-    // Suggestions calculées localement à partir des tags des produits déjà chargés.
-    const suggestions = useMemo(() => {
-        const q = filterByTag.trim().toLowerCase();
-        if (!q) return tagCandidates.slice(0, 12);
-        return tagCandidates.filter((t) => t.toLowerCase().includes(q)).slice(0, 12);
-    }, [tagCandidates, filterByTag]);
-
-    return (
-        <div className="sticky top-12 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200/80">
-            <div className="px-4 py-3 flex items-center gap-3 flex-wrap">
-                {/* Statistiques compactes */}
-                <div className="flex items-center gap-2 text-sm">
-                    <Layers size={16} className="text-blue-600" />
-                    <span className="font-semibold text-slate-800">{total}</span>
-                    <span className="text-slate-500">produit{total > 1 ? "s" : ""}</span>
-                    {selectedCount > 0 && (
-                        <>
-                            <span className="text-slate-300">•</span>
-                            <span className="font-semibold text-blue-600">{selectedCount}</span>
-                            <span className="text-blue-600">sélectionné{selectedCount > 1 ? "s" : ""}</span>
-                        </>
-                    )}
-                </div>
-
-                {/* Filtre local avec autocomplete */}
-                <div className="flex-1 min-w-[220px] max-w-md">
-                    <TagAutocomplete
-                        value={filterByTag}
-                        onChange={onFilterChange}
-                        suggestions={suggestions}
-                        placeholder={tagCandidates.length > 0 ? `Filtrer parmi ${tagCandidates.length} tag${tagCandidates.length > 1 ? "s" : ""}…` : "Filtrer par tag…"}
-                        leftIcon={<Filter size={15} />}
-                        disabled={tagCandidates.length === 0}
-                    />
-                </div>
-
-                {/* Filtre par prix (min / max) */}
-                <div className="flex items-center gap-1.5 text-sm">
-                    <CircleDollarSign size={15} className="text-slate-400" />
-                    <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        inputMode="decimal"
-                        value={priceMin}
-                        onChange={(e) => onPriceMinChange(e.target.value)}
-                        placeholder={`Min${devise ? ` (${devise})` : ""}`}
-                        className="h-8 w-24"
-                        aria-label="Prix minimum"
-                    />
-                    <span className="text-slate-400">–</span>
-                    <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        inputMode="decimal"
-                        value={priceMax}
-                        onChange={(e) => onPriceMaxChange(e.target.value)}
-                        placeholder={`Max${devise ? ` (${devise})` : ""}`}
-                        className="h-8 w-24"
-                        aria-label="Prix maximum"
-                    />
-                    {(priceMin || priceMax) && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                onPriceMinChange("");
-                                onPriceMaxChange("");
-                            }}
-                            className="h-8 px-2 text-slate-400 hover:text-slate-700"
-                            aria-label="Effacer le filtre de prix"
-                            title="Effacer le filtre de prix"
-                        >
-                            <XCircle size={14} />
-                        </Button>
-                    )}
-                </div>
-
-                {/* Sélection */}
-                <div className="flex items-center gap-2 ml-auto">
-                    {zeroPriceCount > 0 && (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={onSelectZeroPrice}
-                            className="gap-2 border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
-                            title={`Sélectionner les ${zeroPriceCount} produit${zeroPriceCount > 1 ? "s" : ""} à 0 €`}
-                        >
-                            <CircleDollarSign size={15} />
-                            {zeroPriceCount} à 0&nbsp;€
-                        </Button>
-                    )}
-                    {total > 0 && (
-                        <Button variant={allSelected ? "default" : "outline"} size="sm" onClick={onToggleSelectAll} className="gap-2">
-                            {allSelected ? (
-                                <>
-                                    <XCircle size={15} />
-                                    Désélectionner
-                                </>
-                            ) : (
-                                <>
-                                    <Check size={15} />
-                                    Tout sélectionner
-                                </>
-                            )}
-                        </Button>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-});
-
-/**
- * Modal de modification du stock en masse
- */
 interface StockModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -252,14 +117,12 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
             toast.error("Veuillez entrer une quantité valide");
             return;
         }
-
         setLoading(true);
         try {
             const items = selectedProducts
                 .map((p) => {
                     const currentStock = p.variants?.nodes[0]?.inventoryQuantity || 0;
                     let newQuantity: number;
-
                     switch (mode) {
                         case "add":
                             newQuantity = currentStock + qty;
@@ -270,27 +133,18 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
                         default:
                             newQuantity = qty;
                     }
-
-                    return {
-                        sku: p.variants?.nodes[0]?.sku || "",
-                        quantity: newQuantity,
-                    };
+                    return { sku: p.variants?.nodes[0]?.sku || "", quantity: newQuantity };
                 })
                 .filter((item) => item.sku);
 
-            const res = await bulkUpdateStock({
-                domain,
-                items,
-            });
-
-            if (!res || res.error) {
-                toast.error(res?.error || "Erreur lors de la mise à jour");
-            } else {
+            const res = await bulkUpdateStock({ domain, items });
+            if (!res || res.error) toast.error(res?.error || "Erreur lors de la mise à jour");
+            else {
                 toast.success(res.message || "Stock mis à jour");
                 onSuccess();
                 onClose();
             }
-        } catch (error) {
+        } catch {
             toast.error("Erreur lors de la mise à jour du stock");
         } finally {
             setLoading(false);
@@ -299,18 +153,13 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            {/* Overlay */}
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-
-            {/* Modal */}
             <Card className="relative z-10 w-full max-w-md mx-4 shadow-2xl">
                 <CardContent className="p-6">
                     <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
                         <Package size={20} className="text-blue-500" />
                         Modifier le stock ({selectedProducts.length} produit{selectedProducts.length > 1 ? "s" : ""})
                     </h2>
-
-                    {/* Mode de modification */}
                     <div className="mb-4">
                         <label className="text-sm font-medium text-gray-700 mb-2 block">Mode</label>
                         <div className="flex gap-2">
@@ -325,8 +174,6 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
                             </Button>
                         </div>
                     </div>
-
-                    {/* Quantité */}
                     <div className="mb-6">
                         <label className="text-sm font-medium text-gray-700 mb-2 block">Quantité</label>
                         <Input type="number" min="0" value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="Entrez la quantité..." className="text-lg" />
@@ -336,8 +183,6 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
                             {mode === "subtract" && "Cette quantité sera retirée du stock actuel"}
                         </p>
                     </div>
-
-                    {/* Actions */}
                     <div className="flex gap-3 justify-end">
                         <Button variant="outline" onClick={onClose} disabled={loading}>
                             Annuler
@@ -359,13 +204,26 @@ function StockModal({ isOpen, onClose, selectedProducts, domain, onSuccess }: St
     );
 }
 
-/**
- * Liste des produits
- */
-const ProductList = memo(function ProductList({ products, hasLoadedAny, hasFilter, onClearFilter }: { products: ProductGET[]; hasLoadedAny: boolean; hasFilter: boolean; onClearFilter: () => void }) {
+const ProductList = memo(function ProductList({
+    products,
+    hasFiltersActive,
+    isInitialLoading,
+}: {
+    products: ProductGET[];
+    hasFiltersActive: boolean;
+    isInitialLoading: boolean;
+}) {
+    if (isInitialLoading && products.length === 0) {
+        return (
+            <div className="flex items-center justify-center py-20 text-slate-400">
+                <Loader2 size={20} className="animate-spin mr-2" />
+                Chargement…
+            </div>
+        );
+    }
+
     if (products.length === 0) {
-        // Cas 1 : aucune recherche n'a encore chargé de produits
-        if (!hasLoadedAny) {
+        if (!hasFiltersActive) {
             return (
                 <div className="flex flex-col items-center justify-center py-24 px-4">
                     <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-100/60 p-10 max-w-md text-center shadow-sm">
@@ -373,25 +231,19 @@ const ProductList = memo(function ProductList({ products, hasLoadedAny, hasFilte
                             <Search size={26} className="text-blue-500" />
                         </div>
                         <h3 className="text-base font-semibold text-slate-800 mb-1">Édition en masse</h3>
-                        <p className="text-sm text-slate-500 mb-4">Lance une recherche depuis la barre du haut (titre, tag, ou produits manquant un canal) pour afficher la liste à éditer.</p>
+                        <p className="text-sm text-slate-500 mb-4">Les 50 produits les plus récents sont chargés par défaut. Affine via les filtres.</p>
                         <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
                             <ArrowUpRight size={14} />
-                            <span>Sélectionne le mode dans le menu déroulant en haut</span>
+                            <span>Ajoute des filtres ci-dessus pour cibler ta sélection</span>
                         </div>
                     </div>
                 </div>
             );
         }
-        // Cas 2 : la recherche a chargé des produits, mais le filtre local n'en garde aucun
         return (
             <div className="flex flex-col items-center justify-center py-20 text-slate-500">
                 <Hash size={40} className="mb-3 text-slate-300" />
-                <p className="text-sm font-medium text-slate-700">Aucun produit ne correspond à ce tag</p>
-                {hasFilter && (
-                    <Button variant="link" size="sm" className="mt-2" onClick={onClearFilter}>
-                        Effacer le filtre
-                    </Button>
-                )}
+                <p className="text-sm font-medium text-slate-700">Aucun produit ne correspond aux filtres actifs</p>
             </div>
         );
     }
@@ -405,133 +257,213 @@ const ProductList = memo(function ProductList({ products, hasLoadedAny, hasFilte
     );
 });
 
-// ========================
-// Page principale
-// ========================
-export default function Page() {
-    const { productsSearch, setProductsSearch, shopifyBoutique, canauxBoutique, openDialog } = useShopifyStore();
+// ─── Page principale ────────────────────────────────────────────────────────
 
-    const { setSelectedProducts, selectedProducts, setFilteredProducts, filterByTag, setFilterByTag, dataUpdate, setDataUpdate } = useBulkStore();
+export default function Page() {
+    useBulkFiltersSync();
+
+    const { productsSearch, setProductsSearch, shopifyBoutique, canauxBoutique, openDialog } = useShopifyStore();
+    const { setSelectedProducts, selectedProducts, setFilteredProducts, dataUpdate, setDataUpdate, filters, sort } = useBulkStore();
 
     const [showStockModal, setShowStockModal] = useState(false);
-    const [priceMin, setPriceMin] = useState<string>("");
-    const [priceMax, setPriceMax] = useState<string>("");
+    const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [endCursor, setEndCursor] = useState<string | null>(null);
+    const [hasNextPage, setHasNextPage] = useState(false);
 
-    // Reset quand la boutique change
-    useUpdateEffect(() => {
+    // Identité de la requête en cours pour ignorer les réponses obsolètes (race conditions).
+    const requestIdRef = useRef(0);
+    // Sentinelle pour l'infinite scroll.
+    const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+    // Reset complet quand la boutique change.
+    useEffect(() => {
         setProductsSearch([]);
         setSelectedProducts([]);
-        setPriceMin("");
-        setPriceMax("");
-    }, [shopifyBoutique?.domain]);
+        setEndCursor(null);
+        setHasNextPage(false);
+    }, [shopifyBoutique?.domain, setProductsSearch, setSelectedProducts]);
 
-    // Produits filtrés (tag + prix)
-    const filteredProducts = useMemo<ProductGET[]>(() => {
-        const min = priceMin.trim() === "" ? null : parseFloat(priceMin);
-        const max = priceMax.trim() === "" ? null : parseFloat(priceMax);
-        const minActive = min !== null && Number.isFinite(min);
-        const maxActive = max !== null && Number.isFinite(max);
-        const tagQuery = filterByTag.trim().toLowerCase();
+    // ── Fetch ────────────────────────────────────────────────────────────────
 
-        return productsSearch.filter((p: ProductGET) => {
-            if (tagQuery && !p.tags.some((tag) => tag.toLowerCase().includes(tagQuery))) return false;
-            if (minActive || maxActive) {
-                const price = parseFloat(p.variants?.nodes?.[0]?.price ?? "");
-                if (!Number.isFinite(price)) return false;
-                if (minActive && price < (min as number)) return false;
-                if (maxActive && price > (max as number)) return false;
+    const doFetch = useCallback(
+        async (mode: "reset" | "append") => {
+            if (!shopifyBoutique?.domain) return;
+            const reqId = ++requestIdRef.current;
+
+            const query = buildShopifyQuery(filters);
+            const isMissingOnly = filters.missingChannels && !hasActiveFilters({ ...filters, missingChannels: false });
+
+            if (mode === "reset") {
+                setLoading(true);
+            } else {
+                setLoadingMore(true);
             }
-            return true;
-        });
-    }, [productsSearch, filterByTag, priceMin, priceMax]);
 
-    // Tags distincts présents dans les produits chargés (pour l'autocomplete local)
-    const tagCandidates = useMemo<string[]>(() => {
-        const set = new Set<string>();
-        for (const p of productsSearch) for (const t of p.tags || []) if (t) set.add(t);
-        return Array.from(set).sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }));
-    }, [productsSearch]);
+            try {
+                // Cas spécial : seul "missingChannels" actif → endpoint dédié, pas de pagination.
+                if (isMissingOnly && mode === "reset") {
+                    const data = await getDataBoutique(shopifyBoutique.domain, "productsMissingChannels");
+                    if (reqId !== requestIdRef.current) return;
+                    const list = (data?.response as ProductGET[]) || [];
+                    setProductsSearch(list);
+                    setEndCursor(null);
+                    setHasNextPage(false);
+                    return;
+                }
 
-    // Synchronise le store
-    useEffect(() => {
-        setFilteredProducts(filteredProducts);
-    }, [filteredProducts, setFilteredProducts]);
+                const res = await searchProductsAdvanced({
+                    domain: shopifyBoutique.domain,
+                    query,
+                    first: 50,
+                    after: mode === "append" ? endCursor ?? undefined : undefined,
+                    sortKey: sort.sortKey,
+                    reverse: sort.reverse,
+                });
 
-    // Sélectionner / Désélectionner tout
-    const onSelectAll = useCallback(() => {
-        if (selectedProducts.length === filteredProducts.length) {
-            setSelectedProducts([]);
-            setDataUpdate([]);
-            return;
-        }
+                if (reqId !== requestIdRef.current) return;
 
-        setSelectedProducts(filteredProducts);
+                if (res?.error) {
+                    toast.error(res.error);
+                    return;
+                }
+                const data = res?.response;
+                if (!data) return;
 
-        if (canauxBoutique?.length) {
-            const payload = buildDataUpdate(filteredProducts, canauxBoutique);
-            setDataUpdate(payload);
-        } else {
-            setDataUpdate([]);
-        }
-    }, [selectedProducts.length, filteredProducts, setSelectedProducts, setDataUpdate, canauxBoutique]);
-
-    // Produits filtrés dont le prix de la première variante vaut 0
-    const zeroPriceProducts = useMemo<ProductGET[]>(
-        () => filteredProducts.filter((p) => parseFloat(p.variants?.nodes?.[0]?.price ?? "") === 0),
-        [filteredProducts],
+                if (mode === "reset") {
+                    setProductsSearch(data.products);
+                } else {
+                    // Dédup par id (au cas où une page se recouvre).
+                    const seen = new Set(productsSearch.map((p) => p.id));
+                    const merged = [...productsSearch];
+                    for (const p of data.products) if (!seen.has(p.id)) merged.push(p);
+                    setProductsSearch(merged);
+                }
+                setEndCursor(data.pageInfo.endCursor);
+                setHasNextPage(data.pageInfo.hasNextPage);
+            } catch (err) {
+                console.error("Erreur fetch bulk:", err);
+                if (reqId === requestIdRef.current) toast.error("Erreur lors de la recherche");
+            } finally {
+                if (reqId === requestIdRef.current) {
+                    setLoading(false);
+                    setLoadingMore(false);
+                }
+            }
+        },
+        // productsSearch intentionnellement omis : on lit la valeur courante via la closure
+        // au moment de l'append, et on ne veut pas re-déclencher fetch quand on push des
+        // produits (ça créerait une boucle).
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [shopifyBoutique?.domain, filters, sort, endCursor],
     );
 
-    const onSelectZeroPrice = useCallback(() => {
-        if (zeroPriceProducts.length === 0) return;
-        setSelectedProducts(zeroPriceProducts);
-        if (canauxBoutique?.length) setDataUpdate(buildDataUpdate(zeroPriceProducts, canauxBoutique));
-        else setDataUpdate([]);
-    }, [zeroPriceProducts, setSelectedProducts, setDataUpdate, canauxBoutique]);
+    // Re-fetch (reset) quand les filtres ou le tri changent — debounced.
+    useEffect(() => {
+        if (!shopifyBoutique?.domain) return;
+        const t = setTimeout(() => {
+            doFetch("reset");
+        }, 350);
+        return () => clearTimeout(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [shopifyBoutique?.domain, filters, sort]);
 
-    // Recalcule dataUpdate quand la sélection change
+    // ── Filtre client fin (variante 0, missing channels combiné) ─────────────
+
+    const displayedProducts = useMemo<ProductGET[]>(() => {
+        return applyClientFilters(productsSearch, {
+            priceMin: filters.priceMin,
+            priceMax: filters.priceMax,
+            missingChannels: filters.missingChannels,
+            canauxCount: canauxBoutique.length,
+        });
+    }, [productsSearch, filters.priceMin, filters.priceMax, filters.missingChannels, canauxBoutique.length]);
+
+    useEffect(() => {
+        setFilteredProducts(displayedProducts);
+    }, [displayedProducts, setFilteredProducts]);
+
+    // Nettoie la sélection si un produit sélectionné disparaît du tableau filtré.
+    useEffect(() => {
+        if (selectedProducts.length === 0) return;
+        const visibleIds = new Set(displayedProducts.map((p) => p.id));
+        const stillVisible = selectedProducts.filter((p) => visibleIds.has(p.id));
+        if (stillVisible.length !== selectedProducts.length) {
+            setSelectedProducts(stillVisible);
+        }
+    }, [displayedProducts, selectedProducts, setSelectedProducts]);
+
+    // Recalcule dataUpdate quand la sélection change.
     useEffect(() => {
         if (!canauxBoutique?.length) return;
         if (!selectedProducts.length) {
             setDataUpdate([]);
             return;
         }
-        const payload = buildDataUpdate(selectedProducts, canauxBoutique);
-        setDataUpdate(payload);
+        setDataUpdate(buildDataUpdate(selectedProducts, canauxBoutique));
     }, [selectedProducts, canauxBoutique, setDataUpdate]);
 
-    // Callback après mise à jour du stock
-    const handleStockUpdateSuccess = useCallback(() => {
-        // Optionnel: rafraîchir les produits si nécessaire
-    }, []);
+    // ── Infinite scroll ──────────────────────────────────────────────────────
+
+    useEffect(() => {
+        const node = sentinelRef.current;
+        if (!node) return;
+        const obs = new IntersectionObserver(
+            (entries) => {
+                if (entries.some((e) => e.isIntersecting) && hasNextPage && !loading && !loadingMore) {
+                    doFetch("append");
+                }
+            },
+            { rootMargin: "300px 0px" },
+        );
+        obs.observe(node);
+        return () => obs.disconnect();
+    }, [hasNextPage, loading, loadingMore, doFetch]);
+
+    // ── Render ───────────────────────────────────────────────────────────────
+
+    const onRefresh = useCallback(() => {
+        doFetch("reset");
+    }, [doFetch]);
+
+    const allSelected = selectedProducts.length === displayedProducts.length && displayedProducts.length > 0;
+    const onToggleSelectAll = useCallback(() => {
+        if (allSelected) {
+            setSelectedProducts([]);
+            setDataUpdate([]);
+        } else {
+            setSelectedProducts(displayedProducts);
+            if (canauxBoutique.length) setDataUpdate(buildDataUpdate(displayedProducts, canauxBoutique));
+        }
+    }, [allSelected, displayedProducts, canauxBoutique, setSelectedProducts, setDataUpdate]);
 
     return (
         <div className="relative min-h-screen bg-gray-50">
-            {/* Header */}
-            <BulkHeader
-                total={filteredProducts.length}
+            <BulkFilterBar
+                totalCount={displayedProducts.length}
                 selectedCount={selectedProducts.length}
-                filterByTag={filterByTag}
-                onFilterChange={setFilterByTag}
-                onToggleSelectAll={onSelectAll}
-                tagCandidates={tagCandidates}
-                zeroPriceCount={zeroPriceProducts.length}
-                onSelectZeroPrice={onSelectZeroPrice}
-                priceMin={priceMin}
-                priceMax={priceMax}
-                onPriceMinChange={setPriceMin}
-                onPriceMaxChange={setPriceMax}
-                devise={shopifyBoutique?.devise}
+                allSelected={allSelected}
+                onToggleSelectAll={onToggleSelectAll}
+                loading={loading}
+                onRefresh={onRefresh}
             />
 
-            {/* Liste des produits */}
-            <ProductList
-                products={filteredProducts}
-                hasLoadedAny={productsSearch.length > 0}
-                hasFilter={!!filterByTag}
-                onClearFilter={() => setFilterByTag("")}
-            />
+            <ProductList products={displayedProducts} hasFiltersActive={hasActiveFilters(filters)} isInitialLoading={loading && productsSearch.length === 0} />
 
-            {/* Barre d'actions flottante */}
+            {/* Sentinel pour l'infinite scroll */}
+            {hasNextPage && (
+                <div ref={sentinelRef} className="flex items-center justify-center py-6 text-slate-400 text-sm">
+                    {loadingMore ? (
+                        <>
+                            <Loader2 size={16} className="animate-spin mr-2" />
+                            Chargement de la suite…
+                        </>
+                    ) : (
+                        <span className="opacity-50">Faire défiler pour charger plus</span>
+                    )}
+                </div>
+            )}
+
             <BulkActionsBar
                 selectedCount={selectedProducts.length}
                 onOpenActions={() => openDialog(7)}
@@ -539,14 +471,16 @@ export default function Page() {
                 isDisabled={!dataUpdate.length}
             />
 
-            {/* Modal de modification du stock */}
             <StockModal
                 isOpen={showStockModal}
                 onClose={() => setShowStockModal(false)}
                 selectedProducts={selectedProducts}
                 domain={shopifyBoutique?.domain || ""}
-                onSuccess={handleStockUpdateSuccess}
+                onSuccess={() => {
+                    /* refresh manuel via le bouton */
+                }}
             />
+
         </div>
     );
 }
