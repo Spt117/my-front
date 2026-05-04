@@ -98,6 +98,27 @@ export async function updateMediaAlt(data: { domain: string; productGid: string;
     return response;
 }
 
+export interface UrlRedirectInput {
+    path: string;
+    target: string;
+}
+
+export interface UrlRedirectResult {
+    path: string;
+    success: boolean;
+    redirectId?: string;
+    error?: string;
+}
+
+// Crée des redirections 301 natives Shopify avant suppression de produits.
+// Renvoie un résultat par redirection : permet au caller de ne supprimer que
+// les produits dont la redirection a réussi.
+export async function createUrlRedirects(domain: string, redirects: UrlRedirectInput[]): Promise<ResponseServer<{ results: UrlRedirectResult[] }> | null> {
+    const url = `${pokeUriServer}/shopify/create-url-redirects`;
+    const response = await postServer(url, { domain, redirects });
+    return response;
+}
+
 export async function addImage(data: { domain: string; productId: string; image: { url: string; name: string; altText: string } }): Promise<ResponseServer<any> | null> {
     const url = `${pokeUriServer}/shopify/add-image`;
     const response = await postServer(url, data);

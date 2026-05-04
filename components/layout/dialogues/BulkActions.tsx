@@ -5,8 +5,11 @@ import TagAutocomplete from "@/app/shopify/[shopId]/bulk/TagAutocomplete";
 import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
 import { updateProduct } from "@/app/shopify/[shopId]/products/[productId]/serverAction";
 import Selecteur from "@/components/selecteur";
+import { createUrlRedirects } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { BulkAction } from "@/components/shopify/typesShopify";
+import RedirectBuilder, { RedirectTarget } from "./RedirectBuilder";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
@@ -49,6 +52,7 @@ export default function BulkActions() {
     const [serverSuggestions, setServerSuggestions] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [deleteAck, setDeleteAck] = useState<boolean>(false);
+    const [redirectTarget, setRedirectTarget] = useState<RedirectTarget | null>(null);
 
     const productIds = useMemo(() => selectedProducts.map((p) => p.id), [selectedProducts]);
     const collectionsOptions = useMemo(() => collections.filter((c) => !c.ruleSet).map((c) => ({ label: c.title, value: c.id })), [collections]);
@@ -65,6 +69,7 @@ export default function BulkActions() {
         setTag("");
         setServerSuggestions([]);
         setDeleteAck(false);
+        setRedirectTarget(null);
     }, [action]);
 
     // Listener socket pour les suggestions server-side (add_tag)
@@ -101,7 +106,7 @@ export default function BulkActions() {
         if (action === "add_to_collection") return !!collectionId;
         if (action === "add_tag" || action === "remove_tag") return !!tag.trim();
         if (action === "archive") return productIds.length > 0;
-        if (action === "delete") return productIds.length > 0 && deleteAck;
+        if (action === "delete") return productIds.length > 0 && deleteAck && redirectTarget !== null;
         return false;
     };
 
@@ -142,15 +147,9 @@ export default function BulkActions() {
                     closeDialog();
                     break;
                 }
-                case "archive":
-                case "delete": {
-                    const isDelete = action === "delete";
+                case "archive": {
                     const results = await Promise.allSettled(
-                        productIds.map((id) =>
-                            isDelete
-                                ? updateProduct(shopifyBoutique.domain as string, id, "Delete", " ")
-                                : updateProduct(shopifyBoutique.domain as string, id, "Statut", "ARCHIVED"),
-                        ),
+                        productIds.map((id) => updateProduct(shopifyBoutique.domain as string, id, "Statut", "ARCHIVED")),
                     );
                     const succeeded: string[] = [];
                     const failed: string[] = [];
@@ -160,25 +159,70 @@ export default function BulkActions() {
                         else failed.push(id);
                     });
                     if (succeeded.length > 0) {
-                        toast.success(
-                            isDelete
-                                ? `${succeeded.length} produit${succeeded.length > 1 ? "s supprimés" : " supprimé"}`
-                                : `${succeeded.length} produit${succeeded.length > 1 ? "s archivés" : " archivé"}`,
-                        );
-                        if (isDelete) {
-                            const succeededSet = new Set(succeeded);
-                            setProductsSearch(productsSearch.filter((p) => !succeededSet.has(p.id)));
-                            setSelectedProducts(selectedProducts.filter((p) => !succeededSet.has(p.id)));
-                        }
+                        toast.success(`${succeeded.length} produit${succeeded.length > 1 ? "s archivés" : " archivé"}`);
                     }
                     if (failed.length > 0) {
-                        toast.error(
-                            isDelete
-                                ? `Échec de la suppression de ${failed.length} produit${failed.length > 1 ? "s" : ""}`
-                                : `Échec de l'archivage de ${failed.length} produit${failed.length > 1 ? "s" : ""}`,
-                        );
+                        toast.error(`Échec de l'archivage de ${failed.length} produit${failed.length > 1 ? "s" : ""}`);
                     }
                     closeDialog();
+                    router.refresh();
+                    break;
+                }
+                case "delete": {
+                    if (!redirectTarget) {
+                        toast.error("Choisis une cible de redirection");
+                        return;
+                    }
+                    // 1) Créer toutes les redirections en une fois.
+                    const redirects = selectedProducts.map((p) => ({ path: `/products/${p.handle}`, target: redirectTarget.target }));
+                    const redirRes = await createUrlRedirects(shopifyBoutique.domain, redirects);
+                    if (redirRes?.error) {
+                        toast.error(`Redirections : ${redirRes.error}`);
+                        return;
+                    }
+                    const results = redirRes?.response?.results ?? [];
+                    const successByPath = new Map<string, { success: boolean; error?: string }>();
+                    for (const r of results) successByPath.set(r.path, r);
+
+                    // 2) Tri : ne supprimer QUE les produits dont la redirection a réussi.
+                    const okProducts = selectedProducts.filter((p) => successByPath.get(`/products/${p.handle}`)?.success);
+                    const failedRedirects = selectedProducts.filter((p) => !successByPath.get(`/products/${p.handle}`)?.success);
+
+                    if (failedRedirects.length > 0) {
+                        const detail = failedRedirects
+                            .slice(0, 3)
+                            .map((p) => `${p.title} → ${successByPath.get(`/products/${p.handle}`)?.error || "raison inconnue"}`)
+                            .join(" | ");
+                        const more = failedRedirects.length > 3 ? ` (+${failedRedirects.length - 3} autres)` : "";
+                        toast.error(`Redirection refusée pour ${failedRedirects.length} produit(s) : ${detail}${more}`);
+                    }
+
+                    if (okProducts.length === 0) return; // Rien à supprimer.
+
+                    // 3) Suppression des produits dont la redirection a réussi.
+                    const okIds = okProducts.map((p) => p.id);
+                    const deleteResults = await Promise.allSettled(
+                        okIds.map((id) => updateProduct(shopifyBoutique.domain as string, id, "Delete", " ")),
+                    );
+                    const succeeded: string[] = [];
+                    const failed: string[] = [];
+                    deleteResults.forEach((r, i) => {
+                        const id = okIds[i];
+                        if (r.status === "fulfilled" && !r.value?.error) succeeded.push(id);
+                        else failed.push(id);
+                    });
+                    if (succeeded.length > 0) {
+                        toast.success(`${succeeded.length} produit${succeeded.length > 1 ? "s supprimés" : " supprimé"} et redirigé${succeeded.length > 1 ? "s" : ""}`);
+                        const succeededSet = new Set(succeeded);
+                        setProductsSearch(productsSearch.filter((p) => !succeededSet.has(p.id)));
+                        setSelectedProducts(selectedProducts.filter((p) => !succeededSet.has(p.id)));
+                    }
+                    if (failed.length > 0) {
+                        toast.error(`${failed.length} suppression(s) échouée(s) — la redirection a déjà été créée côté Shopify`);
+                    }
+                    if (failedRedirects.length === 0 && failed.length === 0) {
+                        closeDialog();
+                    }
                     router.refresh();
                     break;
                 }
@@ -284,11 +328,30 @@ export default function BulkActions() {
                             <div className="flex items-start gap-3 text-sm">
                                 <Trash2 size={18} className="text-red-600 mt-0.5 flex-shrink-0" />
                                 <div className="text-slate-700">
-                                    Vous êtes sur le point de supprimer définitivement <strong>{selectedProducts.length}</strong> produit{selectedProducts.length > 1 ? "s" : ""}. Cette action est{" "}
-                                    <strong className="text-red-700">irréversible</strong> côté Shopify.
+                                    Suppression définitive de <strong>{selectedProducts.length}</strong> produit{selectedProducts.length > 1 ? "s" : ""}. Une redirection 301 sera créée pour chacun
+                                    <strong> avant</strong> la suppression. Si Shopify la refuse, le produit n&apos;est pas supprimé.
                                 </div>
                             </div>
-                            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none">
+
+                            <div className="rounded-md border border-slate-200 bg-white p-2 max-h-32 overflow-y-auto">
+                                <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-1">URLs sources</div>
+                                <ul className="space-y-0.5">
+                                    {selectedProducts.slice(0, 50).map((p) => (
+                                        <li key={p.id} className="flex items-center gap-2 text-[11px]">
+                                            <span className="font-mono text-slate-700 truncate flex-1">/products/{p.handle}</span>
+                                            <ArrowRight size={10} className="text-slate-300 flex-shrink-0" />
+                                            <span className="font-mono text-slate-400 truncate max-w-[40%]">{redirectTarget?.target || "(à définir)"}</span>
+                                        </li>
+                                    ))}
+                                    {selectedProducts.length > 50 && (
+                                        <li className="text-[11px] text-slate-400 italic pt-1">+ {selectedProducts.length - 50} autres…</li>
+                                    )}
+                                </ul>
+                            </div>
+
+                            <RedirectBuilder onChange={setRedirectTarget} />
+
+                            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none pt-1">
                                 <Checkbox checked={deleteAck} onCheckedChange={(v) => setDeleteAck(v === true)} />
                                 Je comprends que la suppression est définitive.
                             </label>
