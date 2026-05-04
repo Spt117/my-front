@@ -2,10 +2,8 @@
 import { searchProductsShopify } from "@/app/shopify/[shopId]/collections/server";
 import useCollectionStore from "@/app/shopify/[shopId]/collections/storeCollections";
 import useShopifyStore from "@/components/shopify/shopifyStore";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Home, Link2, Package, Search, Tag } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -50,10 +48,12 @@ export default function RedirectBuilder({ onChange }: Props) {
     const { collections } = useCollectionStore();
     const [mode, setMode] = useState<RedirectMode>("collection");
 
-    // Collection
+    // Collection (recherche locale dans le cache déjà chargé du store)
+    const [collectionQuery, setCollectionQuery] = useState("");
     const [collectionHandle, setCollectionHandle] = useState<string>("");
+    const [collectionTitle, setCollectionTitle] = useState<string>("");
 
-    // Produit (recherche)
+    // Produit (recherche serveur debounced)
     const [productQuery, setProductQuery] = useState("");
     const [productResults, setProductResults] = useState<{ id: string; title: string; handle: string; featuredImage?: { url: string } | null }[]>([]);
     const [productLoading, setProductLoading] = useState(false);
@@ -67,6 +67,14 @@ export default function RedirectBuilder({ onChange }: Props) {
         () => [...collections].sort((a, b) => a.title.localeCompare(b.title, "fr", { sensitivity: "base" })),
         [collections],
     );
+
+    const filteredCollections = useMemo(() => {
+        const q = collectionQuery.trim().toLowerCase();
+        if (!q) return collectionsOptions.slice(0, 12);
+        return collectionsOptions
+            .filter((c) => c.title.toLowerCase().includes(q) || c.handle.toLowerCase().includes(q))
+            .slice(0, 12);
+    }, [collectionsOptions, collectionQuery]);
 
     // Recherche produit (debounced)
     useEffect(() => {
@@ -93,15 +101,14 @@ export default function RedirectBuilder({ onChange }: Props) {
         let target: RedirectTarget | null = null;
         if (mode === "home") target = buildTarget("home", "");
         else if (mode === "collection") {
-            const c = collectionsOptions.find((x) => x.handle === collectionHandle);
-            target = buildTarget("collection", collectionHandle, { collectionTitle: c?.title });
+            target = buildTarget("collection", collectionHandle, { collectionTitle });
         } else if (mode === "product") {
             target = buildTarget("product", productHandle, { productTitle });
         } else if (mode === "custom") {
             target = buildTarget("custom", customUrl);
         }
         onChange(target);
-    }, [mode, collectionHandle, productHandle, productTitle, customUrl, collectionsOptions, onChange]);
+    }, [mode, collectionHandle, collectionTitle, productHandle, productTitle, customUrl, onChange]);
 
     return (
         <div className="space-y-3">
@@ -135,30 +142,56 @@ export default function RedirectBuilder({ onChange }: Props) {
             )}
 
             {mode === "collection" && (
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 w-full">
                     <Label htmlFor="redirect-collection">Collection cible</Label>
-                    <Select value={collectionHandle} onValueChange={setCollectionHandle}>
-                        <SelectTrigger id="redirect-collection">
-                            <SelectValue placeholder="Choisir une collection…" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {collectionsOptions.length === 0 && (
-                                <div className="px-2 py-1.5 text-sm text-slate-400 italic">Aucune collection disponible</div>
-                            )}
-                            {collectionsOptions.map((c) => (
-                                <SelectItem key={c.id} value={c.handle}>
-                                    {c.title}
-                                </SelectItem>
+                    <div className="relative w-full">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                        <Input
+                            id="redirect-collection"
+                            value={collectionQuery}
+                            onChange={(e) => {
+                                setCollectionQuery(e.target.value);
+                                setCollectionHandle("");
+                                setCollectionTitle("");
+                            }}
+                            placeholder="Rechercher une collection…"
+                            className="pl-8 w-full"
+                        />
+                    </div>
+                    {collectionHandle && (
+                        <div className="text-xs text-slate-600 bg-emerald-50 border border-emerald-200 rounded-md px-2 py-1">
+                            Sélectionné : <strong>{collectionTitle}</strong>{" "}
+                            <span className="font-mono text-slate-500">/collections/{collectionHandle}</span>
+                        </div>
+                    )}
+                    {!collectionHandle && filteredCollections.length > 0 && (
+                        <ul className="border border-slate-200 rounded-md max-h-48 overflow-y-auto divide-y divide-slate-100 w-full">
+                            {filteredCollections.map((c) => (
+                                <li
+                                    key={c.id}
+                                    onClick={() => {
+                                        setCollectionHandle(c.handle);
+                                        setCollectionTitle(c.title);
+                                        setCollectionQuery(c.title);
+                                    }}
+                                    className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-slate-50 cursor-pointer"
+                                >
+                                    <span className="truncate flex-1">{c.title}</span>
+                                    <span className="text-[11px] text-slate-400 font-mono truncate max-w-[40%]">{c.handle}</span>
+                                </li>
                             ))}
-                        </SelectContent>
-                    </Select>
+                        </ul>
+                    )}
+                    {collectionsOptions.length === 0 && (
+                        <p className="text-xs text-slate-400 italic">Aucune collection chargée pour cette boutique.</p>
+                    )}
                 </div>
             )}
 
             {mode === "product" && (
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 w-full">
                     <Label htmlFor="redirect-product">Produit cible</Label>
-                    <div className="relative">
+                    <div className="relative w-full">
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
                         <Input
                             id="redirect-product"
@@ -169,7 +202,7 @@ export default function RedirectBuilder({ onChange }: Props) {
                                 setProductTitle("");
                             }}
                             placeholder="Rechercher par titre ou SKU…"
-                            className="pl-8"
+                            className="pl-8 w-full"
                         />
                     </div>
                     {productHandle && (
@@ -179,7 +212,7 @@ export default function RedirectBuilder({ onChange }: Props) {
                     )}
                     {productLoading && <p className="text-xs text-slate-400">Recherche…</p>}
                     {!productHandle && productResults.length > 0 && (
-                        <ul className="border border-slate-200 rounded-md max-h-48 overflow-y-auto divide-y divide-slate-100">
+                        <ul className="border border-slate-200 rounded-md max-h-48 overflow-y-auto divide-y divide-slate-100 w-full">
                             {productResults.map((p) => (
                                 <li
                                     key={p.id}
@@ -201,13 +234,14 @@ export default function RedirectBuilder({ onChange }: Props) {
             )}
 
             {mode === "custom" && (
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 w-full">
                     <Label htmlFor="redirect-custom">URL ou chemin relatif</Label>
                     <Input
                         id="redirect-custom"
                         value={customUrl}
                         onChange={(e) => setCustomUrl(e.target.value)}
                         placeholder="/collections/foo  ou  https://exemple.com"
+                        className="w-full"
                     />
                     <p className="text-[11px] text-slate-500">
                         Chemin relatif (ex: <code>/collections/foo</code>) ou URL absolue (ex: <code>https://exemple.com</code>).
