@@ -17,11 +17,23 @@ export async function createCollection(title: string, domain: string) {
     return response;
 }
 
+export interface CollectionRuleInput {
+    column: "TAG" | "TITLE" | "TYPE" | "VENDOR" | "VARIANT_PRICE" | "VARIANT_TITLE" | "VARIANT_INVENTORY" | "VARIANT_WEIGHT" | "PRODUCT_METAFIELD_DEFINITION" | "VARIANT_METAFIELD_DEFINITION";
+    relation: "EQUALS" | "NOT_EQUALS" | "GREATER_THAN" | "LESS_THAN" | "STARTS_WITH" | "ENDS_WITH" | "CONTAINS" | "NOT_CONTAINS" | "IS_SET" | "IS_NOT_SET";
+    condition: string;
+}
+
+export interface CollectionRuleSetInput {
+    appliedDisjunctively: boolean;
+    rules: CollectionRuleInput[];
+}
+
 export interface CreateExtensionInput {
     title: string;
     handle: string;
     descriptionHtml?: string;
     seo?: { title?: string; description?: string };
+    ruleSet?: CollectionRuleSetInput;
 }
 
 export async function createExtensionCollection(domain: string, input: CreateExtensionInput, publicationGids: string[]) {
