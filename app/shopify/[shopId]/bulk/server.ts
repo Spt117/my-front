@@ -22,3 +22,30 @@ export async function actionBulk(data: BulkAction): Promise<ResponseServer<any>>
     const response = await postServer(url, data);
     return response;
 }
+
+export interface SearchProductsAdvancedPayload {
+    domain: string;
+    query: string;
+    first?: number;
+    after?: string;
+    sortKey?: "TITLE" | "CREATED_AT" | "UPDATED_AT" | "VENDOR" | "PRODUCT_TYPE";
+    reverse?: boolean;
+}
+
+export interface SearchProductsAdvancedResult {
+    products: ProductGET[];
+    pageInfo: {
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+        startCursor: string | null;
+        endCursor: string | null;
+    };
+}
+
+// Wrapper du nouvel endpoint pokemon /shopify/search-products-advanced.
+// La query Shopify est composée côté client (cf. bulkQuery.ts/buildShopifyQuery).
+export async function searchProductsAdvanced(payload: SearchProductsAdvancedPayload): Promise<IResponseFetch<SearchProductsAdvancedResult>> {
+    const url = `${pokeUriServer}/shopify/search-products-advanced`;
+    const response = await postServer(url, payload);
+    return response;
+}
