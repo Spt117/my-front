@@ -49,6 +49,8 @@ export async function createBeybladeOnShop(params: {
     shop: string;
     price: string;
     tags: string[];
+    affiliate?: boolean;
+    asin?: string;
 }): Promise<{ success: boolean; error?: string }> {
     try {
         const result = await postServer(`${pokeUriServer}/shopify/create-beyblade-product`, params);

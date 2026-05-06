@@ -39,10 +39,29 @@ function marketplaceDevise(marketplace: string, boutiques: IShopifyBase[]): stri
     return boutique?.devise ?? "€";
 }
 
-function getDefaultTags(pub: ShopifyPublicationWithContent): string[] {
+// Traduction des 4 types de combat Beyblade par langue de boutique
+type BeybladeType = "Attack" | "Defense" | "Stamina" | "Balance";
+const TYPE_TAG_BY_LANGUE: Record<string, Record<BeybladeType, string>> = {
+    français: { Attack: "Type Attaque", Defense: "Type Défense", Stamina: "Type Endurance", Balance: "Type Équilibre" },
+    allemand: { Attack: "Angriff", Defense: "Verteidigung", Stamina: "Ausdauer", Balance: "Balance" },
+    anglais: { Attack: "Attack", Defense: "Defense", Stamina: "Stamina", Balance: "Balance" },
+};
+
+function shopToLangue(shop: string, boutiques: IShopifyBase[]): string | null {
+    return boutiques.find((b) => b.domain === shop)?.langue ?? null;
+}
+
+function translateBeybladeType(rawType: string | null | undefined, langue: string | null): string | null {
+    if (!rawType) return null;
+    const map = langue ? TYPE_TAG_BY_LANGUE[langue] : null;
+    return map?.[rawType as BeybladeType] ?? rawType;
+}
+
+function getDefaultTags(pub: ShopifyPublicationWithContent, langue: string | null): string[] {
     const tags = ["Xtreme"];
     if (pub.beybladePackType) tags.push(pub.beybladePackType);
-    if (pub.beybladeType) tags.push(pub.beybladeType);
+    const translatedType = translateBeybladeType(pub.beybladeType, langue);
+    if (translatedType) tags.push(translatedType);
     return tags;
 }
 
@@ -101,14 +120,7 @@ export function ShopifyPublicationsList() {
 
     useEffect(() => {
         getBeybladePublications()
-            .then((pubs) => {
-                setPublications(pubs);
-                const initialTags: Record<string, string[]> = {};
-                pubs.forEach((p) => {
-                    initialTags[p.id] = getDefaultTags(p);
-                });
-                setTags(initialTags);
-            })
+            .then((pubs) => setPublications(pubs))
             .finally(() => setLoading(false));
     }, []);
 
@@ -157,12 +169,19 @@ export function ShopifyPublicationsList() {
             return next;
         });
 
+        const market = shopToMarketplace(pub.shop, boutiques);
+        const matchedAsin = market ? pub.supabaseAsins.find((a) => a.marketplace === market) ?? null : null;
+        const affiliate = affiliations[pub.id] ?? false;
+        const langue = shopToLangue(pub.shop, boutiques);
+
         const result = await createBeybladeOnShop({
             publicationId: pub.id,
             sku: pub.sku,
             shop: pub.shop,
             price,
-            tags: tags[pub.id] ?? getDefaultTags(pub),
+            tags: tags[pub.id] ?? getDefaultTags(pub, langue),
+            affiliate,
+            asin: matchedAsin?.asin ?? "",
         });
 
         setCreateResults((prev) => ({ ...prev, [pub.id]: result }));
@@ -325,7 +344,7 @@ export function ShopifyPublicationsList() {
                                                     />
                                                     <span className="text-slate-500 text-xs">€</span>
                                                 </div>
-                                                <TagsEditor tags={tags[pub.id] ?? getDefaultTags(pub)} onChange={(t) => setTags((prev) => ({ ...prev, [pub.id]: t }))} />
+                                                <TagsEditor tags={tags[pub.id] ?? getDefaultTags(pub, shopToLangue(pub.shop, boutiques))} onChange={(t) => setTags((prev) => ({ ...prev, [pub.id]: t }))} />
                                                 <button
                                                     onClick={() => handleCreate(pub)}
                                                     disabled={isCreating || !prices[pub.id]?.trim()}
