@@ -9,7 +9,7 @@ import * as Flags from "country-flag-icons/react/3x2";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
 import frLocale from "i18n-iso-countries/langs/fr.json";
-import { Archive, ArrowUpRight, CalendarClock, ChevronDown, ChevronUp, ExternalLink, Mail, MapPin, Package, ShoppingBag } from "lucide-react";
+import { AlertTriangle, Archive, ArrowUpRight, Ban, CalendarClock, ChevronDown, ChevronUp, ExternalLink, Mail, MapPin, Package, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -69,11 +69,36 @@ export default function OrderCompact({ order, hiddenPreorderCount = 0 }: OrderCo
     const pathname = usePathname();
     const isClientPage = pathname.includes("/clients/");
 
+    // États spéciaux : annulation (cancelledAt) et litige actif (NEEDS_RESPONSE / UNDER_REVIEW).
+    const isCancelled = !!order.cancelledAt;
+    const activeDispute = (order.disputes ?? []).find((d) => d.status === "NEEDS_RESPONSE" || d.status === "UNDER_REVIEW");
+    const cancelReasonLabel: Record<string, string> = {
+        CUSTOMER: "Client",
+        DECLINED: "Paiement refusé",
+        FRAUD: "Fraude",
+        INVENTORY: "Stock",
+        OTHER: "Autre",
+        STAFF: "Staff",
+    };
+
+    const cardRing = isCancelled
+        ? "ring-2 ring-red-300"
+        : activeDispute
+        ? "ring-2 ring-orange-400"
+        : "ring-1 ring-black/5";
+    const cardOpacity = isCancelled ? "opacity-70 grayscale-[0.4]" : "";
+
     if (!boutique) return null;
 
     return (
         <div className="container mx-auto px-4 py-0.5">
-            <Card className="overflow-hidden border-0 shadow-sm bg-white/60 backdrop-blur-xl ring-1 ring-black/5 hover:bg-white/80 transition-all duration-300">
+            <Card className={`relative overflow-hidden border-0 shadow-sm bg-white/60 backdrop-blur-xl hover:bg-white/80 transition-all duration-300 ${cardRing} ${cardOpacity}`}>
+                {/* Bandeau diagonal "ANNULÉE" en coin de carte (overlay décoratif sans bloquer les clics). */}
+                {isCancelled && (
+                    <div className="pointer-events-none absolute -top-2 -right-12 rotate-45 bg-red-600 text-white text-[10px] font-bold tracking-widest uppercase px-12 py-1 shadow-md z-10">
+                        Annulée
+                    </div>
+                )}
                 <div className="px-4 py-3">
                     {/* Header: Boutique & Order Info */}
                     <div className="flex items-center justify-between gap-4 overflow-hidden mb-3 pb-2 border-b border-gray-100">
@@ -100,6 +125,25 @@ export default function OrderCompact({ order, hiddenPreorderCount = 0 }: OrderCo
                                     {order.lineItems.edges.some(({ node }) => node.variant?.product.precommande?.value) && (
                                         <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-blue-100 border border-blue-200 uppercase tracking-wider">
                                             Précommande
+                                        </span>
+                                    )}
+                                    {isCancelled && (
+                                        <span
+                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-red-600 text-white border border-red-700 uppercase tracking-wider"
+                                            title={`Annulée le ${new Date(order.cancelledAt as string).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}${order.cancelReason ? ` (${cancelReasonLabel[order.cancelReason] ?? order.cancelReason})` : ""}`}
+                                        >
+                                            <Ban size={10} />
+                                            Annulée
+                                            {order.cancelReason && <span className="font-normal opacity-90">· {cancelReasonLabel[order.cancelReason] ?? order.cancelReason}</span>}
+                                        </span>
+                                    )}
+                                    {activeDispute && (
+                                        <span
+                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-orange-500 text-white border border-orange-600 uppercase tracking-wider animate-pulse"
+                                            title={`Litige ${activeDispute.initiatedAs === "CHARGEBACK" ? "(rétrofacturation)" : "(enquête)"} — ${activeDispute.status === "NEEDS_RESPONSE" ? "Réponse requise" : "En cours d'examen"}`}
+                                        >
+                                            <AlertTriangle size={10} />
+                                            Litige {activeDispute.status === "NEEDS_RESPONSE" ? "— réponse requise" : "en cours"}
                                         </span>
                                     )}
                                     {hiddenPreorderCount > 0 && (

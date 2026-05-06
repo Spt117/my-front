@@ -85,6 +85,16 @@ interface LineItems {
     edges: LineItemEdge[];
 }
 
+export type OrderCancelReason = "CUSTOMER" | "DECLINED" | "FRAUD" | "INVENTORY" | "OTHER" | "STAFF";
+export type DisputeStatus = "ACCEPTED" | "LOST" | "NEEDS_RESPONSE" | "UNDER_REVIEW" | "WON" | "CHARGE_REFUNDED";
+export type DisputeInitiatedAs = "CHARGEBACK" | "INQUIRY";
+
+export interface OrderDispute {
+    id: string;
+    status: DisputeStatus;
+    initiatedAs: DisputeInitiatedAs;
+}
+
 // Type principal pour la commande
 export interface ShopifyOrder {
     id: string;
@@ -92,6 +102,9 @@ export interface ShopifyOrder {
     name: string;
     note: string | null;
     createdAt: string; // Format ISO 8601
+    cancelledAt: string | null;
+    cancelReason: OrderCancelReason | null;
+    disputes: OrderDispute[];
     displayFulfillmentStatus: "FULFILLED" | "UNFULFILLED" | "PARTIALLY_FULFILLED" | "RESTOCKED" | "PENDING_FULFILLMENT" | "OPEN";
     displayFinancialStatus: "PAID" | "PENDING" | "AUTHORIZED" | "PARTIALLY_PAID" | "PARTIALLY_REFUNDED" | "REFUNDED" | "VOIDED" | "EXPIRED";
     totalPriceSet: TotalPriceSet;
@@ -125,6 +138,9 @@ export interface GroupedShopifyOrder {
     name: string[];
     note: string | null;
     createdAt: string;
+    cancelledAt: string | null;
+    cancelReason: OrderCancelReason | null;
+    disputes: OrderDispute[];
     displayFulfillmentStatus: "FULFILLED" | "UNFULFILLED" | "PARTIALLY_FULFILLED" | "RESTOCKED" | "PENDING_FULFILLMENT" | "OPEN";
     displayFinancialStatus: "PAID" | "PENDING" | "AUTHORIZED" | "PARTIALLY_PAID" | "PARTIALLY_REFUNDED" | "REFUNDED" | "VOIDED" | "EXPIRED";
     totalPriceSet: TotalPriceSet;
