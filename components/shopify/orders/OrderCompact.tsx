@@ -69,9 +69,8 @@ export default function OrderCompact({ order, hiddenPreorderCount = 0 }: OrderCo
     const pathname = usePathname();
     const isClientPage = pathname.includes("/clients/");
 
-    // États spéciaux : annulation (cancelledAt) et litige actif (NEEDS_RESPONSE / UNDER_REVIEW).
+    // États spéciaux : annulation (cancelledAt) et litiges (tous statuts).
     const isCancelled = !!order.cancelledAt;
-    const activeDispute = (order.disputes ?? []).find((d) => d.status === "NEEDS_RESPONSE" || d.status === "UNDER_REVIEW");
     const cancelReasonLabel: Record<string, string> = {
         CUSTOMER: "Client",
         DECLINED: "Paiement refusé",
@@ -81,10 +80,45 @@ export default function OrderCompact({ order, hiddenPreorderCount = 0 }: OrderCo
         STAFF: "Staff",
     };
 
+    // Tonalité du litige selon le statut. On affiche toujours un dispute s'il
+    // existe — un LOST est CRITIQUE (argent perdu) et un WON reste informatif.
+    type DisputeTone = "active" | "danger" | "success" | "neutral";
+    const TONE_BY_STATUS: Record<string, { tone: DisputeTone; label: string }> = {
+        NEEDS_RESPONSE: { tone: "active", label: "Litige — réponse requise" },
+        UNDER_REVIEW: { tone: "active", label: "Litige — en cours d'examen" },
+        LOST: { tone: "danger", label: "Litige perdu" },
+        CHARGE_REFUNDED: { tone: "danger", label: "Remboursé suite litige" },
+        WON: { tone: "success", label: "Litige gagné" },
+        ACCEPTED: { tone: "neutral", label: "Litige accepté" },
+    };
+    const TONE_PRIORITY: Record<DisputeTone, number> = { active: 4, danger: 3, neutral: 2, success: 1 };
+    const allDisputes = order.disputes ?? [];
+    const featuredDispute = allDisputes.length
+        ? allDisputes.reduce((best, d) => {
+              const dt = TONE_BY_STATUS[d.status]?.tone ?? "neutral";
+              const bt = TONE_BY_STATUS[best.status]?.tone ?? "neutral";
+              return TONE_PRIORITY[dt] > TONE_PRIORITY[bt] ? d : best;
+          }, allDisputes[0])
+        : undefined;
+    const featuredTone = featuredDispute ? TONE_BY_STATUS[featuredDispute.status]?.tone : undefined;
+
+    const RING_BY_TONE: Record<DisputeTone, string> = {
+        active: "ring-2 ring-orange-400",
+        danger: "ring-2 ring-red-400",
+        success: "ring-1 ring-emerald-300",
+        neutral: "ring-1 ring-slate-300",
+    };
+    const BADGE_BY_TONE: Record<DisputeTone, string> = {
+        active: "bg-orange-500 text-white border-orange-600 animate-pulse",
+        danger: "bg-red-600 text-white border-red-700",
+        success: "bg-emerald-100 text-emerald-700 border-emerald-300",
+        neutral: "bg-slate-100 text-slate-700 border-slate-300",
+    };
+
     const cardRing = isCancelled
         ? "ring-2 ring-red-300"
-        : activeDispute
-        ? "ring-2 ring-orange-400"
+        : featuredTone
+        ? RING_BY_TONE[featuredTone]
         : "ring-1 ring-black/5";
     const cardOpacity = isCancelled ? "opacity-70 grayscale-[0.4]" : "";
 
@@ -137,13 +171,14 @@ export default function OrderCompact({ order, hiddenPreorderCount = 0 }: OrderCo
                                             {order.cancelReason && <span className="font-normal opacity-90">· {cancelReasonLabel[order.cancelReason] ?? order.cancelReason}</span>}
                                         </span>
                                     )}
-                                    {activeDispute && (
+                                    {featuredDispute && featuredTone && (
                                         <span
-                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-orange-500 text-white border border-orange-600 uppercase tracking-wider animate-pulse"
-                                            title={`Litige ${activeDispute.initiatedAs === "CHARGEBACK" ? "(rétrofacturation)" : "(enquête)"} — ${activeDispute.status === "NEEDS_RESPONSE" ? "Réponse requise" : "En cours d'examen"}`}
+                                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${BADGE_BY_TONE[featuredTone]}`}
+                                            title={`${TONE_BY_STATUS[featuredDispute.status]?.label ?? featuredDispute.status} ${featuredDispute.initiatedAs === "CHARGEBACK" ? "(rétrofacturation)" : "(enquête)"}${allDisputes.length > 1 ? ` — ${allDisputes.length} litiges au total` : ""}`}
                                         >
                                             <AlertTriangle size={10} />
-                                            Litige {activeDispute.status === "NEEDS_RESPONSE" ? "— réponse requise" : "en cours"}
+                                            {TONE_BY_STATUS[featuredDispute.status]?.label ?? featuredDispute.status}
+                                            {allDisputes.length > 1 && <span className="opacity-80">×{allDisputes.length}</span>}
                                         </span>
                                     )}
                                     {hiddenPreorderCount > 0 && (
