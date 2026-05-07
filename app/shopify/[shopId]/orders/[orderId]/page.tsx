@@ -15,6 +15,7 @@ import { ArrowLeft, ArrowUpRight, Calendar, ExternalLink, Mail, MapPin, Package,
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import OrderNavigation from './OrderNavigation';
 
 countries.registerLocale(frLocale);
 countries.registerLocale(enLocale);
@@ -68,6 +69,7 @@ export default function OrderDetailPage() {
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-3 text-sm text-gray-500 mb-1 flex-wrap">
+                                        <OrderNavigation currentName={order.name[0]} domain={order.shop} />
                                         {order.name.map((name, index) => (
                                             <a
                                                 key={index}
