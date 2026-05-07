@@ -1,12 +1,16 @@
 "use client";
 
+import useShopifyStore from "@/components/shopify/shopifyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
+import { useDataProduct } from "@/library/hooks/useDataProduct";
 import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { setAffiliateForShops, SYNCED_AFFILIATE_DOMAINS } from "../Metafields/affiliateSync";
 import { updateVariantStock } from "../serverAction";
+import useProductStore from "../storeProduct";
 
 interface StockAdjustProps {
     domain: string;
@@ -17,6 +21,9 @@ interface StockAdjustProps {
 export default function StockAdjust({ domain, variantGid, quantity }: StockAdjustProps) {
     const [stockAdjust, setStockAdjust] = useState(0);
     const [isUpdating, setIsUpdating] = useState(false);
+    const { product } = useShopifyStore();
+    const { idsOtherShop } = useProductStore();
+    const { getProductData } = useDataProduct();
 
     const newQuantity = quantity + stockAdjust;
 
@@ -27,8 +34,35 @@ export default function StockAdjust({ domain, variantGid, quantity }: StockAdjus
             const res = await updateVariantStock(domain, variantGid, newQuantity);
             if (res?.error) {
                 toast.error(res.error);
-            } else {
-                toast.success(`Stock mis à jour : ${quantity} → ${newQuantity}`);
+                return;
+            }
+            toast.success(`Stock mis à jour : ${quantity} → ${newQuantity}`);
+
+            // Boutiques Beyblade FR/DE : un restock désactive automatiquement
+            // l'affiliation Amazon (et la sync sur la boutique soeur).
+            const isRestock = stockAdjust > 0;
+            const isSyncedShop = SYNCED_AFFILIATE_DOMAINS.includes(domain);
+            const activeAmazon = product?.metafields.nodes.find((mf) => mf.key === "amazon_activate");
+            const isAffiliateActive = activeAmazon?.value === "true";
+            const sku = product?.variants?.nodes[0]?.sku;
+
+            if (isRestock && isSyncedShop && isAffiliateActive && product && sku) {
+                const result = await setAffiliateForShops({
+                    currentDomain: domain,
+                    currentProductId: product.id,
+                    sku,
+                    value: false,
+                    idsOtherShop,
+                });
+                if (result.error) {
+                    toast.error(`Affiliation non désactivée : ${result.error}`);
+                } else {
+                    toast.info("Affiliation Amazon désactivée (stock remis).");
+                    if (result.syncFailures.length > 0) {
+                        toast.warning(`Sync partielle : échec sur ${result.syncFailures.join(", ")}`);
+                    }
+                    await getProductData();
+                }
             }
         } catch {
             toast.error("Erreur lors de la mise à jour du stock");

@@ -1,5 +1,5 @@
 "use client";
-import { setAmazonActivateMetafield, setAsin } from "@/components/shopify/serverActions";
+import { setAsin } from "@/components/shopify/serverActions";
 import useShopifyStore from "@/components/shopify/shopifyStore";
 import { IMetafieldRequest } from "@/components/shopify/typesShopify";
 import { Button } from "@/components/ui/button";
@@ -7,12 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner/index";
 import { Switch } from "@/components/ui/switch";
 import { useDataProduct } from "@/library/hooks/useDataProduct";
-import { toggleAffiliate } from "@/library/models/variantShopify/middlewareVariants";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import useProductStore from "../storeProduct";
+import { setAffiliateForShops } from "./affiliateSync";
 
 export default function Amazon() {
     const { product, shopifyBoutique } = useShopifyStore();
+    const { idsOtherShop } = useProductStore();
     const [asinToAdd, setAsinToAdd] = useState("");
     const [loading, setLoading] = useState(false);
     const { getProductData } = useDataProduct();
@@ -28,20 +30,27 @@ export default function Amazon() {
 
     const handleToggle = async () => {
         setLoading(true);
-        const data: IMetafieldRequest = {
-            productId: product.id,
-            domain: shopifyBoutique.domain,
-            key: activeAmazon?.key,
-            value: activeValue,
-        };
         try {
-            toggleAffiliate(shopifyBoutique.domain, sku, activeValue);
-            const res = await setAmazonActivateMetafield(data);
-            if (res?.error) toast.error(res.error);
-            if (res?.message) {
-                await getProductData();
-                toast.success(res.message);
+            const result = await setAffiliateForShops({
+                currentDomain: shopifyBoutique.domain,
+                currentProductId: product.id,
+                sku,
+                value: activeValue,
+                idsOtherShop,
+                key: activeAmazon?.key,
+            });
+            if (result.error) {
+                toast.error(result.error);
+                return;
             }
+            if (result.syncFailures.length > 0) {
+                toast.warning(`Sync partielle : échec sur ${result.syncFailures.join(", ")}`);
+            }
+            if (result.missingSisters.length > 0) {
+                toast.info(`Pas de produit jumeau trouvé sur ${result.missingSisters.join(", ")}`);
+            }
+            await getProductData();
+            if (result.message) toast.success(result.message);
         } catch (error) {
             toast.error("An error occurred while updating the metafield.");
         } finally {
