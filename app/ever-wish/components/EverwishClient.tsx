@@ -186,6 +186,15 @@ export default function EverwishClient({ initialProducts }: Props) {
                     <FilterPill active={filter === "alertActive"} onClick={() => setFilter("alertActive")}>Alerte active</FilterPill>
                 </div>
 
+                {/* Compteur résultats */}
+                <p className="text-slate-400 text-xs mb-3 pl-1">
+                    <span className="font-bold text-white">{filtered.length}</span>
+                    {" "}produit{filtered.length > 1 ? "s" : ""} affiché{filtered.length > 1 ? "s" : ""}
+                    {filtered.length !== products.length && (
+                        <span className="text-slate-500"> sur {products.length} au total</span>
+                    )}
+                </p>
+
                 {/* Tableau produits */}
                 <div className="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden">
                     {filtered.length === 0 ? (
