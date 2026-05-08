@@ -106,6 +106,15 @@ export default function EverwishClient({ initialProducts }: Props) {
             toast.error(result.error || "Erreur mise à jour");
             // Rollback
             setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, [field]: !value } : p)));
+            return;
+        }
+        const label = field === "alertRestock" ? "restock" : "rupture";
+        const action = value ? "activée" : "désactivée";
+        const titleShort = (product.title || product.url).slice(0, 60);
+        if (value) {
+            toast.success(`Alerte ${label} ${action}`, { description: titleShort });
+        } else {
+            toast(`Alerte ${label} ${action}`, { description: titleShort });
         }
     };
 
