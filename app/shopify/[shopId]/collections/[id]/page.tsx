@@ -44,7 +44,7 @@ export default function Page() {
     const { shopifyBoutique, openDialog } = useShopifyStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
-    const [sort, setSort] = useState<SortKey>('default');
+    const [sort, setSort] = useState<SortKey>('stock-asc');
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
