@@ -223,7 +223,7 @@ export default function EverwishClient({ initialProducts }: Props) {
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="text-center text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
-                                        <th className="p-3">Produit</th>
+                                        <th className="p-3 text-left">Produit</th>
                                         <th className="p-3">Prix</th>
                                         <th className="p-3">Stock</th>
                                         <th className="p-3">Dernière vérif</th>
@@ -253,23 +253,23 @@ export default function EverwishClient({ initialProducts }: Props) {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="p-3 text-slate-300 whitespace-nowrap">{product.priceText || "—"}</td>
-                                            <td className="p-3">
+                                            <td className="p-3 text-slate-300 whitespace-nowrap text-center">{product.priceText || "—"}</td>
+                                            <td className="p-3 text-center">
                                                 {product.inStock ? (
                                                     <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">En stock</Badge>
                                                 ) : (
                                                     <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30">Rupture</Badge>
                                                 )}
                                             </td>
-                                            <td className="p-3 text-slate-400 text-xs whitespace-nowrap">{timeAgo(product.lastChecked)}</td>
+                                            <td className="p-3 text-slate-400 text-xs whitespace-nowrap text-center">{timeAgo(product.lastChecked)}</td>
                                             <td className="p-3">
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center justify-center gap-2">
                                                     <Switch checked={product.alertRestock} onCheckedChange={(v) => handleToggle(product, "alertRestock", v)} disabled={product.inStock} />
                                                     {product.alertRestock ? <IconBell className="w-4 h-4 text-emerald-400" /> : <IconBellOff className="w-4 h-4 text-slate-600" />}
                                                 </div>
                                             </td>
                                             <td className="p-3">
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center justify-center gap-2">
                                                     <Switch checked={product.alertOutOfStock} onCheckedChange={(v) => handleToggle(product, "alertOutOfStock", v)} disabled={!product.inStock} />
                                                     {product.alertOutOfStock ? <IconAlertTriangle className="w-4 h-4 text-rose-400" /> : <IconBellOff className="w-4 h-4 text-slate-600" />}
                                                 </div>
@@ -278,7 +278,7 @@ export default function EverwishClient({ initialProducts }: Props) {
                                                 <button
                                                     onClick={() => handleDelete(product)}
                                                     aria-label="Supprimer le produit"
-                                                    className="p-3 hover:bg-rose-500/10 rounded-lg text-slate-500 hover:text-rose-400 transition-all cursor-pointer flex items-center justify-center"
+                                                    className="mx-auto p-3 hover:bg-rose-500/10 rounded-lg text-slate-500 hover:text-rose-400 transition-all cursor-pointer flex items-center justify-center"
                                                 >
                                                     <IconTrash className="w-5 h-5" />
                                                 </button>
