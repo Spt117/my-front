@@ -17,7 +17,7 @@ import {
     IconX,
 } from "@tabler/icons-react";
 import Image from "next/image";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { addEverwishUrl, deleteEverwishProduct, EverwishProduct, toggleEverwishAlert, triggerEverwishScan } from "../actions";
 import { useRouter } from "next/navigation";
@@ -52,6 +52,17 @@ export default function EverwishClient({ initialProducts }: Props) {
     const [adding, startAdd] = useTransition();
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [bulkRunning, setBulkRunning] = useState(false);
+
+    // Échap global → vide les inputs (recherche + ajout URL), peu importe le focus.
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key !== "Escape") return;
+            setSearch("");
+            setNewUrl("");
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, []);
 
     const stats = useMemo(() => {
         const total = products.length;
