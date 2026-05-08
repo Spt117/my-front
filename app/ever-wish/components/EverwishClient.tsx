@@ -44,6 +44,7 @@ export default function EverwishClient({ initialProducts }: Props) {
     const [products, setProducts] = useState<EverwishProduct[]>(initialProducts);
     const [filter, setFilter] = useState<Filter>("all");
     const [wholesaleFilter, setWholesaleFilter] = useState<WholesaleFilter>("wholesale");
+    const [search, setSearch] = useState("");
     const [newUrl, setNewUrl] = useState("");
     const [scanning, startScan] = useTransition();
     const [adding, startAdd] = useTransition();
@@ -57,14 +58,16 @@ export default function EverwishClient({ initialProducts }: Props) {
     }, [products]);
 
     const filtered = useMemo(() => {
+        const q = search.trim().toLowerCase();
         return products.filter((p) => {
             if (wholesaleFilter === "wholesale" && !p.wholesale) return false;
             if (wholesaleFilter === "retail" && p.wholesale) return false;
             if (filter === "outOfStock" && p.inStock) return false;
             if (filter === "alertActive" && !(p.alertRestock || p.alertOutOfStock)) return false;
+            if (q && !p.title.toLowerCase().includes(q)) return false;
             return true;
         });
-    }, [products, filter, wholesaleFilter]);
+    }, [products, filter, wholesaleFilter, search]);
 
     const handleScan = () => {
         startScan(async () => {
@@ -161,6 +164,17 @@ export default function EverwishClient({ initialProducts }: Props) {
                     </Button>
                 </div>
 
+                {/* Recherche par titre */}
+                <div className="mb-4">
+                    <input
+                        type="search"
+                        placeholder="Rechercher par titre…"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-fuchsia-500 transition-colors placeholder:text-slate-600"
+                    />
+                </div>
+
                 {/* Filtres */}
                 <div className="flex flex-wrap gap-3 mb-6">
                     <FilterPill active={wholesaleFilter === "wholesale"} onClick={() => setWholesaleFilter("wholesale")}>Wholesale uniquement</FilterPill>
@@ -183,7 +197,7 @@ export default function EverwishClient({ initialProducts }: Props) {
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
+                                    <tr className="text-center text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
                                         <th className="p-3">Produit</th>
                                         <th className="p-3">Prix</th>
                                         <th className="p-3">Stock</th>
