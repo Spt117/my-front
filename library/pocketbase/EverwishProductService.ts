@@ -1,10 +1,13 @@
 import { pocketBaseManager } from "./Manager";
 
+export type Availability = "InStock" | "OutOfStock" | "PreOrder" | "Discontinued" | "Unknown";
+
 export interface IEverwishProductRecord {
     url: string;
     title: string;
     priceText: string;
     inStock: boolean;
+    availability: Availability;
     wholesale: boolean;
     alertRestock: boolean;
     alertOutOfStock: boolean;
