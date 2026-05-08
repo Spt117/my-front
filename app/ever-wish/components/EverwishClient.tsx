@@ -211,12 +211,14 @@ export default function EverwishClient({ initialProducts }: Props) {
                                                             return <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">En stock</Badge>;
                                                         case "PreOrder":
                                                             return <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">Pré-commande</Badge>;
+                                                        case "OutOfStock":
+                                                            return <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30">Rupture</Badge>;
                                                         case "Discontinued":
                                                             return <Badge className="bg-slate-500/20 text-slate-300 border-slate-500/30">Discontinué</Badge>;
                                                         case "Unknown":
-                                                            return <Badge className="bg-slate-700/40 text-slate-400 border-slate-700">Inconnu</Badge>;
                                                         default:
-                                                            return <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30">Rupture</Badge>;
+                                                            // Champ vide / null / valeur inconnue → "Inconnu" (pas "Rupture")
+                                                            return <Badge className="bg-slate-700/40 text-slate-400 border-slate-700">Inconnu</Badge>;
                                                     }
                                                 })()}
                                             </td>
