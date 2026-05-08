@@ -15,6 +15,7 @@ import {
     IconSparkles,
     IconTrash,
 } from "@tabler/icons-react";
+import Image from "next/image";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { addEverwishUrl, deleteEverwishProduct, EverwishProduct, toggleEverwishAlert, triggerEverwishScan } from "../actions";
@@ -220,11 +221,22 @@ export default function EverwishClient({ initialProducts }: Props) {
                                     {filtered.map((product) => (
                                         <tr key={product.id} className="hover:bg-slate-800/30 transition-colors">
                                             <td className="p-3 max-w-md">
-                                                <a href={product.url} target="_blank" rel="noreferrer" className="flex items-start gap-1.5 text-white hover:text-fuchsia-400 transition-colors group">
-                                                    <span className="line-clamp-2">{product.title || product.url}</span>
-                                                    <IconExternalLink className="w-3 h-3 text-slate-500 group-hover:text-fuchsia-400 shrink-0 mt-0.5" />
-                                                </a>
-                                                {product.wholesale && <Badge className="mt-1 bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30 text-[9px]">Wholesale</Badge>}
+                                                <div className="flex items-start gap-3">
+                                                    {product.imageUrl ? (
+                                                        <a href={product.url} target="_blank" rel="noreferrer" className="shrink-0 block w-12 h-12 rounded-lg overflow-hidden bg-slate-800 border border-slate-700 relative">
+                                                            <Image src={product.imageUrl} alt="" fill sizes="48px" className="object-cover" />
+                                                        </a>
+                                                    ) : (
+                                                        <div className="shrink-0 w-12 h-12 rounded-lg bg-slate-800 border border-slate-700" />
+                                                    )}
+                                                    <div className="min-w-0">
+                                                        <a href={product.url} target="_blank" rel="noreferrer" className="flex items-start gap-1.5 text-white hover:text-fuchsia-400 transition-colors group">
+                                                            <span className="line-clamp-2 text-left">{product.title || product.url}</span>
+                                                            <IconExternalLink className="w-3 h-3 text-slate-500 group-hover:text-fuchsia-400 shrink-0 mt-0.5" />
+                                                        </a>
+                                                        {product.wholesale && <Badge className="mt-1 bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30 text-[9px]">Wholesale</Badge>}
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td className="p-3 text-slate-300 whitespace-nowrap">{product.priceText || "—"}</td>
                                             <td className="p-3">

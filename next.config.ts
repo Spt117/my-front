@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
                 protocol: 'https',
                 hostname: 'm.media-amazon.com',
             },
+            {
+                protocol: 'https',
+                hostname: 'cdn11.bigcommerce.com',
+            },
         ],
     },
     experimental: {

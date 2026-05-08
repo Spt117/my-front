@@ -3,6 +3,7 @@ import { pocketBaseManager } from "./Manager";
 export interface IEverwishProductRecord {
     url: string;
     title: string;
+    imageUrl: string;
     priceText: string;
     inStock: boolean;
     wholesale: boolean;
