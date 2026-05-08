@@ -205,22 +205,11 @@ export default function EverwishClient({ initialProducts }: Props) {
                                             </td>
                                             <td className="p-3 text-slate-300 whitespace-nowrap">{product.priceText || "—"}</td>
                                             <td className="p-3">
-                                                {(() => {
-                                                    switch (product.availability) {
-                                                        case "InStock":
-                                                            return <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">En stock</Badge>;
-                                                        case "PreOrder":
-                                                            return <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">Pré-commande</Badge>;
-                                                        case "OutOfStock":
-                                                            return <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30">Rupture</Badge>;
-                                                        case "Discontinued":
-                                                            return <Badge className="bg-slate-500/20 text-slate-300 border-slate-500/30">Discontinué</Badge>;
-                                                        case "Unknown":
-                                                        default:
-                                                            // Champ vide / null / valeur inconnue → "Inconnu" (pas "Rupture")
-                                                            return <Badge className="bg-slate-700/40 text-slate-400 border-slate-700">Inconnu</Badge>;
-                                                    }
-                                                })()}
+                                                {product.inStock ? (
+                                                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">En stock</Badge>
+                                                ) : (
+                                                    <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30">Rupture</Badge>
+                                                )}
                                             </td>
                                             <td className="p-3 text-slate-400 text-xs whitespace-nowrap">{timeAgo(product.lastChecked)}</td>
                                             <td className="p-3">
