@@ -14,6 +14,7 @@ import {
     IconRefresh,
     IconSparkles,
     IconTrash,
+    IconX,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { useMemo, useState, useTransition } from "react";
@@ -156,6 +157,7 @@ export default function EverwishClient({ initialProducts }: Props) {
                         onChange={(e) => setNewUrl(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") handleAdd();
+                            else if (e.key === "Escape") setNewUrl("");
                         }}
                         className="flex-1 bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-fuchsia-500 transition-colors placeholder:text-slate-600"
                     />
@@ -166,14 +168,27 @@ export default function EverwishClient({ initialProducts }: Props) {
                 </div>
 
                 {/* Recherche par titre */}
-                <div className="mb-4">
+                <div className="mb-4 relative">
                     <input
                         type="search"
                         placeholder="Rechercher par titre…"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-fuchsia-500 transition-colors placeholder:text-slate-600"
+                        onKeyDown={(e) => {
+                            if (e.key === "Escape") setSearch("");
+                        }}
+                        className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2.5 pr-11 text-white text-sm focus:outline-none focus:border-fuchsia-500 transition-colors placeholder:text-slate-600 [&::-webkit-search-cancel-button]:appearance-none"
                     />
+                    {search && (
+                        <button
+                            type="button"
+                            onClick={() => setSearch("")}
+                            aria-label="Effacer la recherche"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 p-2 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                        >
+                            <IconX className="w-4 h-4" />
+                        </button>
+                    )}
                 </div>
 
                 {/* Filtres */}
@@ -260,8 +275,12 @@ export default function EverwishClient({ initialProducts }: Props) {
                                                 </div>
                                             </td>
                                             <td className="p-3">
-                                                <button onClick={() => handleDelete(product)} className="p-2 hover:bg-rose-500/10 rounded-lg text-slate-500 hover:text-rose-400 transition-all cursor-pointer">
-                                                    <IconTrash className="w-4 h-4" />
+                                                <button
+                                                    onClick={() => handleDelete(product)}
+                                                    aria-label="Supprimer le produit"
+                                                    className="p-3 hover:bg-rose-500/10 rounded-lg text-slate-500 hover:text-rose-400 transition-all cursor-pointer flex items-center justify-center"
+                                                >
+                                                    <IconTrash className="w-5 h-5" />
                                                 </button>
                                             </td>
                                         </tr>
