@@ -50,6 +50,8 @@ export default function EverwishClient({ initialProducts }: Props) {
     const [newUrl, setNewUrl] = useState("");
     const [scanning, startScan] = useTransition();
     const [adding, startAdd] = useTransition();
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [bulkRunning, setBulkRunning] = useState(false);
 
     const stats = useMemo(() => {
         const total = products.length;
@@ -126,7 +128,110 @@ export default function EverwishClient({ initialProducts }: Props) {
             return;
         }
         setProducts((prev) => prev.filter((p) => p.id !== product.id));
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            next.delete(product.id);
+            return next;
+        });
         toast.success("Produit supprimé");
+    };
+
+    // ─── Sélection ───────────────────────────────────────────────────────────
+    const filteredIds = useMemo(() => filtered.map((p) => p.id), [filtered]);
+    const allFilteredSelected = filteredIds.length > 0 && filteredIds.every((id) => selectedIds.has(id));
+    const toggleOne = (id: string, checked: boolean) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (checked) next.add(id);
+            else next.delete(id);
+            return next;
+        });
+    };
+    const toggleAllFiltered = () => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (allFilteredSelected) {
+                filteredIds.forEach((id) => next.delete(id));
+            } else {
+                filteredIds.forEach((id) => next.add(id));
+            }
+            return next;
+        });
+    };
+    const clearSelection = () => setSelectedIds(new Set());
+
+    // ─── Bulk actions ────────────────────────────────────────────────────────
+    type BulkAction = "alertRestockOn" | "alertRestockOff" | "alertOutOfStockOn" | "alertOutOfStockOff" | "delete";
+
+    const runBulk = async (action: BulkAction) => {
+        const ids = Array.from(selectedIds);
+        if (ids.length === 0) return;
+
+        if (action === "delete" && !confirm(`Supprimer ${ids.length} produit(s) de la surveillance ?`)) return;
+
+        setBulkRunning(true);
+        const targets = products.filter((p) => selectedIds.has(p.id));
+        let okCount = 0;
+        let skipCount = 0;
+        let errCount = 0;
+
+        const tasks = targets.map(async (product) => {
+            try {
+                if (action === "delete") {
+                    const r = await deleteEverwishProduct(product.id);
+                    if (!r.success) throw new Error(r.error);
+                    okCount += 1;
+                    return { id: product.id, deleted: true } as const;
+                }
+                if (action === "alertRestockOn" && product.inStock) { skipCount += 1; return null; }
+                if (action === "alertOutOfStockOn" && !product.inStock) { skipCount += 1; return null; }
+
+                const field = action.startsWith("alertRestock") ? "alertRestock" : "alertOutOfStock";
+                const value = action.endsWith("On");
+                const r = await toggleEverwishAlert(product.id, field, value);
+                if (!r.success) throw new Error(r.error);
+                okCount += 1;
+                return { id: product.id, field, value } as const;
+            } catch (e) {
+                errCount += 1;
+                console.error(`[bulk] ${action} ${product.url}:`, e);
+                return null;
+            }
+        });
+        const results = await Promise.all(tasks);
+        setBulkRunning(false);
+
+        // Mise à jour optimiste
+        setProducts((prev) => {
+            let next = [...prev];
+            for (const r of results) {
+                if (!r) continue;
+                if ("deleted" in r) {
+                    next = next.filter((p) => p.id !== r.id);
+                } else {
+                    next = next.map((p) => (p.id === r.id ? { ...p, [r.field]: r.value } : p));
+                }
+            }
+            return next;
+        });
+        if (action === "delete") clearSelection();
+
+        const labels: Record<BulkAction, string> = {
+            alertRestockOn: "alertes restock activées",
+            alertRestockOff: "alertes restock désactivées",
+            alertOutOfStockOn: "alertes rupture activées",
+            alertOutOfStockOff: "alertes rupture désactivées",
+            delete: "produit(s) supprimé(s)",
+        };
+        const desc = [
+            errCount > 0 ? `${errCount} erreur(s)` : null,
+            skipCount > 0 ? `${skipCount} ignoré(s) (état incompatible)` : null,
+        ].filter(Boolean).join(" · ");
+        if (errCount > 0) {
+            toast.error(`${okCount} ${labels[action]}`, { description: desc || undefined });
+        } else {
+            toast.success(`${okCount} ${labels[action]}`, { description: desc || undefined });
+        }
     };
 
     return (
@@ -211,14 +316,27 @@ export default function EverwishClient({ initialProducts }: Props) {
                     <FilterPill active={filter === "alertActive"} onClick={() => setFilter("alertActive")}>Alerte active</FilterPill>
                 </div>
 
-                {/* Compteur résultats */}
-                <p className="text-slate-400 text-xs mb-3 pl-1">
-                    <span className="font-bold text-white">{filtered.length}</span>
-                    {" "}produit{filtered.length > 1 ? "s" : ""} affiché{filtered.length > 1 ? "s" : ""}
-                    {filtered.length !== products.length && (
-                        <span className="text-slate-500"> sur {products.length} au total</span>
+                {/* Compteur résultats + Bulk action bar */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3 pl-1">
+                    <p className="text-slate-400 text-xs">
+                        <span className="font-bold text-white">{filtered.length}</span>
+                        {" "}produit{filtered.length > 1 ? "s" : ""} affiché{filtered.length > 1 ? "s" : ""}
+                        {filtered.length !== products.length && (
+                            <span className="text-slate-500"> sur {products.length} au total</span>
+                        )}
+                    </p>
+                    {selectedIds.size > 0 && (
+                        <div className="flex flex-wrap items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl p-2">
+                            <span className="text-xs font-bold text-white px-2">{selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}</span>
+                            <BulkBtn disabled={bulkRunning} onClick={() => runBulk("alertRestockOn")}>🔔 Restock ON</BulkBtn>
+                            <BulkBtn disabled={bulkRunning} onClick={() => runBulk("alertRestockOff")}>🔕 Restock OFF</BulkBtn>
+                            <BulkBtn disabled={bulkRunning} onClick={() => runBulk("alertOutOfStockOn")}>🔔 Rupture ON</BulkBtn>
+                            <BulkBtn disabled={bulkRunning} onClick={() => runBulk("alertOutOfStockOff")}>🔕 Rupture OFF</BulkBtn>
+                            <BulkBtn disabled={bulkRunning} danger onClick={() => runBulk("delete")}>🗑 Supprimer</BulkBtn>
+                            <button onClick={clearSelection} className="text-slate-400 hover:text-white text-xs px-2 cursor-pointer">Effacer</button>
+                        </div>
                     )}
-                </p>
+                </div>
 
                 {/* Tableau produits */}
                 <div className="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden">
@@ -232,6 +350,15 @@ export default function EverwishClient({ initialProducts }: Props) {
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="text-center text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
+                                        <th className="p-3 w-10">
+                                            <input
+                                                type="checkbox"
+                                                checked={allFilteredSelected}
+                                                onChange={toggleAllFiltered}
+                                                aria-label="Tout sélectionner"
+                                                className="w-4 h-4 accent-fuchsia-600 cursor-pointer"
+                                            />
+                                        </th>
                                         <th className="p-3 text-left">Produit</th>
                                         <th className="p-3">Prix</th>
                                         <th className="p-3">Stock</th>
@@ -243,7 +370,16 @@ export default function EverwishClient({ initialProducts }: Props) {
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/50">
                                     {filtered.map((product) => (
-                                        <tr key={product.id} className="hover:bg-slate-800/30 transition-colors">
+                                        <tr key={product.id} className={`hover:bg-slate-800/30 transition-colors ${selectedIds.has(product.id) ? "bg-fuchsia-500/5" : ""}`}>
+                                            <td className="p-3 text-center w-10">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.has(product.id)}
+                                                    onChange={(e) => toggleOne(product.id, e.target.checked)}
+                                                    aria-label="Sélectionner"
+                                                    className="w-4 h-4 accent-fuchsia-600 cursor-pointer"
+                                                />
+                                            </td>
                                             <td className="p-3 max-w-md">
                                                 <div className="flex items-start gap-3">
                                                     {product.imageUrl ? (
@@ -325,6 +461,20 @@ function FilterPill({ active, onClick, children }: { active: boolean; onClick: (
             onClick={onClick}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 active ? "bg-fuchsia-600 text-white" : "bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            }`}
+        >
+            {children}
+        </button>
+    );
+}
+
+function BulkBtn({ onClick, disabled, danger, children }: { onClick: () => void; disabled?: boolean; danger?: boolean; children: React.ReactNode }) {
+    return (
+        <button
+            onClick={onClick}
+            disabled={disabled}
+            className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                danger ? "bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/30" : "bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700"
             }`}
         >
             {children}
