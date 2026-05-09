@@ -31,11 +31,16 @@ export async function getKeepaSettings(): Promise<KeepaSettings | null> {
 export async function addKeepaWatch(
     asin: string,
     domainId: number,
-): Promise<{ success: boolean; error?: string; warning?: string; tokensLeft?: number }> {
+): Promise<{ success: boolean; error?: string; warning?: string; tokensLeft?: number; record?: KeepaWatch }> {
     const result = await postServer(`${pokeUriServer}/keepa/watch/add`, { asin, domainId });
     if (result.error) return { success: false, error: result.error };
     revalidatePath(PATH);
-    return { success: true, warning: (result as any).warning, tokensLeft: (result as any).tokensLeft };
+    return {
+        success: true,
+        warning: (result as any).warning,
+        tokensLeft: (result as any).tokensLeft,
+        record: result.response as KeepaWatch | undefined,
+    };
 }
 
 export async function toggleKeepaAlert(

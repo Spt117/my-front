@@ -20,7 +20,7 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
     addKeepaWatch,
@@ -87,6 +87,13 @@ export default function KeepaPage({ initialWatches, initialSettings }: Props) {
     const [retryingId, setRetryingId] = useState<string | null>(null);
     const [copiedAsin, setCopiedAsin] = useState<string | null>(null);
 
+    // Resync le state local avec la prop quand le RSC re-render (router.refresh()).
+    // Sans ça, useState(initialWatches) reste figé sur la première valeur — c'est
+    // le piège classique du combo "state local + props depuis server component".
+    useEffect(() => {
+        setWatches(initialWatches);
+    }, [initialWatches]);
+
     const stats = useMemo(() => {
         const total = watches.length;
         const inStock = watches.filter((w) => w.amazonAvailable).length;
@@ -113,6 +120,10 @@ export default function KeepaPage({ initialWatches, initialSettings }: Props) {
                 toast.warning(result.warning + tokensInfo);
             } else {
                 toast.success(`ASIN ${asin} ajouté à la surveillance${tokensInfo}`);
+            }
+            // Update optimiste : insère le nouveau record en tête de liste sans attendre router.refresh().
+            if (result.record) {
+                setWatches((prev) => [result.record!, ...prev.filter((w) => w.id !== result.record!.id)]);
             }
             setNewAsin("");
             router.refresh();
