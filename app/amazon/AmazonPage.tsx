@@ -8,7 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { IAmazonRecord, IAmazonRecordFull } from "@/library/pocketbase/AmazonService";
-import { Globe, Package, Plus, ShoppingCart } from "lucide-react";
+import { Eye, Globe, Package, Plus, ShoppingCart } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -97,40 +98,48 @@ export default function AmazonPage({ marketplaces }: { marketplaces: IAmazonReco
                         </div>
                     </div>
 
-                    <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogTrigger asChild>
-                            <Button className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 shadow-lg shadow-orange-500/20 transition-all duration-300 cursor-pointer">
-                                <Plus className="h-4 w-4 mr-2" />
-                                Ajouter un marketplace
+                    <div className="flex items-center gap-2">
+                        <Link href="/amazon/keepa">
+                            <Button variant="outline" className="cursor-pointer border-amber-200 text-amber-700 hover:bg-amber-50 hover:text-amber-800">
+                                <Eye className="h-4 w-4 mr-2" />
+                                Surveillance Keepa
                             </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-md">
-                            <DialogHeader>
-                                <DialogTitle className="flex items-center gap-2">
-                                    <Globe className="h-5 w-5 text-orange-500" />
-                                    Nouveau marketplace
-                                </DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-3 pt-2">
-                                <div className="grid grid-cols-2 gap-3">
-                                    <Input placeholder="Marketplace (ex: amazon.fr)" value={form.marketplace} onChange={(e) => handleChange("marketplace", e.target.value)} className="col-span-2" />
-                                    <Input placeholder="Host API" value={form.host} onChange={(e) => handleChange("host", e.target.value)} className="col-span-2" />
-                                    <Input placeholder="Région (ex: eu-west-1)" value={form.region} onChange={(e) => handleChange("region", e.target.value)} />
-                                    <Input placeholder="Partner Tag" value={form.partnerTag} onChange={(e) => handleChange("partnerTag", e.target.value)} />
-                                    <Input placeholder="Devise (ex: €)" value={form.currency} onChange={(e) => handleChange("currency", e.target.value)} />
-                                    <Input placeholder="Code pays (ex: fr)" value={form.countryCode} onChange={(e) => handleChange("countryCode", e.target.value)} />
-                                </div>
-                                <div className="flex items-center gap-3 py-1">
-                                    <Switch checked={form.isActive} onCheckedChange={(checked) => handleChange("isActive", checked)} />
-                                    <span className="text-sm text-muted-foreground">Activer le marketplace</span>
-                                </div>
-                                <Separator />
-                                <Button onClick={handleSubmit} disabled={loading} className="w-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 cursor-pointer">
-                                    {loading ? "Création..." : "Créer le marketplace"}
+                        </Link>
+                        <Dialog open={open} onOpenChange={setOpen}>
+                            <DialogTrigger asChild>
+                                <Button className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 shadow-lg shadow-orange-500/20 transition-all duration-300 cursor-pointer">
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Ajouter un marketplace
                                 </Button>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle className="flex items-center gap-2">
+                                        <Globe className="h-5 w-5 text-orange-500" />
+                                        Nouveau marketplace
+                                    </DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-3 pt-2">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Input placeholder="Marketplace (ex: amazon.fr)" value={form.marketplace} onChange={(e) => handleChange("marketplace", e.target.value)} className="col-span-2" />
+                                        <Input placeholder="Host API" value={form.host} onChange={(e) => handleChange("host", e.target.value)} className="col-span-2" />
+                                        <Input placeholder="Région (ex: eu-west-1)" value={form.region} onChange={(e) => handleChange("region", e.target.value)} />
+                                        <Input placeholder="Partner Tag" value={form.partnerTag} onChange={(e) => handleChange("partnerTag", e.target.value)} />
+                                        <Input placeholder="Devise (ex: €)" value={form.currency} onChange={(e) => handleChange("currency", e.target.value)} />
+                                        <Input placeholder="Code pays (ex: fr)" value={form.countryCode} onChange={(e) => handleChange("countryCode", e.target.value)} />
+                                    </div>
+                                    <div className="flex items-center gap-3 py-1">
+                                        <Switch checked={form.isActive} onCheckedChange={(checked) => handleChange("isActive", checked)} />
+                                        <span className="text-sm text-muted-foreground">Activer le marketplace</span>
+                                    </div>
+                                    <Separator />
+                                    <Button onClick={handleSubmit} disabled={loading} className="w-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 cursor-pointer">
+                                        {loading ? "Création..." : "Créer le marketplace"}
+                                    </Button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </div>
 
                 {/* Table */}
