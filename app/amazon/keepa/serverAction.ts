@@ -58,6 +58,13 @@ export async function refreshKeepaWatch(
     return { success: true, tokensLeft: (result as any).tokensLeft };
 }
 
+export async function retryKeepaTracking(id: string): Promise<{ success: boolean; error?: string }> {
+    const result = await postServer(`${pokeUriServer}/keepa/watch/${id}/retry-tracking`, {});
+    if (result.error) return { success: false, error: result.error };
+    revalidatePath(PATH);
+    return { success: true };
+}
+
 export async function deleteKeepaWatch(id: string): Promise<{ success: boolean; error?: string }> {
     try {
         const response = await fetch(`${pokeUriServer}/keepa/watch/${id}`, {

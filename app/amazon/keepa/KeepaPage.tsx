@@ -7,9 +7,12 @@ import {
     IconAlertTriangle,
     IconBell,
     IconBellOff,
+    IconCheck,
+    IconCopy,
     IconExternalLink,
     IconLoader2,
     IconPackageOff,
+    IconPlugConnected,
     IconPlus,
     IconRefresh,
     IconShoppingCart,
@@ -25,6 +28,7 @@ import {
     KeepaSettings,
     KeepaWatch,
     refreshKeepaWatch,
+    retryKeepaTracking,
     syncKeepaNotifications,
     toggleKeepaAlert,
 } from "./serverAction";
@@ -80,6 +84,8 @@ export default function KeepaPage({ initialWatches, initialSettings }: Props) {
     const [adding, startAdd] = useTransition();
     const [syncing, startSync] = useTransition();
     const [refreshingId, setRefreshingId] = useState<string | null>(null);
+    const [retryingId, setRetryingId] = useState<string | null>(null);
+    const [copiedAsin, setCopiedAsin] = useState<string | null>(null);
 
     const stats = useMemo(() => {
         const total = watches.length;
@@ -156,6 +162,34 @@ export default function KeepaPage({ initialWatches, initialSettings }: Props) {
         }
         setWatches((prev) => prev.filter((w) => w.id !== watch.id));
         toast.success("Surveillance supprimée");
+    };
+
+    const handleRetryTracking = async (watch: KeepaWatch) => {
+        setRetryingId(watch.id);
+        try {
+            const result = await retryKeepaTracking(watch.id);
+            if (!result.success) {
+                toast.error(result.error || "Erreur retry tracking");
+                return;
+            }
+            // Optimiste : on flag trackingActive=true en local
+            setWatches((prev) => prev.map((w) => (w.id === watch.id ? { ...w, trackingActive: true } : w)));
+            toast.success(`Tracking Keepa réactivée pour ${watch.asin}`);
+            router.refresh();
+        } finally {
+            setRetryingId(null);
+        }
+    };
+
+    const handleCopyAsin = async (asin: string) => {
+        try {
+            await navigator.clipboard.writeText(asin);
+            setCopiedAsin(asin);
+            // Reset l'icône check après 1.5s
+            setTimeout(() => setCopiedAsin((prev) => (prev === asin ? null : prev)), 1500);
+        } catch {
+            toast.error("Impossible de copier");
+        }
     };
 
     const handleSync = () => {
@@ -299,12 +333,36 @@ export default function KeepaPage({ initialWatches, initialSettings }: Props) {
                                                                 <span className="line-clamp-2 text-left">{watch.title || watch.asin}</span>
                                                                 <IconExternalLink className="w-3 h-3 text-slate-500 group-hover:text-amber-400 shrink-0 mt-0.5" />
                                                             </a>
-                                                            <code className="text-[10px] text-slate-500 font-mono">{watch.asin}</code>
-                                                            {!watch.trackingActive && (
-                                                                <Badge className="ml-2 bg-rose-500/20 text-rose-300 border-rose-500/30 text-[9px]">
-                                                                    Tracking KO
-                                                                </Badge>
-                                                            )}
+                                                            <div className="flex items-center gap-1.5 mt-0.5">
+                                                                <code className="text-[10px] text-slate-500 font-mono">{watch.asin}</code>
+                                                                <button
+                                                                    onClick={() => handleCopyAsin(watch.asin)}
+                                                                    aria-label="Copier l'ASIN"
+                                                                    title="Copier l'ASIN"
+                                                                    className="p-0.5 rounded text-slate-600 hover:text-amber-400 hover:bg-amber-500/10 transition-colors cursor-pointer"
+                                                                >
+                                                                    {copiedAsin === watch.asin ? (
+                                                                        <IconCheck className="w-3 h-3 text-emerald-400" />
+                                                                    ) : (
+                                                                        <IconCopy className="w-3 h-3" />
+                                                                    )}
+                                                                </button>
+                                                                {!watch.trackingActive && (
+                                                                    <button
+                                                                        onClick={() => handleRetryTracking(watch)}
+                                                                        disabled={retryingId === watch.id}
+                                                                        title="Cliquer pour relancer la tracking Keepa"
+                                                                        className="ml-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[9px] hover:bg-rose-500/30 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                    >
+                                                                        {retryingId === watch.id ? (
+                                                                            <IconLoader2 className="w-2.5 h-2.5 animate-spin" />
+                                                                        ) : (
+                                                                            <IconPlugConnected className="w-2.5 h-2.5" />
+                                                                        )}
+                                                                        Tracking KO
+                                                                    </button>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </td>
