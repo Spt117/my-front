@@ -11,6 +11,7 @@ export const menuItems: MenuProps[] = [
     { path: "/wordpress", label: "WordPress" },
     { path: "/server", label: "Serveur" },
     { path: "/amazon", label: "Amazon" },
+    { path: "/amazon/keepa", label: "Keepa Watch" },
     { path: "/youtube", label: "YouTube" },
     { path: "/colissimo", label: "Colissimo" },
 ];

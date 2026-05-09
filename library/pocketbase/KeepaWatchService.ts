@@ -58,7 +58,9 @@ class KeepaWatchService {
 
     async getAll(): Promise<IKeepaWatchRecordFull[]> {
         await this.ensureConnection();
-        return this.watch.getFullList<IKeepaWatchRecordFull>({ sort: "-created" });
+        // Pas de sort : la version PB déployée renvoie un 400 sur "-created"/"-updated"
+        // (cf. EverwishProductService). Le tri est fait côté UI si besoin.
+        return this.watch.getFullList<IKeepaWatchRecordFull>();
     }
 
     async getSettings(): Promise<IKeepaSettingsFull | null> {
